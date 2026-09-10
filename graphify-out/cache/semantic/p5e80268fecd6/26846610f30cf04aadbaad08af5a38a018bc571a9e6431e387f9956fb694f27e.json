@@ -1,0 +1,1 @@
+{"nodes": [{"id": "mobile_pubspec", "label": "Mobile Pubspec", "file_type": "code", "source_file": "mobile/pubspec.yaml"}], "edges": [{"source": "mobile_pubspec", "target": "flutter_mobile_app", "relation": "implements", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "mobile/pubspec.yaml"}], "hyperedges": []}
