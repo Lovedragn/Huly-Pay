@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import '../data/mock_data.dart';
 import '../models/dashboard_data.dart';
 import '../models/payment_model.dart';
 import '../repositories/payment_repository.dart';
@@ -47,20 +45,12 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   @override
   void initState() {
     super.initState();
-    bool isTest = false;
-    try {
-      isTest = Platform.environment.containsKey('FLUTTER_TEST');
-    } catch (_) {}
-
     if (widget.initialPayments != null) {
       _allPayments = List.from(widget.initialPayments!);
       _filterAndRecalculate();
     } else if (widget.initialCategories != null) {
       _categories = widget.initialCategories!;
-      _totalSpent = widget.totalSpent ?? (_categories.isEmpty ? '₹0' : '₹12,480');
-    } else if (isTest) {
-      _categories = MockData.analysisCategoryItems;
-      _totalSpent = widget.totalSpent ?? '₹12,480';
+      _totalSpent = widget.totalSpent ?? '₹0';
     } else {
       _categories = [];
       _totalSpent = widget.totalSpent ?? '₹0';

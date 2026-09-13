@@ -1,23 +1,23 @@
-# Graph Report - Huly.pay  (2026-09-13)
+# Graph Report - Huly.pay  (2026-09-14)
 
 ## Corpus Check
-- 149 files · ~189,420 words
+- 146 files · ~187,089 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1461 nodes · 2353 edges · 110 communities (59 shown, 37 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 90 edges (avg confidence: 0.82)
+- 1431 nodes · 2284 edges · 114 communities (62 shown, 38 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 87 edges (avg confidence: 0.82)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `92d0bcbf`
+- Built from commit: `8341fac6`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - home_spend_trend_line_chart.dart
-- DatabaseHealthController
-- Category
+- org.springframework.web.bind.annotation.GetMapping
+- org.springframework.http.ResponseEntity
 - dashboard_data.dart
 - package.json
 - GeneratedPluginRegistrant.swift
@@ -29,7 +29,7 @@
 - payment_model.dart
 - ErrorResponse
 - analysis_screen.dart
-- analysis_category_pie_chart.dart
+- org.springframework.transaction.annotation.Transactional
 - scan_and_pay_screen.dart
 - Win32Window
 - HulyPay_5_Phase_FullStack_Workload.md
@@ -49,7 +49,7 @@
 - chart_colors.dart
 - Huly Pay — Final UI + Real Connection Verification.md
 - main.dart
-- org.springframework.transaction.annotation.Transactional
+- lombok.AllArgsConstructor
 - user_profile.dart
 - State
 - splash_screen.dart
@@ -92,25 +92,29 @@
 - Web Maskable Icon (192)
 - Web Maskable Icon (512)
 - com.hulypay:backend
-- lombok.AllArgsConstructor
-- org.springframework.http.ResponseEntity
+- analysis_category_pie_chart.dart
+- MaterialPageRoute
 - rules/graphify.md
 - workflows/graphify.md
 - String?
-- BackendApplication
-- PaymentResponse
+- jakarta.annotation.PostConstruct
 - lombok.RequiredArgsConstructor
+- upi_service.dart
 - home_weekly_bar_chart.dart
 - custom_bottom_nav_bar.dart
-- PaymentRepository
-- User
+- PaymentResponse
+- .updateCurrentUser
 - StatelessWidget
 - ../models/payment_model.dart
 - home_today_spend_gauge.dart
 - payment_repository.dart
-- MaterialPageRoute
+- Category
 - api_service.dart
-- mock_data.dart
+- CategoryResponse
+- User
+- category_model.dart
+- CustomPainter
+- bool?
 
 ## God Nodes (most connected - your core abstractions)
 1. `User` - 48 edges
@@ -120,9 +124,9 @@
 5. `Payment` - 18 edges
 6. `PaymentResponse` - 18 edges
 7. `ExpenseResponse` - 17 edges
-8. `PaymentService` - 17 edges
-9. `UserService` - 17 edges
-10. `CategoryResponse` - 16 edges
+8. `UserService` - 17 edges
+9. `CategoryResponse` - 16 edges
+10. `ErrorResponse` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Home Dashboard UI` --references--> `Expense Module`  [INFERRED]
@@ -149,19 +153,19 @@
 - **Payment Verification & Reconciliation Flow** — flutter_mobile_app, upi_intent_flow, spring_boot_api, supabase_postgresql [EXTRACTED 1.00]
 - **Windows Build Configuration** — mobile_windows_cmakelists, mobile_windows_flutter_cmakelists, mobile_windows_runner_cmakelists [EXTRACTED 1.00]
 
-## Communities (110 total, 37 thin omitted)
+## Communities (114 total, 38 thin omitted)
 
 ### Community 0 - "home_spend_trend_line_chart.dart"
 Cohesion: 0.08
 Nodes (26): amount, _bottomTitleWidgets, build, _buildAvgData, _buildCardFooter, _buildCardHeader, _buildCurvedGradientData, _buildDualZoneData (+18 more)
 
-### Community 1 - "DatabaseHealthController"
-Cohesion: 0.26
-Nodes (6): DatabaseHealthController, DatabaseHealthResponse, HealthController, HealthResponse, javax.sql.DataSource, org.springframework.web.bind.annotation.RestController
+### Community 1 - "org.springframework.web.bind.annotation.GetMapping"
+Cohesion: 0.28
+Nodes (7): DatabaseHealthController, DatabaseHealthResponse, HealthController, HealthResponse, javax.sql.DataSource, org.springframework.web.bind.annotation.GetMapping, org.springframework.web.bind.annotation.RestController
 
-### Community 2 - "Category"
-Cohesion: 0.10
-Nodes (21): Category, AllArgsConstructor, Builder, Entity, Getter, NoArgsConstructor, Setter, Table (+13 more)
+### Community 2 - "org.springframework.http.ResponseEntity"
+Cohesion: 0.16
+Nodes (13): DeleteMapping, GetMapping, ExpenseController, DeleteMapping, GetMapping, PostMapping, PutMapping, RequestMapping (+5 more)
 
 ### Community 3 - "dashboard_data.dart"
 Cohesion: 0.06
@@ -192,12 +196,12 @@ Cohesion: 0.08
 Nodes (24): appVersion, _avatarUrl, build, _buildAccountSection, _buildGroupCard, _buildLogoutCard, _buildPreferencesSection, _buildProfileCard (+16 more)
 
 ### Community 10 - "transactions_screen.dart"
-Cohesion: 0.08
-Nodes (23): analysis_screen.dart, ../data/mock_data.dart, _allGroups, build, _buildFilterChips, _buildGroupedTransactions, _buildHeader, _buildSearchBar (+15 more)
+Cohesion: 0.09
+Nodes (22): analysis_screen.dart, _allGroups, build, _buildFilterChips, _buildGroupedTransactions, _buildHeader, _buildSearchBar, createState (+14 more)
 
 ### Community 11 - "payment_model.dart"
-Cohesion: 0.04
-Nodes (44): dashboard_data.dart, double?, amount, copyWith, createdAt, CreatePaymentPayload, currency, expenseId (+36 more)
+Cohesion: 0.07
+Nodes (27): dashboard_data.dart, amount, copyWith, createdAt, CreatePaymentPayload, currency, expenseId, fromJson (+19 more)
 
 ### Community 12 - "ErrorResponse"
 Cohesion: 0.19
@@ -205,15 +209,15 @@ Nodes (12): ErrorResponse, GlobalExceptionHandler, com.fasterxml.jackson.annotat
 
 ### Community 13 - "analysis_screen.dart"
 Cohesion: 0.08
-Nodes (25): _allPayments, AnalysisScreen, _AnalysisScreenState, build, _buildCategoryList, _buildHeader, _categories, createState (+17 more)
+Nodes (23): _allPayments, build, _buildCategoryList, _buildHeader, _categories, createState, _filterAndRecalculate, _getCenterLabel (+15 more)
 
-### Community 14 - "analysis_category_pie_chart.dart"
-Cohesion: 0.10
-Nodes (21): List, AnalysisCategoryPieChart, _AnalysisCategoryPieChartState, build, centerLabel, createState, items, _showingSections (+13 more)
+### Community 14 - "org.springframework.transaction.annotation.Transactional"
+Cohesion: 0.22
+Nodes (8): CategoryService, BadRequestException, ResourceNotFoundException, ExpenseResponse, ExpenseService, org.springframework.stereotype.Service, org.springframework.transaction.annotation.Transactional, org.springframework.web.bind.annotation.ResponseStatus
 
 ### Community 15 - "scan_and_pay_screen.dart"
 Cohesion: 0.07
-Nodes (29): DateTime?, build, cornerColor, cornerLength, cornerRadius, createState, dispose, _handleBack (+21 more)
+Nodes (28): DateTime?, build, cornerColor, cornerLength, cornerRadius, createState, dispose, _handleBack (+20 more)
 
 ### Community 16 - "Win32Window"
 Cohesion: 0.05
@@ -233,23 +237,23 @@ Nodes (9): _In_, _In_opt_, wWinMain(), string, wchar_t, CreateAndAttachConsole()
 
 ### Community 20 - "single_transaction_screen.dart"
 Cohesion: 0.06
-Nodes (34): double get, _accuracy, build, _buildActionButton, _buildDarkMapFallbackCanvas, _buildDetailRow, _buildDetailsCard, _buildGoogleMapContent (+26 more)
+Nodes (36): double get, _accuracy, build, _buildActionButton, _buildDarkMapFallbackCanvas, _buildDetailRow, _buildDetailsCard, _buildGoogleMapContent (+28 more)
 
 ### Community 21 - "package:flutter/material.dart"
 Cohesion: 0.06
-Nodes (44): LocalDatabaseService, main, main, main, samplePayments, dbService, main, main (+36 more)
+Nodes (48): AuthException, LocalDatabaseService, main, main, main, samplePayments, dbService, main (+40 more)
 
 ### Community 22 - "auth_service.dart"
-Cohesion: 0.08
-Nodes (25): _allowDevMock, AuthService, currentSession, currentUser, _devToken, _devUser, enableMockForTesting, initialize (+17 more)
+Cohesion: 0.09
+Nodes (22): dart:async, AuthService, currentAccessToken, currentSession, currentUser, initialize, _initialized, _instance (+14 more)
 
 ### Community 23 - "expense_model.dart"
-Cohesion: 0.06
-Nodes (29): category_model.dart, CategoryModel, color, fromJson, icon, id, isDefault, name (+21 more)
+Cohesion: 0.09
+Nodes (21): category_model.dart, amount, category, categoryId, createdAt, CreateExpensePayload, currency, description (+13 more)
 
 ### Community 24 - "api_client.dart"
 Cohesion: 0.06
-Nodes (31): auth_service.dart, Dio, Exception, int?, ApiException, createCategory, createExpense, createPayment (+23 more)
+Nodes (31): auth_service.dart, dart:io, Dio, Exception, int?, ApiException, createCategory, createExpense (+23 more)
 
 ### Community 25 - "manifest.json"
 Cohesion: 0.18
@@ -265,7 +269,7 @@ Nodes (8): mvnw script, clean(), die(), exec_maven(), hash_string(), set_java_ho
 
 ### Community 28 - "sign_in_screen.dart"
 Cohesion: 0.09
-Nodes (21): _authSubscription, build, createState, dispose, _finishSignIn, _handleBack, _handleGitHubSignIn, _handleGoogleSignIn (+13 more)
+Nodes (21): home_dashboard_screen.dart, _authSubscription, build, createState, dispose, _finishSignIn, _handleBack, _handleGitHubSignIn (+13 more)
 
 ### Community 29 - "spending_heatmap.dart"
 Cohesion: 0.11
@@ -285,23 +289,23 @@ Nodes (45): 10. Map / Street View Toggle, 11. QR Scanner Workflow, 12. Payment W
 
 ### Community 33 - "main.dart"
 Cohesion: 0.12
-Nodes (16): appFontFallback, appFontFamily, build, home, initialize, main, showSplash, supabaseAnonKey (+8 more)
+Nodes (15): appFontFallback, appFontFamily, build, home, initializeAuth, isAuthenticated, main, nextScreen (+7 more)
 
-### Community 34 - "org.springframework.transaction.annotation.Transactional"
-Cohesion: 0.18
-Nodes (10): CategoryService, CategoryResponse, BadRequestException, ResourceNotFoundException, ExpenseResponse, ExpenseService, jakarta.annotation.PostConstruct, org.springframework.stereotype.Service (+2 more)
+### Community 34 - "lombok.AllArgsConstructor"
+Cohesion: 0.15
+Nodes (25): CategoryBreakdownResponse, DailySpendingResponse, MonthlySpendingResponse, SpendingSummaryResponse, CreateExpenseRequest, UpdateExpenseRequest, CreatePaymentRequest, ReconcilePaymentRequest (+17 more)
 
 ### Community 35 - "user_profile.dart"
 Cohesion: 0.14
 Nodes (13): active, authProvider, avatarUrl, copyWith, email, firstName, fromJson, fullName (+5 more)
 
 ### Community 36 - "State"
-Cohesion: 0.14
-Nodes (20): HomeDashboardScreen, _HomeDashboardScreenState, ScanAndPayScreen, _ScanAndPayScreenState, SettingsScreen, _SettingsScreenState, SignInScreen, _SignInScreenState (+12 more)
+Cohesion: 0.15
+Nodes (18): AnalysisScreen, _AnalysisScreenState, HomeDashboardScreen, _HomeDashboardScreenState, ScanAndPayScreen, _ScanAndPayScreenState, SettingsScreen, _SettingsScreenState (+10 more)
 
 ### Community 37 - "splash_screen.dart"
 Cohesion: 0.09
-Nodes (21): Animation, AnimationController, dart:async, Duration, home_dashboard_screen.dart, build, _checkLocalStorage, _controller (+13 more)
+Nodes (22): Animation, AnimationController, Duration, build, _controller, createState, dispose, duration (+14 more)
 
 ### Community 38 - "location_service.dart"
 Cohesion: 0.09
@@ -323,88 +327,100 @@ Nodes (3): Web Favicon, Web Icon (192), Web Index HTML
 Cohesion: 1.00
 Nodes (3): Windows Project CMakeLists, Windows Flutter CMakeLists, Windows Runner CMakeLists
 
-### Community 90 - "lombok.AllArgsConstructor"
-Cohesion: 0.15
-Nodes (26): CategoryBreakdownResponse, DailySpendingResponse, MonthlySpendingResponse, SpendingSummaryResponse, CategoryRequest, CreateExpenseRequest, UpdateExpenseRequest, CreatePaymentRequest (+18 more)
+### Community 90 - "analysis_category_pie_chart.dart"
+Cohesion: 0.17
+Nodes (12): List, AnalysisCategoryPieChart, _AnalysisCategoryPieChartState, build, centerLabel, createState, items, _showingSections (+4 more)
 
-### Community 91 - "org.springframework.http.ResponseEntity"
-Cohesion: 0.10
-Nodes (21): DeleteMapping, GetMapping, PostMapping, PutMapping, ExpenseController, DeleteMapping, GetMapping, PostMapping (+13 more)
+### Community 91 - "MaterialPageRoute"
+Cohesion: 0.40
+Nodes (5): MaterialPageRoute, _openScanAndPay, _openScanAndPay, _openScanAndPay, build
 
-### Community 95 - "BackendApplication"
-Cohesion: 0.43
-Nodes (3): BackendApplication, org.springframework.boot.autoconfigure.SpringBootApplication, org.springframework.scheduling.annotation.EnableScheduling
+### Community 95 - "jakarta.annotation.PostConstruct"
+Cohesion: 0.27
+Nodes (3): BackendApplication, jakarta.annotation.PostConstruct, org.springframework.boot.autoconfigure.SpringBootApplication
 
-### Community 96 - "PaymentResponse"
-Cohesion: 0.12
-Nodes (13): PaymentResponse, AllArgsConstructor, Builder, Entity, Getter, NoArgsConstructor, Setter, Table (+5 more)
-
-### Community 97 - "lombok.RequiredArgsConstructor"
+### Community 96 - "lombok.RequiredArgsConstructor"
 Cohesion: 0.24
-Nodes (12): AnalyticsController, CategoryController, RequestMapping, RestController, RequestMapping, RestController, PaymentController, UserService (+4 more)
+Nodes (11): AnalyticsController, CategoryController, RequestMapping, RestController, RequestMapping, RestController, PaymentController, UserService (+3 more)
+
+### Community 97 - "upi_service.dart"
+Cohesion: 0.11
+Nodes (17): double?, amount, buildPaymentUri, currency, isUpiUri, launchUpiPayment, merchantCode, note (+9 more)
 
 ### Community 98 - "home_weekly_bar_chart.dart"
 Cohesion: 0.12
-Nodes (15): build, _buildBarChartData, _buildLegendItem, _calculateMax, _computeWeeklyData, createState, _defaultBarColor, _getBottomTitles (+7 more)
+Nodes (17): build, _buildBarChartData, _buildLegendItem, _calculateMax, _computeWeeklyData, createState, _defaultBarColor, _getBottomTitles (+9 more)
 
 ### Community 99 - "custom_bottom_nav_bar.dart"
 Cohesion: 0.12
 Nodes (15): IconData?, build, icon, label, onTap, svgAsset, build, _buildNavItem (+7 more)
 
-### Community 100 - "PaymentRepository"
-Cohesion: 0.29
-Nodes (6): PaymentRepository, UserRepository, org.springframework.data.jpa.repository.JpaRepository, org.springframework.data.jpa.repository.Modifying, org.springframework.data.jpa.repository.Query, org.springframework.stereotype.Repository
+### Community 100 - "PaymentResponse"
+Cohesion: 0.33
+Nodes (5): PaymentResponse, PutMapping, PaymentService, lombok.extern.slf4j.Slf4j, org.springframework.jdbc.core.JdbcTemplate
 
-### Community 101 - "User"
-Cohesion: 0.09
-Nodes (19): AnalyticsService, Expense, AllArgsConstructor, Builder, Entity, Getter, NoArgsConstructor, Setter (+11 more)
+### Community 101 - ".updateCurrentUser"
+Cohesion: 0.22
+Nodes (5): GetMapping, PutMapping, RequestMapping, RestController, UserController
 
 ### Community 102 - "StatelessWidget"
-Cohesion: 0.25
-Nodes (8): HulyPayApp, QuickActionButton, CustomBottomNavBar, DonutChart, HomeTodaySpendGaugeChart, SpendingChart, TransactionTile, StatelessWidget
+Cohesion: 0.33
+Nodes (6): HulyPayApp, QuickActionButton, CustomBottomNavBar, HomeTodaySpendGaugeChart, TransactionTile, StatelessWidget
 
 ### Community 103 - "../models/payment_model.dart"
 Cohesion: 0.25
 Nodes (7): TransactionItem, PaymentModel, onTap, payment, transaction, ../models/payment_model.dart, ../screens/single_transaction_screen.dart
 
 ### Community 104 - "home_today_spend_gauge.dart"
-Cohesion: 0.12
-Nodes (16): Color, CustomPainter, dart:math, ScannerFramePainter, _MapGridPainter, activeColor, build, _buildZoneIndicator (+8 more)
+Cohesion: 0.14
+Nodes (13): Color, dart:math, activeColor, build, _buildZoneIndicator, _computeTodaySpend, dailyBudget, maxValue (+5 more)
 
 ### Community 105 - "payment_repository.dart"
 Cohesion: 0.09
-Nodes (24): dart:io, _apiClient, cleanupStalePayments, createPayment, getCachedPayments, getPaymentById, getPayments, _instance (+16 more)
+Nodes (23): _apiClient, cleanupStalePayments, createPayment, getCachedPayments, getPaymentById, getPayments, _instance, _localDb (+15 more)
 
-### Community 106 - "MaterialPageRoute"
-Cohesion: 0.40
-Nodes (5): MaterialPageRoute, _openScanAndPay, _openScanAndPay, _openScanAndPay, build
+### Community 106 - "Category"
+Cohesion: 0.07
+Nodes (32): Category, AllArgsConstructor, Builder, Entity, Getter, NoArgsConstructor, Setter, Table (+24 more)
 
 ### Community 107 - "api_service.dart"
 Cohesion: 0.18
 Nodes (10): api_client.dart, ApiService, baseUrl, client, fetchUserProfile, getCurrentUser, ../models/user_profile.dart, package:http/http.dart (+2 more)
 
-### Community 108 - "mock_data.dart"
-Cohesion: 0.25
-Nodes (7): analysisCategoryItems, dashboardData, MockData, transactionScreenGroups, static const DashboardData, static const List, ../theme/chart_colors.dart
+### Community 108 - "CategoryResponse"
+Cohesion: 0.42
+Nodes (4): PostMapping, PutMapping, CategoryRequest, CategoryResponse
+
+### Community 109 - "User"
+Cohesion: 0.10
+Nodes (19): AnalyticsService, Expense, AllArgsConstructor, Builder, Entity, Getter, NoArgsConstructor, Setter (+11 more)
+
+### Community 110 - "category_model.dart"
+Cohesion: 0.22
+Nodes (8): CategoryModel, color, fromJson, icon, id, isDefault, name, toJson
+
+### Community 111 - "CustomPainter"
+Cohesion: 0.50
+Nodes (4): CustomPainter, ScannerFramePainter, _MapGridPainter, _SpeedometerGaugePainter
 
 ## Knowledge Gaps
-- **710 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+705 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 902 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **37 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **695 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+690 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 885 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **38 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `User` connect `User` to `PaymentResponse`, `lombok.RequiredArgsConstructor`, `Category`, `org.springframework.transaction.annotation.Transactional`, `PaymentRepository`, `lombok.AllArgsConstructor`, `org.springframework.http.ResponseEntity`?**
-  _High betweenness centrality (0.010) - this node is a cross-community bridge._
+- **Why does `User` connect `User` to `lombok.RequiredArgsConstructor`, `lombok.AllArgsConstructor`, `org.springframework.http.ResponseEntity`, `PaymentResponse`, `.updateCurrentUser`, `Category`, `CategoryResponse`, `org.springframework.transaction.annotation.Transactional`?**
+  _High betweenness centrality (0.012) - this node is a cross-community bridge._
 - **Why does `PaymentModel` connect `../models/payment_model.dart` to `payment_model.dart`, `dashboard_data.dart`, `single_transaction_screen.dart`?**
-  _High betweenness centrality (0.006) - this node is a cross-community bridge._
+  _High betweenness centrality (0.008) - this node is a cross-community bridge._
+- **Why does `Category` connect `Category` to `lombok.AllArgsConstructor`, `CategoryResponse`, `User`, `org.springframework.transaction.annotation.Transactional`, `jakarta.annotation.PostConstruct`?**
+  _High betweenness centrality (0.005) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _710 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _695 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `home_spend_trend_line_chart.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.07692307692307693 - nodes in this community are weakly interconnected._
-- **Should `Category` be split into smaller, more focused modules?**
-  _Cohesion score 0.09948979591836735 - nodes in this community are weakly interconnected._
 - **Should `dashboard_data.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.06451612903225806 - nodes in this community are weakly interconnected._
 - **Should `package.json` be split into smaller, more focused modules?**

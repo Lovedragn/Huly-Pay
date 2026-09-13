@@ -650,15 +650,6 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     );
   }
 
-  void _simulateDemoScan() {
-    final demoUpi = UpiService.parseUpiUri(
-      'upi://pay?pa=starbucks@okhdfcbank&pn=Starbucks%20Coffee&am=240.00&cu=INR&tr=TXN_DEMO_123',
-    );
-    if (demoUpi != null) {
-      _processPaymentFlow(demoUpi);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -677,7 +668,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 ),
                 child: Column(
                   children: [
-                    // Top Bar (Back Button & Demo Trigger)
+                    // Top Bar (Back Button)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -702,38 +693,6 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                                 color: Colors.white,
                                 size: 26,
                               ),
-                            ),
-                          ),
-                        ),
-                        // Demo QR trigger button for emulators
-                        GestureDetector(
-                          key: const Key('demo_qr_button'),
-                          onTap: _simulateDemoScan,
-                          behavior: HitTestBehavior.opaque,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF161619),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: const Color(0xFF2A2A30),
-                                width: 1,
-                              ),
-                            ),
-                            child: const Row(
-                              children: [
-                                Icon(Icons.qr_code_2_rounded, color: Color(0xFF007AFF), size: 16),
-                                SizedBox(width: 6),
-                                Text(
-                                  'Demo QR',
-                                  style: TextStyle(
-                                    fontFamily: 'Google Sans',
-                                    color: Colors.white,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
                             ),
                           ),
                         ),

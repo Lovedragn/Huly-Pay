@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,12 +33,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
   void initState() {
     super.initState();
     _currentPayment = widget.payment;
-    bool isTest = false;
-    try {
-      isTest = Platform.environment.containsKey('FLUTTER_TEST');
-    } catch (_) {}
-
-    if (widget.payment == null && !isTest) {
+    if (widget.payment == null) {
       _fetchPaymentDetails();
     }
   }

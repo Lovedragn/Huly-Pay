@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user_profile.dart';
@@ -11,24 +10,6 @@ class AuthService {
 
   static bool _initialized = false;
   static bool get isInitialized => _initialized;
-
-  // Development / test mock fallback, strictly isolated from real application flow
-  static bool _allowDevMock = false;
-  static bool get isTestEnvironment {
-    try {
-      return Platform.environment.containsKey('FLUTTER_TEST');
-    } catch (_) {
-      return false;
-    }
-  }
-  static bool get isDevMockAllowed => _allowDevMock || isTestEnvironment;
-
-  static void enableMockForTesting([bool allow = true]) {
-    _allowDevMock = allow;
-  }
-
-  static User? _devUser;
-  static String? _devToken;
 
   static Future<void> initialize({
     required String url,
@@ -67,14 +48,9 @@ class AuthService {
   }
 
   Session? get currentSession => _client?.auth.currentSession;
-  User? get currentUser => _client?.auth.currentUser ?? (isDevMockAllowed ? _devUser : null);
+  User? get currentUser => _client?.auth.currentUser;
 
-  String? get currentAccessToken {
-    if (_client?.auth.currentSession?.accessToken != null) {
-      return _client!.auth.currentSession!.accessToken;
-    }
-    return isDevMockAllowed ? _devToken : null;
-  }
+  String? get currentAccessToken => _client?.auth.currentSession?.accessToken;
 
   bool get isAuthenticated => currentAccessToken != null && currentAccessToken!.isNotEmpty;
 
@@ -115,29 +91,8 @@ class AuthService {
       );
     }
 
-    if (!isDevMockAllowed) {
-      throw const AuthException(
-        'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY in .env.',
-      );
-    }
-
-    // Isolated test mock mode
-    _devUser = User(
-      id: '00000000-0000-0000-0000-000000000001',
-      appMetadata: {'provider': 'email'},
-      userMetadata: {'full_name': 'Huly User', 'first_name': 'Huly', 'last_name': 'User'},
-      aud: 'authenticated',
-      createdAt: DateTime.now().toIso8601String(),
-    );
-    _devToken = 'mock_dev_token_${DateTime.now().millisecondsSinceEpoch}';
-
-    return AuthResponse(
-      session: Session(
-        accessToken: _devToken!,
-        tokenType: 'bearer',
-        user: _devUser!,
-      ),
-      user: _devUser,
+    throw const AuthException(
+      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY in .env.',
     );
   }
 
@@ -155,29 +110,8 @@ class AuthService {
       );
     }
 
-    if (!isDevMockAllowed) {
-      throw const AuthException(
-        'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY in .env.',
-      );
-    }
-
-    // Isolated test mock mode
-    _devUser = User(
-      id: '00000000-0000-0000-0000-000000000001',
-      appMetadata: {'provider': 'email'},
-      userMetadata: {'full_name': fullName ?? 'Huly User'},
-      aud: 'authenticated',
-      createdAt: DateTime.now().toIso8601String(),
-    );
-    _devToken = 'mock_dev_token_${DateTime.now().millisecondsSinceEpoch}';
-
-    return AuthResponse(
-      session: Session(
-        accessToken: _devToken!,
-        tokenType: 'bearer',
-        user: _devUser!,
-      ),
-      user: _devUser,
+    throw const AuthException(
+      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY in .env.',
     );
   }
 
@@ -190,22 +124,9 @@ class AuthService {
       );
     }
 
-    if (!isDevMockAllowed) {
-      throw const AuthException(
-        'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY in .env.',
-      );
-    }
-
-    // Isolated test fallback only
-    _devUser = User(
-      id: '00000000-0000-0000-0000-000000000002',
-      appMetadata: {'provider': 'google'},
-      userMetadata: {'full_name': 'Google User', 'avatar_url': 'https://i.pravatar.cc/150?img=12'},
-      aud: 'authenticated',
-      createdAt: DateTime.now().toIso8601String(),
+    throw const AuthException(
+      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY in .env.',
     );
-    _devToken = 'mock_google_token_${DateTime.now().millisecondsSinceEpoch}';
-    return true;
   }
 
   Future<bool> signInWithGitHub({String? redirectTo}) async {
@@ -217,22 +138,9 @@ class AuthService {
       );
     }
 
-    if (!isDevMockAllowed) {
-      throw const AuthException(
-        'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY in .env.',
-      );
-    }
-
-    // Isolated test fallback only
-    _devUser = User(
-      id: '00000000-0000-0000-0000-000000000003',
-      appMetadata: {'provider': 'github'},
-      userMetadata: {'full_name': 'GitHub User', 'avatar_url': 'https://i.pravatar.cc/150?img=60'},
-      aud: 'authenticated',
-      createdAt: DateTime.now().toIso8601String(),
+    throw const AuthException(
+      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY in .env.',
     );
-    _devToken = 'mock_github_token_${DateTime.now().millisecondsSinceEpoch}';
-    return true;
   }
 
   Future<void> signOut() async {
@@ -246,7 +154,5 @@ class AuthService {
         }
       }
     }
-    _devUser = null;
-    _devToken = null;
   }
 }

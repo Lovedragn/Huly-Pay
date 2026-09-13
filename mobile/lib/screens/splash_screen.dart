@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../repositories/payment_repository.dart';
 import '../repositories/user_repository.dart';
@@ -10,11 +12,15 @@ import 'sign_in_screen.dart';
 class SplashScreen extends StatefulWidget {
   final Duration duration;
   final Widget? nextScreen;
+  final bool initializeAuth;
+  final bool? isAuthenticated;
 
   const SplashScreen({
     super.key,
     this.duration = const Duration(milliseconds: 2200),
     this.nextScreen,
+    this.initializeAuth = true,
+    this.isAuthenticated,
   });
 
   @override
@@ -33,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
-    _checkLocalStorage();
+    _initializeAppAndAuth();
 
     _controller = AnimationController(
       vsync: this,
@@ -57,7 +63,8 @@ class _SplashScreenState extends State<SplashScreen>
     _navigationTimer = Timer(widget.duration, _navigateToNext);
   }
 
-  Future<void> _checkLocalStorage() async {
+  Future<void> _initializeAppAndAuth() async {
+    // 1. Always check local storage cache first
     try {
       final cachedProfile = await UserRepository().getCachedUserProfile();
       if (cachedProfile != null) {
@@ -65,7 +72,30 @@ class _SplashScreenState extends State<SplashScreen>
       }
     } catch (_) {}
 
-    // Auto-fetch fresh data every time user opens application
+    if (!widget.initializeAuth) return;
+
+    // 2. Initialize dotenv in background if not yet loaded
+    if (!dotenv.isInitialized) {
+      try {
+        await dotenv.load(fileName: '.env');
+      } catch (e) {
+        if (kDebugMode) {
+          print('dotenv load warning: $e');
+        }
+      }
+    }
+
+    // 3. Initialize Supabase / AuthService in background if not yet initialized
+    if (!AuthService.isInitialized) {
+      final supabaseUrl = dotenv.env['SUPABASE_URL'] ?? 'https://aszhhxnbzstzemyhcjvi.supabase.co';
+      final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
+      await AuthService.initialize(
+        url: supabaseUrl,
+        anonKey: supabaseAnonKey,
+      );
+    }
+
+    // 4. Auto-fetch fresh data every time user opens application
     if (AuthService().isAuthenticated || _hasLocalUser) {
       try {
         UserRepository().getUserProfile(forceRefresh: true);
@@ -80,7 +110,7 @@ class _SplashScreenState extends State<SplashScreen>
     _navigationTimer?.cancel();
 
     // Check local storage first, then go to application: Authenticated / Cached -> HomeDashboardScreen; Unauthenticated -> SignInScreen
-    final bool hasValidSessionOrCache = AuthService().isAuthenticated || _hasLocalUser;
+    final bool hasValidSessionOrCache = widget.isAuthenticated ?? (AuthService().isAuthenticated || _hasLocalUser);
     final Widget targetScreen = widget.nextScreen ??
         (hasValidSessionOrCache
             ? const HomeDashboardScreen()

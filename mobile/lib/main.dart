@@ -1,13 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'screens/home_dashboard_screen.dart';
 import 'screens/splash_screen.dart';
-import 'services/auth_service.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -17,30 +14,25 @@ Future<void> main() async {
     ),
   );
 
-  try {
-    await dotenv.load(fileName: '.env');
-  } catch (e) {
-    if (kDebugMode) {
-      print('dotenv load warning: $e');
-    }
-  }
-
-  final supabaseUrl = dotenv.env['SUPABASE_URL'] ?? 'https://aszhhxnbzstzemyhcjvi.supabase.co';
-  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
-
-  await AuthService.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseAnonKey,
-  );
-
+  // Instantly render SplashScreen on the very first frame without blocking on auth or dotenv
   runApp(const HulyPayApp(showSplash: true));
 }
 
 class HulyPayApp extends StatelessWidget {
   final bool showSplash;
   final Widget? home;
+  final bool initializeAuth;
+  final Widget? nextScreen;
+  final bool? isAuthenticated;
 
-  const HulyPayApp({super.key, this.showSplash = false, this.home});
+  const HulyPayApp({
+    super.key,
+    this.showSplash = false,
+    this.home,
+    this.initializeAuth = true,
+    this.nextScreen,
+    this.isAuthenticated,
+  });
 
   static const String appFontFamily = 'Google Sans';
   static const List<String> appFontFallback = [
@@ -73,7 +65,13 @@ class HulyPayApp extends StatelessWidget {
       ),
       home:
           home ??
-          (showSplash ? const SplashScreen() : const HomeDashboardScreen()),
+          (showSplash
+              ? SplashScreen(
+                  initializeAuth: initializeAuth,
+                  nextScreen: nextScreen,
+                  isAuthenticated: isAuthenticated,
+                )
+              : const HomeDashboardScreen()),
     );
   }
 }

@@ -96,9 +96,9 @@
     "semantic_hash": "0c3e86af131f6a9e547c80b5ed058914"
   },
   "mobile/lib/main.dart": {
-    "mtime": 1789298257.067657,
-    "seen": 1789298423.988197,
-    "ast_hash": "b88b993f00ee0f90142126a3635f304e",
+    "mtime": 1789322665.3278844,
+    "seen": 1789322703.801989,
+    "ast_hash": "698ef8f41137da6e5f078ae80b3c48a4",
     "semantic_hash": ""
   },
   "mobile/linux/flutter/generated_plugin_registrant.cc": {
@@ -756,9 +756,9 @@
     "semantic_hash": ""
   },
   "mobile/lib/screens/scan_and_pay_screen.dart": {
-    "mtime": 1789321326.057895,
-    "seen": 1789321685.633745,
-    "ast_hash": "a761bdd1700a18fe17475dad0bac09f9",
+    "mtime": 1789322290.7609847,
+    "seen": 1789322338.3189852,
+    "ast_hash": "cc4cc7f747b8c67e2addab05727f03bc",
     "semantic_hash": ""
   },
   "mobile/lib/screens/settings_screen.dart": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "mobile/lib/screens/splash_screen.dart": {
-    "mtime": 1789298057.75063,
-    "seen": 1789298423.9882185,
-    "ast_hash": "efae154b23ff72db847eec79d1f762d3",
+    "mtime": 1789322806.641937,
+    "seen": 1789322840.0238419,
+    "ast_hash": "05715e291b46be95419157962aaace96",
     "semantic_hash": ""
   },
   "mobile/lib/screens/transactions_screen.dart": {
@@ -1020,9 +1020,9 @@
     "semantic_hash": ""
   },
   "mobile/lib/services/auth_service.dart": {
-    "mtime": 1789297854.3242798,
-    "seen": 1789298423.988224,
-    "ast_hash": "e538a7c3eead6769a77806ea57b4e331",
+    "mtime": 1789322728.696334,
+    "seen": 1789322840.0238483,
+    "ast_hash": "b02be0a5ab8e4ba31481fe683bbf816a",
     "semantic_hash": ""
   },
   "mobile/test/auth_and_api_test.dart": {
@@ -1254,9 +1254,9 @@
     "semantic_hash": ""
   },
   "mobile/lib/services/location_service.dart": {
-    "mtime": 1789307222.9014428,
-    "seen": 1789307320.1761925,
-    "ast_hash": "592108bbc0e4ae522c861b1cdf55e140",
+    "mtime": 1789322244.5378873,
+    "seen": 1789322338.3190002,
+    "ast_hash": "da746f24661f0093206b1c6f3a0e346d",
     "semantic_hash": ""
   },
   "mobile/lib/services/upi_service.dart": {

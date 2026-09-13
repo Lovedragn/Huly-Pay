@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -68,12 +67,6 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Future<void> _syncUserWithBackend() async {
-    bool isTest = false;
-    try {
-      isTest = Platform.environment.containsKey('FLUTTER_TEST');
-    } catch (_) {}
-    if (isTest) return;
-
     // 1. Immediately store Supabase / Google OAuth user details in SQLite local DB
     final authProfile = AuthService().currentUserProfile;
     if (authProfile != null) {
