@@ -74,8 +74,8 @@ void main() {
         ),
       );
 
-      // Verify header and merchant details
-      expect(find.text('Transaction Details'), findsOneWidget);
+      // Verify merchant details and ensure top title is removed
+      expect(find.text('Transaction Details'), findsNothing);
       expect(find.textContaining('Cafe Coffee Day'), findsWidgets);
       expect(find.text('₹340.00'), findsOneWidget);
 
@@ -85,11 +85,26 @@ void main() {
       expect(find.byKey(const Key('start_route_button')), findsOneWidget);
       expect(find.text('Start Route'), findsOneWidget);
 
-      // Verify Coordinates chip exists
-      expect(find.byIcon(Icons.location_pin), findsOneWidget);
+      // Verify coordinates chip, reposition and fullscreen buttons are removed per user request
+      expect(find.byKey(const Key('recenter_map_button')), findsNothing);
+      expect(find.byKey(const Key('expand_map_button')), findsNothing);
     });
 
-    testWidgets('Toggling Street View displays no-coverage fallback message', (tester) async {
+    testWidgets('Tapping Start Route button triggers navigation smoothly', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: SingleTransactionScreen(
+            transaction: sampleTxn,
+          ),
+        ),
+      );
+
+      expect(find.byKey(const Key('start_route_button')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('start_route_button')));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('Toggling Street View displays no-coverage fallback message and 360 action', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: SingleTransactionScreen(
@@ -104,6 +119,7 @@ void main() {
 
       // Verify specification message: "Street View isn't available at this location."
       expect(find.text("Street View isn't available at this location."), findsOneWidget);
+      expect(find.text('Check 360° in Google Maps'), findsOneWidget);
 
       // Tap MAP toggle to switch back
       await tester.tap(find.byKey(const Key('map_mode_button')));

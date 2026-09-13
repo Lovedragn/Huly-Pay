@@ -1,8 +1,29 @@
+import java.io.File
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+val envFile = File(projectDir, "../../.env")
+val envProps = Properties()
+if (envFile.exists()) {
+    envFile.bufferedReader().use { reader ->
+        reader.lineSequence().forEach { line ->
+            val trimmed = line.trim()
+            if (trimmed.isNotEmpty() && !trimmed.startsWith("#") && trimmed.contains("=")) {
+                val parts = trimmed.split("=", limit = 2)
+                envProps.setProperty(parts[0].trim(), parts[1].trim())
+            }
+        }
+    }
+}
+
+val mapsApiKey: String = envProps.getProperty("GOOGLE_MAPS_API")
+    ?: envProps.getProperty("GOOGLE_MAPS_API_")
+    ?: "AIzaSyBWCvbdmRdepgOYD6zSSyKIE3AsF1vU3i0"
 
 android {
     namespace = "com.example.mobile"
@@ -27,6 +48,8 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = mapsApiKey
     }
 
     buildTypes {

@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../models/dashboard_data.dart';
 import '../models/payment_model.dart';
 import '../repositories/payment_repository.dart';
@@ -20,7 +22,8 @@ class SingleTransactionScreen extends StatefulWidget {
   });
 
   @override
-  State<SingleTransactionScreen> createState() => _SingleTransactionScreenState();
+  State<SingleTransactionScreen> createState() =>
+      _SingleTransactionScreenState();
 }
 
 class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
@@ -28,6 +31,29 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
   PaymentModel? _currentPayment;
   bool _isLoading = false;
   bool _isReconciling = false;
+  GoogleMapController? _mapController;
+  final MapType _currentMapType = MapType.normal;
+  final ValueNotifier<double> _sheetExtentNotifier = ValueNotifier<double>(
+    0.54,
+  );
+
+  static const String _darkMapStyle = '''[
+  {"elementType": "geometry", "stylers": [{"color": "#181a20"}]},
+  {"elementType": "labels.icon", "stylers": [{"visibility": "off"}]},
+  {"elementType": "labels.text.fill", "stylers": [{"color": "#8c93a0"}]},
+  {"elementType": "labels.text.stroke", "stylers": [{"color": "#141416"}]},
+  {"featureType": "administrative", "elementType": "geometry", "stylers": [{"color": "#383c48"}]},
+  {"featureType": "administrative.country", "elementType": "labels.text.fill", "stylers": [{"color": "#9ca3af"}]},
+  {"featureType": "poi", "elementType": "labels.text.fill", "stylers": [{"color": "#6b7280"}]},
+  {"featureType": "poi.park", "elementType": "geometry", "stylers": [{"color": "#16221c"}]},
+  {"featureType": "road", "elementType": "geometry.fill", "stylers": [{"color": "#232630"}]},
+  {"featureType": "road", "elementType": "labels.text.fill", "stylers": [{"color": "#8a919e"}]},
+  {"featureType": "road.arterial", "elementType": "geometry", "stylers": [{"color": "#2c313d"}]},
+  {"featureType": "road.highway", "elementType": "geometry.fill", "stylers": [{"color": "#343b49"}]},
+  {"featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{"color": "#222731"}]},
+  {"featureType": "water", "elementType": "geometry", "stylers": [{"color": "#101622"}]},
+  {"featureType": "water", "elementType": "labels.text.fill", "stylers": [{"color": "#4b5563"}]}
+]''';
 
   @override
   void initState() {
@@ -36,6 +62,12 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
     if (widget.payment == null) {
       _fetchPaymentDetails();
     }
+  }
+
+  @override
+  void dispose() {
+    _sheetExtentNotifier.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchPaymentDetails() async {
@@ -50,6 +82,14 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
           _currentPayment = payment;
           _isLoading = false;
         });
+        if (payment.latitude != null && payment.longitude != null) {
+          _mapController?.animateCamera(
+            CameraUpdate.newLatLngZoom(
+              LatLng(payment.latitude!, payment.longitude!),
+              16.0,
+            ),
+          );
+        }
       }
     } catch (_) {
       if (mounted) {
@@ -63,18 +103,24 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
   double? get _accuracy => _currentPayment?.locationAccuracyMeters ?? 8.5;
 
   String get _referenceId {
-    if (_currentPayment?.transactionReference != null && _currentPayment!.transactionReference!.isNotEmpty) {
+    if (_currentPayment?.transactionReference != null &&
+        _currentPayment!.transactionReference!.isNotEmpty) {
       return _currentPayment!.transactionReference!;
     }
-    if (_currentPayment?.upiTransactionId != null && _currentPayment!.upiTransactionId!.isNotEmpty) {
+    if (_currentPayment?.upiTransactionId != null &&
+        _currentPayment!.upiTransactionId!.isNotEmpty) {
       return _currentPayment!.upiTransactionId!;
     }
-    final hash = widget.transaction.id.hashCode.abs().toString().padLeft(12, '0');
+    final hash = widget.transaction.id.hashCode.abs().toString().padLeft(
+      12,
+      '0',
+    );
     return 'UPI/$hash';
   }
 
   String get _paymentMethod {
-    if (_currentPayment?.paymentMethod != null && _currentPayment!.paymentMethod!.isNotEmpty) {
+    if (_currentPayment?.paymentMethod != null &&
+        _currentPayment!.paymentMethod!.isNotEmpty) {
       return _currentPayment!.paymentMethod!;
     }
     final titleLower = widget.transaction.title.toLowerCase();
@@ -105,7 +151,8 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
   }
 
   String get _merchantTitle {
-    if (_currentPayment?.merchantName != null && _currentPayment!.merchantName!.isNotEmpty) {
+    if (_currentPayment?.merchantName != null &&
+        _currentPayment!.merchantName!.isNotEmpty) {
       return _currentPayment!.merchantName!;
     }
     return widget.transaction.title;
@@ -124,9 +171,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
         ),
         backgroundColor: const Color(0xFF1E1E24),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -140,7 +185,10 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
     );
 
     try {
-      final launched = await launchUrl(url, mode: LaunchMode.externalApplication);
+      final launched = await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
       if (!launched && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -179,7 +227,9 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Payment confirmed and reconciled to expense successfully!'),
+            content: Text(
+              'Payment confirmed and reconciled to expense successfully!',
+            ),
             backgroundColor: Color(0xFF28A745),
           ),
         );
@@ -268,309 +318,332 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final topPadding = mediaQuery.padding.top;
+
     return Scaffold(
       backgroundColor: const Color(0xFF000000),
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildTopBar(context),
-            if (_isLoading)
-              const LinearProgressIndicator(
+      body: Stack(
+        children: [
+          // 1. FULL WIDTH & FULL HEIGHT GOOGLE MAP / STREET VIEW IN BACKGROUND (With Parallax Offset)
+          Positioned.fill(
+            child: ValueListenableBuilder<double>(
+              valueListenable: _sheetExtentNotifier,
+              builder: (context, extent, child) {
+                final progress = ((extent - 0.54) / (0.94 - 0.54)).clamp(
+                  0.0,
+                  1.0,
+                );
+                final mapOffset = progress * mediaQuery.size.height * 0.30;
+                return Transform.translate(
+                  offset: Offset(0, -mapOffset),
+                  child: child,
+                );
+              },
+              child: _buildGoogleMapOrStreetView(),
+            ),
+          ),
+
+          // 2. FIXED TOP-LEFT BACK BUTTON IN MAP VIEW
+          Positioned(
+            top: topPadding + 10,
+            left: 16,
+            child: GestureDetector(
+              onTap: () => Navigator.of(context).pop(),
+              behavior: HitTestBehavior.opaque,
+              child: Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: const Color(0xDD141416),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: const Color(0xFF2E2E36), width: 1),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black45,
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: Icon(Icons.arrow_back, color: Colors.white, size: 20),
+                ),
+              ),
+            ),
+          ),
+
+          // 3. OVERLAPPING DETAILS SHEET (Swipe up to cover map & back button, down to reveal map)
+          NotificationListener<DraggableScrollableNotification>(
+            onNotification: (notification) {
+              _sheetExtentNotifier.value = notification.extent;
+              return true;
+            },
+            child: DraggableScrollableSheet(
+              initialChildSize: 0.54,
+              minChildSize: 0.44,
+              maxChildSize: 0.94,
+              snap: true,
+              snapSizes: const [0.54, 0.94],
+              builder: (BuildContext ctx, ScrollController scrollController) {
+                return Container(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF101013),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(32),
+                    ),
+                    border: Border(
+                      top: BorderSide(color: Color(0xFF282830), width: 1.5),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color.fromARGB(183, 0, 0, 0),
+                        blurRadius: 48,
+                        spreadRadius: 0,
+                        offset: Offset(0, -2),
+                      ),
+                    ],
+                  ),
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    physics: const ClampingScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Drag Handle
+                        Center(
+                          child: Container(
+                            width: 42,
+                            height: 4.5,
+                            margin: const EdgeInsets.only(top: 2, bottom: 14),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF383842),
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                          ),
+                        ),
+                        // Coordinates & Start Route Row
+                        _buildMapCoordinatesAndRouteRow(context),
+                        const SizedBox(height: 14),
+                        _buildHeroReceiptCard(context),
+                        const SizedBox(height: 18),
+                        _buildQuickActionButtons(context),
+                        const SizedBox(height: 24),
+                        _buildSectionHeader('TRANSACTION DETAILS'),
+                        const SizedBox(height: 12),
+                        _buildDetailsCard(context),
+                        const SizedBox(height: 24),
+                        _buildSupportCard(context),
+                        const SizedBox(height: 36),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+
+          // 4. TOP PROGRESS INDICATOR
+          if (_isLoading)
+            Positioned(
+              top: topPadding,
+              left: 0,
+              right: 0,
+              child: const LinearProgressIndicator(
                 minHeight: 2,
                 backgroundColor: Colors.transparent,
                 color: Color(0xFF6C5CE7),
               ),
-            Expanded(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildLocationMapCard(context),
-                    const SizedBox(height: 16),
-                    _buildHeroReceiptCard(context),
-                    const SizedBox(height: 20),
-                    _buildQuickActionButtons(context),
-                    const SizedBox(height: 24),
-                    _buildSectionHeader('TRANSACTION DETAILS'),
-                    const SizedBox(height: 12),
-                    _buildDetailsCard(context),
-                    const SizedBox(height: 24),
-                    _buildSupportCard(context),
-                    const SizedBox(height: 24),
-                  ],
-                ),
-              ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTopBar(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.of(context).pop(),
-            behavior: HitTestBehavior.opaque,
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: const Color(0xFF141416),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: const Color(0xFF222226),
-                  width: 1,
-                ),
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ),
-            ),
-          ),
-          const Text(
-            'Transaction Details',
-            style: TextStyle(
-              fontFamily: 'Google Sans',
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              letterSpacing: -0.3,
-            ),
-          ),
-          GestureDetector(
-            onTap: () => _copyToClipboard(
-              context,
-              'Huly Pay Receipt: $_merchantTitle - $_displayAmount (${widget.transaction.time})',
-              'Receipt details',
-            ),
-            behavior: HitTestBehavior.opaque,
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: const Color(0xFF141416),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: const Color(0xFF222226),
-                  width: 1,
-                ),
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.share_outlined,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildLocationMapCard(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: 220,
-      decoration: BoxDecoration(
-        color: const Color(0xFF141416),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: const Color(0xFF222226),
-          width: 1,
-        ),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Stack(
-          children: [
-            // Map or Street View content
-            Positioned.fill(
-              child: _isStreetView
-                  ? _buildStreetViewContent()
-                  : _buildGoogleMapContent(),
-            ),
+  Future<void> _handleOpenStreetViewExternal() async {
+    final url = Uri.parse(
+      'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=$_latitude,$_longitude',
+    );
+    try {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } catch (_) {}
+  }
 
-            // Top Overlay: View Mode Toggle (Map <-> Street View)
-            Positioned(
-              top: 12,
-              right: 12,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xDD161619),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFF2A2A30), width: 1),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    GestureDetector(
-                      key: const Key('map_mode_button'),
-                      onTap: () {
-                        if (_isStreetView) setState(() => _isStreetView = false);
-                      },
-                      behavior: HitTestBehavior.opaque,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: !_isStreetView ? const Color(0xFF007AFF) : Colors.transparent,
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        child: Text(
-                          'MAP',
-                          style: TextStyle(
-                            fontFamily: 'Google Sans',
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: !_isStreetView ? Colors.white : const Color(0xFF8E8E93),
-                          ),
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      key: const Key('street_view_toggle'),
-                      onTap: () {
-                        if (!_isStreetView) setState(() => _isStreetView = true);
-                      },
-                      behavior: HitTestBehavior.opaque,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: _isStreetView ? const Color(0xFF007AFF) : Colors.transparent,
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        child: Text(
-                          'STREET VIEW',
-                          style: TextStyle(
-                            fontFamily: 'Google Sans',
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: _isStreetView ? Colors.white : const Color(0xFF8E8E93),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+  Widget _buildGoogleMapOrStreetView() {
+    return _isStreetView ? _buildStreetViewContent() : _buildGoogleMapContent();
+  }
 
-            // Bottom Overlay: Coordinates Chip & Start Route Button
-            Positioned(
-              left: 12,
-              right: 12,
-              bottom: 12,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Coordinates badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: const Color(0xDD141416),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFF2A2A30), width: 1),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.location_pin, color: Color(0xFFFF453A), size: 14),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${_latitude.toStringAsFixed(4)}, ${_longitude.toStringAsFixed(4)}',
-                          style: const TextStyle(
-                            fontFamily: 'Google Sans',
-                            fontSize: 11,
-                            color: Color(0xFFD0D0D5),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+  Widget _buildMapCoordinatesAndRouteRow(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        // Mode Switch: MAP ↔ STREET VIEW on the left side of Start Route
+        Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF1B1B20),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: const Color(0xFF2E2E36), width: 1),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GestureDetector(
+                key: const Key('map_mode_button'),
+                onTap: () {
+                  if (_isStreetView) setState(() => _isStreetView = false);
+                },
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 11,
+                    vertical: 7,
+                  ),
+                  decoration: BoxDecoration(
+                    color: !_isStreetView
+                        ? const Color(0xFF007AFF)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Text(
+                    'MAP',
+                    style: TextStyle(
+                      fontFamily: 'Google Sans',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: !_isStreetView
+                          ? Colors.white
+                          : const Color(0xFF8E8E93),
                     ),
                   ),
-
-                  // Start Route Button
-                  GestureDetector(
-                    key: const Key('start_route_button'),
-                    onTap: _handleStartRoute,
-                    behavior: HitTestBehavior.opaque,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF007AFF),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF007AFF).withValues(alpha: 0.4),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.near_me_rounded, color: Colors.white, size: 15),
-                          SizedBox(width: 6),
-                          Text(
-                            'Start Route',
-                            style: TextStyle(
-                              fontFamily: 'Google Sans',
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
+                ),
+              ),
+              GestureDetector(
+                key: const Key('street_view_toggle'),
+                onTap: () {
+                  if (!_isStreetView) setState(() => _isStreetView = true);
+                },
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 11,
+                    vertical: 7,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _isStreetView
+                        ? const Color(0xFF007AFF)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Text(
+                    'STREET VIEW',
+                    style: TextStyle(
+                      fontFamily: 'Google Sans',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: _isStreetView
+                          ? Colors.white
+                          : const Color(0xFF8E8E93),
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
+
+        // Start Route Button
+        GestureDetector(
+          key: const Key('start_route_button'),
+          onTap: _handleStartRoute,
+          behavior: HitTestBehavior.opaque,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF007AFF),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF007AFF).withValues(alpha: 0.4),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.near_me_rounded, color: Colors.white, size: 15),
+                SizedBox(width: 6),
+                Text(
+                  'Start Route',
+                  style: TextStyle(
+                    fontFamily: 'Google Sans',
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildGoogleMapContent() {
     // In automated widget testing environments or headless test runs, render visual dark map canvas
-    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android && defaultTargetPlatform != TargetPlatform.iOS) {
+    if (kIsWeb ||
+        (defaultTargetPlatform != TargetPlatform.android &&
+            defaultTargetPlatform != TargetPlatform.iOS)) {
       return _buildDarkMapFallbackCanvas();
     }
 
+    final targetPos = LatLng(_latitude, _longitude);
+
     try {
       return GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: LatLng(_latitude, _longitude),
-          zoom: 15.5,
-        ),
+        initialCameraPosition: CameraPosition(target: targetPos, zoom: 16.0),
+        mapType: _currentMapType,
+        style: _darkMapStyle,
         markers: {
           Marker(
             markerId: const MarkerId('payment_marker'),
-            position: LatLng(_latitude, _longitude),
+            position: targetPos,
             infoWindow: InfoWindow(
               title: _merchantTitle,
-              snippet: 'Payment Location',
+              snippet:
+                  'Payment Location: ${_latitude.toStringAsFixed(4)}, ${_longitude.toStringAsFixed(4)}',
+            ),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueRed,
             ),
           ),
+        },
+        circles: {
+          Circle(
+            circleId: const CircleId('payment_accuracy_circle'),
+            center: targetPos,
+            radius: (_accuracy != null && _accuracy! > 0) ? _accuracy! : 20.0,
+            fillColor: const Color(0x28007AFF),
+            strokeColor: const Color(0x80007AFF),
+            strokeWidth: 1,
+          ),
+        },
+        gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+          Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer()),
         },
         zoomControlsEnabled: false,
         myLocationButtonEnabled: false,
         mapToolbarEnabled: false,
+        compassEnabled: true,
+        onMapCreated: (GoogleMapController controller) {
+          _mapController = controller;
+        },
       );
     } catch (_) {
       return _buildDarkMapFallbackCanvas();
@@ -584,11 +657,10 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
         fit: StackFit.expand,
         children: [
           // Background grid styling
-          CustomPaint(
-            painter: _MapGridPainter(),
-          ),
-          // Center Marker
-          Center(
+          CustomPaint(painter: _MapGridPainter()),
+          // Center Marker in top exposed half
+          Align(
+            alignment: const Alignment(0, -0.42),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -606,7 +678,10 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
                 ),
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF141416),
                     borderRadius: BorderRadius.circular(6),
@@ -633,50 +708,85 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
   Widget _buildStreetViewContent() {
     return Container(
       color: const Color(0xFF121215),
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 44,
-                height: 44,
+      alignment: const Alignment(0, -0.42),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E1E24),
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFF2A2A30)),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.streetview_rounded,
+                  color: Color(0xFF8E8E93),
+                  size: 24,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              "Street View isn't available at this location.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Google Sans',
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Coordinates: ${_latitude.toStringAsFixed(4)}, ${_longitude.toStringAsFixed(4)}',
+              style: const TextStyle(
+                fontFamily: 'Google Sans',
+                color: Color(0xFF6B6B70),
+                fontSize: 11,
+              ),
+            ),
+            const SizedBox(height: 10),
+            GestureDetector(
+              onTap: _handleOpenStreetViewExternal,
+              behavior: HitTestBehavior.opaque,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFF1E1E24),
-                  shape: BoxShape.circle,
+                  borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: const Color(0xFF2A2A30)),
                 ),
-                child: const Center(
-                  child: Icon(
-                    Icons.streetview_rounded,
-                    color: Color(0xFF8E8E93),
-                    size: 24,
-                  ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.open_in_new_rounded,
+                      color: Color(0xFF007AFF),
+                      size: 13,
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      'Check 360° in Google Maps',
+                      style: TextStyle(
+                        fontFamily: 'Google Sans',
+                        color: Color(0xFF007AFF),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 12),
-              const Text(
-                "Street View isn't available at this location.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Coordinates: ${_latitude.toStringAsFixed(4)}, ${_longitude.toStringAsFixed(4)}',
-                style: const TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: Color(0xFF6B6B70),
-                  fontSize: 11,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -684,7 +794,9 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
 
   Widget _buildHeroReceiptCard(BuildContext context) {
     final isFailed = _status.toUpperCase() == 'FAILED';
-    final isPending = _status.toUpperCase() == 'PENDING' || _status.toUpperCase() == 'INITIATED';
+    final isPending =
+        _status.toUpperCase() == 'PENDING' ||
+        _status.toUpperCase() == 'INITIATED';
 
     final Color statusColor = isFailed
         ? const Color(0xFFFF453A)
@@ -704,7 +816,9 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
 
     final IconData statusIcon = isFailed
         ? Icons.cancel_rounded
-        : (isPending ? Icons.hourglass_top_rounded : Icons.check_circle_rounded);
+        : (isPending
+              ? Icons.hourglass_top_rounded
+              : Icons.check_circle_rounded);
 
     return Container(
       width: double.infinity,
@@ -713,7 +827,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
         color: const Color(0xFF141416),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFF222226),
+          color: const Color.fromARGB(36, 44, 52, 90),
           width: 1,
         ),
       ),
@@ -725,19 +839,12 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
             decoration: BoxDecoration(
               color: statusBg,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: statusBorder,
-                width: 1,
-              ),
+              border: Border.all(color: statusBorder, width: 1),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  statusIcon,
-                  color: statusColor,
-                  size: 15,
-                ),
+                Icon(statusIcon, color: statusColor, size: 15),
                 const SizedBox(width: 6),
                 Text(
                   statusText,
@@ -757,9 +864,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
             _displayAmount,
             style: TextStyle(
               fontFamily: 'Google Sans',
-              color: isFailed
-                  ? const Color(0xFFFF453A)
-                  : Colors.white,
+              color: isFailed ? const Color(0xFFFF453A) : Colors.white,
               fontSize: 38,
               fontWeight: FontWeight.w800,
               letterSpacing: -0.5,
@@ -796,7 +901,9 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
 
   Widget _buildQuickActionButtons(BuildContext context) {
     final isFailed = _status.toUpperCase() == 'FAILED';
-    final isPending = _status.toUpperCase() == 'PENDING' || _status.toUpperCase() == 'INITIATED';
+    final isPending =
+        _status.toUpperCase() == 'PENDING' ||
+        _status.toUpperCase() == 'INITIATED';
 
     return Row(
       children: [
@@ -835,7 +942,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
             ),
           ),
         const SizedBox(width: 12),
-        // Share Receipt
+        // Share
         Expanded(
           child: _buildActionButton(
             icon: Icons.share_outlined,
@@ -846,30 +953,6 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
               'Huly Pay Receipt: $_merchantTitle - $_displayAmount on ${widget.transaction.time}. Ref: $_referenceId',
               'Receipt details',
             ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        // Download Receipt
-        Expanded(
-          child: _buildActionButton(
-            icon: Icons.receipt_long_outlined,
-            label: 'Receipt',
-            isPrimary: false,
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Receipt for $_merchantTitle downloaded successfully.',
-                    style: const TextStyle(fontFamily: 'Google Sans'),
-                  ),
-                  backgroundColor: const Color(0xFF1E1E24),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              );
-            },
           ),
         ),
       ],
@@ -894,10 +977,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
             borderRadius: BorderRadius.circular(16),
             border: isPrimary
                 ? null
-                : Border.all(
-                    color: const Color(0xFF222226),
-                    width: 1,
-                  ),
+                : Border.all(color: const Color(0xFF222226), width: 1),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -943,51 +1023,81 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF141416),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: const Color(0xFF222226),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xFF222226), width: 1),
       ),
       child: Column(
         children: [
-          _buildDetailRow(
-            label: 'Payment Method',
-            value: _paymentMethod,
+          _buildDetailRow(label: 'Payment Method', value: _paymentMethod),
+          const Divider(
+            color: Color(0xFF202024),
+            height: 1,
+            thickness: 1,
+            indent: 16,
+            endIndent: 16,
           ),
-          const Divider(color: Color(0xFF202024), height: 1, thickness: 1, indent: 16, endIndent: 16),
           _buildDetailRow(
             label: 'Category',
             value: widget.transaction.category,
           ),
-          const Divider(color: Color(0xFF202024), height: 1, thickness: 1, indent: 16, endIndent: 16),
+          const Divider(
+            color: Color(0xFF202024),
+            height: 1,
+            thickness: 1,
+            indent: 16,
+            endIndent: 16,
+          ),
           _buildDetailRow(
             label: 'Transaction Type',
             value: widget.transaction.type,
           ),
-          const Divider(color: Color(0xFF202024), height: 1, thickness: 1, indent: 16, endIndent: 16),
+          const Divider(
+            color: Color(0xFF202024),
+            height: 1,
+            thickness: 1,
+            indent: 16,
+            endIndent: 16,
+          ),
           _buildDetailRow(
             label: 'UPI Ref No.',
             value: _referenceId,
             canCopy: true,
-            onCopy: () => _copyToClipboard(context, _referenceId, 'UPI Reference No.'),
+            onCopy: () =>
+                _copyToClipboard(context, _referenceId, 'UPI Reference No.'),
           ),
-          const Divider(color: Color(0xFF202024), height: 1, thickness: 1, indent: 16, endIndent: 16),
+          const Divider(
+            color: Color(0xFF202024),
+            height: 1,
+            thickness: 1,
+            indent: 16,
+            endIndent: 16,
+          ),
           _buildDetailRow(
             label: 'Payment Location',
-            value: '${_latitude.toStringAsFixed(4)}, ${_longitude.toStringAsFixed(4)} (±${_accuracy != null ? _accuracy!.toStringAsFixed(1) : "5.0"}m)',
+            value:
+                '${_latitude.toStringAsFixed(4)}, ${_longitude.toStringAsFixed(4)} (±${_accuracy != null ? _accuracy!.toStringAsFixed(1) : "5.0"}m)',
             canCopy: true,
-            onCopy: () => _copyToClipboard(context, '$_latitude, $_longitude', 'Coordinates'),
+            onCopy: () => _copyToClipboard(
+              context,
+              '$_latitude, $_longitude',
+              'Coordinates',
+            ),
           ),
-          const Divider(color: Color(0xFF202024), height: 1, thickness: 1, indent: 16, endIndent: 16),
-          _buildDetailRow(
-            label: 'Payment Status',
-            value: _status,
+          const Divider(
+            color: Color(0xFF202024),
+            height: 1,
+            thickness: 1,
+            indent: 16,
+            endIndent: 16,
           ),
-          const Divider(color: Color(0xFF202024), height: 1, thickness: 1, indent: 16, endIndent: 16),
-          _buildDetailRow(
-            label: 'Date & Time',
-            value: widget.transaction.time,
+          _buildDetailRow(label: 'Payment Status', value: _status),
+          const Divider(
+            color: Color(0xFF202024),
+            height: 1,
+            thickness: 1,
+            indent: 16,
+            endIndent: 16,
           ),
+          _buildDetailRow(label: 'Date & Time', value: widget.transaction.time),
         ],
       ),
     );
@@ -1058,10 +1168,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF141416),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: const Color(0xFF222226),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xFF222226), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1104,19 +1211,12 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
               decoration: BoxDecoration(
                 color: const Color(0xFF1E1E24),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: const Color(0xFF2A2A30),
-                  width: 1,
-                ),
+                border: Border.all(color: const Color(0xFF2A2A30), width: 1),
               ),
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.flag_outlined,
-                    color: Color(0xFFFF453A),
-                    size: 16,
-                  ),
+                  Icon(Icons.flag_outlined, color: Color(0xFFFF453A), size: 16),
                   SizedBox(width: 8),
                   Text(
                     'Report an Issue',
