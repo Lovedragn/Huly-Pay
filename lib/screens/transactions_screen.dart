@@ -3,15 +3,18 @@ import '../data/mock_data.dart';
 import '../models/dashboard_data.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import '../widgets/transaction_tile.dart';
+import 'analysis_screen.dart';
 import 'home_dashboard_screen.dart';
 import 'scan_and_pay_screen.dart';
 
 class TransactionsScreen extends StatefulWidget {
   final List<TransactionGroup>? initialGroups;
+  final bool isEmbedded;
 
   const TransactionsScreen({
     super.key,
     this.initialGroups,
+    this.isEmbedded = false,
   });
 
   @override
@@ -21,7 +24,14 @@ class TransactionsScreen extends StatefulWidget {
 class _TransactionsScreenState extends State<TransactionsScreen> {
   final TextEditingController _searchController = TextEditingController();
   int _selectedFilterIndex = 0;
-  final List<String> _filters = const ['All', 'UPI', 'Expenses', 'Income'];
+  final List<String> _filters = const [
+    'All',
+    'Failed',
+    'Food',
+    'Internet',
+    'Shopping',
+    'Bills',
+  ];
   late List<TransactionGroup> _allGroups;
   String _searchQuery = '';
 
@@ -45,14 +55,23 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
 
     for (final group in _allGroups) {
       final filteredTx = group.transactions.where((tx) {
-        // Filter by category / type
+        // Filter by category
         bool matchesType = true;
-        if (selectedFilter == 'UPI') {
-          matchesType = tx.type == 'UPI';
-        } else if (selectedFilter == 'Expenses') {
-          matchesType = !tx.isIncome;
-        } else if (selectedFilter == 'Income') {
-          matchesType = tx.isIncome;
+        if (selectedFilter == 'Failed') {
+          matchesType = tx.isFailed;
+        } else if (selectedFilter == 'Food') {
+          matchesType = tx.category.toLowerCase().contains('food');
+        } else if (selectedFilter == 'Internet') {
+          matchesType = tx.category.toLowerCase().contains('internet') ||
+              tx.title.toLowerCase().contains('fiber') ||
+              tx.title.toLowerCase().contains('broadband') ||
+              tx.title.toLowerCase().contains('wifi');
+        } else if (selectedFilter == 'Shopping') {
+          matchesType = tx.category.toLowerCase().contains('shopping');
+        } else if (selectedFilter == 'Bills') {
+          matchesType = tx.category.toLowerCase().contains('bill');
+        } else if (selectedFilter != 'All') {
+          matchesType = tx.category.toLowerCase().contains(selectedFilter.toLowerCase());
         }
 
         // Filter by search query
@@ -85,9 +104,55 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     );
   }
 
+  void _openHome() {
+    if (Navigator.canPop(context)) {
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => const HomeDashboardScreen(),
+        ),
+      );
+    }
+  }
+
+  void _openAnalysis() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => const AnalysisScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final groupsToDisplay = _filteredGroups;
+
+    final content = SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 12,
+        bottom: 110, // padding for bottom nav
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(),
+          const SizedBox(height: 20),
+          _buildSearchBar(),
+          const SizedBox(height: 18),
+          _buildFilterChips(),
+          const SizedBox(height: 26),
+          _buildGroupedTransactions(groupsToDisplay),
+        ],
+      ),
+    );
+
+    if (widget.isEmbedded) {
+      return content;
+    }
 
     return Scaffold(
       backgroundColor: const Color(0xFF000000),
@@ -95,30 +160,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         bottom: false,
         child: Stack(
           children: [
-            // Scrollable Content
-            Positioned.fill(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: 12,
-                  bottom: 110, // padding for bottom nav
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildHeader(),
-                    const SizedBox(height: 20),
-                    _buildSearchBar(),
-                    const SizedBox(height: 18),
-                    _buildFilterChips(),
-                    const SizedBox(height: 26),
-                    _buildGroupedTransactions(groupsToDisplay),
-                  ],
-                ),
-              ),
-            ),
+            Positioned.fill(child: content),
 
             // Bottom Navigation Bar (Transactions active)
             Positioned(
@@ -130,15 +172,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 isQrActive: false,
                 onItemSelected: (index) {
                   if (index == 0) {
-                    if (Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                    } else {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (_) => const HomeDashboardScreen(),
-                        ),
-                      );
-                    }
+                    _openHome();
+                  } else if (index == 1) {
+                    _openAnalysis();
                   }
                 },
                 onQrScanTap: _openScanAndPay,
@@ -264,6 +300,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               right: index < _filters.length - 1 ? 10 : 0,
             ),
             child: GestureDetector(
+              key: Key('filter_chip_${_filters[index]}'),
               onTap: () {
                 setState(() {
                   _selectedFilterIndex = index;

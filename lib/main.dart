@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import 'screens/home_dashboard_screen.dart';
+import 'screens/splash_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,18 +13,19 @@ void main() {
       statusBarBrightness: Brightness.dark,
     ),
   );
-  runApp(const HulyPayApp());
+  runApp(const HulyPayApp(showSplash: true));
 }
 
 class HulyPayApp extends StatelessWidget {
-  const HulyPayApp({super.key});
+  final bool showSplash;
+  final Widget? home;
+
+  const HulyPayApp({super.key, this.showSplash = false, this.home});
 
   static const String appFontFamily = 'Google Sans';
   static const List<String> appFontFallback = [
     'GoogleSans',
-    'Product Sans',
     'Open Sans',
-    'Roboto',
     'sans-serif',
   ];
 
@@ -48,7 +51,9 @@ class HulyPayApp extends StatelessWidget {
           surface: Color(0xFF141416),
         ),
       ),
-      home: const HomeDashboardScreen(),
+      home:
+          home ??
+          (showSplash ? const SplashScreen() : const HomeDashboardScreen()),
     );
   }
 }
