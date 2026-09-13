@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../services/auth_service.dart';
 import 'home_dashboard_screen.dart';
+import 'sign_in_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   final Duration duration;
@@ -53,10 +55,17 @@ class _SplashScreenState extends State<SplashScreen>
   void _navigateToNext() {
     if (_navigated || !mounted) return;
     _navigated = true;
+    _navigationTimer?.cancel();
+
+    // Authenticated session -> HomeDashboardScreen; Unauthenticated -> SignInScreen
+    final Widget targetScreen = widget.nextScreen ??
+        (AuthService().isAuthenticated
+            ? const HomeDashboardScreen()
+            : const SignInScreen());
+
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (_, animation, secondaryAnimation) =>
-            widget.nextScreen ?? const HomeDashboardScreen(),
+        pageBuilder: (_, animation, secondaryAnimation) => targetScreen,
         transitionsBuilder: (_, animation, secondaryAnimation, child) {
           return FadeTransition(
             opacity: CurvedAnimation(
