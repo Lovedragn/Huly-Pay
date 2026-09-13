@@ -132,9 +132,9 @@
     "semantic_hash": "ffa1a7c0a2ad45a2c14a921596516ff8"
   },
   "mobile/macos/Flutter/GeneratedPluginRegistrant.swift": {
-    "mtime": 1789282183.8467128,
-    "seen": 1789282584.8964107,
-    "ast_hash": "dcf9e804edb3ff6fbc55c791e4ab83a6",
+    "mtime": 1789291525.7464602,
+    "seen": 1789292756.7516537,
+    "ast_hash": "6944d9bde75ce65b1a24f893942d1a8e",
     "semantic_hash": ""
   },
   "mobile/macos/RunnerTests/RunnerTests.swift": {
@@ -162,10 +162,10 @@
     "semantic_hash": "93c22dae2d93f3dc1402e121901f582b"
   },
   "mobile/test/widget_test.dart": {
-    "mtime": 1789279238.7110744,
-    "seen": 1789279757.1694388,
-    "ast_hash": "a2d7d20923156bf286ebf23d96492f94",
-    "semantic_hash": "a2d7d20923156bf286ebf23d96492f94"
+    "mtime": 1789292624.470989,
+    "seen": 1789292756.7516665,
+    "ast_hash": "d64a548c1a8216572f56ee9adec33cdb",
+    "semantic_hash": ""
   },
   "mobile/web/manifest.json": {
     "mtime": 1789028090.6815598,
@@ -174,9 +174,9 @@
     "semantic_hash": "6818dc0048f086a6849c17ab04b5b189"
   },
   "mobile/windows/flutter/generated_plugin_registrant.cc": {
-    "mtime": 1789282183.8242104,
-    "seen": 1789282584.8964224,
-    "ast_hash": "8f827c92146e46fc11f4e794a498348b",
+    "mtime": 1789283183.5896132,
+    "seen": 1789283444.6635575,
+    "ast_hash": "97fa5bb4984c4d95f9aeeff1fdf2ada0",
     "semantic_hash": ""
   },
   "mobile/windows/flutter/generated_plugin_registrant.h": {
@@ -282,9 +282,9 @@
     "semantic_hash": "30cc1614b16214b66c014af09ba699eb"
   },
   "mobile/pubspec.yaml": {
-    "mtime": 1789282173.619266,
-    "seen": 1789282584.8964589,
-    "ast_hash": "f5d2adef71cf3eac76e72fbae5e80c99",
+    "mtime": 1789291516.7830634,
+    "seen": 1789292756.7517037,
+    "ast_hash": "e55ca7201bc2e10c907cd06f9e4ca4f6",
     "semantic_hash": ""
   },
   "mobile/web/index.html": {
@@ -594,16 +594,16 @@
     "semantic_hash": "a97e05ba43b0b62fb4693a9cf1a52411"
   },
   "backend/src/main/java/com/hulypay/backend/payments/Payment.java": {
-    "mtime": 1789134039.2922378,
-    "seen": 1789279757.1655786,
-    "ast_hash": "f0daee91c67a9930d8ef3ba89cf402bb",
-    "semantic_hash": "f0daee91c67a9930d8ef3ba89cf402bb"
+    "mtime": 1789283102.445507,
+    "seen": 1789283444.663414,
+    "ast_hash": "cd318920495f27f24d96684b83ec4900",
+    "semantic_hash": ""
   },
   "backend/src/main/java/com/hulypay/backend/payments/PaymentController.java": {
-    "mtime": 1789134072.9530876,
-    "seen": 1789279757.1655796,
-    "ast_hash": "25c82470868ad68ed25dc0fbba8acdb1",
-    "semantic_hash": "25c82470868ad68ed25dc0fbba8acdb1"
+    "mtime": 1789284553.598912,
+    "seen": 1789285040.813681,
+    "ast_hash": "9fec120a34e482e9173fd03ba0830e32",
+    "semantic_hash": ""
   },
   "backend/src/main/java/com/hulypay/backend/payments/PaymentRepository.java": {
     "mtime": 1789134044.9312105,
@@ -612,28 +612,28 @@
     "semantic_hash": "8b8e37c61c269275ecf0d39d4e6f927b"
   },
   "backend/src/main/java/com/hulypay/backend/payments/PaymentService.java": {
-    "mtime": 1789134066.8515327,
-    "seen": 1789279757.1655812,
-    "ast_hash": "41f96143f368d3769f46ae29ccf79e00",
-    "semantic_hash": "41f96143f368d3769f46ae29ccf79e00"
+    "mtime": 1789284664.3279495,
+    "seen": 1789285040.8136845,
+    "ast_hash": "b4f917a97cca1414d02842d8584ca979",
+    "semantic_hash": ""
   },
   "backend/src/main/java/com/hulypay/backend/payments/PaymentStatus.java": {
-    "mtime": 1789134017.1859195,
-    "seen": 1789279757.1655824,
-    "ast_hash": "083a020095da30b75d94aa5327eab09a",
-    "semantic_hash": "083a020095da30b75d94aa5327eab09a"
+    "mtime": 1789284509.7865567,
+    "seen": 1789285040.8136861,
+    "ast_hash": "2111815940e407b912fea13b97e1563a",
+    "semantic_hash": ""
   },
   "backend/src/main/java/com/hulypay/backend/payments/dto/CreatePaymentRequest.java": {
-    "mtime": 1789134049.8963275,
-    "seen": 1789279757.1655831,
-    "ast_hash": "fadfd4329746c268627044ae9808b4d9",
-    "semantic_hash": "fadfd4329746c268627044ae9808b4d9"
+    "mtime": 1789283111.4582293,
+    "seen": 1789283444.6634266,
+    "ast_hash": "3eaae223bc6efda2622213385367939b",
+    "semantic_hash": ""
   },
   "backend/src/main/java/com/hulypay/backend/payments/dto/PaymentResponse.java": {
-    "mtime": 1789134058.3108795,
-    "seen": 1789279757.165584,
-    "ast_hash": "bd6208464b585a98b8178e12fb5f7bd5",
-    "semantic_hash": "bd6208464b585a98b8178e12fb5f7bd5"
+    "mtime": 1789284527.0421362,
+    "seen": 1789285040.8136892,
+    "ast_hash": "eb537185898cbe4088e327d9ca8e6161",
+    "semantic_hash": ""
   },
   "backend/src/main/java/com/hulypay/backend/payments/package-info.java": {
     "mtime": 1789110332.9313233,
@@ -720,10 +720,10 @@
     "semantic_hash": "a67666444a4192644e95b67f45558eda"
   },
   "backend/src/test/java/com/hulypay/backend/PaymentControllerTests.java": {
-    "mtime": 1789134721.2918026,
-    "seen": 1789279757.1655989,
-    "ast_hash": "0b3f22826df39a195032557c45839daf",
-    "semantic_hash": "0b3f22826df39a195032557c45839daf"
+    "mtime": 1789284602.8730037,
+    "seen": 1789285040.8137164,
+    "ast_hash": "057ddeaabc1600551662588a3224d5ec",
+    "semantic_hash": ""
   },
   "backend/src/test/java/com/hulypay/backend/SecurityAndUserTests.java": {
     "mtime": 1789134516.9071267,
@@ -738,10 +738,10 @@
     "semantic_hash": "a6e3723b3eade517561da224a60f1e34"
   },
   "mobile/lib/models/dashboard_data.dart": {
-    "mtime": 1789240550.1175382,
-    "seen": 1789279757.1674352,
-    "ast_hash": "f4a543bdf95ecb8951e67c6be99c07e4",
-    "semantic_hash": "f4a543bdf95ecb8951e67c6be99c07e4"
+    "mtime": 1789290669.659556,
+    "seen": 1789290984.6639655,
+    "ast_hash": "082cc98c391408d3f4765a1a3c6cf717",
+    "semantic_hash": ""
   },
   "mobile/lib/screens/analysis_screen.dart": {
     "mtime": 1789238710.6814547,
@@ -750,21 +750,21 @@
     "semantic_hash": "d8e488703be478e9459ebbfad54c68fb"
   },
   "mobile/lib/screens/home_dashboard_screen.dart": {
-    "mtime": 1789240155.025609,
-    "seen": 1789279757.167438,
-    "ast_hash": "4eb0c59b52714b3173986a1d160ee5e4",
-    "semantic_hash": "4eb0c59b52714b3173986a1d160ee5e4"
+    "mtime": 1789291684.91285,
+    "seen": 1789292756.7516234,
+    "ast_hash": "9c915b11d2ab7546f43d1d5f4f2eacc3",
+    "semantic_hash": ""
   },
   "mobile/lib/screens/scan_and_pay_screen.dart": {
-    "mtime": 1789277000.2324133,
-    "seen": 1789279757.1674392,
-    "ast_hash": "ace583887dec05e5d339ea255047504a",
-    "semantic_hash": "ace583887dec05e5d339ea255047504a"
+    "mtime": 1789291693.1427996,
+    "seen": 1789292756.7516248,
+    "ast_hash": "7bfcfdc0f08850694a472e4c60a0f1a9",
+    "semantic_hash": ""
   },
   "mobile/lib/screens/settings_screen.dart": {
-    "mtime": 1789282504.3205,
-    "seen": 1789282584.8963795,
-    "ast_hash": "e54527e923ad847e51bca4d5d56a073f",
+    "mtime": 1789292545.2988248,
+    "seen": 1789292756.751626,
+    "ast_hash": "f770b19cfd5703cea8b87ac40953f132",
     "semantic_hash": ""
   },
   "mobile/lib/screens/sign_in_screen.dart": {
@@ -774,10 +774,10 @@
     "semantic_hash": ""
   },
   "mobile/lib/screens/single_transaction_screen.dart": {
-    "mtime": 1789279231.039935,
-    "seen": 1789279757.1674428,
-    "ast_hash": "d895f6ba93ee934e6b172da56099014c",
-    "semantic_hash": "d895f6ba93ee934e6b172da56099014c"
+    "mtime": 1789291948.4954863,
+    "seen": 1789292756.7516289,
+    "ast_hash": "49df3d99543403569cdc2478071b3b4b",
+    "semantic_hash": ""
   },
   "mobile/lib/screens/splash_screen.dart": {
     "mtime": 1789278825.2119324,
@@ -786,10 +786,10 @@
     "semantic_hash": "a9354fe0c9b36210133edda2bb48bb18"
   },
   "mobile/lib/screens/transactions_screen.dart": {
-    "mtime": 1789240292.8582444,
-    "seen": 1789279757.1674447,
-    "ast_hash": "75ac3606127cf2e336a02d4c4524f4e8",
-    "semantic_hash": "75ac3606127cf2e336a02d4c4524f4e8"
+    "mtime": 1789291711.8354461,
+    "seen": 1789292756.751632,
+    "ast_hash": "88473518215efdc019ce6353576bda8f",
+    "semantic_hash": ""
   },
   "mobile/lib/services/api_service.dart": {
     "mtime": 1789282232.8666866,
@@ -822,10 +822,10 @@
     "semantic_hash": "a32208e9163c496b789a1ccc99e900eb"
   },
   "mobile/lib/widgets/transaction_tile.dart": {
-    "mtime": 1789275830.658128,
-    "seen": 1789279757.167451,
-    "ast_hash": "d9b54d75f71b1efa8f43826b41b90606",
-    "semantic_hash": "d9b54d75f71b1efa8f43826b41b90606"
+    "mtime": 1789290692.4129868,
+    "seen": 1789290984.6639938,
+    "ast_hash": "fb4910683c5da5fa8eb24e5efc71f592",
+    "semantic_hash": ""
   },
   "backend/HulyPay_Backend_README.md": {
     "mtime": 1789128968.3204446,
@@ -840,9 +840,9 @@
     "semantic_hash": "7d2f848d8d36ec3d763c86c0c2b05af4"
   },
   "backend/src/main/resources/application.yml": {
-    "mtime": 1789282126.6848936,
-    "seen": 1789282584.8964484,
-    "ast_hash": "1d85b21ca414700e02d4de3fb4742068",
+    "mtime": 1789285775.1807673,
+    "seen": 1789285850.0508304,
+    "ast_hash": "6df23ffa83c12048c3b52c8eb2e4e7e4",
     "semantic_hash": ""
   },
   "mobile/design/analysis.png": {
@@ -1008,21 +1008,21 @@
     "semantic_hash": ""
   },
   "mobile/lib/models/user_profile.dart": {
-    "mtime": 1789282211.3509946,
-    "seen": 1789282584.8963716,
-    "ast_hash": "6dd4e20fda6c228532031c70409eecc3",
+    "mtime": 1789290757.286788,
+    "seen": 1789290984.6639702,
+    "ast_hash": "e2384fce72725a5dff319e6466bbc4ce",
     "semantic_hash": ""
   },
   "mobile/lib/services/api_client.dart": {
-    "mtime": 1789282540.5902066,
-    "seen": 1789282584.8963876,
-    "ast_hash": "2a7a398f2a200e70209c263a45cc4a1b",
+    "mtime": 1789289980.39071,
+    "seen": 1789290037.0747294,
+    "ast_hash": "2ed8b459d6a9a67bd518e48c561d50f2",
     "semantic_hash": ""
   },
   "mobile/lib/services/auth_service.dart": {
-    "mtime": 1789282440.6454835,
-    "seen": 1789282584.8963904,
-    "ast_hash": "ea3c75d3e765376b24cbb00d1e564468",
+    "mtime": 1789294650.7905705,
+    "seen": 1789294696.3526225,
+    "ast_hash": "559154822d251009b0636e7078e20271",
     "semantic_hash": ""
   },
   "mobile/test/auth_and_api_test.dart": {
@@ -1233,6 +1233,96 @@
     "mtime": 1789278564.0,
     "seen": 1789282584.8965077,
     "ast_hash": "c8f28edab73499f70620f1600cb8d6cd",
+    "semantic_hash": ""
+  },
+  "mobile/lib/models/category_model.dart": {
+    "mtime": 1789283218.9058995,
+    "seen": 1789283444.6634934,
+    "ast_hash": "734892819c3da944695c130897d0f13c",
+    "semantic_hash": ""
+  },
+  "mobile/lib/models/expense_model.dart": {
+    "mtime": 1789283228.9722686,
+    "seen": 1789283444.663497,
+    "ast_hash": "505c11aefe1d3544649fc8b81e1fbe42",
+    "semantic_hash": ""
+  },
+  "mobile/lib/models/payment_model.dart": {
+    "mtime": 1789290887.6365523,
+    "seen": 1789290984.6639686,
+    "ast_hash": "074b44c7a9aac011cb44227f4d8b4e25",
+    "semantic_hash": ""
+  },
+  "mobile/lib/services/location_service.dart": {
+    "mtime": 1789283236.7067642,
+    "seen": 1789283444.6635222,
+    "ast_hash": "beda73ad34b05f1e7a066748c31f5885",
+    "semantic_hash": ""
+  },
+  "mobile/lib/services/upi_service.dart": {
+    "mtime": 1789283244.701157,
+    "seen": 1789283444.6635242,
+    "ast_hash": "c4b9ff4bbcaabbd4a6e680739feb980e",
+    "semantic_hash": ""
+  },
+  "mobile/test/phase2_test.dart": {
+    "mtime": 1789283302.0610428,
+    "seen": 1789283444.6635535,
+    "ast_hash": "8e24ba9c577e1336b126814be886850c",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/payments/dto/ReconcilePaymentRequest.java": {
+    "mtime": 1789284515.899917,
+    "seen": 1789285040.8136914,
+    "ast_hash": "540c7f48c843ee4e7ee41d4fc65bdb1c",
+    "semantic_hash": ""
+  },
+  "mobile/test/phase3_test.dart": {
+    "mtime": 1789284956.950974,
+    "seen": 1789285040.8137953,
+    "ast_hash": "2bfd48fd1566c788383cc450c5584082",
+    "semantic_hash": ""
+  },
+  "mobile/devtools_options.yaml": {
+    "mtime": 1789285769.8112707,
+    "seen": 1789285850.050842,
+    "ast_hash": "d1ff5187b1b67653e7357395895e8449",
+    "semantic_hash": ""
+  },
+  "mobile/test/connection_matrix_test.dart": {
+    "mtime": 1789291742.7445168,
+    "seen": 1789292756.7516615,
+    "ast_hash": "bc51de4ba99ae3bf3eb8fe4c1eb2ce7b",
+    "semantic_hash": ""
+  },
+  "Huly Pay \u2014 Final UI + Real Connection Verification.md": {
+    "mtime": 1789290407.0367439,
+    "seen": 1789290984.6640348,
+    "ast_hash": "611f6cb55953821b32652c8e0c134c6a",
+    "semantic_hash": ""
+  },
+  "mobile/lib/repositories/payment_repository.dart": {
+    "mtime": 1789291848.5403063,
+    "seen": 1789292756.7516174,
+    "ast_hash": "02164e229d379dc37cb1f94b2dfe809c",
+    "semantic_hash": ""
+  },
+  "mobile/lib/repositories/user_repository.dart": {
+    "mtime": 1789291859.7697594,
+    "seen": 1789292756.75162,
+    "ast_hash": "d567fd40963a1179ba8708919d5ad579",
+    "semantic_hash": ""
+  },
+  "mobile/lib/services/local_database_service.dart": {
+    "mtime": 1789292712.2070687,
+    "seen": 1789292756.7516367,
+    "ast_hash": "4012cf7f686bad5cb26fa4365b7faae1",
+    "semantic_hash": ""
+  },
+  "mobile/test/local_database_service_test.dart": {
+    "mtime": 1789291752.094381,
+    "seen": 1789292756.7516625,
+    "ast_hash": "6c0f9b5b611f8f10a886be3a6029fb86",
     "semantic_hash": ""
   }
 }

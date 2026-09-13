@@ -1,7 +1,13 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../data/mock_data.dart';
 import '../models/dashboard_data.dart';
+import '../models/payment_model.dart';
+import '../models/user_profile.dart';
+import '../repositories/payment_repository.dart';
+import '../repositories/user_repository.dart';
+import '../services/auth_service.dart';
 import '../widgets/action_button.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import '../widgets/spending_chart.dart';
@@ -31,6 +37,84 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   void initState() {
     super.initState();
     _data = widget.initialData ?? MockData.dashboardData;
+    bool isTest = false;
+    try {
+      isTest = Platform.environment.containsKey('FLUTTER_TEST');
+    } catch (_) {}
+
+    if (widget.initialData == null && !isTest) {
+      _loadRealData();
+    }
+  }
+
+  Future<void> _loadRealData() async {
+    // 1. Immediately render cached data from SQLite if available
+    try {
+      final cachedPayments = await PaymentRepository().getCachedPayments();
+      final cachedUser = await UserRepository().getCachedUserProfile();
+      if (cachedPayments.isNotEmpty || cachedUser != null) {
+        _applyData(cachedUser, cachedPayments);
+      }
+    } catch (_) {}
+
+    // 2. Fetch fresh data from backend & sync SQLite cache
+    try {
+      final user = await UserRepository().getUserProfile().catchError((_) => null);
+      final payments = await PaymentRepository().getPayments().catchError((_) => <PaymentModel>[]);
+      _applyData(user, payments);
+    } catch (_) {}
+  }
+
+  void _applyData(UserProfile? user, List<PaymentModel> payments) {
+    if (!mounted) return;
+
+    String userName = _data.userName;
+    if (user != null && user.displayName.isNotEmpty) {
+      userName = user.displayName;
+    } else {
+      final authUser = AuthService().currentUser;
+      final nameMeta = authUser?.userMetadata?['full_name'] ?? authUser?.userMetadata?['name'];
+      if (nameMeta != null && nameMeta.toString().isNotEmpty) {
+        userName = nameMeta.toString();
+      }
+    }
+
+    String totalSpent = _data.totalSpentFormatted;
+    List<TransactionItem> recentTxs = _data.recentTransactions;
+
+    if (payments.isNotEmpty) {
+      double sum = 0;
+      for (final p in payments) {
+        if (p.status.toUpperCase() != 'FAILED') {
+          sum += p.amount;
+        }
+      }
+      totalSpent = '₹${sum.toStringAsFixed(sum.truncateToDouble() == sum ? 0 : 2)}';
+
+      final sorted = List<PaymentModel>.from(payments)
+        ..sort((a, b) {
+          final aDate = a.createdAt ?? '';
+          final bDate = b.createdAt ?? '';
+          return bDate.compareTo(aDate);
+        });
+      final recentList = sorted.take(5).map((p) => p.toTransactionItem()).toList();
+      if (recentList.isNotEmpty) {
+        recentTxs = recentList;
+      }
+    }
+
+    setState(() {
+      _data = DashboardData(
+        greeting: _data.greeting,
+        userName: userName,
+        avatarUrl: user?.avatarUrl ?? _data.avatarUrl,
+        totalSpentFormatted: totalSpent,
+        changePercent: _data.changePercent,
+        changePeriodLabel: _data.changePeriodLabel,
+        weeklySpending: _data.weeklySpending,
+        recentTransactions: recentTxs,
+      );
+    });
   }
 
   @override

@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 @Data
@@ -30,9 +32,28 @@ public class CreatePaymentRequest {
     @Size(max = 100, message = "UPI transaction ID must not exceed 100 characters")
     private String upiTransactionId;
 
+    @Size(max = 100, message = "UPI ID must not exceed 100 characters")
+    private String upiId;
+
     @Size(max = 255, message = "Merchant name must not exceed 255 characters")
     private String merchantName;
 
+    @Size(max = 50, message = "Payment method must not exceed 50 characters")
+    private String paymentMethod;
+
+    @Size(max = 100, message = "Transaction reference must not exceed 100 characters")
+    private String transactionReference;
+
     @Size(max = 50, message = "Provider must not exceed 50 characters")
     private String provider;
+
+    private Double latitude;
+
+    private Double longitude;
+
+    private Double locationAccuracyMeters;
+
+    private LocalDate paymentDate;
+
+    private LocalTime paymentTime;
 }

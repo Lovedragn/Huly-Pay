@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'payment_model.dart';
 
 class TransactionItem {
   final String id;
@@ -11,6 +12,7 @@ class TransactionItem {
   final Color iconBgColor;
   final bool isIncome;
   final String type; // 'UPI', 'Expense', 'Income'
+  final PaymentModel? payment;
 
   const TransactionItem({
     required this.id,
@@ -23,6 +25,7 @@ class TransactionItem {
     required this.iconBgColor,
     this.isIncome = false,
     this.type = 'Expense',
+    this.payment,
   });
 
   bool get isFailed => category.toLowerCase() == 'failed';

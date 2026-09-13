@@ -48,4 +48,12 @@ class UserProfile {
       'active': active,
     };
   }
+
+  String get displayName {
+    if (fullName != null && fullName!.trim().isNotEmpty) return fullName!.trim();
+    final parts = [firstName, lastName].where((p) => p != null && p.trim().isNotEmpty).join(' ');
+    if (parts.isNotEmpty) return parts;
+    if (email.isNotEmpty) return email.split('@').first;
+    return 'User';
+  }
 }

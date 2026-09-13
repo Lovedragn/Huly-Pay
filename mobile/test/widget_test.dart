@@ -430,6 +430,9 @@ void main() {
     // 3. Confirm Logout in dialog targeting the TextButton
     final dialogLogoutButton = find.widgetWithText(TextButton, 'Logout');
     await tester.tap(dialogLogoutButton);
+    await tester.runAsync(() async {
+      await Future.delayed(const Duration(milliseconds: 150));
+    });
     await tester.pumpAndSettle();
 
     // 4. Verify user is now on SignInScreen
