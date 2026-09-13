@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../models/user_profile.dart';
 
 class AuthService {
   static final AuthService _instance = AuthService._internal();
@@ -76,6 +77,24 @@ class AuthService {
   }
 
   bool get isAuthenticated => currentAccessToken != null && currentAccessToken!.isNotEmpty;
+
+  UserProfile? get currentUserProfile {
+    final user = currentUser;
+    if (user == null) return null;
+
+    final meta = user.userMetadata ?? {};
+    final fullName = meta['full_name'] as String? ?? meta['name'] as String?;
+    final avatar = meta['avatar_url'] as String? ?? meta['picture'] as String?;
+
+    return UserProfile(
+      id: user.id,
+      email: user.email ?? '',
+      fullName: fullName,
+      avatarUrl: avatar,
+      authProvider: user.appMetadata['provider'] as String? ?? 'google',
+      active: true,
+    );
+  }
 
   Stream<AuthState> get onAuthStateChange {
     if (_client != null) {

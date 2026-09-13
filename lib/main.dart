@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'screens/home_dashboard_screen.dart';
-import 'screens/sign_in_screen.dart';
 import 'screens/splash_screen.dart';
 import 'services/auth_service.dart';
 

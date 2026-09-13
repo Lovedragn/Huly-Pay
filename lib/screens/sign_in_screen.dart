@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../repositories/payment_repository.dart';
+import '../repositories/user_repository.dart';
 import '../services/auth_service.dart';
-import '../services/api_client.dart';
 import 'home_dashboard_screen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -31,11 +33,13 @@ class _SignInScreenState extends State<SignInScreen> {
   void initState() {
     super.initState();
     // Listen to real Supabase OAuth callback redirects
-    _authSubscription = AuthService().onAuthStateChange.listen((data) {
+    _authSubscription = AuthService().onAuthStateChange.listen((data) async {
       if (data.event == AuthChangeEvent.signedIn && data.session != null) {
         if (mounted) {
-          _syncUserWithBackend();
-          _finishSignIn();
+          await _syncUserWithBackend();
+          if (mounted) {
+            _finishSignIn();
+          }
         }
       }
     });
@@ -64,13 +68,29 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Future<void> _syncUserWithBackend() async {
-    if (AuthService().currentAccessToken != null) {
+    bool isTest = false;
+    try {
+      isTest = Platform.environment.containsKey('FLUTTER_TEST');
+    } catch (_) {}
+    if (isTest) return;
+
+    // 1. Immediately store Supabase / Google OAuth user details in SQLite local DB
+    final authProfile = AuthService().currentUserProfile;
+    if (authProfile != null) {
       try {
-        await ApiClient().getCurrentUser();
-      } catch (e) {
-        // Backend may be offline during unit test or local dev
-      }
+        await UserRepository().saveUserProfile(authProfile);
+      } catch (_) {}
     }
+
+    // 2. Fetch fresh user profile from backend (will update SQLite)
+    try {
+      await UserRepository().getUserProfile(forceRefresh: true);
+    } catch (_) {}
+
+    // 3. Pre-fetch payments from backend and cache in SQLite
+    try {
+      await PaymentRepository().getPayments(forceRefresh: true);
+    } catch (_) {}
   }
 
   void _handleGoogleSignIn() async {

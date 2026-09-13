@@ -34,14 +34,23 @@ class DonutChart extends StatelessWidget {
               pieTouchData: PieTouchData(
                 enabled: true,
               ),
-              sections: items.map((cat) {
-                return PieChartSectionData(
-                  color: cat.color,
-                  value: cat.percentage.toDouble(),
-                  radius: strokeWidth,
-                  showTitle: false,
-                );
-              }).toList(),
+              sections: items.isEmpty
+                  ? [
+                      PieChartSectionData(
+                        color: const Color(0xFF222226),
+                        value: 100,
+                        radius: strokeWidth,
+                        showTitle: false,
+                      ),
+                    ]
+                  : items.map((cat) {
+                      return PieChartSectionData(
+                        color: cat.color,
+                        value: cat.percentage.toDouble(),
+                        radius: strokeWidth,
+                        showTitle: false,
+                      );
+                    }).toList(),
             ),
           ),
           Column(
