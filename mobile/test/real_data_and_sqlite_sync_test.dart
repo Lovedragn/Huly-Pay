@@ -8,7 +8,6 @@ import 'package:mobile/repositories/user_repository.dart';
 import 'package:mobile/screens/analysis_screen.dart';
 import 'package:mobile/screens/home_dashboard_screen.dart';
 import 'package:mobile/screens/transactions_screen.dart';
-import 'package:mobile/services/auth_service.dart';
 import 'package:mobile/services/local_database_service.dart';
 
 void main() {

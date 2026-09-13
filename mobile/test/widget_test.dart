@@ -273,9 +273,9 @@ void main() {
     await tester.tap(find.text('Cafe Coffee Day'));
     await tester.pumpAndSettle();
 
-    // 2. Verify SingleTransactionScreen is loaded
+    // 2. Verify SingleTransactionScreen is loaded and title is removed per requirement
     expect(find.byType(SingleTransactionScreen), findsOneWidget);
-    expect(find.text('Transaction Details'), findsOneWidget);
+    expect(find.text('Transaction Details'), findsNothing);
     expect(find.text('- ₹320'), findsOneWidget);
     expect(find.text('Paid to Cafe Coffee Day'), findsOneWidget);
     expect(find.text('Payment Successful'), findsOneWidget);
