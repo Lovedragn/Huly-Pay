@@ -44,6 +44,50 @@ class PaymentModel {
     this.updatedAt,
   });
 
+  PaymentModel copyWith({
+    String? id,
+    String? userId,
+    String? expenseId,
+    double? amount,
+    String? currency,
+    String? upiTransactionId,
+    String? upiId,
+    String? merchantName,
+    String? paymentMethod,
+    String? transactionReference,
+    String? status,
+    String? provider,
+    double? latitude,
+    double? longitude,
+    double? locationAccuracyMeters,
+    String? paymentDate,
+    String? paymentTime,
+    String? createdAt,
+    String? updatedAt,
+  }) {
+    return PaymentModel(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      expenseId: expenseId ?? this.expenseId,
+      amount: amount ?? this.amount,
+      currency: currency ?? this.currency,
+      upiTransactionId: upiTransactionId ?? this.upiTransactionId,
+      upiId: upiId ?? this.upiId,
+      merchantName: merchantName ?? this.merchantName,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      transactionReference: transactionReference ?? this.transactionReference,
+      status: status ?? this.status,
+      provider: provider ?? this.provider,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      locationAccuracyMeters: locationAccuracyMeters ?? this.locationAccuracyMeters,
+      paymentDate: paymentDate ?? this.paymentDate,
+      paymentTime: paymentTime ?? this.paymentTime,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
   factory PaymentModel.fromJson(Map<String, dynamic> json) {
     return PaymentModel(
       id: json['id'] as String,

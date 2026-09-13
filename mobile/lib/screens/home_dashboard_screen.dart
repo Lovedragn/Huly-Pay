@@ -136,17 +136,20 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
 
     String avatarUrl = user?.avatarUrl ?? AuthService().currentUserProfile?.avatarUrl ?? _data.avatarUrl;
 
+    final confirmedPayments = payments.where((p) {
+      final s = p.status.toUpperCase();
+      return s == 'CONFIRMED' || s == 'SUCCESS';
+    }).toList();
+
     double sum = 0;
-    for (final p in payments) {
-      if (p.status.toUpperCase() != 'FAILED') {
-        sum += p.amount;
-      }
+    for (final p in confirmedPayments) {
+      sum += p.amount;
     }
     final String totalSpent = '₹${sum.toStringAsFixed(sum.truncateToDouble() == sum ? 0 : 2)}';
 
     List<TransactionItem> recentTxs = [];
-    if (payments.isNotEmpty) {
-      final sorted = List<PaymentModel>.from(payments)
+    if (confirmedPayments.isNotEmpty) {
+      final sorted = List<PaymentModel>.from(confirmedPayments)
         ..sort((a, b) {
           final aDate = a.createdAt ?? '';
           final bDate = b.createdAt ?? '';
@@ -155,10 +158,10 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
       recentTxs = sorted.take(5).map((p) => p.toTransactionItem()).toList();
     }
 
-    final weeklyBars = _computeWeeklySpending(payments);
+    final weeklyBars = _computeWeeklySpending(confirmedPayments);
 
     setState(() {
-      _payments = payments;
+      _payments = confirmedPayments;
       _data = DashboardData(
         greeting: _data.greeting,
         userName: userName,
@@ -181,7 +184,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
     final weekStart = DateTime(monday.year, monday.month, monday.day);
 
     for (final p in payments) {
-      if (p.status.toUpperCase() == 'FAILED') continue;
+      final s = p.status.toUpperCase();
+      if (s != 'CONFIRMED' && s != 'SUCCESS') continue;
       if (p.createdAt == null) continue;
       try {
         final dt = DateTime.parse(p.createdAt!);

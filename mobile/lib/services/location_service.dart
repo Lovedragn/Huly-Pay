@@ -94,10 +94,26 @@ class LocationService {
         );
       }
 
+      // 1. Fast path: return last known position instantly (< 10ms) if fresh within 30 min
+      try {
+        final lastKnown = await Geolocator.getLastKnownPosition();
+        if (lastKnown != null &&
+            DateTime.now().difference(lastKnown.timestamp).inMinutes < 30) {
+          return LocationResult.success(
+            PaymentLocation(
+              latitude: lastKnown.latitude,
+              longitude: lastKnown.longitude,
+              accuracyMeters: lastKnown.accuracy,
+            ),
+          );
+        }
+      } catch (_) {}
+
+      // 2. Medium accuracy (Wi-Fi / Cell tower / GPS) with 2-second timeout so it never hangs
       final position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          timeLimit: Duration(seconds: 5),
+          accuracy: LocationAccuracy.medium,
+          timeLimit: Duration(seconds: 2),
         ),
       );
 
