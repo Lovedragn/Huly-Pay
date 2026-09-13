@@ -1,6 +1,7 @@
 import 'dart:io';
 import '../models/user_profile.dart';
 import '../services/api_client.dart';
+import '../services/auth_service.dart';
 import '../services/local_database_service.dart';
 
 class UserRepository {
@@ -32,13 +33,24 @@ class UserRepository {
 
     try {
       final remote = await _apiClient.getCurrentUser();
-      await _localDb.saveUserProfile(remote);
-      return remote;
+      final authProfile = AuthService().currentUserProfile;
+      final merged = remote.copyWith(
+        fullName: remote.fullName ?? authProfile?.fullName,
+        avatarUrl: remote.avatarUrl ?? authProfile?.avatarUrl,
+      );
+      await _localDb.saveUserProfile(merged);
+      return merged;
     } catch (_) {
+      // Fallback to real Supabase / Google OAuth user metadata if backend is offline
+      final authProfile = AuthService().currentUserProfile;
+      if (authProfile != null) {
+        await _localDb.saveUserProfile(authProfile);
+        return authProfile;
+      }
       if (cached != null) {
         return cached;
       }
-      rethrow;
+      return null;
     }
   }
 

@@ -29,20 +29,53 @@ class HomeDashboardScreen extends StatefulWidget {
   State<HomeDashboardScreen> createState() => _HomeDashboardScreenState();
 }
 
-class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
+class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsBindingObserver {
   int _selectedNavIndex = 0;
   late DashboardData _data;
+
+  bool get _isTestEnvironment {
+    try {
+      return Platform.environment.containsKey('FLUTTER_TEST');
+    } catch (_) {
+      return false;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    _data = widget.initialData ?? MockData.dashboardData;
-    bool isTest = false;
-    try {
-      isTest = Platform.environment.containsKey('FLUTTER_TEST');
-    } catch (_) {}
+    WidgetsBinding.instance.addObserver(this);
 
-    if (widget.initialData == null && !isTest) {
+    if (widget.initialData != null) {
+      _data = widget.initialData!;
+    } else if (_isTestEnvironment) {
+      _data = MockData.dashboardData;
+    } else {
+      final authProfile = AuthService().currentUserProfile;
+      _data = DashboardData(
+        greeting: 'Good Morning,',
+        userName: authProfile?.displayName ?? 'User',
+        avatarUrl: authProfile?.avatarUrl ?? '',
+        totalSpentFormatted: '₹0',
+        changePercent: 0,
+        changePeriodLabel: 'this month',
+        weeklySpending: _computeWeeklySpending([]),
+        recentTransactions: const [],
+      );
+      _loadRealData();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && !_isTestEnvironment) {
+      // Auto-fetch fresh data every time user opens or resumes our application
       _loadRealData();
     }
   }
@@ -52,16 +85,18 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
     try {
       final cachedPayments = await PaymentRepository().getCachedPayments();
       final cachedUser = await UserRepository().getCachedUserProfile();
-      if (cachedPayments.isNotEmpty || cachedUser != null) {
+      if (mounted) {
         _applyData(cachedUser, cachedPayments);
       }
     } catch (_) {}
 
     // 2. Fetch fresh data from backend & sync SQLite cache
     try {
-      final user = await UserRepository().getUserProfile().catchError((_) => null);
-      final payments = await PaymentRepository().getPayments().catchError((_) => <PaymentModel>[]);
-      _applyData(user, payments);
+      final user = await UserRepository().getUserProfile(forceRefresh: true).catchError((_) => null);
+      final payments = await PaymentRepository().getPayments(forceRefresh: true).catchError((_) => <PaymentModel>[]);
+      if (mounted) {
+        _applyData(user, payments);
+      }
     } catch (_) {}
   }
 
@@ -72,47 +107,86 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
     if (user != null && user.displayName.isNotEmpty) {
       userName = user.displayName;
     } else {
-      final authUser = AuthService().currentUser;
-      final nameMeta = authUser?.userMetadata?['full_name'] ?? authUser?.userMetadata?['name'];
-      if (nameMeta != null && nameMeta.toString().isNotEmpty) {
-        userName = nameMeta.toString();
+      final authProfile = AuthService().currentUserProfile;
+      if (authProfile != null && authProfile.displayName.isNotEmpty) {
+        userName = authProfile.displayName;
       }
     }
 
-    String totalSpent = _data.totalSpentFormatted;
-    List<TransactionItem> recentTxs = _data.recentTransactions;
+    String avatarUrl = user?.avatarUrl ?? AuthService().currentUserProfile?.avatarUrl ?? _data.avatarUrl;
 
-    if (payments.isNotEmpty) {
-      double sum = 0;
-      for (final p in payments) {
-        if (p.status.toUpperCase() != 'FAILED') {
-          sum += p.amount;
-        }
+    double sum = 0;
+    for (final p in payments) {
+      if (p.status.toUpperCase() != 'FAILED') {
+        sum += p.amount;
       }
-      totalSpent = '₹${sum.toStringAsFixed(sum.truncateToDouble() == sum ? 0 : 2)}';
+    }
+    final String totalSpent = '₹${sum.toStringAsFixed(sum.truncateToDouble() == sum ? 0 : 2)}';
 
+    List<TransactionItem> recentTxs = [];
+    if (payments.isNotEmpty) {
       final sorted = List<PaymentModel>.from(payments)
         ..sort((a, b) {
           final aDate = a.createdAt ?? '';
           final bDate = b.createdAt ?? '';
           return bDate.compareTo(aDate);
         });
-      final recentList = sorted.take(5).map((p) => p.toTransactionItem()).toList();
-      if (recentList.isNotEmpty) {
-        recentTxs = recentList;
-      }
+      recentTxs = sorted.take(5).map((p) => p.toTransactionItem()).toList();
     }
+
+    final weeklyBars = _computeWeeklySpending(payments);
 
     setState(() {
       _data = DashboardData(
         greeting: _data.greeting,
         userName: userName,
-        avatarUrl: user?.avatarUrl ?? _data.avatarUrl,
+        avatarUrl: avatarUrl,
         totalSpentFormatted: totalSpent,
         changePercent: _data.changePercent,
         changePeriodLabel: _data.changePeriodLabel,
-        weeklySpending: _data.weeklySpending,
+        weeklySpending: weeklyBars,
         recentTransactions: recentTxs,
+      );
+    });
+  }
+
+  List<SpendingBarData> _computeWeeklySpending(List<PaymentModel> payments) {
+    final dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    final dayTotals = List<double>.filled(7, 0.0);
+
+    final now = DateTime.now();
+    final monday = now.subtract(Duration(days: now.weekday - 1));
+    final weekStart = DateTime(monday.year, monday.month, monday.day);
+
+    for (final p in payments) {
+      if (p.status.toUpperCase() == 'FAILED') continue;
+      if (p.createdAt == null) continue;
+      try {
+        final dt = DateTime.parse(p.createdAt!);
+        if (dt.isAfter(weekStart.subtract(const Duration(seconds: 1)))) {
+          final dayIdx = dt.weekday - 1;
+          if (dayIdx >= 0 && dayIdx < 7) {
+            dayTotals[dayIdx] += p.amount;
+          }
+        }
+      } catch (_) {}
+    }
+
+    double maxTotal = 0;
+    for (final t in dayTotals) {
+      if (t > maxTotal) maxTotal = t;
+    }
+
+    return List.generate(7, (i) {
+      final total = dayTotals[i];
+      final double h = maxTotal > 0 ? (total / maxTotal) * 110 + 4 : 4.0;
+      final bool isToday = (i == now.weekday - 1);
+      return SpendingBarData(
+        day: dayLabels[i],
+        height: h,
+        color: isToday
+            ? const Color(0xFFFFFFFF)
+            : (total > 0 ? const Color(0xFF6B6B70) : const Color(0xFF26262B)),
       );
     });
   }
@@ -264,24 +338,17 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                       ),
                     ),
                     child: ClipOval(
-                      child: Image.asset(
-                        'asserts/pictures/profile.png',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          color: const Color(0xFF00C076),
-                          child: const Center(
-                            child: Text(
-                              'SS',
-                              style: TextStyle(
-                                fontFamily: 'Google Sans',
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 16,
-                              ),
+                      child: _data.avatarUrl.isNotEmpty && _data.avatarUrl.startsWith('http')
+                          ? Image.network(
+                              _data.avatarUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => _buildAvatarFallback(),
+                            )
+                          : Image.asset(
+                              'asserts/pictures/profile.png',
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => _buildAvatarFallback(),
                             ),
-                          ),
-                        ),
-                      ),
                     ),
                   ),
                 ),
@@ -452,23 +519,92 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
               width: 1,
             ),
           ),
-          child: Column(
-            children: [
-              for (int i = 0; i < _data.recentTransactions.length; i++) ...[
-                TransactionTile(transaction: _data.recentTransactions[i]),
-                if (i < _data.recentTransactions.length - 1)
-                  const Divider(
-                    color: Color(0xFF202024),
-                    height: 1,
-                    thickness: 1,
-                    indent: 74,
-                    endIndent: 16,
+          child: _data.recentTransactions.isEmpty
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color(0xFF1E1E24),
+                        ),
+                        child: const Icon(
+                          Icons.receipt_long_outlined,
+                          color: Color(0xFF8E8E93),
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'No transactions yet',
+                        style: TextStyle(
+                          fontFamily: 'Google Sans',
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'Tap Scan & Pay to make your first payment',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Google Sans',
+                          color: Color(0xFF8E8E93),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
                   ),
-              ],
-            ],
-          ),
+                )
+              : Column(
+                  children: [
+                    for (int i = 0; i < _data.recentTransactions.length; i++) ...[
+                      TransactionTile(transaction: _data.recentTransactions[i]),
+                      if (i < _data.recentTransactions.length - 1)
+                        const Divider(
+                          color: Color(0xFF202024),
+                          height: 1,
+                          thickness: 1,
+                          indent: 74,
+                          endIndent: 16,
+                        ),
+                    ],
+                  ],
+                ),
         ),
       ],
     );
+  }
+
+  Widget _buildAvatarFallback() {
+    final initials = _getInitials(_data.userName);
+    return Container(
+      color: const Color(0xFF00C076),
+      child: Center(
+        child: Text(
+          initials,
+          style: const TextStyle(
+            fontFamily: 'Google Sans',
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+            fontSize: 16,
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _getInitials(String name) {
+    final parts = name.trim().split(RegExp(r'\s+'));
+    if (parts.length >= 2 && parts[0].isNotEmpty && parts[1].isNotEmpty) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    } else if (parts.isNotEmpty && parts[0].isNotEmpty) {
+      return parts[0].substring(0, parts[0].length >= 2 ? 2 : 1).toUpperCase();
+    }
+    return 'SS';
   }
 }

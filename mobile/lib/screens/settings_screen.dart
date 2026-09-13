@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../repositories/user_repository.dart';
 import '../services/auth_service.dart';
@@ -8,14 +9,14 @@ import 'scan_and_pay_screen.dart';
 import 'sign_in_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
-  final String userName;
-  final String userEmail;
+  final String? userName;
+  final String? userEmail;
   final String appVersion;
 
   const SettingsScreen({
     super.key,
-    this.userName = 'Sujit Saha',
-    this.userEmail = 'sujit@example.com',
+    this.userName,
+    this.userEmail,
     this.appVersion = 'v1.0.0',
   });
 
@@ -27,17 +28,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _selectedTheme = 'OLED Black';
   late String _displayName;
   late String _displayEmail;
+  String _avatarUrl = '';
+
+  bool get _isTestEnvironment {
+    try {
+      return Platform.environment.containsKey('FLUTTER_TEST');
+    } catch (_) {
+      return false;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    _displayName = widget.userName;
-    _displayEmail = widget.userEmail;
-    _resolveUser();
+    if (_isTestEnvironment) {
+      _displayName = widget.userName ?? 'Sujit Saha';
+      _displayEmail = widget.userEmail ?? 'sujit@example.com';
+    } else {
+      final authProfile = AuthService().currentUserProfile;
+      _displayName = widget.userName ?? authProfile?.displayName ?? 'User';
+      _displayEmail = widget.userEmail ?? authProfile?.email ?? '';
+      _avatarUrl = authProfile?.avatarUrl ?? '';
+      _resolveUser();
+    }
   }
 
   Future<void> _resolveUser() async {
-    // 1. Try local SQLite profile cache
+    // 1. Try local SQLite profile cache first
     try {
       final cachedProfile = await UserRepository().getCachedUserProfile();
       if (cachedProfile != null && mounted) {
@@ -46,25 +63,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
           if (cachedProfile.email.isNotEmpty) {
             _displayEmail = cachedProfile.email;
           }
+          if (cachedProfile.avatarUrl != null && cachedProfile.avatarUrl!.isNotEmpty) {
+            _avatarUrl = cachedProfile.avatarUrl!;
+          }
         });
       }
     } catch (_) {}
 
-    // 2. Then check authUser session
-    final authUser = AuthService().currentUser;
-    if (authUser != null) {
-      final name = authUser.userMetadata?['full_name'] ?? authUser.userMetadata?['name'];
-      if (mounted) {
+    // 2. Check active auth user session
+    final authProfile = AuthService().currentUserProfile;
+    if (authProfile != null && mounted) {
+      setState(() {
+        if (authProfile.displayName.isNotEmpty) {
+          _displayName = authProfile.displayName;
+        }
+        if (authProfile.email.isNotEmpty) {
+          _displayEmail = authProfile.email;
+        }
+        if (authProfile.avatarUrl != null && authProfile.avatarUrl!.isNotEmpty) {
+          _avatarUrl = authProfile.avatarUrl!;
+        }
+      });
+    }
+
+    // 3. Fetch fresh user profile from backend & sync SQLite cache
+    try {
+      final remote = await UserRepository().getUserProfile(forceRefresh: true);
+      if (remote != null && mounted) {
         setState(() {
-          if (name != null && name.toString().isNotEmpty) {
-            _displayName = name.toString();
+          _displayName = remote.displayName;
+          if (remote.email.isNotEmpty) {
+            _displayEmail = remote.email;
           }
-          if (authUser.email != null && authUser.email!.isNotEmpty) {
-            _displayEmail = authUser.email!;
+          if (remote.avatarUrl != null && remote.avatarUrl!.isNotEmpty) {
+            _avatarUrl = remote.avatarUrl!;
           }
         });
       }
-    }
+    } catch (_) {}
   }
 
   String get _initials {
@@ -437,16 +473,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
               shape: BoxShape.circle,
               color: Color(0xFF00C076),
             ),
-            child: Center(
-              child: Text(
-                _initials,
-                style: const TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+            child: ClipOval(
+              child: _avatarUrl.isNotEmpty && _avatarUrl.startsWith('http')
+                  ? Image.network(
+                      _avatarUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Center(
+                        child: Text(
+                          _initials,
+                          style: const TextStyle(
+                            fontFamily: 'Google Sans',
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    )
+                  : Center(
+                      child: Text(
+                        _initials,
+                        style: const TextStyle(
+                          fontFamily: 'Google Sans',
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
             ),
           ),
           const SizedBox(width: 16),

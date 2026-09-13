@@ -56,4 +56,28 @@ class UserProfile {
     if (email.isNotEmpty) return email.split('@').first;
     return 'User';
   }
+
+  UserProfile copyWith({
+    String? id,
+    String? email,
+    String? fullName,
+    String? firstName,
+    String? lastName,
+    String? phoneNumber,
+    String? avatarUrl,
+    String? authProvider,
+    bool? active,
+  }) {
+    return UserProfile(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      fullName: fullName ?? this.fullName,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      authProvider: authProvider ?? this.authProvider,
+      active: active ?? this.active,
+    );
+  }
 }

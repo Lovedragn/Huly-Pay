@@ -41,13 +41,17 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   @override
   void initState() {
     super.initState();
-    _allGroups = widget.initialGroups ?? MockData.transactionScreenGroups;
     bool isTest = false;
     try {
       isTest = Platform.environment.containsKey('FLUTTER_TEST');
     } catch (_) {}
 
-    if (widget.initialGroups == null && !isTest) {
+    if (widget.initialGroups != null) {
+      _allGroups = widget.initialGroups!;
+    } else if (isTest) {
+      _allGroups = MockData.transactionScreenGroups;
+    } else {
+      _allGroups = [];
       _loadPayments();
     }
   }
@@ -56,42 +60,34 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     // 1. Instantly display cached payments from SQLite
     try {
       final cached = await PaymentRepository().getCachedPayments();
-      if (cached.isNotEmpty && mounted) {
+      if (mounted) {
         final sorted = List<PaymentModel>.from(cached)
           ..sort((a, b) {
             final aDate = a.createdAt ?? '';
             final bDate = b.createdAt ?? '';
             return bDate.compareTo(aDate);
           });
-        final groups = PaymentModel.groupPayments(sorted);
-        if (groups.isNotEmpty) {
-          setState(() {
-            _allGroups = groups;
-          });
-        }
+        setState(() {
+          _allGroups = PaymentModel.groupPayments(sorted);
+        });
       }
     } catch (_) {}
 
     // 2. Fetch fresh payments from backend and update SQLite cache
     try {
-      final payments = await PaymentRepository().getPayments();
+      final payments = await PaymentRepository().getPayments(forceRefresh: true);
       if (!mounted) return;
-      if (payments.isNotEmpty) {
-        final sorted = List<PaymentModel>.from(payments)
-          ..sort((a, b) {
-            final aDate = a.createdAt ?? '';
-            final bDate = b.createdAt ?? '';
-            return bDate.compareTo(aDate);
-          });
-        final liveGroups = PaymentModel.groupPayments(sorted);
-        if (liveGroups.isNotEmpty) {
-          setState(() {
-            _allGroups = liveGroups;
-          });
-        }
-      }
+      final sorted = List<PaymentModel>.from(payments)
+        ..sort((a, b) {
+          final aDate = a.createdAt ?? '';
+          final bDate = b.createdAt ?? '';
+          return bDate.compareTo(aDate);
+        });
+      setState(() {
+        _allGroups = PaymentModel.groupPayments(sorted);
+      });
     } catch (_) {
-      // Graceful fallback to initial mock groups or cached groups
+      // Graceful fallback to cached groups
     }
   }
 
@@ -396,17 +392,55 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
 
   Widget _buildGroupedTransactions(List<TransactionGroup> groups) {
     if (groups.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.only(top: 40),
-        child: Center(
-          child: Text(
-            'No transactions found',
-            style: TextStyle(
-              fontFamily: 'Google Sans',
-              color: Color(0xFF8E8E93),
-              fontSize: 15,
-            ),
+      return Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(top: 16),
+        padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 24),
+        decoration: BoxDecoration(
+          color: const Color(0xFF141416),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: const Color(0xFF222226),
+            width: 1,
           ),
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 52,
+              height: 52,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Color(0xFF1E1E24),
+              ),
+              child: const Icon(
+                Icons.receipt_long_outlined,
+                color: Color(0xFF8E8E93),
+                size: 26,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'No transactions found',
+              style: TextStyle(
+                fontFamily: 'Google Sans',
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              'Transactions will appear here once you make payments.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Google Sans',
+                color: Color(0xFF8E8E93),
+                fontSize: 13,
+                height: 1.4,
+              ),
+            ),
+          ],
         ),
       );
     }

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../repositories/payment_repository.dart';
+import '../repositories/user_repository.dart';
 import '../services/auth_service.dart';
 import 'home_dashboard_screen.dart';
 import 'sign_in_screen.dart';
@@ -26,10 +28,13 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _scaleAnimation;
   Timer? _navigationTimer;
   bool _navigated = false;
+  bool _hasLocalUser = false;
 
   @override
   void initState() {
     super.initState();
+    _checkLocalStorage();
+
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1400),
@@ -52,14 +57,32 @@ class _SplashScreenState extends State<SplashScreen>
     _navigationTimer = Timer(widget.duration, _navigateToNext);
   }
 
+  Future<void> _checkLocalStorage() async {
+    try {
+      final cachedProfile = await UserRepository().getCachedUserProfile();
+      if (cachedProfile != null) {
+        _hasLocalUser = true;
+      }
+    } catch (_) {}
+
+    // Auto-fetch fresh data every time user opens application
+    if (AuthService().isAuthenticated || _hasLocalUser) {
+      try {
+        UserRepository().getUserProfile(forceRefresh: true);
+        PaymentRepository().getPayments(forceRefresh: true);
+      } catch (_) {}
+    }
+  }
+
   void _navigateToNext() {
     if (_navigated || !mounted) return;
     _navigated = true;
     _navigationTimer?.cancel();
 
-    // Authenticated session -> HomeDashboardScreen; Unauthenticated -> SignInScreen
+    // Check local storage first, then go to application: Authenticated / Cached -> HomeDashboardScreen; Unauthenticated -> SignInScreen
+    final bool hasValidSessionOrCache = AuthService().isAuthenticated || _hasLocalUser;
     final Widget targetScreen = widget.nextScreen ??
-        (AuthService().isAuthenticated
+        (hasValidSessionOrCache
             ? const HomeDashboardScreen()
             : const SignInScreen());
 
