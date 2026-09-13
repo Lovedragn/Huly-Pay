@@ -19,6 +19,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import jakarta.annotation.PostConstruct;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,6 +32,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final ExpenseRepository expenseRepository;
     private final JdbcTemplate jdbcTemplate;
+    private final org.springframework.transaction.support.TransactionTemplate transactionTemplate;
 
     @PostConstruct
     public void ensurePaymentStatusConstraint() {
@@ -39,6 +42,27 @@ public class PaymentService {
             log.info("Ensured payments_status_check constraint permits Phase 3 lifecycle statuses");
         } catch (Exception e) {
             log.warn("Payment status constraint notice: {}", e.getMessage());
+        }
+        cleanupStalePayments();
+    }
+
+    @Scheduled(fixedRate = 60000)
+    public void cleanupStalePayments() {
+        try {
+            transactionTemplate.execute(status -> {
+                Instant initiatedCutoff = Instant.now().minus(Duration.ofMinutes(30));
+                Instant pendingCutoff = Instant.now().minus(Duration.ofDays(1));
+
+                int deletedInitiated = paymentRepository.deleteStaleInitiatedPayments(initiatedCutoff);
+                int deletedPending = paymentRepository.deleteStalePendingPayments(pendingCutoff);
+
+                if (deletedInitiated > 0 || deletedPending > 0) {
+                    log.info("Pruned stale payments: {} initiated (>30m), {} pending (>1d)", deletedInitiated, deletedPending);
+                }
+                return null;
+            });
+        } catch (Exception e) {
+            log.warn("Notice during stale payments cleanup: {}", e.getMessage());
         }
     }
 
@@ -134,8 +158,9 @@ public class PaymentService {
         return PaymentResponse.fromEntity(saved);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<PaymentResponse> getPaymentsForUser(User user) {
+        cleanupStalePayments();
         return paymentRepository.findByUserIdOrderByCreatedAtDesc(user.getId())
                 .stream()
                 .map(PaymentResponse::fromEntity)
