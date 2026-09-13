@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import '../models/dashboard_data.dart';
+import '../models/payment_model.dart';
 import '../screens/single_transaction_screen.dart';
 
 class TransactionTile extends StatelessWidget {
   final TransactionItem transaction;
+  final PaymentModel? payment;
   final VoidCallback? onTap;
 
   const TransactionTile({
     super.key,
     required this.transaction,
+    this.payment,
     this.onTap,
   });
 
@@ -20,10 +23,13 @@ class TransactionTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         onTap: onTap ??
             () {
+              final activePayment = payment ?? transaction.payment;
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => SingleTransactionScreen(
                     transaction: transaction,
+                    payment: activePayment,
+                    paymentId: activePayment?.id ?? (transaction.id.startsWith('tx_') ? null : transaction.id),
                   ),
                 ),
               );

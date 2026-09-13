@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+import '../models/payment_model.dart';
+import '../repositories/payment_repository.dart';
+import '../services/location_service.dart';
+import '../services/upi_service.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 
 class ScanAndPayScreen extends StatefulWidget {
@@ -10,8 +15,26 @@ class ScanAndPayScreen extends StatefulWidget {
 }
 
 class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
+  late final MobileScannerController _scannerController;
   bool _isFlashOn = false;
   bool _isFrontCamera = false;
+  bool _isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scannerController = MobileScannerController(
+      detectionSpeed: DetectionSpeed.noDuplicates,
+      facing: CameraFacing.back,
+      torchEnabled: false,
+    );
+  }
+
+  @override
+  void dispose() {
+    _scannerController.dispose();
+    super.dispose();
+  }
 
   void _handleBack([int? targetIndex]) {
     if (Navigator.canPop(context)) {
@@ -19,28 +42,405 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     }
   }
 
-  void _toggleCamera() {
-    setState(() {
-      _isFrontCamera = !_isFrontCamera;
-    });
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          _isFrontCamera ? 'Switched to Front Camera' : 'Switched to Rear Camera',
-          style: const TextStyle(
-            fontFamily: 'Google Sans',
-            color: Colors.white,
+  void _toggleFlash() async {
+    try {
+      await _scannerController.toggleTorch();
+      setState(() {
+        _isFlashOn = !_isFlashOn;
+      });
+    } catch (_) {
+      setState(() {
+        _isFlashOn = !_isFlashOn;
+      });
+    }
+  }
+
+  void _toggleCamera() async {
+    try {
+      await _scannerController.switchCamera();
+      setState(() {
+        _isFrontCamera = !_isFrontCamera;
+      });
+    } catch (_) {
+      setState(() {
+        _isFrontCamera = !_isFrontCamera;
+      });
+    }
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _isFrontCamera ? 'Switched to Front Camera' : 'Switched to Rear Camera',
+            style: const TextStyle(
+              fontFamily: 'Google Sans',
+              color: Colors.white,
+            ),
           ),
+          backgroundColor: const Color(0xFF1E1E24),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          duration: const Duration(milliseconds: 1500),
         ),
+      );
+    }
+  }
+
+  void _handleBarcodeDetected(BarcodeCapture capture) {
+    if (_isProcessing) return;
+    final barcode = capture.barcodes.firstOrNull;
+    if (barcode == null || barcode.rawValue == null) return;
+
+    final upiData = UpiService.parseUpiUri(barcode.rawValue!);
+    if (upiData != null) {
+      _processPaymentFlow(upiData);
+    }
+  }
+
+  void _processPaymentFlow(UpiPaymentData upiData) async {
+    setState(() {
+      _isProcessing = true;
+    });
+
+    try {
+      await _scannerController.stop();
+    } catch (_) {}
+
+    if (!mounted) return;
+    await _showPaymentConfirmationModal(upiData);
+
+    if (mounted) {
+      setState(() {
+        _isProcessing = false;
+      });
+      try {
+        await _scannerController.start();
+      } catch (_) {}
+    }
+  }
+
+  Future<void> _showPaymentConfirmationModal(UpiPaymentData upiData) async {
+    final amountController = TextEditingController(
+      text: upiData.amount != null ? upiData.amount!.toStringAsFixed(2) : '',
+    );
+    PaymentLocation? capturedLocation;
+    bool fetchingLocation = true;
+
+    // Trigger location capture concurrently with modal presentation
+    LocationService().getCurrentPaymentLocation().then((loc) {
+      capturedLocation = loc;
+      fetchingLocation = false;
+    }).catchError((_) {
+      fetchingLocation = false;
+    });
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (modalContext) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            // Check if location finished loading in background
+            if (fetchingLocation) {
+              Future.delayed(const Duration(milliseconds: 400), () {
+                if (modalContext.mounted && fetchingLocation == false) {
+                  setModalState(() {});
+                }
+              });
+            }
+
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(modalContext).viewInsets.bottom,
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF161619),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                  border: Border(
+                    top: BorderSide(color: Color(0xFF2A2A30), width: 1),
+                  ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF33333A),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    Row(
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF24242A),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Center(
+                            child: Icon(
+                              Icons.storefront_rounded,
+                              color: Color(0xFF007AFF),
+                              size: 26,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                upiData.payeeName,
+                                style: const TextStyle(
+                                  fontFamily: 'Google Sans',
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                upiData.upiId,
+                                style: const TextStyle(
+                                  fontFamily: 'Google Sans',
+                                  fontSize: 13,
+                                  color: Color(0xFF8E8E93),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Amount Field
+                    TextField(
+                      controller: amountController,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      style: const TextStyle(
+                        fontFamily: 'Google Sans',
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      decoration: InputDecoration(
+                        labelText: 'Amount (INR)',
+                        labelStyle: const TextStyle(color: Color(0xFF8E8E93)),
+                        prefixText: '₹ ',
+                        prefixStyle: const TextStyle(
+                          color: Color(0xFF007AFF),
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFF1E1E24),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // GPS Location Capture Badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1E1E24),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: capturedLocation != null
+                              ? const Color(0xFF28A745).withValues(alpha: 0.4)
+                              : const Color(0xFF33333A),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            capturedLocation != null
+                                ? Icons.location_on_rounded
+                                : (fetchingLocation ? Icons.hourglass_top_rounded : Icons.location_off_rounded),
+                            color: capturedLocation != null
+                                ? const Color(0xFF28A745)
+                                : const Color(0xFFE5A93C),
+                            size: 20,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              capturedLocation != null
+                                  ? 'GPS: ${capturedLocation!.latitude.toStringAsFixed(4)}, ${capturedLocation!.longitude.toStringAsFixed(4)} (±${capturedLocation!.accuracyMeters.toStringAsFixed(1)}m)'
+                                  : (fetchingLocation
+                                      ? 'Acquiring GPS location...'
+                                      : 'Location unavailable (permission denied or no GPS)'),
+                              style: TextStyle(
+                                fontFamily: 'Google Sans',
+                                fontSize: 12,
+                                color: capturedLocation != null
+                                    ? const Color(0xFFD0D0D5)
+                                    : const Color(0xFF8E8E93),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Proceed to Pay Button
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF007AFF),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      onPressed: () async {
+                        final messenger = ScaffoldMessenger.of(context);
+                        final parsedAmount = double.tryParse(amountController.text.trim()) ?? 0.0;
+                        if (parsedAmount <= 0) {
+                          messenger.showSnackBar(
+                            const SnackBar(content: Text('Please enter a valid amount greater than 0')),
+                          );
+                          return;
+                        }
+
+                        Navigator.of(modalContext).pop();
+
+                        // 1. Record pending payment on Spring Boot backend
+                        try {
+                          final payload = CreatePaymentPayload(
+                            amount: parsedAmount,
+                            currency: 'INR',
+                            merchantName: upiData.payeeName,
+                            upiId: upiData.upiId,
+                            paymentMethod: 'GPAY',
+                            transactionReference: upiData.transactionRef ?? 'REF-${DateTime.now().millisecondsSinceEpoch}',
+                            provider: 'GOOGLE_PAY',
+                            latitude: capturedLocation?.latitude,
+                            longitude: capturedLocation?.longitude,
+                            locationAccuracyMeters: capturedLocation?.accuracyMeters,
+                          );
+
+                          final payment = await PaymentRepository().createPayment(payload);
+
+                          // 2. Open external UPI app
+                          final uri = upiData.buildPaymentUri(customAmount: parsedAmount);
+                          await UpiService.launchUpiPayment(uri);
+
+                          if (mounted) {
+                            _showPaymentInitiatedDialog(payment);
+                          }
+                        } catch (e) {
+                          if (mounted) {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text('Payment initiation error: $e'),
+                                backgroundColor: const Color(0xFFD93025),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      child: const Text(
+                        'Proceed to Pay via UPI / GPay',
+                        style: TextStyle(
+                          fontFamily: 'Google Sans',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showPaymentInitiatedDialog(PaymentModel payment) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E24),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Payment Initiated',
+          style: TextStyle(fontFamily: 'Google Sans', color: Colors.white, fontWeight: FontWeight.w700),
         ),
-        duration: const Duration(milliseconds: 1500),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Amount: ₹${payment.amount.toStringAsFixed(2)}',
+              style: const TextStyle(fontFamily: 'Google Sans', color: Colors.white, fontSize: 16),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Merchant: ${payment.merchantName ?? payment.upiId ?? "UPI Merchant"}',
+              style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 14),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Location: ${payment.latitude != null ? "${payment.latitude!.toStringAsFixed(4)}, ${payment.longitude!.toStringAsFixed(4)}" : "Not captured"}',
+              style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 13),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Status: ${payment.status}',
+              style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF007AFF), fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              _handleBack(0); // Return to home
+            },
+            child: const Text('Back to Home', style: TextStyle(color: Color(0xFF007AFF), fontWeight: FontWeight.w600)),
+          ),
+        ],
       ),
     );
+  }
+
+  void _simulateDemoScan() {
+    final demoUpi = UpiService.parseUpiUri(
+      'upi://pay?pa=starbucks@okhdfcbank&pn=Starbucks%20Coffee&am=240.00&cu=INR&tr=TXN_DEMO_123',
+    );
+    if (demoUpi != null) {
+      _processPaymentFlow(demoUpi);
+    }
   }
 
   @override
@@ -51,23 +451,22 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
         bottom: false,
         child: Stack(
           children: [
-            // Top Controls & Main Content
             Positioned.fill(
               child: Padding(
                 padding: const EdgeInsets.only(
                   left: 20,
                   right: 20,
                   top: 10,
-                  bottom: 110, // padding for bottom nav
+                  bottom: 80,
                 ),
                 child: Column(
                   children: [
-                    // Top Bar (Back Button)
+                    // Top Bar (Back Button & Demo Trigger)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Back Button
                         GestureDetector(
+                          key: const Key('back_button'),
                           onTap: _handleBack,
                           behavior: HitTestBehavior.opaque,
                           child: Container(
@@ -90,13 +489,44 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 44),
+                        // Demo QR trigger button for emulators
+                        GestureDetector(
+                          key: const Key('demo_qr_button'),
+                          onTap: _simulateDemoScan,
+                          behavior: HitTestBehavior.opaque,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF161619),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: const Color(0xFF2A2A30),
+                                width: 1,
+                              ),
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(Icons.qr_code_2_rounded, color: Color(0xFF007AFF), size: 16),
+                                SizedBox(width: 6),
+                                Text(
+                                  'Demo QR',
+                                  style: TextStyle(
+                                    fontFamily: 'Google Sans',
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
 
-                    const Spacer(flex: 2),
+                    const Spacer(flex: 1),
 
-                    // Scanner Viewfinder Box with 4 corner brackets
+                    // Scanner Viewfinder Box with Live MobileScanner and Reticle
                     Center(
                       child: Container(
                         width: 250,
@@ -105,21 +535,41 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                           color: const Color(0xFF141416),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: CustomPaint(
-                          size: const Size(250, 250),
-                          painter: ScannerFramePainter(
-                            cornerColor: Colors.white,
-                            cornerLength: 36.0,
-                            strokeWidth: 4.0,
-                            cornerRadius: 8.0,
-                          ),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: MobileScanner(
+                                controller: _scannerController,
+                                onDetect: _handleBarcodeDetected,
+                                errorBuilder: (context, error, child) {
+                                  return const Center(
+                                    child: Icon(
+                                      Icons.camera_alt_outlined,
+                                      color: Color(0xFF55555C),
+                                      size: 48,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            CustomPaint(
+                              size: const Size(250, 250),
+                              painter: ScannerFramePainter(
+                                cornerColor: Colors.white,
+                                cornerLength: 36.0,
+                                strokeWidth: 4.0,
+                                cornerRadius: 8.0,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 36),
+                    const SizedBox(height: 20),
 
-                    // Instructions
                     const Text(
                       'Scan any UPI QR code',
                       style: TextStyle(
@@ -143,9 +593,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                       textAlign: TextAlign.center,
                     ),
 
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 20),
 
-                    // Back to Home Button
                     GestureDetector(
                       onTap: () => _handleBack(0),
                       behavior: HitTestBehavior.opaque,
@@ -174,27 +623,22 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                       ),
                     ),
 
-                    const Spacer(flex: 3),
+                    const Spacer(flex: 2),
                   ],
                 ),
               ),
             ),
 
-            // Vertical Flash & Switch buttons on right side bottom near blue QR icon
+            // Controls on right side
             Positioned(
               right: 34,
               bottom: 118,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Flash Toggle Button
                   GestureDetector(
                     key: const Key('flash_button'),
-                    onTap: () {
-                      setState(() {
-                        _isFlashOn = !_isFlashOn;
-                      });
-                    },
+                    onTap: _toggleFlash,
                     behavior: HitTestBehavior.opaque,
                     child: Container(
                       width: 44,
@@ -221,8 +665,6 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-
-                  // Switch Camera Button (using switch.svg)
                   GestureDetector(
                     key: const Key('switch_camera_button'),
                     onTap: _toggleCamera,
@@ -259,14 +701,14 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
               ),
             ),
 
-            // Bottom Navigation Bar (with QR active in blue)
+            // Bottom Navigation Bar
             Positioned(
               left: 0,
               right: 0,
               bottom: 0,
               child: CustomBottomNavBar(
-                selectedIndex: -1, // No tab active
-                isQrActive: true, // QR button active in bright blue
+                selectedIndex: -1,
+                isQrActive: true,
                 onItemSelected: (index) {
                   _handleBack(index);
                 },
@@ -280,7 +722,6 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   }
 }
 
-/// Custom painter to draw the 4 white corner brackets of the viewfinder reticle
 class ScannerFramePainter extends CustomPainter {
   final Color cornerColor;
   final double cornerLength;
@@ -308,7 +749,7 @@ class ScannerFramePainter extends CustomPainter {
     final r = cornerRadius;
     final l = cornerLength;
 
-    // Top-Left Corner
+    // Top-Left
     final tl = Path();
     tl.moveTo(0, l);
     tl.lineTo(0, r);
@@ -316,7 +757,7 @@ class ScannerFramePainter extends CustomPainter {
     tl.lineTo(l, 0);
     canvas.drawPath(tl, paint);
 
-    // Top-Right Corner
+    // Top-Right
     final tr = Path();
     tr.moveTo(w - l, 0);
     tr.lineTo(w - r, 0);
@@ -324,7 +765,7 @@ class ScannerFramePainter extends CustomPainter {
     tr.lineTo(w, l);
     canvas.drawPath(tr, paint);
 
-    // Bottom-Left Corner
+    // Bottom-Left
     final bl = Path();
     bl.moveTo(0, h - l);
     bl.lineTo(0, h - r);
@@ -332,7 +773,7 @@ class ScannerFramePainter extends CustomPainter {
     bl.lineTo(l, h);
     canvas.drawPath(bl, paint);
 
-    // Bottom-Right Corner
+    // Bottom-Right
     final br = Path();
     br.moveTo(w - l, h);
     br.lineTo(w - r, h);

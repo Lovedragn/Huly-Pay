@@ -137,7 +137,7 @@ class AuthService {
     if (client != null) {
       return await client.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: redirectTo,
+        redirectTo: redirectTo ?? 'io.supabase.hulypay://login-callback',
       );
     }
 
@@ -158,7 +158,7 @@ class AuthService {
     if (client != null) {
       return await client.auth.signInWithOAuth(
         OAuthProvider.github,
-        redirectTo: redirectTo,
+        redirectTo: redirectTo ?? 'io.supabase.hulypay://login-callback',
       );
     }
 

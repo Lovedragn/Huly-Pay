@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import '../repositories/user_repository.dart';
 import '../services/auth_service.dart';
+import '../services/local_database_service.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import 'scan_and_pay_screen.dart';
 import 'sign_in_screen.dart';
@@ -22,6 +25,58 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   String _selectedTheme = 'OLED Black';
+  late String _displayName;
+  late String _displayEmail;
+
+  @override
+  void initState() {
+    super.initState();
+    _displayName = widget.userName;
+    _displayEmail = widget.userEmail;
+    _resolveUser();
+  }
+
+  Future<void> _resolveUser() async {
+    // 1. Try local SQLite profile cache
+    try {
+      final cachedProfile = await UserRepository().getCachedUserProfile();
+      if (cachedProfile != null && mounted) {
+        setState(() {
+          _displayName = cachedProfile.displayName;
+          if (cachedProfile.email.isNotEmpty) {
+            _displayEmail = cachedProfile.email;
+          }
+        });
+      }
+    } catch (_) {}
+
+    // 2. Then check authUser session
+    final authUser = AuthService().currentUser;
+    if (authUser != null) {
+      final name = authUser.userMetadata?['full_name'] ?? authUser.userMetadata?['name'];
+      if (mounted) {
+        setState(() {
+          if (name != null && name.toString().isNotEmpty) {
+            _displayName = name.toString();
+          }
+          if (authUser.email != null && authUser.email!.isNotEmpty) {
+            _displayEmail = authUser.email!;
+          }
+        });
+      }
+    }
+  }
+
+  String get _initials {
+    final parts = _displayName.trim().split(RegExp(r'\s+'));
+    if (parts.length >= 2) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    } else if (parts.isNotEmpty && parts[0].isNotEmpty) {
+      return parts[0].substring(0, parts[0].length >= 2 ? 2 : 1).toUpperCase();
+    }
+    return 'SS';
+  }
+
   final List<Map<String, dynamic>> _themeOptions = const [
     {
       'name': 'OLED Black',
@@ -226,6 +281,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             TextButton(
               onPressed: () async {
                 await AuthService().signOut();
+                try {
+                  await LocalDatabaseService().clearAll();
+                } catch (_) {}
                 if (ctx.mounted) {
                   Navigator.of(ctx).pop();
                 }
@@ -379,10 +437,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               shape: BoxShape.circle,
               color: Color(0xFF00C076),
             ),
-            child: const Center(
+            child: Center(
               child: Text(
-                'SS',
-                style: TextStyle(
+                _initials,
+                style: const TextStyle(
                   fontFamily: 'Google Sans',
                   color: Colors.white,
                   fontSize: 20,
@@ -397,7 +455,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.userName,
+                  _displayName,
                   style: const TextStyle(
                     fontFamily: 'Google Sans',
                     color: Colors.white,
@@ -408,7 +466,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  widget.userEmail,
+                  _displayEmail,
                   style: const TextStyle(
                     fontFamily: 'Google Sans',
                     color: Color(0xFF8E8E93),

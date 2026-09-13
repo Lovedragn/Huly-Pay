@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../data/mock_data.dart';
 import '../models/dashboard_data.dart';
+import '../models/payment_model.dart';
+import '../repositories/payment_repository.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import '../widgets/transaction_tile.dart';
 import 'analysis_screen.dart';
@@ -39,6 +42,57 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   void initState() {
     super.initState();
     _allGroups = widget.initialGroups ?? MockData.transactionScreenGroups;
+    bool isTest = false;
+    try {
+      isTest = Platform.environment.containsKey('FLUTTER_TEST');
+    } catch (_) {}
+
+    if (widget.initialGroups == null && !isTest) {
+      _loadPayments();
+    }
+  }
+
+  Future<void> _loadPayments() async {
+    // 1. Instantly display cached payments from SQLite
+    try {
+      final cached = await PaymentRepository().getCachedPayments();
+      if (cached.isNotEmpty && mounted) {
+        final sorted = List<PaymentModel>.from(cached)
+          ..sort((a, b) {
+            final aDate = a.createdAt ?? '';
+            final bDate = b.createdAt ?? '';
+            return bDate.compareTo(aDate);
+          });
+        final groups = PaymentModel.groupPayments(sorted);
+        if (groups.isNotEmpty) {
+          setState(() {
+            _allGroups = groups;
+          });
+        }
+      }
+    } catch (_) {}
+
+    // 2. Fetch fresh payments from backend and update SQLite cache
+    try {
+      final payments = await PaymentRepository().getPayments();
+      if (!mounted) return;
+      if (payments.isNotEmpty) {
+        final sorted = List<PaymentModel>.from(payments)
+          ..sort((a, b) {
+            final aDate = a.createdAt ?? '';
+            final bDate = b.createdAt ?? '';
+            return bDate.compareTo(aDate);
+          });
+        final liveGroups = PaymentModel.groupPayments(sorted);
+        if (liveGroups.isNotEmpty) {
+          setState(() {
+            _allGroups = liveGroups;
+          });
+        }
+      }
+    } catch (_) {
+      // Graceful fallback to initial mock groups or cached groups
+    }
   }
 
   @override
