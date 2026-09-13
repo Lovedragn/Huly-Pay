@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../services/auth_service.dart';
+import '../services/api_client.dart';
 import 'home_dashboard_screen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -22,15 +24,8 @@ class _SignInScreenState extends State<SignInScreen> {
   bool _isLoadingGoogle = false;
   bool _isLoadingGitHub = false;
 
-  void _handleGoogleSignIn() async {
-    if (_isLoadingGoogle || _isLoadingGitHub) return;
-    setState(() => _isLoadingGoogle = true);
-
-    await Future.delayed(const Duration(milliseconds: 600));
-    if (!mounted) return;
-
+  void _finishSignIn() {
     if (widget.onSignInSuccess != null) {
-      setState(() => _isLoadingGoogle = false);
       widget.onSignInSuccess!();
     } else {
       Navigator.of(context).pushAndRemoveUntil(
@@ -45,27 +40,66 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
+  Future<void> _syncUserWithBackend() async {
+    if (AuthService().currentAccessToken != null) {
+      try {
+        await ApiClient().getCurrentUser();
+      } catch (e) {
+        // Backend may be offline during unit test or local dev
+      }
+    }
+  }
+
+  void _handleGoogleSignIn() async {
+    if (_isLoadingGoogle || _isLoadingGitHub) return;
+    setState(() => _isLoadingGoogle = true);
+
+    try {
+      await AuthService().signInWithGoogle();
+      await _syncUserWithBackend();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Google Sign-In: $e'),
+            backgroundColor: const Color(0xFF222226),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoadingGoogle = false);
+      }
+    }
+
+    if (!mounted) return;
+    _finishSignIn();
+  }
+
   void _handleGitHubSignIn() async {
     if (_isLoadingGoogle || _isLoadingGitHub) return;
     setState(() => _isLoadingGitHub = true);
 
-    await Future.delayed(const Duration(milliseconds: 600));
-    if (!mounted) return;
-
-    if (widget.onSignInSuccess != null) {
-      setState(() => _isLoadingGitHub = false);
-      widget.onSignInSuccess!();
-    } else {
-      Navigator.of(context).pushAndRemoveUntil(
-        PageRouteBuilder(
-          pageBuilder: (_, _, _) => const HomeDashboardScreen(),
-          transitionsBuilder: (_, animation, _, child) =>
-              FadeTransition(opacity: animation, child: child),
-          transitionDuration: const Duration(milliseconds: 300),
-        ),
-        (route) => false,
-      );
+    try {
+      await AuthService().signInWithGitHub();
+      await _syncUserWithBackend();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('GitHub Sign-In: $e'),
+            backgroundColor: const Color(0xFF222226),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoadingGitHub = false);
+      }
     }
+
+    if (!mounted) return;
+    _finishSignIn();
   }
 
   void _handleBack() {
@@ -120,6 +154,163 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showEmailAuthDialog({bool isSignUp = false}) {
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
+    final nameController = TextEditingController();
+    bool dialogLoading = false;
+    String? errorMessage;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: const Color(0xFF1C1C20),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Text(
+            isSignUp ? 'Create Account' : 'Sign In with Email',
+            style: const TextStyle(
+              fontFamily: 'Google Sans',
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (errorMessage != null) ...[
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      errorMessage!,
+                      style: const TextStyle(color: Colors.redAccent, fontSize: 13),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ],
+                if (isSignUp) ...[
+                  TextField(
+                    controller: nameController,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'Full Name',
+                      hintStyle: const TextStyle(color: Color(0xFF71717A)),
+                      filled: true,
+                      fillColor: const Color(0xFF141416),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFF26262B)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ],
+                TextField(
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'Email address',
+                    hintStyle: const TextStyle(color: Color(0xFF71717A)),
+                    filled: true,
+                    fillColor: const Color(0xFF141416),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0xFF26262B)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'Password',
+                    hintStyle: const TextStyle(color: Color(0xFF71717A)),
+                    filled: true,
+                    fillColor: const Color(0xFF141416),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0xFF26262B)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: dialogLoading ? null : () => Navigator.of(ctx).pop(),
+              child: const Text('Cancel', style: TextStyle(color: Color(0xFF8E8E93))),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: dialogLoading
+                  ? null
+                  : () async {
+                      final email = emailController.text.trim();
+                      final password = passwordController.text;
+                      if (email.isEmpty || password.isEmpty) {
+                        setDialogState(() => errorMessage = 'Please enter email and password');
+                        return;
+                      }
+
+                      setDialogState(() {
+                        dialogLoading = true;
+                        errorMessage = null;
+                      });
+
+                      try {
+                        if (isSignUp) {
+                          await AuthService().signUpWithPassword(
+                            email: email,
+                            password: password,
+                            fullName: nameController.text.trim(),
+                          );
+                        } else {
+                          await AuthService().signInWithPassword(
+                            email: email,
+                            password: password,
+                          );
+                        }
+                        await _syncUserWithBackend();
+                        if (ctx.mounted) {
+                          Navigator.of(ctx).pop();
+                        }
+                        if (mounted) {
+                          _finishSignIn();
+                        }
+                      } catch (e) {
+                        setDialogState(() {
+                          dialogLoading = false;
+                          errorMessage = e.toString();
+                        });
+                      }
+                    },
+              child: dialogLoading
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
+                    )
+                  : Text(isSignUp ? 'Sign Up' : 'Sign In'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -347,6 +538,48 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                             ],
                           ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 14),
+
+              // Email Sign-In Button
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  key: const Key('email_signin_button'),
+                  borderRadius: BorderRadius.circular(28),
+                  onTap: () => _showEmailAuthDialog(isSignUp: false),
+                  child: Container(
+                    height: 56,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF141416),
+                      borderRadius: BorderRadius.circular(28),
+                      border: Border.all(
+                        color: const Color(0xFF26262B),
+                        width: 1,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.mail_outline, color: Colors.white, size: 20),
+                        SizedBox(width: 12),
+                        Text(
+                          'Continue with Email',
+                          style: TextStyle(
+                            fontFamily: 'Google Sans',
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

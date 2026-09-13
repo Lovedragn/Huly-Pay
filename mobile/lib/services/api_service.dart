@@ -1,7 +1,11 @@
 import 'package:http/http.dart' as http;
+import 'api_client.dart';
+import '../models/user_profile.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://10.0.2.2:8080';
+  static String get baseUrl => ApiClient.defaultBaseUrl;
+
+  static final ApiClient client = ApiClient();
 
   static Future<http.Response> getCurrentUser(String accessToken) async {
     return await http.get(
@@ -11,5 +15,9 @@ class ApiService {
         'Content-Type': 'application/json',
       },
     );
+  }
+
+  static Future<UserProfile> fetchUserProfile() async {
+    return await client.getCurrentUser();
   }
 }

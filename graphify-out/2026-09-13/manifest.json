@@ -5,36 +5,6 @@
     "ast_hash": "0bdccf3f74ca242511bb4114b3b44bfd",
     "semantic_hash": "0bdccf3f74ca242511bb4114b3b44bfd"
   },
-  "Backend/build.gradle": {
-    "mtime": 1789029564.179,
-    "seen": 1789036078.5989962,
-    "ast_hash": "825186b18116c8aea972ef924c859264",
-    "semantic_hash": "825186b18116c8aea972ef924c859264"
-  },
-  "Backend/gradlew": {
-    "mtime": 1789029561.265131,
-    "seen": 1789036078.5989983,
-    "ast_hash": "a43be8432bac3ffd05b3769aa42fe996",
-    "semantic_hash": "a43be8432bac3ffd05b3769aa42fe996"
-  },
-  "Backend/settings.gradle": {
-    "mtime": 1789029561.2491374,
-    "seen": 1789036078.5989993,
-    "ast_hash": "28d5599d9f6b9427c9e24690d14b2bce",
-    "semantic_hash": "28d5599d9f6b9427c9e24690d14b2bce"
-  },
-  "Backend/src/main/java/com/example/backend/BackendApplication.java": {
-    "mtime": 1789029564.169,
-    "seen": 1789036078.5990007,
-    "ast_hash": "ba3936e146440c436828eddf9ba605f6",
-    "semantic_hash": "ba3936e146440c436828eddf9ba605f6"
-  },
-  "Backend/src/test/java/com/example/backend/BackendApplicationTests.java": {
-    "mtime": 1789029564.185,
-    "seen": 1789036078.5990016,
-    "ast_hash": "2189bfc8457251d24288336e2c13fe30",
-    "semantic_hash": "2189bfc8457251d24288336e2c13fe30"
-  },
   "Frontend/eslint.config.js": {
     "mtime": 1789033537.1618173,
     "seen": 1789036078.5990026,
@@ -78,10 +48,10 @@
     "semantic_hash": "88001931658991eab76b8ff67ce8c30c"
   },
   "mobile/android/build.gradle.kts": {
-    "mtime": 1789028090.2853663,
-    "seen": 1789036078.5990093,
-    "ast_hash": "803fe22651fbe96ed401eb0b66a492d1",
-    "semantic_hash": "803fe22651fbe96ed401eb0b66a492d1"
+    "mtime": 1789189828.7638693,
+    "seen": 1789279757.1660287,
+    "ast_hash": "56f183e93a786e326ffb95c67b7a180c",
+    "semantic_hash": "56f183e93a786e326ffb95c67b7a180c"
   },
   "mobile/android/settings.gradle.kts": {
     "mtime": 1789028090.3512611,
@@ -126,10 +96,10 @@
     "semantic_hash": "0c3e86af131f6a9e547c80b5ed058914"
   },
   "mobile/lib/main.dart": {
-    "mtime": 1789028090.4920998,
-    "seen": 1789036078.5990174,
-    "ast_hash": "69617c0fc3dadefc5632aaea8ee2f59d",
-    "semantic_hash": "69617c0fc3dadefc5632aaea8ee2f59d"
+    "mtime": 1789279323.1122324,
+    "seen": 1789279757.167434,
+    "ast_hash": "e23db9471d3c407fb6e186bd4cbdffac",
+    "semantic_hash": "e23db9471d3c407fb6e186bd4cbdffac"
   },
   "mobile/linux/flutter/generated_plugin_registrant.cc": {
     "mtime": 1789028123.832825,
@@ -192,10 +162,10 @@
     "semantic_hash": "93c22dae2d93f3dc1402e121901f582b"
   },
   "mobile/test/widget_test.dart": {
-    "mtime": 1789028090.7305272,
-    "seen": 1789036078.5990279,
-    "ast_hash": "6c77b15161a1e9cf98ffab648d69d3b6",
-    "semantic_hash": "6c77b15161a1e9cf98ffab648d69d3b6"
+    "mtime": 1789279238.7110744,
+    "seen": 1789279757.1694388,
+    "ast_hash": "a2d7d20923156bf286ebf23d96492f94",
+    "semantic_hash": "a2d7d20923156bf286ebf23d96492f94"
   },
   "mobile/web/manifest.json": {
     "mtime": 1789028090.6815598,
@@ -312,10 +282,10 @@
     "semantic_hash": "30cc1614b16214b66c014af09ba699eb"
   },
   "mobile/pubspec.yaml": {
-    "mtime": 1789028090.6361246,
-    "seen": 1789036274.181022,
-    "ast_hash": "1c610c0b7e2fc435e05936326cd93d1c",
-    "semantic_hash": "1c610c0b7e2fc435e05936326cd93d1c"
+    "mtime": 1789238458.1408508,
+    "seen": 1789279757.1716146,
+    "ast_hash": "7387c6c362d8dc5af299b9903d013662",
+    "semantic_hash": "7387c6c362d8dc5af299b9903d013662"
   },
   "mobile/web/index.html": {
     "mtime": 1789028090.6732507,
@@ -406,5 +376,635 @@
     "seen": 1789036274.1810374,
     "ast_hash": "301a7604d45b3e739efc881eb04896ea",
     "semantic_hash": "301a7604d45b3e739efc881eb04896ea"
+  },
+  "backend/mvnw": {
+    "mtime": 1789110113.3666282,
+    "seen": 1789279757.1655376,
+    "ast_hash": "ab50dd89da7da2346b28003352eeeeeb",
+    "semantic_hash": "ab50dd89da7da2346b28003352eeeeeb"
+  },
+  "backend/pom.xml": {
+    "mtime": 1789144574.8586135,
+    "seen": 1789279757.1655397,
+    "ast_hash": "93fe455d2e15071bcceee82c26ecca62",
+    "semantic_hash": "93fe455d2e15071bcceee82c26ecca62"
+  },
+  "backend/src/main/java/com/hulypay/backend/BackendApplication.java": {
+    "mtime": 1789144920.2688425,
+    "seen": 1789279757.1655414,
+    "ast_hash": "8d2da54955a12387e6464777f68c52c9",
+    "semantic_hash": "8d2da54955a12387e6464777f68c52c9"
+  },
+  "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsController.java": {
+    "mtime": 1789134110.090814,
+    "seen": 1789279757.1655424,
+    "ast_hash": "4aef81a3f6b851ca2c8a91654bf7465b",
+    "semantic_hash": "4aef81a3f6b851ca2c8a91654bf7465b"
+  },
+  "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsService.java": {
+    "mtime": 1789134103.6443074,
+    "seen": 1789279757.1655433,
+    "ast_hash": "e0957286d96ee7352505e338cb555159",
+    "semantic_hash": "e0957286d96ee7352505e338cb555159"
+  },
+  "backend/src/main/java/com/hulypay/backend/analytics/dto/CategoryBreakdownResponse.java": {
+    "mtime": 1789134084.1115746,
+    "seen": 1789279757.1655447,
+    "ast_hash": "ed66c80823556f3a46647d47e03b5162",
+    "semantic_hash": "ed66c80823556f3a46647d47e03b5162"
+  },
+  "backend/src/main/java/com/hulypay/backend/analytics/dto/DailySpendingResponse.java": {
+    "mtime": 1789134089.9310453,
+    "seen": 1789279757.1655455,
+    "ast_hash": "c3fc784a79bf0001c38288fedb464d83",
+    "semantic_hash": "c3fc784a79bf0001c38288fedb464d83"
+  },
+  "backend/src/main/java/com/hulypay/backend/analytics/dto/MonthlySpendingResponse.java": {
+    "mtime": 1789134095.1546707,
+    "seen": 1789279757.1655467,
+    "ast_hash": "d78788c04c3b71d2c2127a2c55bff220",
+    "semantic_hash": "d78788c04c3b71d2c2127a2c55bff220"
+  },
+  "backend/src/main/java/com/hulypay/backend/analytics/dto/SpendingSummaryResponse.java": {
+    "mtime": 1789134079.2693527,
+    "seen": 1789279757.1655478,
+    "ast_hash": "898f656b40d3caefe34225b0eaa5dac8",
+    "semantic_hash": "898f656b40d3caefe34225b0eaa5dac8"
+  },
+  "backend/src/main/java/com/hulypay/backend/analytics/package-info.java": {
+    "mtime": 1789110349.0996175,
+    "seen": 1789279757.165549,
+    "ast_hash": "3be67a37d55a61815f9aad7ad7c33ec0",
+    "semantic_hash": "3be67a37d55a61815f9aad7ad7c33ec0"
+  },
+  "backend/src/main/java/com/hulypay/backend/auth/package-info.java": {
+    "mtime": 1789110317.007908,
+    "seen": 1789279757.16555,
+    "ast_hash": "901f6de6f13b2231e9a6a00df25e854d",
+    "semantic_hash": "901f6de6f13b2231e9a6a00df25e854d"
+  },
+  "backend/src/main/java/com/hulypay/backend/budget/package-info.java": {
+    "mtime": 1789110354.4422705,
+    "seen": 1789279757.1655512,
+    "ast_hash": "38ab66e011d029fd130579b5e1dbe420",
+    "semantic_hash": "38ab66e011d029fd130579b5e1dbe420"
+  },
+  "backend/src/main/java/com/hulypay/backend/categories/Category.java": {
+    "mtime": 1789133933.7263799,
+    "seen": 1789279757.1655521,
+    "ast_hash": "7a13e44c5dda59235380227e6391d2e7",
+    "semantic_hash": "7a13e44c5dda59235380227e6391d2e7"
+  },
+  "backend/src/main/java/com/hulypay/backend/categories/CategoryController.java": {
+    "mtime": 1789133965.5283344,
+    "seen": 1789279757.1655533,
+    "ast_hash": "485ad5bef23c9f7a9d5b8f927d9d7616",
+    "semantic_hash": "485ad5bef23c9f7a9d5b8f927d9d7616"
+  },
+  "backend/src/main/java/com/hulypay/backend/categories/CategoryRepository.java": {
+    "mtime": 1789133940.2968812,
+    "seen": 1789279757.1655543,
+    "ast_hash": "1e5f633a6f02b88c0712e695d4573af5",
+    "semantic_hash": "1e5f633a6f02b88c0712e695d4573af5"
+  },
+  "backend/src/main/java/com/hulypay/backend/categories/CategoryService.java": {
+    "mtime": 1789133959.7297413,
+    "seen": 1789279757.1655552,
+    "ast_hash": "71c7c04f763567ab8779736f7a40806e",
+    "semantic_hash": "71c7c04f763567ab8779736f7a40806e"
+  },
+  "backend/src/main/java/com/hulypay/backend/categories/dto/CategoryRequest.java": {
+    "mtime": 1789133945.3097367,
+    "seen": 1789279757.1655562,
+    "ast_hash": "a376349998521a0424253e827ebf81cc",
+    "semantic_hash": "a376349998521a0424253e827ebf81cc"
+  },
+  "backend/src/main/java/com/hulypay/backend/categories/dto/CategoryResponse.java": {
+    "mtime": 1789133950.4810424,
+    "seen": 1789279757.1655576,
+    "ast_hash": "793543c7ace815e6dae4ff250b3dde6f",
+    "semantic_hash": "793543c7ace815e6dae4ff250b3dde6f"
+  },
+  "backend/src/main/java/com/hulypay/backend/categories/package-info.java": {
+    "mtime": 1789110344.468784,
+    "seen": 1789279757.1655586,
+    "ast_hash": "52a96edc22ee9778e9748ef90046b08f",
+    "semantic_hash": "52a96edc22ee9778e9748ef90046b08f"
+  },
+  "backend/src/main/java/com/hulypay/backend/common/DatabaseHealthController.java": {
+    "mtime": 1789112072.256,
+    "seen": 1789279757.1655593,
+    "ast_hash": "c82831eeac8bb4ba3f29b102a6fb5fb1",
+    "semantic_hash": "c82831eeac8bb4ba3f29b102a6fb5fb1"
+  },
+  "backend/src/main/java/com/hulypay/backend/common/HealthController.java": {
+    "mtime": 1789144650.9178967,
+    "seen": 1789279757.1655605,
+    "ast_hash": "14c7c2815376089e8efc824d8f2bc168",
+    "semantic_hash": "14c7c2815376089e8efc824d8f2bc168"
+  },
+  "backend/src/main/java/com/hulypay/backend/common/exception/BadRequestException.java": {
+    "mtime": 1789133886.179842,
+    "seen": 1789279757.1655617,
+    "ast_hash": "dab1cf41f7c7aa36a219f90616fb13e0",
+    "semantic_hash": "dab1cf41f7c7aa36a219f90616fb13e0"
+  },
+  "backend/src/main/java/com/hulypay/backend/common/exception/ErrorResponse.java": {
+    "mtime": 1789133890.692336,
+    "seen": 1789279757.1655626,
+    "ast_hash": "72e4f93e6fbf7a4def51dee925d82a3b",
+    "semantic_hash": "72e4f93e6fbf7a4def51dee925d82a3b"
+  },
+  "backend/src/main/java/com/hulypay/backend/common/exception/GlobalExceptionHandler.java": {
+    "mtime": 1789144837.4033284,
+    "seen": 1789279757.1655657,
+    "ast_hash": "e068c56d5d6d67a229546e8447492b9b",
+    "semantic_hash": "e068c56d5d6d67a229546e8447492b9b"
+  },
+  "backend/src/main/java/com/hulypay/backend/common/exception/ResourceNotFoundException.java": {
+    "mtime": 1789133880.7341638,
+    "seen": 1789279757.165567,
+    "ast_hash": "785da3ae08a9f33c5473bdc8fb86d579",
+    "semantic_hash": "785da3ae08a9f33c5473bdc8fb86d579"
+  },
+  "backend/src/main/java/com/hulypay/backend/config/OpenApiConfig.java": {
+    "mtime": 1789144632.6254704,
+    "seen": 1789279757.165568,
+    "ast_hash": "d80a35e3d0ae67c121c1a744ef049037",
+    "semantic_hash": "d80a35e3d0ae67c121c1a744ef049037"
+  },
+  "backend/src/main/java/com/hulypay/backend/config/SecurityConfig.java": {
+    "mtime": 1789142043.7078629,
+    "seen": 1789279757.165569,
+    "ast_hash": "0c9b0b397c8c7259a45ea3c4c1e09359",
+    "semantic_hash": "0c9b0b397c8c7259a45ea3c4c1e09359"
+  },
+  "backend/src/main/java/com/hulypay/backend/expenses/Expense.java": {
+    "mtime": 1789133971.9938972,
+    "seen": 1789279757.1655698,
+    "ast_hash": "0b1c6bc835e1bd8f6d8c1f57023a5a62",
+    "semantic_hash": "0b1c6bc835e1bd8f6d8c1f57023a5a62"
+  },
+  "backend/src/main/java/com/hulypay/backend/expenses/ExpenseController.java": {
+    "mtime": 1789134010.296376,
+    "seen": 1789279757.1655707,
+    "ast_hash": "4889dff15aa39fa192b65565146d2412",
+    "semantic_hash": "4889dff15aa39fa192b65565146d2412"
+  },
+  "backend/src/main/java/com/hulypay/backend/expenses/ExpenseRepository.java": {
+    "mtime": 1789133997.038021,
+    "seen": 1789279757.1655717,
+    "ast_hash": "bb309bf2d82254b10fce022c057685dd",
+    "semantic_hash": "bb309bf2d82254b10fce022c057685dd"
+  },
+  "backend/src/main/java/com/hulypay/backend/expenses/ExpenseService.java": {
+    "mtime": 1789134004.2766864,
+    "seen": 1789279757.1655726,
+    "ast_hash": "bc2d3404a8dddd9c2fce001649b2b3ba",
+    "semantic_hash": "bc2d3404a8dddd9c2fce001649b2b3ba"
+  },
+  "backend/src/main/java/com/hulypay/backend/expenses/dto/CreateExpenseRequest.java": {
+    "mtime": 1789133978.0006135,
+    "seen": 1789279757.1655736,
+    "ast_hash": "11a137d4991711dcc6361d93345aa7e4",
+    "semantic_hash": "11a137d4991711dcc6361d93345aa7e4"
+  },
+  "backend/src/main/java/com/hulypay/backend/expenses/dto/ExpenseResponse.java": {
+    "mtime": 1789133990.4548457,
+    "seen": 1789279757.1655746,
+    "ast_hash": "5db52b055e96e94d3e1bd5a08289a77a",
+    "semantic_hash": "5db52b055e96e94d3e1bd5a08289a77a"
+  },
+  "backend/src/main/java/com/hulypay/backend/expenses/dto/UpdateExpenseRequest.java": {
+    "mtime": 1789133984.1695032,
+    "seen": 1789279757.1655755,
+    "ast_hash": "463a262ed2e0c99ac7022b76c8aefed2",
+    "semantic_hash": "463a262ed2e0c99ac7022b76c8aefed2"
+  },
+  "backend/src/main/java/com/hulypay/backend/expenses/package-info.java": {
+    "mtime": 1789110338.5046272,
+    "seen": 1789279757.1655765,
+    "ast_hash": "e2f0ccf5d17797ecf3146d4a7913fc4f",
+    "semantic_hash": "e2f0ccf5d17797ecf3146d4a7913fc4f"
+  },
+  "backend/src/main/java/com/hulypay/backend/merchants/package-info.java": {
+    "mtime": 1789110321.8159363,
+    "seen": 1789279757.1655774,
+    "ast_hash": "a97e05ba43b0b62fb4693a9cf1a52411",
+    "semantic_hash": "a97e05ba43b0b62fb4693a9cf1a52411"
+  },
+  "backend/src/main/java/com/hulypay/backend/payments/Payment.java": {
+    "mtime": 1789134039.2922378,
+    "seen": 1789279757.1655786,
+    "ast_hash": "f0daee91c67a9930d8ef3ba89cf402bb",
+    "semantic_hash": "f0daee91c67a9930d8ef3ba89cf402bb"
+  },
+  "backend/src/main/java/com/hulypay/backend/payments/PaymentController.java": {
+    "mtime": 1789134072.9530876,
+    "seen": 1789279757.1655796,
+    "ast_hash": "25c82470868ad68ed25dc0fbba8acdb1",
+    "semantic_hash": "25c82470868ad68ed25dc0fbba8acdb1"
+  },
+  "backend/src/main/java/com/hulypay/backend/payments/PaymentRepository.java": {
+    "mtime": 1789134044.9312105,
+    "seen": 1789279757.1655805,
+    "ast_hash": "8b8e37c61c269275ecf0d39d4e6f927b",
+    "semantic_hash": "8b8e37c61c269275ecf0d39d4e6f927b"
+  },
+  "backend/src/main/java/com/hulypay/backend/payments/PaymentService.java": {
+    "mtime": 1789134066.8515327,
+    "seen": 1789279757.1655812,
+    "ast_hash": "41f96143f368d3769f46ae29ccf79e00",
+    "semantic_hash": "41f96143f368d3769f46ae29ccf79e00"
+  },
+  "backend/src/main/java/com/hulypay/backend/payments/PaymentStatus.java": {
+    "mtime": 1789134017.1859195,
+    "seen": 1789279757.1655824,
+    "ast_hash": "083a020095da30b75d94aa5327eab09a",
+    "semantic_hash": "083a020095da30b75d94aa5327eab09a"
+  },
+  "backend/src/main/java/com/hulypay/backend/payments/dto/CreatePaymentRequest.java": {
+    "mtime": 1789134049.8963275,
+    "seen": 1789279757.1655831,
+    "ast_hash": "fadfd4329746c268627044ae9808b4d9",
+    "semantic_hash": "fadfd4329746c268627044ae9808b4d9"
+  },
+  "backend/src/main/java/com/hulypay/backend/payments/dto/PaymentResponse.java": {
+    "mtime": 1789134058.3108795,
+    "seen": 1789279757.165584,
+    "ast_hash": "bd6208464b585a98b8178e12fb5f7bd5",
+    "semantic_hash": "bd6208464b585a98b8178e12fb5f7bd5"
+  },
+  "backend/src/main/java/com/hulypay/backend/payments/package-info.java": {
+    "mtime": 1789110332.9313233,
+    "seen": 1789279757.165585,
+    "ast_hash": "47c236869202caa321359f43e44b7756",
+    "semantic_hash": "47c236869202caa321359f43e44b7756"
+  },
+  "backend/src/main/java/com/hulypay/backend/places/package-info.java": {
+    "mtime": 1789110359.5381413,
+    "seen": 1789279757.165586,
+    "ast_hash": "176601243b28c830179cb46d91e0e8ac",
+    "semantic_hash": "176601243b28c830179cb46d91e0e8ac"
+  },
+  "backend/src/main/java/com/hulypay/backend/qr/package-info.java": {
+    "mtime": 1789110327.0890334,
+    "seen": 1789279757.165587,
+    "ast_hash": "272284fb5e268438c8caa314aa0d201d",
+    "semantic_hash": "272284fb5e268438c8caa314aa0d201d"
+  },
+  "backend/src/main/java/com/hulypay/backend/users/User.java": {
+    "mtime": 1789140709.711928,
+    "seen": 1789279757.1655877,
+    "ast_hash": "c2567ad267b9bba419d78a772c86d7f9",
+    "semantic_hash": "c2567ad267b9bba419d78a772c86d7f9"
+  },
+  "backend/src/main/java/com/hulypay/backend/users/UserController.java": {
+    "mtime": 1789133928.08529,
+    "seen": 1789279757.165589,
+    "ast_hash": "59a7049a88602cc7f4cb7edc51470667",
+    "semantic_hash": "59a7049a88602cc7f4cb7edc51470667"
+  },
+  "backend/src/main/java/com/hulypay/backend/users/UserRepository.java": {
+    "mtime": 1789110308.2618911,
+    "seen": 1789279757.16559,
+    "ast_hash": "e7ef8c0baf842d2a6b1d455c7c8d8236",
+    "semantic_hash": "e7ef8c0baf842d2a6b1d455c7c8d8236"
+  },
+  "backend/src/main/java/com/hulypay/backend/users/UserService.java": {
+    "mtime": 1789140745.9615083,
+    "seen": 1789279757.1655908,
+    "ast_hash": "aff96ae8731bb19c3c40ce0aa1c050a5",
+    "semantic_hash": "aff96ae8731bb19c3c40ce0aa1c050a5"
+  },
+  "backend/src/main/java/com/hulypay/backend/users/dto/UpdateUserRequest.java": {
+    "mtime": 1789133914.8444114,
+    "seen": 1789279757.1655917,
+    "ast_hash": "04a1bae53ad086e0632cc816d30812cf",
+    "semantic_hash": "04a1bae53ad086e0632cc816d30812cf"
+  },
+  "backend/src/main/java/com/hulypay/backend/users/dto/UserResponse.java": {
+    "mtime": 1789140719.9384365,
+    "seen": 1789279757.165593,
+    "ast_hash": "af80ea08f8aa280a5c4f65dd5cab0a9a",
+    "semantic_hash": "af80ea08f8aa280a5c4f65dd5cab0a9a"
+  },
+  "backend/src/test/java/com/hulypay/backend/AnalyticsControllerTests.java": {
+    "mtime": 1789134778.7900164,
+    "seen": 1789279757.1655936,
+    "ast_hash": "5669a54c6c0fb39508192b411134a5b7",
+    "semantic_hash": "5669a54c6c0fb39508192b411134a5b7"
+  },
+  "backend/src/test/java/com/hulypay/backend/BackendApplicationTests.java": {
+    "mtime": 1789279505.0978594,
+    "seen": 1789279757.1655946,
+    "ast_hash": "77a0486b78e3363f4837ea0fe1b94dc7",
+    "semantic_hash": "77a0486b78e3363f4837ea0fe1b94dc7"
+  },
+  "backend/src/test/java/com/hulypay/backend/CategoryControllerTests.java": {
+    "mtime": 1789134746.968585,
+    "seen": 1789279757.165596,
+    "ast_hash": "9adeb41742439c6547235047639a9efa",
+    "semantic_hash": "9adeb41742439c6547235047639a9efa"
+  },
+  "backend/src/test/java/com/hulypay/backend/ExpenseControllerTests.java": {
+    "mtime": 1789134820.561473,
+    "seen": 1789279757.1655967,
+    "ast_hash": "d5a450152e36be24dc409f1e8edd53a7",
+    "semantic_hash": "d5a450152e36be24dc409f1e8edd53a7"
+  },
+  "backend/src/test/java/com/hulypay/backend/HealthControllerTests.java": {
+    "mtime": 1789139651.2333138,
+    "seen": 1789279757.1655977,
+    "ast_hash": "a67666444a4192644e95b67f45558eda",
+    "semantic_hash": "a67666444a4192644e95b67f45558eda"
+  },
+  "backend/src/test/java/com/hulypay/backend/PaymentControllerTests.java": {
+    "mtime": 1789134721.2918026,
+    "seen": 1789279757.1655989,
+    "ast_hash": "0b3f22826df39a195032557c45839daf",
+    "semantic_hash": "0b3f22826df39a195032557c45839daf"
+  },
+  "backend/src/test/java/com/hulypay/backend/SecurityAndUserTests.java": {
+    "mtime": 1789134516.9071267,
+    "seen": 1789279757.1656,
+    "ast_hash": "33d45c9e703d798924d6a3d5f31cc475",
+    "semantic_hash": "33d45c9e703d798924d6a3d5f31cc475"
+  },
+  "mobile/lib/data/mock_data.dart": {
+    "mtime": 1789240590.9019413,
+    "seen": 1789279757.1674323,
+    "ast_hash": "a6e3723b3eade517561da224a60f1e34",
+    "semantic_hash": "a6e3723b3eade517561da224a60f1e34"
+  },
+  "mobile/lib/models/dashboard_data.dart": {
+    "mtime": 1789240550.1175382,
+    "seen": 1789279757.1674352,
+    "ast_hash": "f4a543bdf95ecb8951e67c6be99c07e4",
+    "semantic_hash": "f4a543bdf95ecb8951e67c6be99c07e4"
+  },
+  "mobile/lib/screens/analysis_screen.dart": {
+    "mtime": 1789238710.6814547,
+    "seen": 1789279757.1674368,
+    "ast_hash": "d8e488703be478e9459ebbfad54c68fb",
+    "semantic_hash": "d8e488703be478e9459ebbfad54c68fb"
+  },
+  "mobile/lib/screens/home_dashboard_screen.dart": {
+    "mtime": 1789240155.025609,
+    "seen": 1789279757.167438,
+    "ast_hash": "4eb0c59b52714b3173986a1d160ee5e4",
+    "semantic_hash": "4eb0c59b52714b3173986a1d160ee5e4"
+  },
+  "mobile/lib/screens/scan_and_pay_screen.dart": {
+    "mtime": 1789277000.2324133,
+    "seen": 1789279757.1674392,
+    "ast_hash": "ace583887dec05e5d339ea255047504a",
+    "semantic_hash": "ace583887dec05e5d339ea255047504a"
+  },
+  "mobile/lib/screens/settings_screen.dart": {
+    "mtime": 1789279419.6178377,
+    "seen": 1789279757.1674402,
+    "ast_hash": "c598b838b84190b7e9fdeb3f3e76b869",
+    "semantic_hash": "c598b838b84190b7e9fdeb3f3e76b869"
+  },
+  "mobile/lib/screens/sign_in_screen.dart": {
+    "mtime": 1789279419.6178377,
+    "seen": 1789279757.1674416,
+    "ast_hash": "7acf8aa6fa1a1c65d5af6b8638dca57c",
+    "semantic_hash": "7acf8aa6fa1a1c65d5af6b8638dca57c"
+  },
+  "mobile/lib/screens/single_transaction_screen.dart": {
+    "mtime": 1789279231.039935,
+    "seen": 1789279757.1674428,
+    "ast_hash": "d895f6ba93ee934e6b172da56099014c",
+    "semantic_hash": "d895f6ba93ee934e6b172da56099014c"
+  },
+  "mobile/lib/screens/splash_screen.dart": {
+    "mtime": 1789278825.2119324,
+    "seen": 1789279757.1674438,
+    "ast_hash": "a9354fe0c9b36210133edda2bb48bb18",
+    "semantic_hash": "a9354fe0c9b36210133edda2bb48bb18"
+  },
+  "mobile/lib/screens/transactions_screen.dart": {
+    "mtime": 1789240292.8582444,
+    "seen": 1789279757.1674447,
+    "ast_hash": "75ac3606127cf2e336a02d4c4524f4e8",
+    "semantic_hash": "75ac3606127cf2e336a02d4c4524f4e8"
+  },
+  "mobile/lib/services/api_service.dart": {
+    "mtime": 1789148872.0489585,
+    "seen": 1789279757.167446,
+    "ast_hash": "7ced8e6a66bfc6d323a973658a975ab1",
+    "semantic_hash": "7ced8e6a66bfc6d323a973658a975ab1"
+  },
+  "mobile/lib/widgets/action_button.dart": {
+    "mtime": 1789237704.2298238,
+    "seen": 1789279757.1674469,
+    "ast_hash": "b1c1c51c6628c3df8d5d37040e1bed82",
+    "semantic_hash": "b1c1c51c6628c3df8d5d37040e1bed82"
+  },
+  "mobile/lib/widgets/custom_bottom_nav_bar.dart": {
+    "mtime": 1789238163.5830247,
+    "seen": 1789279757.1674478,
+    "ast_hash": "b268f5f7ff45f975757d3f6f1a71b45a",
+    "semantic_hash": "b268f5f7ff45f975757d3f6f1a71b45a"
+  },
+  "mobile/lib/widgets/donut_chart.dart": {
+    "mtime": 1789238365.3513482,
+    "seen": 1789279757.1674488,
+    "ast_hash": "53f4b3df84f40ecd83ed50493574fb8e",
+    "semantic_hash": "53f4b3df84f40ecd83ed50493574fb8e"
+  },
+  "mobile/lib/widgets/spending_chart.dart": {
+    "mtime": 1789238394.7784085,
+    "seen": 1789279757.16745,
+    "ast_hash": "a32208e9163c496b789a1ccc99e900eb",
+    "semantic_hash": "a32208e9163c496b789a1ccc99e900eb"
+  },
+  "mobile/lib/widgets/transaction_tile.dart": {
+    "mtime": 1789275830.658128,
+    "seen": 1789279757.167451,
+    "ast_hash": "d9b54d75f71b1efa8f43826b41b90606",
+    "semantic_hash": "d9b54d75f71b1efa8f43826b41b90606"
+  },
+  "backend/HulyPay_Backend_README.md": {
+    "mtime": 1789128968.3204446,
+    "seen": 1789279757.1716096,
+    "ast_hash": "f2e2de1850784fefd597888790f1ba43",
+    "semantic_hash": "f2e2de1850784fefd597888790f1ba43"
+  },
+  "backend/docker-compose.yml": {
+    "mtime": 1789123046.6604042,
+    "seen": 1789279757.171611,
+    "ast_hash": "7d2f848d8d36ec3d763c86c0c2b05af4",
+    "semantic_hash": "7d2f848d8d36ec3d763c86c0c2b05af4"
+  },
+  "backend/src/main/resources/application.yml": {
+    "mtime": 1789144641.7203214,
+    "seen": 1789279757.1716127,
+    "ast_hash": "483088beedd13c955b6c2ea7c91c1564",
+    "semantic_hash": "483088beedd13c955b6c2ea7c91c1564"
+  },
+  "mobile/design/analysis.png": {
+    "mtime": 1789238085.5436954,
+    "seen": 1789279757.171616,
+    "ast_hash": "16cf24181e1fb2c83d1f92e89ddabf70",
+    "semantic_hash": "16cf24181e1fb2c83d1f92e89ddabf70"
+  },
+  "mobile/design/home-dashboard.png": {
+    "mtime": 1789235241.9993598,
+    "seen": 1789279757.1716175,
+    "ast_hash": "4a72a202e7e4457a7736e5c17cf7dd1c",
+    "semantic_hash": "4a72a202e7e4457a7736e5c17cf7dd1c"
+  },
+  "mobile/design/scan-and-pay.png": {
+    "mtime": 1789237884.0363338,
+    "seen": 1789279757.1716194,
+    "ast_hash": "5d02da7de1a9605a7a02da3cf5200ca3",
+    "semantic_hash": "5d02da7de1a9605a7a02da3cf5200ca3"
+  },
+  "mobile/design/setting.png": {
+    "mtime": 1789219780.0,
+    "seen": 1789279757.1716204,
+    "ast_hash": "b7c03837c160b603a6c83d1233319b36",
+    "semantic_hash": "b7c03837c160b603a6c83d1233319b36"
+  },
+  "mobile/design/single-transaction.png": {
+    "mtime": 1789275647.2032516,
+    "seen": 1789279757.1716216,
+    "ast_hash": "2b57d4423b34b527331e84505e1e1bef",
+    "semantic_hash": "2b57d4423b34b527331e84505e1e1bef"
+  },
+  "mobile/design/transactions.png": {
+    "mtime": 1789237939.4317806,
+    "seen": 1789279757.1716228,
+    "ast_hash": "0bcd2110e04acab2412f8f6478e8c279",
+    "semantic_hash": "0bcd2110e04acab2412f8f6478e8c279"
+  },
+  "mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png": {
+    "mtime": 1789022743.152064,
+    "seen": 1789279757.1716237,
+    "ast_hash": "c785f8932297af4acd5f5ccb7630f01c",
+    "semantic_hash": "c785f8932297af4acd5f5ccb7630f01c"
+  },
+  "mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png": {
+    "mtime": 1789022743.1575708,
+    "seen": 1789279757.1716251,
+    "ast_hash": "a2f8558fb1d42514111fbbb19fb67314",
+    "semantic_hash": "a2f8558fb1d42514111fbbb19fb67314"
+  },
+  "mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png": {
+    "mtime": 1789022743.1339877,
+    "seen": 1789279757.171626,
+    "ast_hash": "2247a840b6ee72b8a069208af170e5b1",
+    "semantic_hash": "2247a840b6ee72b8a069208af170e5b1"
+  },
+  "mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png": {
+    "mtime": 1789022743.1733189,
+    "seen": 1789279757.171627,
+    "ast_hash": "1b3b1538136316263c7092951e923e9d",
+    "semantic_hash": "1b3b1538136316263c7092951e923e9d"
+  },
+  "mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png": {
+    "mtime": 1789022743.1963234,
+    "seen": 1789279757.171628,
+    "ast_hash": "be8887071dd7ec39cb754d236aa9584f",
+    "semantic_hash": "be8887071dd7ec39cb754d236aa9584f"
+  },
+  "mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png": {
+    "mtime": 1789022743.1054063,
+    "seen": 1789279757.171629,
+    "ast_hash": "043119ef4faa026ff82bd03f241e5338",
+    "semantic_hash": "043119ef4faa026ff82bd03f241e5338"
+  },
+  "mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png": {
+    "mtime": 1789022743.165615,
+    "seen": 1789279757.1716304,
+    "ast_hash": "2b1452c4c1bda6177b4fbbb832df217f",
+    "semantic_hash": "2b1452c4c1bda6177b4fbbb832df217f"
+  },
+  "mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png": {
+    "mtime": 1789022743.1109018,
+    "seen": 1789279757.1716313,
+    "ast_hash": "2247a840b6ee72b8a069208af170e5b1",
+    "semantic_hash": "2247a840b6ee72b8a069208af170e5b1"
+  },
+  "mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png": {
+    "mtime": 1789022743.1911879,
+    "seen": 1789279757.1716323,
+    "ast_hash": "8245359312aea1b0d2412f79a07b0ca5",
+    "semantic_hash": "8245359312aea1b0d2412f79a07b0ca5"
+  },
+  "mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png": {
+    "mtime": 1789022743.1249063,
+    "seen": 1789279757.1716335,
+    "ast_hash": "5b3c0902200ce596e9848f22e1f0fe0e",
+    "semantic_hash": "5b3c0902200ce596e9848f22e1f0fe0e"
+  },
+  "mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png": {
+    "mtime": 1789022743.1480463,
+    "seen": 1789279757.1716344,
+    "ast_hash": "5b3c0902200ce596e9848f22e1f0fe0e",
+    "semantic_hash": "5b3c0902200ce596e9848f22e1f0fe0e"
+  },
+  "mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png": {
+    "mtime": 1789022743.094578,
+    "seen": 1789279757.1716356,
+    "ast_hash": "e419d22a37bc40ba185aca1acb6d4ac6",
+    "semantic_hash": "e419d22a37bc40ba185aca1acb6d4ac6"
+  },
+  "mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png": {
+    "mtime": 1789022743.1309698,
+    "seen": 1789279757.1716366,
+    "ast_hash": "36c0d7a7132bdde18898ffdfcfcdc4d2",
+    "semantic_hash": "36c0d7a7132bdde18898ffdfcfcdc4d2"
+  },
+  "mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png": {
+    "mtime": 1789022743.203539,
+    "seen": 1789279757.1716378,
+    "ast_hash": "643842917530acf4c5159ae851b0baf2",
+    "semantic_hash": "643842917530acf4c5159ae851b0baf2"
+  },
+  "mobile/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_128.png": {
+    "mtime": 1789022742.9881673,
+    "seen": 1789279757.1716387,
+    "ast_hash": "3ded30823804caaa5ccc944067c54a36",
+    "semantic_hash": "3ded30823804caaa5ccc944067c54a36"
+  },
+  "mobile/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_16.png": {
+    "mtime": 1789022743.02362,
+    "seen": 1789279757.1716402,
+    "ast_hash": "8bf511604bc6ed0a6aeb380c5113fdcf",
+    "semantic_hash": "8bf511604bc6ed0a6aeb380c5113fdcf"
+  },
+  "mobile/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_256.png": {
+    "mtime": 1789022743.0635922,
+    "seen": 1789279757.171641,
+    "ast_hash": "dfe2c93d1536ae02f085cc63faa3430e",
+    "semantic_hash": "dfe2c93d1536ae02f085cc63faa3430e"
+  },
+  "mobile/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_32.png": {
+    "mtime": 1789022743.033377,
+    "seen": 1789279757.171642,
+    "ast_hash": "8e0ae58e362a6636bdfccbc04da2c58c",
+    "semantic_hash": "8e0ae58e362a6636bdfccbc04da2c58c"
+  },
+  "mobile/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_512.png": {
+    "mtime": 1789022742.9945827,
+    "seen": 1789279757.1716428,
+    "ast_hash": "0ad44039155424738917502c69667699",
+    "semantic_hash": "0ad44039155424738917502c69667699"
+  },
+  "mobile/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_64.png": {
+    "mtime": 1789022742.9787028,
+    "seen": 1789279757.171644,
+    "ast_hash": "04e7b6ef05346c70b663ca1d97de3ad5",
+    "semantic_hash": "04e7b6ef05346c70b663ca1d97de3ad5"
+  },
+  ".vscode/launch.json": {
+    "mtime": 1789280913.9516287,
+    "seen": 1789281789.4916573,
+    "ast_hash": "6f44160bfe0291a58949574d57fbdf75",
+    "semantic_hash": "6f44160bfe0291a58949574d57fbdf75"
   }
 }

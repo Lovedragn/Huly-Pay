@@ -1156,13 +1156,13 @@
       "degree": 17
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_payment_payment",
-      "label": "Payment",
+      "id": "backend_src_main_java_com_hulypay_backend_users_userservice_userservice",
+      "label": "UserService",
       "degree": 17
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_users_userservice_userservice",
-      "label": "UserService",
+      "id": "backend_src_main_java_com_hulypay_backend_payments_payment_payment",
+      "label": "Payment",
       "degree": 17
     },
     {
@@ -1176,8 +1176,8 @@
       "degree": 16
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_categories_categoryrepository_categoryrepository",
-      "label": "CategoryRepository",
+      "id": "backend_src_main_java_com_hulypay_backend_common_exception_resourcenotfoundexception_resourcenotfoundexception",
+      "label": "ResourceNotFoundException",
       "degree": 15
     }
   ],
@@ -1191,7 +1191,7 @@
       ],
       "confidence": "INFERRED",
       "relation": "references",
-      "why": "inferred connection - not explicitly stated in source; crosses file types (doc \u2194 image); connects across different repos/directories"
+      "why": "inferred connection - not explicitly stated in source; crosses file types (doc ↔ image); connects across different repos/directories"
     },
     {
       "source": "Scan and Pay UI",
@@ -1202,7 +1202,7 @@
       ],
       "confidence": "INFERRED",
       "relation": "references",
-      "why": "inferred connection - not explicitly stated in source; crosses file types (doc \u2194 image); connects across different repos/directories"
+      "why": "inferred connection - not explicitly stated in source; crosses file types (doc ↔ image); connects across different repos/directories"
     },
     {
       "source": "Spending Analysis UI",
@@ -1213,7 +1213,18 @@
       ],
       "confidence": "INFERRED",
       "relation": "references",
-      "why": "inferred connection - not explicitly stated in source; crosses file types (doc \u2194 image); connects across different repos/directories"
+      "why": "inferred connection - not explicitly stated in source; crosses file types (doc ↔ image); connects across different repos/directories"
+    },
+    {
+      "source": "Flutter Pubspec",
+      "target": "HulyPay Backend Implementation Specification",
+      "source_files": [
+        "mobile/pubspec.yaml",
+        "backend/HulyPay_Backend_README.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories"
     },
     {
       "source": "Hero Diagram",
@@ -1224,22 +1235,44 @@
       ],
       "confidence": "INFERRED",
       "relation": "conceptually_related_to",
-      "why": "inferred connection - not explicitly stated in source; crosses file types (doc \u2194 image)"
-    },
-    {
-      "source": "Launch Screen Assets README",
-      "target": "iOS Launch Image",
-      "source_files": [
-        "mobile/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md",
-        "mobile/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png"
-      ],
-      "confidence": "INFERRED",
-      "relation": "references",
-      "why": "inferred connection - not explicitly stated in source; crosses file types (doc \u2194 image)"
+      "why": "inferred connection - not explicitly stated in source; crosses file types (doc ↔ image)"
     }
   ],
-  "tokens": {
-    "input": 82330,
-    "output": 5474
-  }
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `Win32Window` connect `Win32Window` to `Point`, `Size`, `win32_window.cpp`, `FlutterWindow`, `string`, `MessageHandler`?",
+      "why": "High betweenness centrality (0.051) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `FlutterWindow` connect `FlutterWindow` to `string`, `AppDelegate`, `Win32Window`?",
+      "why": "High betweenness centrality (0.043) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `User` connect `User` to `Expense`, `Category`, `lombok.AllArgsConstructor`?",
+      "why": "High betweenness centrality (0.034) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `CANCELLED`, `FAILED`, `INITIATED` to the rest of the system?",
+      "why": "278 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `User` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.06173558532323821 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Expense` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.05656108597285068 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Category` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.1072463768115942 - nodes in this community are weakly interconnected."
+    }
+  ]
 }

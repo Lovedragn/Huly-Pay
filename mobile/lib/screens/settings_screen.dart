@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import 'scan_and_pay_screen.dart';
 import 'sign_in_screen.dart';
@@ -223,8 +224,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             TextButton(
-              onPressed: () {
-                Navigator.of(ctx).pop();
+              onPressed: () async {
+                await AuthService().signOut();
+                if (ctx.mounted) {
+                  Navigator.of(ctx).pop();
+                }
+                if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: const Text(

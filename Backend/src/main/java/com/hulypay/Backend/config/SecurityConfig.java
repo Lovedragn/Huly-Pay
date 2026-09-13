@@ -40,10 +40,27 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated())
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> {
-                }));
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(org.springframework.security.config.Customizer.withDefaults()));
 
         return http.build();
+    }
+
+    @Bean
+    public org.springframework.security.oauth2.jwt.JwtDecoder jwtDecoder(
+            @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri:https://aszhhxnbzstzemyhcjvi.supabase.co/auth/v1}") String issuerUri
+    ) {
+        org.springframework.security.oauth2.jwt.NimbusJwtDecoder jwtDecoder =
+                org.springframework.security.oauth2.jwt.NimbusJwtDecoder.withIssuerLocation(issuerUri)
+                        .jwsAlgorithms(algorithms -> {
+                            algorithms.add(org.springframework.security.oauth2.jose.jws.SignatureAlgorithm.ES256);
+                            algorithms.add(org.springframework.security.oauth2.jose.jws.SignatureAlgorithm.RS256);
+                        })
+                        .build();
+
+        org.springframework.security.oauth2.core.OAuth2TokenValidator<org.springframework.security.oauth2.jwt.Jwt> defaultValidator =
+                org.springframework.security.oauth2.jwt.JwtValidators.createDefaultWithIssuer(issuerUri);
+        jwtDecoder.setJwtValidator(defaultValidator);
+        return jwtDecoder;
     }
 
     @Bean
