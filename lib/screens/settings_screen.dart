@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import '../repositories/user_repository.dart';
 import '../services/auth_service.dart';
@@ -30,27 +29,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   late String _displayEmail;
   String _avatarUrl = '';
 
-  bool get _isTestEnvironment {
-    try {
-      return Platform.environment.containsKey('FLUTTER_TEST');
-    } catch (_) {
-      return false;
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    if (_isTestEnvironment) {
-      _displayName = widget.userName ?? 'Sujit Saha';
-      _displayEmail = widget.userEmail ?? 'sujit@example.com';
-    } else {
-      final authProfile = AuthService().currentUserProfile;
-      _displayName = widget.userName ?? authProfile?.displayName ?? 'User';
-      _displayEmail = widget.userEmail ?? authProfile?.email ?? '';
-      _avatarUrl = authProfile?.avatarUrl ?? '';
-      _resolveUser();
-    }
+    final authProfile = AuthService().currentUserProfile;
+    _displayName = widget.userName ?? authProfile?.displayName ?? 'User';
+    _displayEmail = widget.userEmail ?? authProfile?.email ?? '';
+    _avatarUrl = authProfile?.avatarUrl ?? '';
+    _resolveUser();
   }
 
   Future<void> _resolveUser() async {
@@ -110,7 +96,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     } else if (parts.isNotEmpty && parts[0].isNotEmpty) {
       return parts[0].substring(0, parts[0].length >= 2 ? 2 : 1).toUpperCase();
     }
-    return 'SS';
+    return 'HP';
   }
 
   final List<Map<String, dynamic>> _themeOptions = const [

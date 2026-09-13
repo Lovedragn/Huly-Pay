@@ -1,4 +1,3 @@
-import 'dart:io';
 import '../models/user_profile.dart';
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
@@ -12,24 +11,12 @@ class UserRepository {
   final LocalDatabaseService _localDb = LocalDatabaseService();
   final ApiClient _apiClient = ApiClient();
 
-  bool get _isTest {
-    try {
-      return Platform.environment.containsKey('FLUTTER_TEST');
-    } catch (_) {
-      return false;
-    }
-  }
-
   /// Retrieve user profile with SQLite caching
   Future<UserProfile?> getUserProfile({bool forceRefresh = false}) async {
     UserProfile? cached;
     try {
       cached = await _localDb.getUserProfile();
     } catch (_) {}
-
-    if (_isTest) {
-      return cached;
-    }
 
     try {
       final remote = await _apiClient.getCurrentUser();

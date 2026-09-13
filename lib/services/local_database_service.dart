@@ -246,28 +246,13 @@ class LocalDatabaseService {
     await batch.commit(noResult: true);
   }
 
-  /// Prunes stale payments from the SQLite database:
-  /// - INITIATED / PAYMENT_INITIATED older than 30 minutes
-  /// - PENDING older than 1 day (24 hours)
+  /// Retains all payments in SQLite history without purging stale records.
+  /// Returns 0 as no records are deleted.
   Future<int> cleanupStalePayments() async {
-    try {
-      final db = await database;
-      final now = DateTime.now().toUtc();
-      final cutoff30Min = now.subtract(const Duration(minutes: 30)).toIso8601String();
-      final cutoff1Day = now.subtract(const Duration(days: 1)).toIso8601String();
-
-      return await db.delete(
-        'cached_payments',
-        where: "(status IN ('INITIATED', 'PAYMENT_INITIATED') AND created_at < ?) OR (status = 'PENDING' AND created_at < ?)",
-        whereArgs: [cutoff30Min, cutoff1Day],
-      );
-    } catch (_) {
-      return 0;
-    }
+    return 0;
   }
 
   Future<List<PaymentModel>> getPayments({String? status, int? limit, int? offset}) async {
-    await cleanupStalePayments();
     final db = await database;
 
     String? whereClause;

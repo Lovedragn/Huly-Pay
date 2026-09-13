@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:geolocator/geolocator.dart';
 
 class PaymentLocation {
@@ -46,26 +45,9 @@ class LocationService {
   factory LocationService() => _instance;
   LocationService._internal();
 
-  bool get _isTest {
-    try {
-      return Platform.environment.containsKey('FLUTTER_TEST');
-    } catch (_) {
-      return false;
-    }
-  }
-
   /// Captures single-point GPS coordinates at payment time with detailed status.
   /// Never fabricates or synthesizes coordinates.
   Future<LocationResult> getPaymentLocationWithStatus() async {
-    if (_isTest) {
-      return const LocationResult.success(
-        PaymentLocation(
-          latitude: 12.9716,
-          longitude: 77.5946,
-          accuracyMeters: 3.5,
-        ),
-      );
-    }
 
     try {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();

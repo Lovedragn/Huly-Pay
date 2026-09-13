@@ -142,10 +142,12 @@ class PaymentModel {
         ? merchantName!.trim()
         : (upiId != null && upiId!.trim().isNotEmpty ? upiId!.trim() : 'UPI Payment');
 
-    final bool isFailedStatus = status.toUpperCase() == 'FAILED';
-    final categoryText = isFailedStatus ? 'Failed' : (paymentMethod ?? 'UPI');
+    final sUpper = status.toUpperCase();
+    final bool isFailedStatus = sUpper == 'FAILED' || sUpper == 'CANCELLED';
+    final bool isPendingStatus = sUpper == 'PENDING' || sUpper == 'INITIATED' || sUpper == 'PAYMENT_INITIATED';
+    final categoryText = isFailedStatus ? 'Failed' : (isPendingStatus ? 'Pending' : (paymentMethod ?? 'UPI'));
 
-    final amountText = isFailedStatus
+    final amountText = (isFailedStatus || isPendingStatus)
         ? '₹${amount.toStringAsFixed(amount.truncateToDouble() == amount ? 0 : 2)}'
         : '- ₹${amount.toStringAsFixed(amount.truncateToDouble() == amount ? 0 : 2)}';
 
@@ -174,6 +176,10 @@ class PaymentModel {
       icon = Icons.error_outline_rounded;
       iconColor = const Color(0xFFFF453A);
       iconBgColor = const Color(0xFF2C1517);
+    } else if (isPendingStatus) {
+      icon = Icons.hourglass_top_rounded;
+      iconColor = const Color(0xFFFF9F0A);
+      iconBgColor = const Color(0xFF2C2210);
     } else if (titleLower.contains('swiggy') || titleLower.contains('zomato') || titleLower.contains('food')) {
       icon = Icons.restaurant_rounded;
       iconColor = const Color(0xFFFF9500);

@@ -4,6 +4,7 @@ import 'package:mobile/models/user_profile.dart';
 import 'package:mobile/screens/sign_in_screen.dart';
 import 'package:mobile/services/api_client.dart';
 import 'package:mobile/services/auth_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -11,29 +12,22 @@ void main() {
   group('AuthService Tests', () {
     final auth = AuthService();
 
-    test('Initial dev mock sign in with password produces session and token', () async {
-      final response = await auth.signInWithPassword(
-        email: 'test@hulypay.com',
-        password: 'password123',
+    test('Unconfigured Supabase authentication throws AuthException on sign in', () async {
+      expect(
+        () => auth.signInWithPassword(
+          email: 'test@hulypay.com',
+          password: 'password123',
+        ),
+        throwsA(isA<AuthException>()),
       );
-
-      expect(response.session, isNotNull);
-      expect(response.session?.accessToken, isNotNull);
-      expect(auth.isAuthenticated, isTrue);
-      expect(auth.currentAccessToken, equals(response.session?.accessToken));
     });
 
-    test('Google and GitHub OAuth fallbacks populate user identity', () async {
-      final googleRes = await auth.signInWithGoogle();
-      expect(googleRes, isTrue);
-      expect(auth.currentUser?.appMetadata['provider'], equals('google'));
-
-      final githubRes = await auth.signInWithGitHub();
-      expect(githubRes, isTrue);
-      expect(auth.currentUser?.appMetadata['provider'], equals('github'));
+    test('Unconfigured OAuth throws AuthException', () async {
+      expect(() => auth.signInWithGoogle(), throwsA(isA<AuthException>()));
+      expect(() => auth.signInWithGitHub(), throwsA(isA<AuthException>()));
     });
 
-    test('signOut clears user and token', () async {
+    test('signOut clears user session cleanly', () async {
       await auth.signOut();
       expect(auth.currentUser, isNull);
       expect(auth.currentAccessToken, isNull);
@@ -73,16 +67,10 @@ void main() {
   });
 
   group('ApiClient Interceptor Tests', () {
-    test('ApiClient adds Authorization Bearer token to request headers', () async {
-      final auth = AuthService();
-      await auth.signInWithPassword(
-        email: 'token-test@hulypay.com',
-        password: 'pass',
-      );
-
+    test('ApiClient contains Authorization Bearer header interceptor', () {
       final client = ApiClient();
       expect(client.dio.interceptors.isNotEmpty, isTrue);
-      expect(auth.currentAccessToken, isNotNull);
+      expect(client.dio.options.baseUrl, isNotEmpty);
     });
   });
 

@@ -301,7 +301,8 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
     final weekStart = DateTime(monday.year, monday.month, monday.day);
 
     for (final p in payments) {
-      if (p.status.toUpperCase() == 'FAILED') continue;
+      final s = p.status.toUpperCase();
+      if (s != 'CONFIRMED' && s != 'SUCCESS') continue;
       final dateStr = p.createdAt ?? p.paymentDate;
       if (dateStr == null) continue;
 

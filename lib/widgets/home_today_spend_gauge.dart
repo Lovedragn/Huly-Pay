@@ -174,7 +174,8 @@ class HomeTodaySpendGaugeChart extends StatelessWidget {
 
     double total = 0.0;
     for (final p in payments) {
-      if (p.status.toUpperCase() == 'FAILED') continue;
+      final s = p.status.toUpperCase();
+      if (s != 'CONFIRMED' && s != 'SUCCESS') continue;
       final dateStr = p.createdAt ?? p.paymentDate;
       if (dateStr != null && dateStr.startsWith(todayPrefix)) {
         total += p.amount;

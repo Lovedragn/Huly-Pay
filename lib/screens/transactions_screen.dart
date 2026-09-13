@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import '../data/mock_data.dart';
 import '../models/dashboard_data.dart';
 import '../models/payment_model.dart';
 import '../repositories/payment_repository.dart';
@@ -29,6 +27,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   int _selectedFilterIndex = 0;
   final List<String> _filters = const [
     'All',
+    'Pending',
     'Failed',
     'Food',
     'Internet',
@@ -41,15 +40,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   @override
   void initState() {
     super.initState();
-    bool isTest = false;
-    try {
-      isTest = Platform.environment.containsKey('FLUTTER_TEST');
-    } catch (_) {}
-
     if (widget.initialGroups != null) {
       _allGroups = widget.initialGroups!;
-    } else if (isTest) {
-      _allGroups = MockData.transactionScreenGroups;
     } else {
       _allGroups = [];
       _loadPayments();
@@ -107,7 +99,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       final filteredTx = group.transactions.where((tx) {
         // Filter by category
         bool matchesType = true;
-        if (selectedFilter == 'Failed') {
+        if (selectedFilter == 'Pending') {
+          matchesType = tx.isPending;
+        } else if (selectedFilter == 'Failed') {
           matchesType = tx.isFailed;
         } else if (selectedFilter == 'Food') {
           matchesType = tx.category.toLowerCase().contains('food');

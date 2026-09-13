@@ -104,6 +104,28 @@ class TransactionTile extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
+                    )
+                  else if (transaction.isPending)
+                    Container(
+                      margin: const EdgeInsets.only(right: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2C2210),
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(
+                          color: const Color(0xFF5A3E15),
+                          width: 0.5,
+                        ),
+                      ),
+                      child: const Text(
+                        'Pending',
+                        style: TextStyle(
+                          fontFamily: 'Google Sans',
+                          color: Color(0xFFFF9F0A),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   Text(
                     transaction.amount,
@@ -111,9 +133,11 @@ class TransactionTile extends StatelessWidget {
                       fontFamily: 'Google Sans',
                       color: transaction.isFailed
                           ? const Color(0xFFFF453A)
-                          : transaction.isIncome
-                              ? const Color(0xFF30D158)
-                              : Colors.white,
+                          : transaction.isPending
+                              ? const Color(0xFFFF9F0A)
+                              : transaction.isIncome
+                                  ? const Color(0xFF30D158)
+                                  : Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),

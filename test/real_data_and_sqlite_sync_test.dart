@@ -19,31 +19,30 @@ void main() {
   setUp(() async {
     dbService = LocalDatabaseService();
     await dbService.initDatabase(inMemory: true);
-    AuthService.enableMockForTesting(true);
   });
 
   tearDown(() async {
     await dbService.close();
-    await AuthService().signOut();
   });
 
   group('Real Data & SQLite Local Database Synchronization Tests', () {
-    test('Google OAuth extracts real user profile metadata and stores in SQLite', () async {
-      await AuthService().signInWithGoogle();
-      final authProfile = AuthService().currentUserProfile;
-
-      expect(authProfile, isNotNull);
-      expect(authProfile!.fullName, equals('Google User'));
-      expect(authProfile.authProvider, equals('google'));
+    test('User profile metadata stores and retrieves accurately in SQLite', () async {
+      final userProfile = UserProfile(
+        id: 'usr_real_001',
+        email: 'user@hulypay.com',
+        fullName: 'Huly Real User',
+        authProvider: 'google',
+        active: true,
+      );
 
       // Persist to local SQLite
-      await UserRepository().saveUserProfile(authProfile);
+      await UserRepository().saveUserProfile(userProfile);
 
       // Verify retrieval directly from SQLite
       final cached = await UserRepository().getCachedUserProfile();
       expect(cached, isNotNull);
-      expect(cached!.fullName, equals('Google User'));
-      expect(cached.displayName, equals('Google User'));
+      expect(cached!.fullName, equals('Huly Real User'));
+      expect(cached.displayName, equals('Huly Real User'));
       expect(cached.authProvider, equals('google'));
     });
 

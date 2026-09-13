@@ -28,7 +28,18 @@ class TransactionItem {
     this.payment,
   });
 
-  bool get isFailed => category.toLowerCase() == 'failed';
+  bool get isFailed =>
+      category.toLowerCase() == 'failed' ||
+      payment?.status.toUpperCase() == 'FAILED' ||
+      payment?.status.toUpperCase() == 'CANCELLED';
+
+  bool get isPending {
+    final s = payment?.status.toUpperCase();
+    return category.toLowerCase() == 'pending' ||
+        s == 'PENDING' ||
+        s == 'INITIATED' ||
+        s == 'PAYMENT_INITIATED';
+  }
 }
 
 class TransactionGroup {

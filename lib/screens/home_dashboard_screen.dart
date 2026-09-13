@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../data/mock_data.dart';
 import '../models/dashboard_data.dart';
 import '../models/payment_model.dart';
 import '../models/user_profile.dart';
@@ -35,14 +33,6 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
   late DashboardData _data;
   List<PaymentModel> _payments = [];
 
-  bool get _isTestEnvironment {
-    try {
-      return Platform.environment.containsKey('FLUTTER_TEST');
-    } catch (_) {
-      return false;
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -51,26 +41,6 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
     if (widget.initialData != null) {
       _data = widget.initialData!;
       _payments = [];
-    } else if (_isTestEnvironment) {
-      _data = MockData.dashboardData;
-      _payments = [
-        PaymentModel(
-          id: 'mock_tx_1',
-          amount: 320,
-          currency: 'INR',
-          merchantName: 'Dining',
-          status: 'CONFIRMED',
-          createdAt: DateTime.now().toIso8601String(),
-        ),
-        PaymentModel(
-          id: 'mock_tx_2',
-          amount: 1200,
-          currency: 'INR',
-          merchantName: 'Store',
-          status: 'CONFIRMED',
-          createdAt: DateTime.now().subtract(const Duration(days: 1)).toIso8601String(),
-        ),
-      ];
     } else {
       final authProfile = AuthService().currentUserProfile;
       _data = DashboardData(
@@ -95,7 +65,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed && !_isTestEnvironment) {
+    if (state == AppLifecycleState.resumed) {
       // Auto-fetch fresh data every time user opens or resumes our application
       _loadRealData();
     }
@@ -148,8 +118,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
     final String totalSpent = '₹${sum.toStringAsFixed(sum.truncateToDouble() == sum ? 0 : 2)}';
 
     List<TransactionItem> recentTxs = [];
-    if (confirmedPayments.isNotEmpty) {
-      final sorted = List<PaymentModel>.from(confirmedPayments)
+    if (payments.isNotEmpty) {
+      final sorted = List<PaymentModel>.from(payments)
         ..sort((a, b) {
           final aDate = a.createdAt ?? '';
           final bDate = b.createdAt ?? '';
@@ -161,7 +131,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
     final weeklyBars = _computeWeeklySpending(confirmedPayments);
 
     setState(() {
-      _payments = confirmedPayments;
+      _payments = payments;
       _data = DashboardData(
         greeting: _data.greeting,
         userName: userName,

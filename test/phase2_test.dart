@@ -239,27 +239,8 @@ void main() {
 
       // Verify action buttons
       expect(find.byKey(const Key('back_button')), findsOneWidget);
-      expect(find.byKey(const Key('demo_qr_button')), findsOneWidget);
       expect(find.byKey(const Key('flash_button')), findsOneWidget);
       expect(find.byKey(const Key('switch_camera_button')), findsOneWidget);
-    });
-
-    testWidgets('Tapping Demo QR opens Payment Confirmation bottom sheet with extracted data', (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: ScanAndPayScreen(),
-        ),
-      );
-
-      // Tap Demo QR button
-      await tester.tap(find.byKey(const Key('demo_qr_button')));
-      await tester.pumpAndSettle();
-
-      // Verify payment confirmation bottom sheet opened with Starbucks demo data
-      expect(find.text('Starbucks Coffee'), findsOneWidget);
-      expect(find.text('starbucks@okhdfcbank'), findsOneWidget);
-      expect(find.text('240.00'), findsOneWidget);
-      expect(find.text('Proceed to Pay via UPI / GPay'), findsOneWidget);
     });
 
     test('Test Case 3: Parse standard UPI QR with amount, merchant, and INR currency', () {

@@ -1,4 +1,3 @@
-import 'dart:io';
 import '../models/payment_model.dart';
 import '../services/api_client.dart';
 import '../services/local_database_service.dart';
@@ -11,14 +10,6 @@ class PaymentRepository {
   final LocalDatabaseService _localDb = LocalDatabaseService();
   final ApiClient _apiClient = ApiClient();
 
-  bool get _isTest {
-    try {
-      return Platform.environment.containsKey('FLUTTER_TEST');
-    } catch (_) {
-      return false;
-    }
-  }
-
   /// Retrieve payments with offline-first SQLite cache
   /// 1. Immediately returns cached payments from SQLite if available and not forced to refresh
   /// 2. Fetches fresh payments from Spring Boot backend and syncs with SQLite
@@ -28,10 +19,6 @@ class PaymentRepository {
     try {
       cached = await _localDb.getPayments();
     } catch (_) {}
-
-    if (_isTest) {
-      return cached;
-    }
 
     // If we have cached data and not forcing refresh, return immediately or continue background sync
     try {
@@ -53,20 +40,15 @@ class PaymentRepository {
   /// Get cached payments directly from SQLite without network call
   Future<List<PaymentModel>> getCachedPayments() async {
     try {
-      await _localDb.cleanupStalePayments();
       return await _localDb.getPayments();
     } catch (_) {
       return [];
     }
   }
 
-  /// Explicitly triggers stale payment cleanup in local SQLite
+  /// Retains all payment history in local SQLite
   Future<int> cleanupStalePayments() async {
-    try {
-      return await _localDb.cleanupStalePayments();
-    } catch (_) {
-      return 0;
-    }
+    return 0;
   }
 
   /// Retrieve payment by ID with cache fallback
@@ -75,17 +57,6 @@ class PaymentRepository {
     try {
       local = await _localDb.getPaymentById(id);
     } catch (_) {}
-
-    if (_isTest) {
-      if (local != null) return local;
-      return PaymentModel(
-        id: id,
-        amount: 100,
-        currency: 'INR',
-        status: 'CONFIRMED',
-        createdAt: DateTime.now().toIso8601String(),
-      );
-    }
 
     try {
       final remote = await _apiClient.getPaymentById(id);
@@ -101,27 +72,6 @@ class PaymentRepository {
 
   /// Create a payment and immediately persist to local SQLite
   Future<PaymentModel> createPayment(CreatePaymentPayload payload) async {
-    if (_isTest) {
-      final mock = PaymentModel(
-        id: 'test_pay_${DateTime.now().millisecondsSinceEpoch}',
-        amount: payload.amount,
-        currency: payload.currency,
-        merchantName: payload.merchantName,
-        upiId: payload.upiId,
-        paymentMethod: payload.paymentMethod,
-        transactionReference: payload.transactionReference,
-        status: 'INITIATED',
-        latitude: payload.latitude,
-        longitude: payload.longitude,
-        locationAccuracyMeters: payload.locationAccuracyMeters,
-        createdAt: DateTime.now().toIso8601String(),
-      );
-      try {
-        await _localDb.upsertPayment(mock);
-      } catch (_) {}
-      return mock;
-    }
-
     try {
       final payment = await _apiClient.createPayment(payload);
       try {
@@ -160,28 +110,6 @@ class PaymentRepository {
     String? upiTransactionId,
     String? transactionReference,
   }) async {
-    if (_isTest) {
-      final existing = await _localDb.getPaymentById(id);
-      final updated = PaymentModel(
-        id: id,
-        amount: existing?.amount ?? 100,
-        currency: existing?.currency ?? 'INR',
-        merchantName: existing?.merchantName,
-        upiId: existing?.upiId,
-        paymentMethod: existing?.paymentMethod,
-        status: status,
-        upiTransactionId: upiTransactionId,
-        transactionReference: transactionReference,
-        latitude: existing?.latitude,
-        longitude: existing?.longitude,
-        createdAt: existing?.createdAt ?? DateTime.now().toIso8601String(),
-      );
-      try {
-        await _localDb.upsertPayment(updated);
-      } catch (_) {}
-      return updated;
-    }
-
     try {
       final payment = await _apiClient.reconcilePayment(
         id,

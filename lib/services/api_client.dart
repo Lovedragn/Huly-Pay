@@ -29,18 +29,12 @@ class ApiClient {
 
   late final Dio dio;
 
-  static const String localWifiHost = 'http://10.192.176.244:8080';
-  static const List<String> fallbackHosts = [
-    'http://10.192.176.244:8080',
-    'http://127.0.0.1:8080',
-    'http://10.0.2.2:8080',
-    'http://localhost:8080',
-  ];
+  static const String defaultAndroidHost = 'http://10.0.2.2:8080';
 
   static String get defaultBaseUrl {
     if (kIsWeb) return 'http://localhost:8080';
     try {
-      if (Platform.isAndroid) return localWifiHost;
+      if (Platform.isAndroid) return defaultAndroidHost;
     } catch (_) {
       // Platform check may fail on web or non-standard hosts
     }
@@ -84,40 +78,11 @@ class ApiClient {
         onRequest: (options, handler) {
           final token = AuthService().currentAccessToken;
           if (token != null && token.isNotEmpty) {
-            // Ensure only genuine Supabase JWTs are sent in real runtime
-            if (!token.startsWith('mock_') || AuthService.isTestEnvironment) {
-              options.headers['Authorization'] = 'Bearer $token';
-            }
+            options.headers['Authorization'] = 'Bearer $token';
           }
           return handler.next(options);
         },
         onError: (DioException error, handler) async {
-          final isConnError = error.type == DioExceptionType.connectionError ||
-              (error.message != null && error.message!.toLowerCase().contains('connection refused'));
-
-          // Automatically fallback to alternative host candidate on connection failure
-          if (isConnError && error.requestOptions.extra['retried_fallback'] != true) {
-            final currentBase = dio.options.baseUrl;
-            for (final candidate in fallbackHosts) {
-              if (candidate != currentBase) {
-                try {
-                  final opts = error.requestOptions;
-                  opts.extra['retried_fallback'] = true;
-                  opts.baseUrl = candidate;
-
-                  final newResponse = await dio.fetch(opts);
-                  updateBaseUrl(candidate);
-                  if (kDebugMode) {
-                    print('ApiClient: Switched baseUrl to $candidate for physical device');
-                  }
-                  return handler.resolve(newResponse);
-                } catch (_) {
-                  // Try next candidate
-                }
-              }
-            }
-          }
-
           if (error.response?.statusCode == 401) {
             if (kDebugMode) {
               print('ApiClient: 401 Unauthorized encountered on ${error.requestOptions.path}');

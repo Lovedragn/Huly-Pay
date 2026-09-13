@@ -178,7 +178,7 @@ void main() {
       expect(profile, isNull);
     });
 
-    test('cleanupStalePayments purges initiated >30min and pending >1day while preserving confirmed and fresh records', () async {
+    test('cleanupStalePayments preserves initiated, pending, failed, and confirmed records without purging', () async {
       final now = DateTime.now().toUtc();
       final oldInitiated = PaymentModel(
         id: 'p_old_init',
@@ -224,19 +224,19 @@ void main() {
         oldConfirmed,
       ]);
 
-      // Manually trigger cleanup
+      // Trigger cleanup - should be non-destructive
       final deletedCount = await dbService.cleanupStalePayments();
-      expect(deletedCount, equals(2)); // oldInitiated and oldPending
+      expect(deletedCount, equals(0));
 
-      // Retrieve remaining payments
+      // Retrieve remaining payments - all records must be preserved
       final remaining = await dbService.getPayments();
       final ids = remaining.map((p) => p.id).toList();
 
+      expect(ids, contains('p_old_init'));
       expect(ids, contains('p_fresh_init'));
+      expect(ids, contains('p_old_pending'));
       expect(ids, contains('p_fresh_pending'));
       expect(ids, contains('p_old_confirmed'));
-      expect(ids, isNot(contains('p_old_init')));
-      expect(ids, isNot(contains('p_old_pending')));
     });
   });
 
@@ -259,7 +259,7 @@ void main() {
       expect(cached.first.merchantName, equals('Offline Merchant'));
     });
 
-    test('PaymentRepository cleanupStalePayments removes initiated >30m and pending >1day and returns deleted count', () async {
+    test('PaymentRepository preserves all initiated, pending, and confirmed payments in history', () async {
       final now = DateTime.now().toUtc();
       final staleInit = PaymentModel(
         id: 'repo_init_stale',
@@ -312,19 +312,19 @@ void main() {
 
       final repo = PaymentRepository();
       final deletedCount = await repo.cleanupStalePayments();
-      expect(deletedCount, equals(2));
+      expect(deletedCount, equals(0));
 
       final cached = await repo.getCachedPayments();
       final cachedIds = cached.map((p) => p.id).toList();
 
+      expect(cachedIds, contains('repo_init_stale'));
       expect(cachedIds, contains('repo_init_fresh'));
+      expect(cachedIds, contains('repo_pend_stale'));
       expect(cachedIds, contains('repo_pend_fresh'));
       expect(cachedIds, contains('repo_confirmed'));
-      expect(cachedIds, isNot(contains('repo_init_stale')));
-      expect(cachedIds, isNot(contains('repo_pend_stale')));
     });
 
-    test('PaymentRepository getCachedPayments automatically purges stale payments on invocation', () async {
+    test('PaymentRepository getCachedPayments retains all payment statuses for user transaction history', () async {
       final now = DateTime.now().toUtc();
       final staleInit = PaymentModel(
         id: 'auto_purge_init',
@@ -350,21 +350,20 @@ void main() {
 
       await dbService.upsertPayments([staleInit, stalePend, validConfirmed]);
 
-      // Calling getCachedPayments() directly without calling cleanupStalePayments()
       final repo = PaymentRepository();
       final cached = await repo.getCachedPayments();
       final cachedIds = cached.map((p) => p.id).toList();
 
+      expect(cachedIds, contains('auto_purge_init'));
+      expect(cachedIds, contains('auto_purge_pend'));
       expect(cachedIds, contains('auto_purge_confirmed'));
-      expect(cachedIds, isNot(contains('auto_purge_init')));
-      expect(cachedIds, isNot(contains('auto_purge_pend')));
 
-      // Verify the SQLite table itself was pruned
+      // Verify the SQLite table retains all records
       final inDb = await dbService.getPayments();
       final inDbIds = inDb.map((p) => p.id).toList();
+      expect(inDbIds, contains('auto_purge_init'));
+      expect(inDbIds, contains('auto_purge_pend'));
       expect(inDbIds, contains('auto_purge_confirmed'));
-      expect(inDbIds, isNot(contains('auto_purge_init')));
-      expect(inDbIds, isNot(contains('auto_purge_pend')));
     });
 
     test('UserRepository getCachedUserProfile returns local SQLite profile without network', () async {
