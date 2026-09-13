@@ -116,8 +116,7 @@ void main() {
       // Verify real empty metrics and state
       expect(find.text('₹0'), findsOneWidget);
       expect(find.text('Alex Developer'), findsOneWidget);
-      expect(find.text('No transactions yet'), findsOneWidget);
-      expect(find.text('Tap Scan & Pay to make your first payment'), findsOneWidget);
+      expect(find.text('Recent Transactions'), findsNothing);
     });
 
     testWidgets('TransactionsScreen displays clean empty state when transactions list is empty', (tester) async {

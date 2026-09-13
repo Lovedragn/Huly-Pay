@@ -10,8 +10,9 @@ import '../repositories/user_repository.dart';
 import '../services/auth_service.dart';
 import '../widgets/action_button.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
-import '../widgets/spending_chart.dart';
-import '../widgets/transaction_tile.dart';
+import '../widgets/home_spend_trend_line_chart.dart';
+import '../widgets/home_today_spend_gauge.dart';
+import '../widgets/home_weekly_bar_chart.dart';
 import 'analysis_screen.dart';
 import 'scan_and_pay_screen.dart';
 import 'settings_screen.dart';
@@ -32,6 +33,7 @@ class HomeDashboardScreen extends StatefulWidget {
 class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsBindingObserver {
   int _selectedNavIndex = 0;
   late DashboardData _data;
+  List<PaymentModel> _payments = [];
 
   bool get _isTestEnvironment {
     try {
@@ -48,8 +50,27 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
 
     if (widget.initialData != null) {
       _data = widget.initialData!;
+      _payments = [];
     } else if (_isTestEnvironment) {
       _data = MockData.dashboardData;
+      _payments = [
+        PaymentModel(
+          id: 'mock_tx_1',
+          amount: 320,
+          currency: 'INR',
+          merchantName: 'Dining',
+          status: 'CONFIRMED',
+          createdAt: DateTime.now().toIso8601String(),
+        ),
+        PaymentModel(
+          id: 'mock_tx_2',
+          amount: 1200,
+          currency: 'INR',
+          merchantName: 'Store',
+          status: 'CONFIRMED',
+          createdAt: DateTime.now().subtract(const Duration(days: 1)).toIso8601String(),
+        ),
+      ];
     } else {
       final authProfile = AuthService().currentUserProfile;
       _data = DashboardData(
@@ -137,6 +158,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
     final weeklyBars = _computeWeeklySpending(payments);
 
     setState(() {
+      _payments = payments;
       _data = DashboardData(
         greeting: _data.greeting,
         userName: userName,
@@ -263,20 +285,21 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
           _buildHeader(),
           const SizedBox(height: 20),
           _buildTotalSpentCard(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           _buildQuickActions(),
-          const SizedBox(height: 24),
-          GestureDetector(
+          const SizedBox(height: 20),
+          HomeSpendTrendLineChart(payments: _payments),
+          const SizedBox(height: 20),
+          HomeTodaySpendGaugeChart(payments: _payments),
+          const SizedBox(height: 20),
+          HomeWeeklyBarChart(
+            payments: _payments,
             onTap: () {
               setState(() {
                 _selectedNavIndex = 1;
               });
             },
-            behavior: HitTestBehavior.opaque,
-            child: SpendingChart(data: _data.weeklySpending),
           ),
-          const SizedBox(height: 28),
-          _buildRecentTransactionsSection(),
         ],
       ),
     );
@@ -471,110 +494,6 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
             label: 'More',
             onTap: _openSettings,
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRecentTransactionsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _selectedNavIndex = 2;
-            });
-          },
-          behavior: HitTestBehavior.opaque,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text(
-                'Recent Transactions',
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.2,
-                ),
-              ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: Color(0xFF6B6B70),
-                size: 20,
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 14),
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: const Color(0xFF141416),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: const Color(0xFF222226),
-              width: 1,
-            ),
-          ),
-          child: _data.recentTransactions.isEmpty
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xFF1E1E24),
-                        ),
-                        child: const Icon(
-                          Icons.receipt_long_outlined,
-                          color: Color(0xFF8E8E93),
-                          size: 24,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'No transactions yet',
-                        style: TextStyle(
-                          fontFamily: 'Google Sans',
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        'Tap Scan & Pay to make your first payment',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: 'Google Sans',
-                          color: Color(0xFF8E8E93),
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : Column(
-                  children: [
-                    for (int i = 0; i < _data.recentTransactions.length; i++) ...[
-                      TransactionTile(transaction: _data.recentTransactions[i]),
-                      if (i < _data.recentTransactions.length - 1)
-                        const Divider(
-                          color: Color(0xFF202024),
-                          height: 1,
-                          thickness: 1,
-                          indent: 74,
-                          endIndent: 16,
-                        ),
-                    ],
-                  ],
-                ),
         ),
       ],
     );

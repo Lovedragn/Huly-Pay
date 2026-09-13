@@ -32,13 +32,10 @@ void main() {
     expect(find.text('Scan'), findsOneWidget);
     expect(find.text('More'), findsOneWidget);
 
-    // Verify BarChart from fl_chart & transactions
+    // Verify BarChart from fl_chart & verify Recent Transactions section is removed from Home
     expect(find.byType(BarChart), findsOneWidget);
     expect(find.text('Spending This Month'), findsOneWidget);
-    expect(find.text('Recent Transactions'), findsOneWidget);
-    expect(find.text('Swiggy'), findsOneWidget);
-    expect(find.text('Amazon'), findsOneWidget);
-    expect(find.text('Salary'), findsOneWidget);
+    expect(find.text('Recent Transactions'), findsNothing);
 
     // Verify CustomBottomNavBar and its tabs
     expect(find.byType(CustomBottomNavBar), findsOneWidget);
