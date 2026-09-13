@@ -9,6 +9,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
@@ -42,8 +44,17 @@ public class Payment {
     @Column(name = "upi_transaction_id")
     private String upiTransactionId;
 
+    @Column(name = "upi_id")
+    private String upiId;
+
     @Column(name = "merchant_name")
     private String merchantName;
+
+    @Column(name = "payment_method")
+    private String paymentMethod;
+
+    @Column(name = "transaction_reference")
+    private String transactionReference;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
@@ -51,6 +62,19 @@ public class Payment {
     private PaymentStatus status = PaymentStatus.INITIATED;
 
     private String provider;
+
+    private Double latitude;
+
+    private Double longitude;
+
+    @Column(name = "location_accuracy_meters")
+    private Double locationAccuracyMeters;
+
+    @Column(name = "payment_date")
+    private LocalDate paymentDate;
+
+    @Column(name = "payment_time")
+    private LocalTime paymentTime;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -60,3 +84,4 @@ public class Payment {
     @Column(name = "updated_at")
     private Instant updatedAt;
 }
+

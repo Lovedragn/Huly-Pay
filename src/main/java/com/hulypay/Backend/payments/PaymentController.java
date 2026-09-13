@@ -2,6 +2,7 @@ package com.hulypay.backend.payments;
 
 import com.hulypay.backend.payments.dto.CreatePaymentRequest;
 import com.hulypay.backend.payments.dto.PaymentResponse;
+import com.hulypay.backend.payments.dto.ReconcilePaymentRequest;
 import com.hulypay.backend.users.User;
 import com.hulypay.backend.users.UserService;
 import jakarta.validation.Valid;
@@ -46,5 +47,16 @@ public class PaymentController {
     ) {
         User user = userService.getUserFromJwt(jwt);
         return ResponseEntity.ok(paymentService.getPaymentById(user, id));
+    }
+
+    @PutMapping("/{id}/reconcile")
+    public ResponseEntity<PaymentResponse> reconcilePayment(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable UUID id,
+            @Valid @RequestBody ReconcilePaymentRequest request
+    ) {
+        User user = userService.getUserFromJwt(jwt);
+        PaymentResponse response = paymentService.reconcilePayment(user, id, request);
+        return ResponseEntity.ok(response);
     }
 }

@@ -12,7 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hulypay.backend.payments.dto.ReconcilePaymentRequest;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import jakarta.annotation.PostConstruct;
+import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,6 +29,18 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final ExpenseRepository expenseRepository;
+    private final JdbcTemplate jdbcTemplate;
+
+    @PostConstruct
+    public void ensurePaymentStatusConstraint() {
+        try {
+            jdbcTemplate.execute("ALTER TABLE payments DROP CONSTRAINT IF EXISTS payments_status_check");
+            jdbcTemplate.execute("ALTER TABLE payments ADD CONSTRAINT payments_status_check CHECK (status IN ('INITIATED', 'PAYMENT_INITIATED', 'PENDING', 'CONFIRMED', 'SUCCESS', 'FAILED', 'CANCELLED', 'UNKNOWN'))");
+            log.info("Ensured payments_status_check constraint permits Phase 3 lifecycle statuses");
+        } catch (Exception e) {
+            log.warn("Payment status constraint notice: {}", e.getMessage());
+        }
+    }
 
     @Transactional
     public PaymentResponse createPayment(User user, CreatePaymentRequest request) {
@@ -44,19 +62,75 @@ public class PaymentService {
                 ? request.getCurrency().toUpperCase()
                 : "INR";
 
+        LocalDate paymentDate = request.getPaymentDate() != null ? request.getPaymentDate() : LocalDate.now();
+        LocalTime paymentTime = request.getPaymentTime() != null ? request.getPaymentTime() : LocalTime.now();
+        String paymentMethod = (request.getPaymentMethod() != null && !request.getPaymentMethod().isBlank())
+                ? request.getPaymentMethod()
+                : "UPI";
+
         Payment payment = Payment.builder()
                 .user(user)
                 .expense(expense)
                 .amount(request.getAmount())
                 .currency(currency)
                 .upiTransactionId(request.getUpiTransactionId())
+                .upiId(request.getUpiId())
                 .merchantName(request.getMerchantName())
+                .paymentMethod(paymentMethod)
+                .transactionReference(request.getTransactionReference())
                 .status(initialStatus)
                 .provider(request.getProvider())
+                .latitude(request.getLatitude())
+                .longitude(request.getLongitude())
+                .locationAccuracyMeters(request.getLocationAccuracyMeters())
+                .paymentDate(paymentDate)
+                .paymentTime(paymentTime)
                 .build();
 
         Payment saved = paymentRepository.save(payment);
         log.info("Recorded payment {} with status {} for user {}", saved.getId(), saved.getStatus(), user.getId());
+        return PaymentResponse.fromEntity(saved);
+    }
+
+    @Transactional
+    public PaymentResponse reconcilePayment(User user, UUID id, ReconcilePaymentRequest request) {
+        Payment payment = paymentRepository.findByIdAndUserId(id, user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Payment not found with ID: " + id));
+
+        payment.setStatus(request.getStatus());
+        if (request.getUpiTransactionId() != null && !request.getUpiTransactionId().isBlank()) {
+            payment.setUpiTransactionId(request.getUpiTransactionId());
+        }
+        if (request.getTransactionReference() != null && !request.getTransactionReference().isBlank()) {
+            payment.setTransactionReference(request.getTransactionReference());
+        }
+
+        // Link/create expense if confirmed or success
+        if ((request.getStatus() == PaymentStatus.CONFIRMED || request.getStatus() == PaymentStatus.SUCCESS)
+                && payment.getExpense() == null) {
+            String payeeDesc = payment.getMerchantName() != null ? payment.getMerchantName()
+                    : (payment.getUpiId() != null ? payment.getUpiId() : "Merchant");
+
+            Expense expense = Expense.builder()
+                    .user(user)
+                    .amount(payment.getAmount())
+                    .currency(payment.getCurrency())
+                    .merchantName(payment.getMerchantName())
+                    .paymentMethod(payment.getPaymentMethod())
+                    .upiTransactionId(payment.getUpiTransactionId())
+                    .status("COMPLETED")
+                    .latitude(payment.getLatitude())
+                    .longitude(payment.getLongitude())
+                    .transactionTime(payment.getCreatedAt() != null ? payment.getCreatedAt() : Instant.now())
+                    .description("Payment to " + payeeDesc)
+                    .build();
+
+            Expense savedExpense = expenseRepository.save(expense);
+            payment.setExpense(savedExpense);
+        }
+
+        Payment saved = paymentRepository.save(payment);
+        log.info("Reconciled payment {} to status {} for user {}", saved.getId(), saved.getStatus(), user.getId());
         return PaymentResponse.fromEntity(saved);
     }
 
