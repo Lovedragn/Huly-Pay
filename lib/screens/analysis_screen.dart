@@ -4,8 +4,10 @@ import '../data/mock_data.dart';
 import '../models/dashboard_data.dart';
 import '../models/payment_model.dart';
 import '../repositories/payment_repository.dart';
+import '../theme/chart_colors.dart';
 import '../widgets/analysis_category_pie_chart.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
+import '../widgets/spending_heatmap.dart';
 import 'home_dashboard_screen.dart';
 import 'scan_and_pay_screen.dart';
 import 'transactions_screen.dart';
@@ -13,12 +15,14 @@ import 'transactions_screen.dart';
 class AnalysisScreen extends StatefulWidget {
   final List<CategorySpendingItem>? initialCategories;
   final String? totalSpent;
+  final List<PaymentModel>? initialPayments;
   final bool isEmbedded;
 
   const AnalysisScreen({
     super.key,
     this.initialCategories,
     this.totalSpent,
+    this.initialPayments,
     this.isEmbedded = false,
   });
 
@@ -29,12 +33,15 @@ class AnalysisScreen extends StatefulWidget {
 class _AnalysisScreenState extends State<AnalysisScreen> {
   late List<CategorySpendingItem> _categories;
   late String _totalSpent;
+  List<PaymentModel> _allPayments = [];
   String _selectedPeriod = 'This Month';
   final List<String> _periodOptions = const [
+    'Days',
+    'Weeks',
     'This Month',
-    'Last Month',
-    'Last 3 Months',
-    'This Year',
+    '3 Months',
+    '6 Months',
+    '1 Year',
   ];
 
   @override
@@ -45,9 +52,12 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
       isTest = Platform.environment.containsKey('FLUTTER_TEST');
     } catch (_) {}
 
-    if (widget.initialCategories != null) {
+    if (widget.initialPayments != null) {
+      _allPayments = List.from(widget.initialPayments!);
+      _filterAndRecalculate();
+    } else if (widget.initialCategories != null) {
       _categories = widget.initialCategories!;
-      _totalSpent = widget.totalSpent ?? '₹12,480';
+      _totalSpent = widget.totalSpent ?? (_categories.isEmpty ? '₹0' : '₹12,480');
     } else if (isTest) {
       _categories = MockData.analysisCategoryItems;
       _totalSpent = widget.totalSpent ?? '₹12,480';
@@ -62,25 +72,87 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     // 1. Read SQLite cached payments first
     try {
       final cached = await PaymentRepository().getCachedPayments();
-      if (mounted) {
-        _processPayments(cached);
+      if (mounted && cached.isNotEmpty) {
+        _setAllPayments(cached);
       }
     } catch (_) {}
 
     // 2. Fetch fresh payments from backend and update SQLite
     try {
       final payments = await PaymentRepository().getPayments(forceRefresh: true);
-      if (mounted) {
-        _processPayments(payments);
+      if (mounted && payments.isNotEmpty) {
+        _setAllPayments(payments);
       }
     } catch (_) {}
   }
 
-  void _processPayments(List<PaymentModel> payments) {
-    if (!mounted) return;
+  void _setAllPayments(List<PaymentModel> payments) {
+    _allPayments = payments.where((p) => p.status.toUpperCase() != 'FAILED').toList();
+    _filterAndRecalculate();
+  }
 
-    final valid = payments.where((p) => p.status.toUpperCase() != 'FAILED').toList();
-    if (valid.isEmpty) {
+  DateTime _getCutoffForPeriod(String period) {
+    final now = DateTime.now();
+    final clean = period.toLowerCase().trim();
+    if (clean.contains('day')) {
+      return now.subtract(const Duration(days: 7));
+    } else if (clean.contains('week')) {
+      return now.subtract(const Duration(days: 14));
+    } else if (clean.contains('3') || clean.contains('three')) {
+      return DateTime(now.year, now.month - 2, 1);
+    } else if (clean.contains('6') || clean.contains('six')) {
+      return DateTime(now.year, now.month - 5, 1);
+    } else if (clean.contains('year')) {
+      return DateTime(now.year - 1, now.month, 1);
+    } else {
+      // Month / This Month
+      return DateTime(now.year, now.month, 1);
+    }
+  }
+
+  String _getCenterLabel(String period) {
+    final clean = period.toLowerCase().trim();
+    if (clean.contains('day')) {
+      return 'Spent last 7 days';
+    } else if (clean.contains('week')) {
+      return 'Spent last 2 weeks';
+    } else if (clean.contains('3') || clean.contains('three')) {
+      return 'Spent last 3 months';
+    } else if (clean.contains('6') || clean.contains('six')) {
+      return 'Spent last 6 months';
+    } else if (clean.contains('year')) {
+      return 'Spent this year';
+    } else {
+      return 'Spent this month';
+    }
+  }
+
+  void _filterAndRecalculate() {
+    if (!mounted) return;
+    if (_allPayments.isEmpty) {
+      if (widget.initialCategories != null) {
+        setState(() {
+          _categories = widget.initialCategories!;
+          _totalSpent = widget.totalSpent ?? (_categories.isEmpty ? '₹0' : '₹12,480');
+        });
+      }
+      return;
+    }
+
+    final cutoff = _getCutoffForPeriod(_selectedPeriod);
+    final filtered = _allPayments.where((p) {
+      if (p.status.toUpperCase() == 'FAILED') return false;
+      final dateStr = p.createdAt ?? p.paymentDate;
+      if (dateStr == null) return false;
+      try {
+        final dt = DateTime.parse(dateStr);
+        return dt.isAfter(cutoff.subtract(const Duration(seconds: 1)));
+      } catch (_) {
+        return false;
+      }
+    }).toList();
+
+    if (filtered.isEmpty) {
       setState(() {
         _totalSpent = '₹0';
         _categories = [];
@@ -91,22 +163,14 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     double total = 0;
     final Map<String, double> categorySums = {};
 
-    for (final p in valid) {
+    for (final p in filtered) {
       total += p.amount;
       String cat = p.merchantName?.trim() ?? 'Other';
       if (cat.isEmpty) cat = 'Other';
       categorySums[cat] = (categorySums[cat] ?? 0) + p.amount;
     }
 
-    final colors = [
-      const Color(0xFF007AFF),
-      const Color(0xFFFF9500),
-      const Color(0xFF30D158),
-      const Color(0xFFAF52DE),
-      const Color(0xFFFF2D55),
-      const Color(0xFF5856D6),
-      const Color(0xFF64D2FF),
-    ];
+    final colors = AppChartColors.globalPalette;
 
     int colorIdx = 0;
     final List<CategorySpendingItem> computed = [];
@@ -180,6 +244,12 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
           AnalysisCategoryPieChart(
             items: _categories,
             totalAmount: _totalSpent,
+            centerLabel: _getCenterLabel(_selectedPeriod),
+          ),
+          const SizedBox(height: 24),
+          SpendingHeatmap(
+            payments: _allPayments,
+            period: _selectedPeriod,
           ),
           const SizedBox(height: 28),
           _buildCategoryList(),
@@ -242,6 +312,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
             setState(() {
               _selectedPeriod = val;
             });
+            _filterAndRecalculate();
           },
           color: const Color(0xFF1E1E24),
           shape: RoundedRectangleBorder(

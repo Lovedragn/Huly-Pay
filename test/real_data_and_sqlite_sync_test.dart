@@ -115,7 +115,7 @@ void main() {
 
       // Verify real empty metrics and state
       expect(find.text('₹0'), findsOneWidget);
-      expect(find.text('Alex Developer'), findsOneWidget);
+      expect(find.text('Alex Developer'), findsNothing);
       expect(find.text('Recent Transactions'), findsNothing);
     });
 

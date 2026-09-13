@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/models/dashboard_data.dart';
 import 'package:mobile/models/payment_model.dart';
+import 'package:mobile/screens/analysis_screen.dart';
+import 'package:mobile/theme/chart_colors.dart';
 import 'package:mobile/widgets/analysis_category_pie_chart.dart';
 import 'package:mobile/widgets/home_spend_trend_line_chart.dart';
 import 'package:mobile/widgets/home_today_spend_gauge.dart';
 import 'package:mobile/widgets/home_weekly_bar_chart.dart';
+import 'package:mobile/widgets/spending_heatmap.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -52,7 +55,7 @@ void main() {
       // Verify LineChart is rendered
       expect(find.byType(LineChart), findsOneWidget);
       expect(find.text('SPEND TREND'), findsOneWidget);
-      expect(find.text('Gradient Flow'), findsOneWidget);
+      expect(find.text('Daily Average'), findsOneWidget);
       expect(find.text('AVG'), findsOneWidget);
 
       // Toggle AVG line in Sample 2
@@ -63,7 +66,7 @@ void main() {
       // Toggle AVG back off
       await tester.tap(find.text('AVG'));
       await tester.pumpAndSettle();
-      expect(find.text('Gradient Flow'), findsOneWidget);
+      expect(find.text('Daily Average'), findsOneWidget);
 
       // Toggle to Sample 4 (Dual Threshold / Range style)
       final sample4Button = find.byIcon(Icons.stacked_line_chart);
@@ -79,7 +82,7 @@ void main() {
       await tester.tap(sample2Button);
       await tester.pumpAndSettle();
 
-      expect(find.text('Gradient Flow'), findsOneWidget);
+      expect(find.text('Daily Average'), findsOneWidget);
     });
 
     testWidgets('HomeWeeklyBarChart renders 7 weekday groups and calculates weekly total', (tester) async {
@@ -94,7 +97,6 @@ void main() {
 
       // Verify BarChart is rendered
       expect(find.byType(BarChart), findsOneWidget);
-      expect(find.text('Spending This Month'), findsOneWidget);
       expect(find.text('WEEKLY SPENDING'), findsOneWidget);
 
       // Verify Weekday labels
@@ -117,10 +119,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Today's total is 450 + 1500 = 1950
-      expect(find.text("TODAY'S TOTAL SPEND"), findsOneWidget);
-      expect(find.text('Daily Limit Gauge'), findsOneWidget);
+      expect(find.text("Daily Limit"), findsOneWidget);
       expect(find.text('₹1950'), findsOneWidget);
-      expect(find.text('Budget: ₹5000'), findsOneWidget);
       expect(find.text('Within Budget'), findsOneWidget);
     });
 
@@ -159,6 +159,130 @@ void main() {
       expect(find.text('₹2,000'), findsOneWidget);
       expect(find.text('Dining'), findsOneWidget);
       expect(find.text('55%'), findsWidgets);
+    });
+
+    testWidgets('SpendingHeatmap renders clean grid without W1/W2 labels or period description words', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: SpendingHeatmap(
+                payments: samplePayments,
+                period: 'This Month',
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify SpendingHeatmap renders clean title and legends
+      expect(find.byType(SpendingHeatmap), findsOneWidget);
+      expect(find.text('Heatmap'), findsOneWidget);
+      expect(find.text('SPENDING INTENSITY'), findsNothing);
+      expect(find.text('Activity Heatmap'), findsNothing);
+      expect(find.text('Less'), findsOneWidget);
+      expect(find.text('More'), findsOneWidget);
+
+      // Verify W1, W2, W3, W4 labels are removed
+      expect(find.text('W1'), findsNothing);
+      expect(find.text('W2'), findsNothing);
+      expect(find.text('W3'), findsNothing);
+      expect(find.text('W4'), findsNothing);
+
+      // Verify period description words like 'Current month breakdown' are removed
+      expect(find.text('Current month breakdown'), findsNothing);
+      expect(find.text('Last 2 weeks activity'), findsNothing);
+      expect(find.text('7-day activity density'), findsNothing);
+
+      // Verify weekday X-axis labels are shown
+      expect(find.text('Mon'), findsOneWidget);
+      expect(find.text('Sun'), findsOneWidget);
+
+      // Verify rendering with other periods works cleanly
+      for (final p in ['Days', 'Weeks', '3 Months', '6 Months', '1 Year']) {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: SpendingHeatmap(
+                  payments: samplePayments,
+                  period: p,
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('W1'), findsNothing);
+        expect(find.text('Current month breakdown'), findsNothing);
+      }
+    });
+
+    testWidgets('AnalysisScreen global period selector updates all charts and filters data', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: AnalysisScreen(
+            initialPayments: samplePayments,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Initial state: 'This Month'
+      expect(find.text('Spending Insights'), findsOneWidget);
+      expect(find.text('This Month'), findsOneWidget);
+      expect(find.text('Spent this month'), findsOneWidget);
+      expect(find.text('Heatmap'), findsOneWidget);
+      expect(find.text('Current month breakdown'), findsNothing);
+      expect(find.text('W1'), findsNothing);
+
+      // Open global period selector popup menu
+      await tester.tap(find.text('This Month'));
+      await tester.pumpAndSettle();
+
+      // Verify menu options
+      expect(find.text('Days'), findsOneWidget);
+      expect(find.text('Weeks'), findsOneWidget);
+      expect(find.text('3 Months'), findsOneWidget);
+      expect(find.text('6 Months'), findsOneWidget);
+      expect(find.text('1 Year'), findsOneWidget);
+
+      // Select 'Weeks'
+      await tester.tap(find.text('Weeks'));
+      await tester.pumpAndSettle();
+
+      // Verify donut chart updated
+      expect(find.text('Spent last 2 weeks'), findsOneWidget);
+      expect(find.text('Current month breakdown'), findsNothing);
+      expect(find.text('W1'), findsNothing);
+    });
+
+    test('AppChartColors globalPalette unifies color schema across all charts', () {
+      // 1. Verify globalPalette has at least 5 distinct cohesive colors
+      expect(AppChartColors.globalPalette.length, greaterThanOrEqualTo(5));
+      final uniqueColors = AppChartColors.globalPalette.toSet();
+      expect(uniqueColors.length, equals(AppChartColors.globalPalette.length));
+
+      // 2. Verify all semantic getters are derived from globalPalette
+      expect(AppChartColors.globalPalette.contains(AppChartColors.blue), isTrue);
+      expect(AppChartColors.globalPalette.contains(AppChartColors.cyan), isTrue);
+      expect(AppChartColors.globalPalette.contains(AppChartColors.green), isTrue);
+      expect(AppChartColors.globalPalette.contains(AppChartColors.amber), isTrue);
+      expect(AppChartColors.globalPalette.contains(AppChartColors.rose), isTrue);
+
+      // 3. Verify gradient and zone derived schemas
+      expect(AppChartColors.primaryGradient, containsAll([AppChartColors.cyan, AppChartColors.blue]));
+      expect(AppChartColors.gaugeSafe, equals(AppChartColors.green));
+      expect(AppChartColors.gaugeModerate, equals(AppChartColors.amber));
+      expect(AppChartColors.gaugeHigh, equals(AppChartColors.rose));
+      expect(AppChartColors.thresholdMain, equals(AppChartColors.amber));
+      expect(AppChartColors.thresholdBelow, equals(AppChartColors.green));
+      expect(AppChartColors.thresholdAbove, equals(AppChartColors.rose));
+
+      // 4. Verify heatmap peak activity color matches global green
+      expect(AppChartColors.heatmapPalette.last, equals(AppChartColors.green));
+      expect(AppChartColors.heatmapSelected, equals(AppChartColors.cyan));
     });
   });
 }

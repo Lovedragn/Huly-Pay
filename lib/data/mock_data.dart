@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/dashboard_data.dart';
+import '../theme/chart_colors.dart';
 
 class MockData {
   static const DashboardData dashboardData = DashboardData(
@@ -184,37 +185,37 @@ class MockData {
       title: 'Food & Dining',
       percentage: 32,
       amount: '₹4,000',
-      color: Color(0xFFAF52DE),
+      color: AppChartColors.blue,
     ),
     CategorySpendingItem(
       title: 'Shopping',
       percentage: 24,
       amount: '₹3,000',
-      color: Color(0xFFFF2D55),
+      color: AppChartColors.amber,
     ),
     CategorySpendingItem(
       title: 'Transport',
       percentage: 18,
       amount: '₹2,200',
-      color: Color(0xFF00C7BE),
+      color: AppChartColors.green,
     ),
     CategorySpendingItem(
       title: 'Bills & Utilities',
       percentage: 14,
       amount: '₹1,700',
-      color: Color(0xFFFFCC00),
+      color: AppChartColors.purple,
     ),
     CategorySpendingItem(
       title: 'Entertainment',
       percentage: 6,
       amount: '₹800',
-      color: Color(0xFF007AFF),
+      color: AppChartColors.rose,
     ),
     CategorySpendingItem(
       title: 'Others',
       percentage: 6,
       amount: '₹780',
-      color: Colors.white,
+      color: AppChartColors.cyan,
     ),
   ];
 }
