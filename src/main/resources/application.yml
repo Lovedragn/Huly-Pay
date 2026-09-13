@@ -1,4 +1,7 @@
 spring:
+  config:
+    import:
+      - optional:file:.env[.properties]
   application:
     name: huly-pay-backend
 
@@ -28,6 +31,9 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${SUPABASE_URL:https://aszhhxnbzstzemyhcjvi.supabase.co}/auth/v1
+          jws-algorithms:
+            - ES256
+            - RS256
 
 server:
   port: 8080
