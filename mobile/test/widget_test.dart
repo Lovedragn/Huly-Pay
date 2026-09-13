@@ -10,6 +10,7 @@ import 'package:mobile/screens/sign_in_screen.dart';
 import 'package:mobile/screens/single_transaction_screen.dart';
 import 'package:mobile/screens/splash_screen.dart';
 import 'package:mobile/screens/transactions_screen.dart';
+import 'package:mobile/services/auth_service.dart';
 import 'package:mobile/widgets/action_button.dart';
 import 'package:mobile/widgets/custom_bottom_nav_bar.dart';
 
@@ -319,8 +320,9 @@ void main() {
   });
 
   testWidgets(
-      'SplashScreen displays logo, brand elements, and transitions to HomeDashboardScreen',
+      'SplashScreen displays logo, brand elements, and transitions unauthenticated user to SignInScreen',
       (WidgetTester tester) async {
+    await AuthService().signOut();
     await tester.pumpWidget(const HulyPayApp(showSplash: true));
 
     // 1. Verify SplashScreen is loaded with Hulypay branding
@@ -333,26 +335,50 @@ void main() {
     await tester.pump(const Duration(milliseconds: 1500));
     await tester.pumpAndSettle();
 
-    // 3. Verify transition to HomeDashboardScreen
-    expect(find.byType(HomeDashboardScreen), findsOneWidget);
-    expect(find.text('TOTAL SPENT'), findsOneWidget);
+    // 3. Verify transition to SignInScreen when unauthenticated
+    expect(find.byType(SignInScreen), findsOneWidget);
+    expect(find.text('Welcome Back'), findsOneWidget);
   });
 
   testWidgets(
-      'SplashScreen tap anywhere skips directly to HomeDashboardScreen',
+      'SplashScreen tap anywhere skips directly to SignInScreen when unauthenticated',
       (WidgetTester tester) async {
+    await AuthService().signOut();
     await tester.pumpWidget(const HulyPayApp(showSplash: true));
 
     expect(find.byType(SplashScreen), findsOneWidget);
     expect(find.text('Hulypay'), findsOneWidget);
     expect(find.text('Track. Pay. Grow.'), findsOneWidget);
 
-    // Tap splash screen to fast-track/skip
+    // Tap splash screen to fast-track/skip without bypassing auth
     await tester.tap(find.byKey(const Key('splash_gesture_detector')));
     await tester.pumpAndSettle();
 
+    expect(find.byType(SignInScreen), findsOneWidget);
+    expect(find.text('Welcome Back'), findsOneWidget);
+  });
+
+  testWidgets(
+      'SplashScreen with authenticated session transitions to HomeDashboardScreen',
+      (WidgetTester tester) async {
+    await AuthService().signInWithPassword(
+      email: 'session-test@hulypay.com',
+      password: 'pass',
+    );
+    await tester.pumpWidget(const HulyPayApp(showSplash: true));
+
+    expect(find.byType(SplashScreen), findsOneWidget);
+
+    // Advance time past splash duration
+    await tester.pump(const Duration(milliseconds: 1000));
+    await tester.pump(const Duration(milliseconds: 1500));
+    await tester.pumpAndSettle();
+
+    // Authenticated session navigates to HomeDashboardScreen
     expect(find.byType(HomeDashboardScreen), findsOneWidget);
     expect(find.text('TOTAL SPENT'), findsOneWidget);
+
+    await AuthService().signOut();
   });
 
   testWidgets(

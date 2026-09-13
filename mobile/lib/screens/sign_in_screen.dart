@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/auth_service.dart';
 import '../services/api_client.dart';
 import 'home_dashboard_screen.dart';
@@ -23,6 +25,27 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   bool _isLoadingGoogle = false;
   bool _isLoadingGitHub = false;
+  StreamSubscription<AuthState>? _authSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    // Listen to real Supabase OAuth callback redirects
+    _authSubscription = AuthService().onAuthStateChange.listen((data) {
+      if (data.event == AuthChangeEvent.signedIn && data.session != null) {
+        if (mounted) {
+          _syncUserWithBackend();
+          _finishSignIn();
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
+  }
 
   void _finishSignIn() {
     if (widget.onSignInSuccess != null) {
@@ -55,8 +78,12 @@ class _SignInScreenState extends State<SignInScreen> {
     setState(() => _isLoadingGoogle = true);
 
     try {
-      await AuthService().signInWithGoogle();
-      await _syncUserWithBackend();
+      final success = await AuthService().signInWithGoogle();
+      if (success && AuthService().isAuthenticated) {
+        await _syncUserWithBackend();
+        if (!mounted) return;
+        _finishSignIn();
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -71,9 +98,6 @@ class _SignInScreenState extends State<SignInScreen> {
         setState(() => _isLoadingGoogle = false);
       }
     }
-
-    if (!mounted) return;
-    _finishSignIn();
   }
 
   void _handleGitHubSignIn() async {
@@ -81,8 +105,12 @@ class _SignInScreenState extends State<SignInScreen> {
     setState(() => _isLoadingGitHub = true);
 
     try {
-      await AuthService().signInWithGitHub();
-      await _syncUserWithBackend();
+      final success = await AuthService().signInWithGitHub();
+      if (success && AuthService().isAuthenticated) {
+        await _syncUserWithBackend();
+        if (!mounted) return;
+        _finishSignIn();
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -97,9 +125,6 @@ class _SignInScreenState extends State<SignInScreen> {
         setState(() => _isLoadingGitHub = false);
       }
     }
-
-    if (!mounted) return;
-    _finishSignIn();
   }
 
   void _handleBack() {
@@ -107,14 +132,6 @@ class _SignInScreenState extends State<SignInScreen> {
       widget.onBackTap!();
     } else if (Navigator.of(context).canPop()) {
       Navigator.of(context).pop();
-    } else {
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder: (_, _, _) => const HomeDashboardScreen(),
-          transitionsBuilder: (_, animation, _, child) =>
-              FadeTransition(opacity: animation, child: child),
-        ),
-      );
     }
   }
 

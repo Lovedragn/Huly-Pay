@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -10,7 +11,21 @@ class AuthService {
   static bool _initialized = false;
   static bool get isInitialized => _initialized;
 
-  // Development mock fallback if Supabase client is uninitialized or anon key is missing
+  // Development / test mock fallback, strictly isolated from real application flow
+  static bool _allowDevMock = false;
+  static bool get isTestEnvironment {
+    try {
+      return Platform.environment.containsKey('FLUTTER_TEST');
+    } catch (_) {
+      return false;
+    }
+  }
+  static bool get isDevMockAllowed => _allowDevMock || isTestEnvironment;
+
+  static void enableMockForTesting([bool allow = true]) {
+    _allowDevMock = allow;
+  }
+
   static User? _devUser;
   static String? _devToken;
 
@@ -20,7 +35,7 @@ class AuthService {
   }) async {
     if (anonKey.trim().isEmpty) {
       if (kDebugMode) {
-        print('AuthService: SUPABASE_ANON_KEY is empty. Supabase client will run in dev/mock mode.');
+        print('AuthService: SUPABASE_ANON_KEY is empty. Supabase authentication is not configured.');
       }
       _initialized = false;
       return;
@@ -51,10 +66,13 @@ class AuthService {
   }
 
   Session? get currentSession => _client?.auth.currentSession;
-  User? get currentUser => _client?.auth.currentUser ?? _devUser;
+  User? get currentUser => _client?.auth.currentUser ?? (isDevMockAllowed ? _devUser : null);
 
   String? get currentAccessToken {
-    return _client?.auth.currentSession?.accessToken ?? _devToken;
+    if (_client?.auth.currentSession?.accessToken != null) {
+      return _client!.auth.currentSession!.accessToken;
+    }
+    return isDevMockAllowed ? _devToken : null;
   }
 
   bool get isAuthenticated => currentAccessToken != null && currentAccessToken!.isNotEmpty;
@@ -78,7 +96,13 @@ class AuthService {
       );
     }
 
-    // Local dev mock mode
+    if (!isDevMockAllowed) {
+      throw const AuthException(
+        'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY in .env.',
+      );
+    }
+
+    // Isolated test mock mode
     _devUser = User(
       id: '00000000-0000-0000-0000-000000000001',
       appMetadata: {'provider': 'email'},
@@ -112,7 +136,13 @@ class AuthService {
       );
     }
 
-    // Local dev mock mode
+    if (!isDevMockAllowed) {
+      throw const AuthException(
+        'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY in .env.',
+      );
+    }
+
+    // Isolated test mock mode
     _devUser = User(
       id: '00000000-0000-0000-0000-000000000001',
       appMetadata: {'provider': 'email'},
@@ -141,7 +171,13 @@ class AuthService {
       );
     }
 
-    // Local dev fallback
+    if (!isDevMockAllowed) {
+      throw const AuthException(
+        'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY in .env.',
+      );
+    }
+
+    // Isolated test fallback only
     _devUser = User(
       id: '00000000-0000-0000-0000-000000000002',
       appMetadata: {'provider': 'google'},
@@ -162,7 +198,13 @@ class AuthService {
       );
     }
 
-    // Local dev fallback
+    if (!isDevMockAllowed) {
+      throw const AuthException(
+        'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY in .env.',
+      );
+    }
+
+    // Isolated test fallback only
     _devUser = User(
       id: '00000000-0000-0000-0000-000000000003',
       appMetadata: {'provider': 'github'},

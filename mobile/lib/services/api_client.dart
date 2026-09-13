@@ -72,7 +72,10 @@ class ApiClient {
         onRequest: (options, handler) {
           final token = AuthService().currentAccessToken;
           if (token != null && token.isNotEmpty) {
-            options.headers['Authorization'] = 'Bearer $token';
+            // Ensure only genuine Supabase JWTs are sent in real runtime
+            if (!token.startsWith('mock_') || AuthService.isTestEnvironment) {
+              options.headers['Authorization'] = 'Bearer $token';
+            }
           }
           return handler.next(options);
         },
