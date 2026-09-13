@@ -30,6 +30,11 @@ public class UserService {
             email = "user-" + userId + "@hulypay.local";
         }
 
+        String phoneNumber = jwt.getClaimAsString("phone");
+        if (phoneNumber != null && phoneNumber.isBlank()) {
+            phoneNumber = null;
+        }
+
         String authProvider = "email";
         Object appMetadataObj = jwt.getClaim("app_metadata");
         if (appMetadataObj instanceof Map<?, ?> appMetadata) {
@@ -42,6 +47,7 @@ public class UserService {
         String firstName = null;
         String lastName = null;
         String avatarUrl = null;
+        String fullName = null;
 
         Object userMetadataObj = jwt.getClaim("user_metadata");
         if (userMetadataObj instanceof Map<?, ?> userMetadata) {
@@ -51,18 +57,41 @@ public class UserService {
             if (userMetadata.get("last_name") != null) {
                 lastName = userMetadata.get("last_name").toString();
             }
-            if (firstName == null && userMetadata.get("full_name") != null) {
-                String fullName = userMetadata.get("full_name").toString();
-                String[] parts = fullName.trim().split("\\s+", 2);
-                firstName = parts[0];
-                if (parts.length > 1) {
-                    lastName = parts[1];
-                }
+            if (userMetadata.get("full_name") != null) {
+                fullName = userMetadata.get("full_name").toString();
+            } else if (userMetadata.get("name") != null) {
+                fullName = userMetadata.get("name").toString();
             }
             if (userMetadata.get("avatar_url") != null) {
                 avatarUrl = userMetadata.get("avatar_url").toString();
             } else if (userMetadata.get("picture") != null) {
                 avatarUrl = userMetadata.get("picture").toString();
+            }
+            if (phoneNumber == null && userMetadata.get("phone") != null) {
+                phoneNumber = userMetadata.get("phone").toString();
+            }
+        }
+
+        // Derive fullName if not explicitly provided
+        if (fullName == null || fullName.isBlank()) {
+            if (firstName != null && !firstName.isBlank() && lastName != null && !lastName.isBlank()) {
+                fullName = firstName + " " + lastName;
+            } else if (firstName != null && !firstName.isBlank()) {
+                fullName = firstName;
+            } else if (lastName != null && !lastName.isBlank()) {
+                fullName = lastName;
+            } else {
+                int atIndex = email.indexOf('@');
+                fullName = atIndex > 0 ? email.substring(0, atIndex) : "User";
+            }
+        }
+
+        // Derive firstName / lastName from fullName if missing
+        if (firstName == null && fullName != null && !fullName.isBlank()) {
+            String[] parts = fullName.trim().split("\\s+", 2);
+            firstName = parts[0];
+            if (parts.length > 1 && lastName == null) {
+                lastName = parts[1];
             }
         }
 
@@ -70,6 +99,8 @@ public class UserService {
         final String finalAuthProvider = authProvider;
         final String finalFirstName = firstName;
         final String finalLastName = lastName;
+        final String finalFullName = fullName;
+        final String finalPhoneNumber = phoneNumber;
         final String finalAvatarUrl = avatarUrl;
 
         return userRepository.findById(userId)
@@ -77,6 +108,18 @@ public class UserService {
                     boolean modified = false;
                     if (existingUser.getEmail() == null || !existingUser.getEmail().equals(finalEmail)) {
                         existingUser.setEmail(finalEmail);
+                        modified = true;
+                    }
+                    if (existingUser.getFullName() == null || existingUser.getFullName().isBlank()) {
+                        existingUser.setFullName(finalFullName);
+                        modified = true;
+                    }
+                    if (existingUser.getActive() == null) {
+                        existingUser.setActive(true);
+                        modified = true;
+                    }
+                    if (existingUser.getPhoneNumber() == null && finalPhoneNumber != null) {
+                        existingUser.setPhoneNumber(finalPhoneNumber);
                         modified = true;
                     }
                     if (existingUser.getFirstName() == null && finalFirstName != null) {
@@ -102,8 +145,11 @@ public class UserService {
                     User newUser = User.builder()
                             .id(userId)
                             .email(finalEmail)
+                            .fullName(finalFullName)
                             .firstName(finalFirstName)
                             .lastName(finalLastName)
+                            .phoneNumber(finalPhoneNumber)
+                            .active(true)
                             .avatarUrl(finalAvatarUrl)
                             .authProvider(finalAuthProvider)
                             .providerSubject(sub)
@@ -124,6 +170,14 @@ public class UserService {
         }
         if (request.getLastName() != null) {
             user.setLastName(request.getLastName());
+        }
+        if (request.getFirstName() != null || request.getLastName() != null) {
+            String fn = user.getFirstName() != null ? user.getFirstName() : "";
+            String ln = user.getLastName() != null ? user.getLastName() : "";
+            String combined = (fn + " " + ln).trim();
+            if (!combined.isEmpty()) {
+                user.setFullName(combined);
+            }
         }
         if (request.getAvatarUrl() != null) {
             user.setAvatarUrl(request.getAvatarUrl());
