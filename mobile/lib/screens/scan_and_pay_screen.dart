@@ -19,6 +19,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   bool _isFlashOn = false;
   bool _isFrontCamera = false;
   bool _isProcessing = false;
+  DateTime? _lastInvalidQrToastTime;
 
   @override
   void initState() {
@@ -27,6 +28,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       detectionSpeed: DetectionSpeed.noDuplicates,
       facing: CameraFacing.back,
       torchEnabled: false,
+      formats: const [BarcodeFormat.qrCode],
     );
   }
 
@@ -93,10 +95,45 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     if (_isProcessing) return;
     final barcode = capture.barcodes.firstOrNull;
     if (barcode == null || barcode.rawValue == null) return;
+    final rawValue = barcode.rawValue!.trim();
+    if (rawValue.isEmpty) return;
 
-    final upiData = UpiService.parseUpiUri(barcode.rawValue!);
+    final upiData = UpiService.parseUpiUri(rawValue);
     if (upiData != null) {
       _processPaymentFlow(upiData);
+    } else {
+      _handleInvalidBarcodeDetected();
+    }
+  }
+
+  void _handleInvalidBarcodeDetected() {
+    final now = DateTime.now();
+    if (_lastInvalidQrToastTime != null &&
+        now.difference(_lastInvalidQrToastTime!) < const Duration(seconds: 3)) {
+      return;
+    }
+    _lastInvalidQrToastTime = now;
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'This is not a valid UPI payment QR.',
+            style: TextStyle(
+              fontFamily: 'Google Sans',
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          backgroundColor: const Color(0xFFD93025),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -110,7 +147,12 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     } catch (_) {}
 
     if (!mounted) return;
-    await _showPaymentConfirmationModal(upiData);
+
+    // Capture GPS location before opening payment confirmation
+    final locationResult = await LocationService().getPaymentLocationWithStatus();
+
+    if (!mounted) return;
+    await _showPaymentConfirmationModal(upiData, locationResult);
 
     if (mounted) {
       setState(() {
@@ -122,20 +164,14 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     }
   }
 
-  Future<void> _showPaymentConfirmationModal(UpiPaymentData upiData) async {
+  Future<void> _showPaymentConfirmationModal(
+    UpiPaymentData upiData,
+    LocationResult locationResult,
+  ) async {
     final amountController = TextEditingController(
       text: upiData.amount != null ? upiData.amount!.toStringAsFixed(2) : '',
     );
-    PaymentLocation? capturedLocation;
-    bool fetchingLocation = true;
-
-    // Trigger location capture concurrently with modal presentation
-    LocationService().getCurrentPaymentLocation().then((loc) {
-      capturedLocation = loc;
-      fetchingLocation = false;
-    }).catchError((_) {
-      fetchingLocation = false;
-    });
+    PaymentLocation? capturedLocation = locationResult.location;
 
     await showModalBottomSheet(
       context: context,
@@ -144,14 +180,9 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       builder: (modalContext) {
         return StatefulBuilder(
           builder: (context, setModalState) {
-            // Check if location finished loading in background
-            if (fetchingLocation) {
-              Future.delayed(const Duration(milliseconds: 400), () {
-                if (modalContext.mounted && fetchingLocation == false) {
-                  setModalState(() {});
-                }
-              });
-            }
+            final hasPayeeName = upiData.payeeName != null && upiData.payeeName!.trim().isNotEmpty;
+            final primaryTitle = hasPayeeName ? upiData.payeeName!.trim() : upiData.upiId;
+            final subtitle = hasPayeeName ? upiData.upiId : 'UPI Payee';
 
             return Padding(
               padding: EdgeInsets.only(
@@ -205,7 +236,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                upiData.payeeName,
+                                primaryTitle,
                                 style: const TextStyle(
                                   fontFamily: 'Google Sans',
                                   fontSize: 18,
@@ -217,7 +248,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                upiData.upiId,
+                                subtitle,
                                 style: const TextStyle(
                                   fontFamily: 'Google Sans',
                                   fontSize: 13,
@@ -246,6 +277,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                       ),
                       decoration: InputDecoration(
                         labelText: 'Amount (INR)',
+                        hintText: 'Enter amount',
+                        hintStyle: const TextStyle(color: Color(0xFF55555C)),
                         labelStyle: const TextStyle(color: Color(0xFF8E8E93)),
                         prefixText: '₹ ',
                         prefixStyle: const TextStyle(
@@ -273,7 +306,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                         border: Border.all(
                           color: capturedLocation != null
                               ? const Color(0xFF28A745).withValues(alpha: 0.4)
-                              : const Color(0xFF33333A),
+                              : const Color(0xFFE5A93C).withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
@@ -281,29 +314,74 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                           Icon(
                             capturedLocation != null
                                 ? Icons.location_on_rounded
-                                : (fetchingLocation ? Icons.hourglass_top_rounded : Icons.location_off_rounded),
+                                : Icons.location_off_rounded,
                             color: capturedLocation != null
                                 ? const Color(0xFF28A745)
                                 : const Color(0xFFE5A93C),
                             size: 20,
                           ),
                           const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              capturedLocation != null
-                                  ? 'GPS: ${capturedLocation!.latitude.toStringAsFixed(4)}, ${capturedLocation!.longitude.toStringAsFixed(4)} (±${capturedLocation!.accuracyMeters.toStringAsFixed(1)}m)'
-                                  : (fetchingLocation
-                                      ? 'Acquiring GPS location...'
-                                      : 'Location unavailable (permission denied or no GPS)'),
-                              style: TextStyle(
-                                fontFamily: 'Google Sans',
-                                fontSize: 12,
-                                color: capturedLocation != null
-                                    ? const Color(0xFFD0D0D5)
-                                    : const Color(0xFF8E8E93),
+                          Builder(
+                            builder: (context) {
+                              final currentLoc = capturedLocation;
+                              return Expanded(
+                                child: Text(
+                                  currentLoc != null
+                                      ? 'GPS: ${currentLoc.latitude.toStringAsFixed(4)}, ${currentLoc.longitude.toStringAsFixed(4)} (±${currentLoc.accuracyMeters.toStringAsFixed(1)}m)'
+                                      : (locationResult.failureReason == LocationFailureReason.serviceDisabled
+                                          ? 'Location disabled: Please turn on GPS'
+                                          : (locationResult.failureReason == LocationFailureReason.permissionDenied
+                                              ? 'Location permission denied'
+                                              : (locationResult.failureReason == LocationFailureReason.permissionDeniedForever
+                                                  ? 'Location permission denied forever'
+                                                  : 'Location unavailable'))),
+                                  style: TextStyle(
+                                    fontFamily: 'Google Sans',
+                                    fontSize: 12,
+                                    color: currentLoc != null
+                                        ? const Color(0xFFD0D0D5)
+                                        : const Color(0xFFE5A93C),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          if (capturedLocation == null)
+                            GestureDetector(
+                              onTap: () async {
+                                if (locationResult.failureReason == LocationFailureReason.permissionDeniedForever) {
+                                  await LocationService.openAppSettings();
+                                } else if (locationResult.failureReason == LocationFailureReason.serviceDisabled) {
+                                  await LocationService.openLocationSettings();
+                                } else {
+                                  final retry = await LocationService().getPaymentLocationWithStatus();
+                                  if (retry.isSuccess && modalContext.mounted) {
+                                    setModalState(() {
+                                      capturedLocation = retry.location;
+                                    });
+                                  }
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF2A2A30),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  locationResult.failureReason == LocationFailureReason.permissionDeniedForever ||
+                                          locationResult.failureReason == LocationFailureReason.serviceDisabled
+                                      ? 'Settings'
+                                      : 'Retry',
+                                  style: const TextStyle(
+                                    fontFamily: 'Google Sans',
+                                    fontSize: 11,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
                         ],
                       ),
                     ),
@@ -331,11 +409,11 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
 
                         Navigator.of(modalContext).pop();
 
-                        // 1. Record pending payment on Spring Boot backend
+                        // 1. Record pending payment on Spring Boot backend (Payment Status: INITIATED)
                         try {
                           final payload = CreatePaymentPayload(
                             amount: parsedAmount,
-                            currency: 'INR',
+                            currency: upiData.currency,
                             merchantName: upiData.payeeName,
                             upiId: upiData.upiId,
                             paymentMethod: 'GPAY',
@@ -348,10 +426,11 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
 
                           final payment = await PaymentRepository().createPayment(payload);
 
-                          // 2. Open external UPI app
+                          // 2. Open external UPI app (Huly.Pay is the intelligent financial layer, not processor)
                           final uri = upiData.buildPaymentUri(customAmount: parsedAmount);
                           await UpiService.launchUpiPayment(uri);
 
+                          // 3. User returns from external UPI application
                           if (mounted) {
                             _showPaymentInitiatedDialog(payment);
                           }
@@ -387,49 +466,179 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   }
 
   void _showPaymentInitiatedDialog(PaymentModel payment) {
+    bool isReconciling = false;
+
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1E1E24),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          'Payment Initiated',
-          style: TextStyle(fontFamily: 'Google Sans', color: Colors.white, fontWeight: FontWeight.w700),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Amount: ₹${payment.amount.toStringAsFixed(2)}',
-              style: const TextStyle(fontFamily: 'Google Sans', color: Colors.white, fontSize: 16),
+      barrierDismissible: false,
+      builder: (ctx) => StatefulBuilder(
+        builder: (dialogCtx, setDialogState) {
+          return AlertDialog(
+            backgroundColor: const Color(0xFF1E1E24),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF007AFF).withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Center(
+                    child: Icon(Icons.send_rounded, color: Color(0xFF007AFF), size: 20),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Payment Initiated',
+                  style: TextStyle(
+                    fontFamily: 'Google Sans',
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 6),
-            Text(
-              'Merchant: ${payment.merchantName ?? payment.upiId ?? "UPI Merchant"}',
-              style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 14),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Amount: ₹${payment.amount.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    fontFamily: 'Google Sans',
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Merchant: ${payment.merchantName ?? payment.upiId ?? "UPI Merchant"}',
+                  style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 14),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Location: ${payment.latitude != null ? "${payment.latitude!.toStringAsFixed(4)}, ${payment.longitude!.toStringAsFixed(4)}" : "Not captured"}',
+                  style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 13),
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    const Text(
+                      'Status: ',
+                      style: TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 13),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF007AFF).withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        payment.status,
+                        style: const TextStyle(
+                          fontFamily: 'Google Sans',
+                          color: Color(0xFF007AFF),
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Payment was launched in your UPI app. If payment completed successfully, tap "Confirm Payment" to reconcile and create your expense entry.',
+                  style: TextStyle(
+                    fontFamily: 'Google Sans',
+                    color: Color(0xFFA0A0A8),
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 6),
-            Text(
-              'Location: ${payment.latitude != null ? "${payment.latitude!.toStringAsFixed(4)}, ${payment.longitude!.toStringAsFixed(4)}" : "Not captured"}',
-              style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 13),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'Status: ${payment.status}',
-              style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF007AFF), fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              _handleBack(0); // Return to home
-            },
-            child: const Text('Back to Home', style: TextStyle(color: Color(0xFF007AFF), fontWeight: FontWeight.w600)),
-          ),
-        ],
+            actions: [
+              TextButton(
+                onPressed: isReconciling
+                    ? null
+                    : () {
+                        Navigator.of(ctx).pop();
+                        _handleBack(0); // Return to home
+                      },
+                child: const Text(
+                  'I\'ll Reconcile Later',
+                  style: TextStyle(color: Color(0xFF8E8E93), fontWeight: FontWeight.w500),
+                ),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF007AFF),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                onPressed: isReconciling
+                    ? null
+                    : () async {
+                        setDialogState(() {
+                          isReconciling = true;
+                        });
+
+                        try {
+                          await PaymentRepository().reconcilePayment(
+                            payment.id,
+                            'CONFIRMED',
+                            transactionReference: payment.transactionReference,
+                          );
+
+                          if (dialogCtx.mounted) {
+                            Navigator.of(ctx).pop();
+                          }
+
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: const Text(
+                                  'Payment confirmed and reconciled to expense successfully!',
+                                  style: TextStyle(fontFamily: 'Google Sans', color: Colors.white),
+                                ),
+                                backgroundColor: const Color(0xFF28A745),
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              ),
+                            );
+                            _handleBack(0); // Return to home
+                          }
+                        } catch (e) {
+                          setDialogState(() {
+                            isReconciling = false;
+                          });
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Reconciliation error: $e'),
+                                backgroundColor: const Color(0xFFD93025),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                child: isReconciling
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Text(
+                        'Confirm Payment',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                      ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

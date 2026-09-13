@@ -379,24 +379,6 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
             ),
           ],
         ),
-        const SizedBox(height: 16),
-        GestureDetector(
-          onTap: _openSettings,
-          behavior: HitTestBehavior.opaque,
-          child: MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: Text(
-              _data.userName,
-              style: const TextStyle(
-                fontFamily: 'Google Sans',
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.4,
-              ),
-            ),
-          ),
-        ),
       ],
     );
   }

@@ -1,6 +1,9 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+
 import '../models/payment_model.dart';
+import '../theme/chart_colors.dart';
 
 /// Speedometer-style gauge chart inspired by gauge_chart_sample3.dart
 /// Combines two rings:
@@ -22,16 +25,16 @@ class HomeTodaySpendGaugeChart extends StatelessWidget {
     final clampedSpend = math.min(todaySpend, dailyBudget * 1.2);
     final ratio = dailyBudget > 0 ? (todaySpend / dailyBudget) : 0.0;
 
-    Color activeColor;
-    String statusText;
+    final Color activeColor;
+    final String statusText;
     if (ratio < 0.50) {
-      activeColor = const Color(0xFF30D158); // Green
+      activeColor = AppChartColors.gaugeSafe;
       statusText = 'Within Budget';
     } else if (ratio < 0.80) {
-      activeColor = const Color(0xFFFFD60A); // Amber
+      activeColor = AppChartColors.gaugeModerate;
       statusText = 'Moderate Spend';
     } else {
-      activeColor = const Color(0xFFFF453A); // Red
+      activeColor = AppChartColors.gaugeHigh;
       statusText = 'Near Limit';
     }
 
@@ -41,10 +44,7 @@ class HomeTodaySpendGaugeChart extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF141416),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: const Color(0xFF222226),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xFF222226), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,7 +56,7 @@ class HomeTodaySpendGaugeChart extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "TODAY'S TOTAL SPEND",
+                    "Daily Limit",
                     style: TextStyle(
                       fontFamily: 'Google Sans',
                       color: Color(0xFF8E8E93),
@@ -66,23 +66,19 @@ class HomeTodaySpendGaugeChart extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 4),
-                  Text(
-                    'Daily Limit Gauge',
-                    style: TextStyle(
-                      fontFamily: 'Google Sans',
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: activeColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: activeColor.withValues(alpha: 0.35)),
+                  border: Border.all(
+                    color: activeColor.withValues(alpha: 0.35),
+                  ),
                 ),
                 child: Text(
                   statusText,
@@ -127,15 +123,6 @@ class HomeTodaySpendGaugeChart extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        Text(
-                          'Budget: ₹${dailyBudget.toStringAsFixed(0)}',
-                          style: const TextStyle(
-                            fontFamily: 'Google Sans',
-                            color: Color(0xFF8E8E93),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -147,9 +134,9 @@ class HomeTodaySpendGaugeChart extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildZoneIndicator('Safe (<50%)', const Color(0xFF30D158)),
-              _buildZoneIndicator('Medium (50-80%)', const Color(0xFFFFD60A)),
-              _buildZoneIndicator('High (>80%)', const Color(0xFFFF453A)),
+              _buildZoneIndicator('Safe (<50%)', AppChartColors.gaugeSafe),
+              _buildZoneIndicator('Medium (50-80%)', AppChartColors.gaugeModerate),
+              _buildZoneIndicator('High (>80%)', AppChartColors.gaugeHigh),
             ],
           ),
         ],
@@ -164,10 +151,7 @@ class HomeTodaySpendGaugeChart extends StatelessWidget {
         Container(
           width: 8,
           height: 8,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 5),
         Text(
@@ -185,7 +169,8 @@ class HomeTodaySpendGaugeChart extends StatelessWidget {
 
   double _computeTodaySpend(List<PaymentModel> payments) {
     final now = DateTime.now();
-    final todayPrefix = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    final todayPrefix =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
 
     double total = 0.0;
     for (final p in payments) {
@@ -220,14 +205,18 @@ class _SpeedometerGaugePainter extends CustomPainter {
     const outerStrokeWidth = 7.0;
     const innerStrokeWidth = 18.0;
     const ringSpacing = 8.0;
-    final innerRadius = outerRadius - (outerStrokeWidth / 2) - ringSpacing - (innerStrokeWidth / 2);
+    final innerRadius =
+        outerRadius -
+        (outerStrokeWidth / 2) -
+        ringSpacing -
+        (innerStrokeWidth / 2);
 
     // 1. Draw Outer Zones Ring (gauge_chart_sample3 zones)
     // Sweep is 180 degrees from math.pi to 2 * math.pi
     final zones = [
-      (from: 0.0, to: 0.50, color: const Color(0xFF30D158)),
-      (from: 0.50, to: 0.80, color: const Color(0xFFFFD60A)),
-      (from: 0.80, to: 1.0, color: const Color(0xFFFF453A)),
+      (from: 0.0, to: 0.50, color: AppChartColors.gaugeSafe),
+      (from: 0.50, to: 0.80, color: AppChartColors.gaugeModerate),
+      (from: 0.80, to: 1.0, color: AppChartColors.gaugeHigh),
     ];
 
     const totalAngle = math.pi;
@@ -235,8 +224,12 @@ class _SpeedometerGaugePainter extends CustomPainter {
 
     for (int i = 0; i < zones.length; i++) {
       final z = zones[i];
-      final start = math.pi + (z.from * totalAngle) + (i == 0 ? 0 : gapAngle / 2);
-      final end = math.pi + (z.to * totalAngle) - (i == zones.length - 1 ? 0 : gapAngle / 2);
+      final start =
+          math.pi + (z.from * totalAngle) + (i == 0 ? 0 : gapAngle / 2);
+      final end =
+          math.pi +
+          (z.to * totalAngle) -
+          (i == zones.length - 1 ? 0 : gapAngle / 2);
       final sweep = math.max(0.01, end - start);
 
       final paint = Paint()
@@ -270,7 +263,9 @@ class _SpeedometerGaugePainter extends CustomPainter {
     );
 
     // 3. Draw Inner Progress Ring Measurement Fill
-    final progressFraction = maxValue > 0 ? (value / maxValue).clamp(0.0, 1.0) : 0.0;
+    final progressFraction = maxValue > 0
+        ? (value / maxValue).clamp(0.0, 1.0)
+        : 0.0;
     if (progressFraction > 0.001) {
       final progressPaint = Paint()
         ..color = activeColor

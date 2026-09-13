@@ -3,7 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 class UpiPaymentData {
   final String rawUri;
   final String upiId;
-  final String payeeName;
+  final String? payeeName;
   final double? amount;
   final String currency;
   final String? transactionRef;
@@ -14,7 +14,7 @@ class UpiPaymentData {
   const UpiPaymentData({
     required this.rawUri,
     required this.upiId,
-    required this.payeeName,
+    this.payeeName,
     this.amount,
     this.currency = 'INR',
     this.transactionRef,
@@ -27,9 +27,11 @@ class UpiPaymentData {
     final finalAmount = customAmount ?? amount;
     final params = <String, String>{
       'pa': upiId,
-      'pn': payeeName,
       'cu': currency,
     };
+    if (payeeName != null && payeeName!.trim().isNotEmpty) {
+      params['pn'] = payeeName!.trim();
+    }
     if (finalAmount != null && finalAmount > 0) {
       params['am'] = finalAmount.toStringAsFixed(2);
     }
@@ -54,50 +56,76 @@ class UpiPaymentData {
 }
 
 class UpiService {
+  /// Checks whether a raw string represents a valid UPI payment QR or UPI ID.
+  static bool isUpiUri(String rawString) => parseUpiUri(rawString) != null;
+
   /// Parses a raw QR scan string into structured UpiPaymentData.
-  /// Handles standard `upi://pay?...` URIs as well as plain UPI IDs.
+  /// Strictly accepts valid `upi://pay?...` URIs or standard UPI VPAs (user@bank).
+  /// Rejects arbitrary URLs, Wi-Fi codes, plain text, and non-UPI formats.
   static UpiPaymentData? parseUpiUri(String rawString) {
     final trimmed = rawString.trim();
     if (trimmed.isEmpty) return null;
 
-    if (trimmed.startsWith('upi://pay') || trimmed.contains('pa=')) {
+    final lower = trimmed.toLowerCase();
+
+    // 1. Standard UPI Payment URI: upi://pay?...
+    if (lower.startsWith('upi://pay') || lower.startsWith('upi:')) {
       try {
         final uri = Uri.parse(trimmed);
-        final params = uri.queryParameters;
-
-        final pa = params['pa'];
-        if (pa == null || pa.isEmpty) {
+        if (uri.scheme.toLowerCase() != 'upi') {
           return null;
         }
 
-        final pn = params['pn'] ?? 'Merchant';
-        final amStr = params['am'];
-        double? amount;
-        if (amStr != null) {
-          amount = double.tryParse(amStr);
+        final pathAndHost = '${uri.host}${uri.path}'.toLowerCase();
+        if (!pathAndHost.contains('pay')) {
+          return null;
         }
+
+        final params = uri.queryParameters;
+        final pa = params['pa']?.trim();
+        // Mandatory UPI ID (must be non-empty and contain @)
+        if (pa == null || pa.isEmpty || !pa.contains('@')) {
+          return null;
+        }
+
+        // Payee/Merchant name (do not invent if absent)
+        final pn = params['pn']?.trim();
+        final String? payeeName = (pn != null && pn.isNotEmpty) ? pn : null;
+
+        // Amount handling: only accept if valid positive number
+        final amStr = params['am']?.trim();
+        double? amount;
+        if (amStr != null && amStr.isNotEmpty) {
+          final parsed = double.tryParse(amStr);
+          if (parsed != null && parsed > 0) {
+            amount = parsed;
+          }
+        }
+
+        final cu = params['cu']?.trim();
+        final currency = (cu != null && cu.isNotEmpty) ? cu : 'INR';
 
         return UpiPaymentData(
           rawUri: trimmed,
           upiId: pa,
-          payeeName: pn,
+          payeeName: payeeName,
           amount: amount,
-          currency: params['cu'] ?? 'INR',
-          transactionRef: params['tr'],
-          transactionId: params['tid'],
-          note: params['tn'],
-          merchantCode: params['mc'],
+          currency: currency,
+          transactionRef: params['tr']?.trim(),
+          transactionId: params['tid']?.trim(),
+          note: params['tn']?.trim(),
+          merchantCode: params['mc']?.trim(),
         );
       } catch (_) {
         return null;
       }
     }
 
-    // Fallback: If scanned code is a simple UPI ID pattern like `user@bank`
+    // 2. Fallback: If scanned code is a simple UPI ID pattern like `user@bank`
     final upiPattern = RegExp(r'^[\w\.\-]+@[\w\-]+$');
     if (upiPattern.hasMatch(trimmed)) {
       return UpiPaymentData(
-        rawUri: 'upi://pay?pa=$trimmed&pn=Merchant&cu=INR',
+        rawUri: 'upi://pay?pa=$trimmed&cu=INR',
         upiId: trimmed,
         payeeName: trimmed.split('@').first,
         amount: null,

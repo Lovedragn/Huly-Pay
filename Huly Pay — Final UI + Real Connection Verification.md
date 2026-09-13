@@ -467,17 +467,17 @@ Login
 Home
 ├── Analyze
 ├── Transactions
-│   └── Transaction Details
+│ └── Transaction Details
 ├── QR Scanner
 └── Profile & Settings
-    ├── Personal Information
-    ├── Payment Methods
-    ├── Notifications
-    ├── Themes & Skins
-    ├── Privacy & Security
-    ├── Help & Support
-    ├── About HulyPay
-    └── Logout
+├── Personal Information
+├── Payment Methods
+├── Notifications
+├── Themes & Skins
+├── Privacy & Security
+├── Help & Support
+├── About HulyPay
+└── Logout
 
 Back buttons must return to the correct previous screen.
 
@@ -596,26 +596,26 @@ Perform this complete test:
 
 Create a report:
 
-| Connection | Status |
-|---|---|
-| Flutter → Google Sign-In | PASS / FAIL / BLOCKED |
-| Google → Flutter | PASS / FAIL / BLOCKED |
-| Flutter → Backend | PASS / FAIL / BLOCKED |
-| Backend → Database | PASS / FAIL / BLOCKED |
-| Authentication → Backend | PASS / FAIL / BLOCKED |
-| User → Database | PASS / FAIL / BLOCKED |
-| Transaction → Database | PASS / FAIL / BLOCKED |
+| Connection                     | Status                |
+| ------------------------------ | --------------------- |
+| Flutter → Google Sign-In       | PASS / FAIL / BLOCKED |
+| Google → Flutter               | PASS / FAIL / BLOCKED |
+| Flutter → Backend              | PASS / FAIL / BLOCKED |
+| Backend → Database             | PASS / FAIL / BLOCKED |
+| Authentication → Backend       | PASS / FAIL / BLOCKED |
+| User → Database                | PASS / FAIL / BLOCKED |
+| Transaction → Database         | PASS / FAIL / BLOCKED |
 | Database → Transaction History | PASS / FAIL / BLOCKED |
-| Transaction → Details | PASS / FAIL / BLOCKED |
-| QR Camera | PASS / FAIL / BLOCKED |
-| QR → Payment Flow | PASS / FAIL / BLOCKED |
-| Payment → External UPI App | PASS / FAIL / BLOCKED |
-| Payment Result → Backend | PASS / FAIL / BLOCKED |
-| Location → Current Position | PASS / FAIL / BLOCKED |
-| Location → Destination | PASS / FAIL / BLOCKED |
-| Map → Route | PASS / FAIL / BLOCKED |
-| Street View | PASS / FAIL / BLOCKED |
-| Logout → Session Clearing | PASS / FAIL / BLOCKED |
+| Transaction → Details          | PASS / FAIL / BLOCKED |
+| QR Camera                      | PASS / FAIL / BLOCKED |
+| QR → Payment Flow              | PASS / FAIL / BLOCKED |
+| Payment → External UPI App     | PASS / FAIL / BLOCKED |
+| Payment Result → Backend       | PASS / FAIL / BLOCKED |
+| Location → Current Position    | PASS / FAIL / BLOCKED |
+| Location → Destination         | PASS / FAIL / BLOCKED |
+| Map → Route                    | PASS / FAIL / BLOCKED |
+| Street View                    | PASS / FAIL / BLOCKED |
+| Logout → Session Clearing      | PASS / FAIL / BLOCKED |
 
 ---
 

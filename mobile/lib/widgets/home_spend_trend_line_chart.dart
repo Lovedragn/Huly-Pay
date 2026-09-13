@@ -1,6 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+
 import '../models/payment_model.dart';
+import '../theme/chart_colors.dart';
 
 enum SpendChartStyle {
   curvedGradient, // Inspired by line_chart_sample2.dart
@@ -18,22 +20,19 @@ class HomeSpendTrendLineChart extends StatefulWidget {
   });
 
   @override
-  State<HomeSpendTrendLineChart> createState() => _HomeSpendTrendLineChartState();
+  State<HomeSpendTrendLineChart> createState() =>
+      _HomeSpendTrendLineChartState();
 }
 
 class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
   SpendChartStyle _currentStyle = SpendChartStyle.curvedGradient;
   bool _showAvg = false;
 
-  // Curated Luxury Palette
-  static const List<Color> _gradientColors = [
-    Color(0xFF00E5FF), // Cyan
-    Color(0xFF007AFF), // Electric Blue
-  ];
-
-  static const Color _dualMainColor = Color(0xFFFFD60A); // Yellow / Gold
-  static const Color _dualBelowColor = Color(0xFF30D158); // Green
-  static const Color _dualAboveColor = Color(0xFFFF375F); // Rose / Red
+  // Curated Luxury Palette derived from global AppChartColors
+  static List<Color> get _gradientColors => AppChartColors.primaryGradient;
+  static Color get _dualMainColor => AppChartColors.thresholdMain;
+  static Color get _dualBelowColor => AppChartColors.thresholdBelow;
+  static Color get _dualAboveColor => AppChartColors.thresholdAbove;
 
   @override
   Widget build(BuildContext context) {
@@ -45,10 +44,7 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
       decoration: BoxDecoration(
         color: const Color(0xFF141416),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: const Color(0xFF222226),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xFF222226), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +55,9 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
             aspectRatio: 1.85,
             child: LineChart(
               _currentStyle == SpendChartStyle.curvedGradient
-                  ? (_showAvg ? _buildAvgData(dailyPoints) : _buildCurvedGradientData(dailyPoints))
+                  ? (_showAvg
+                        ? _buildAvgData(dailyPoints)
+                        : _buildCurvedGradientData(dailyPoints))
                   : _buildDualZoneData(dailyPoints),
               duration: const Duration(milliseconds: 350),
               curve: Curves.easeInOut,
@@ -92,7 +90,7 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
             const SizedBox(height: 4),
             Text(
               _currentStyle == SpendChartStyle.curvedGradient
-                  ? (_showAvg ? 'Daily Average' : 'Gradient Flow')
+                  ? ('Daily Average')
                   : 'Range Threshold',
               style: const TextStyle(
                 fontFamily: 'Google Sans',
@@ -111,10 +109,14 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
                 height: 32,
                 margin: const EdgeInsets.only(right: 8),
                 decoration: BoxDecoration(
-                  color: _showAvg ? const Color(0xFF007AFF).withValues(alpha: 0.2) : const Color(0xFF1E1E24),
+                  color: _showAvg
+                      ? AppChartColors.blue.withValues(alpha: 0.2)
+                      : const Color(0xFF1E1E24),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: _showAvg ? const Color(0xFF007AFF) : const Color(0xFF2E2E34),
+                    color: _showAvg
+                        ? AppChartColors.blue
+                        : const Color(0xFF2E2E34),
                   ),
                 ),
                 child: TextButton(
@@ -124,7 +126,10 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
                     });
                   },
                   style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 0,
+                    ),
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
@@ -134,7 +139,9 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
                       fontFamily: 'Google Sans',
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: _showAvg ? const Color(0xFF00E5FF) : const Color(0xFF8E8E93),
+                      color: _showAvg
+                          ? AppChartColors.cyan
+                          : const Color(0xFF8E8E93),
                     ),
                   ),
                 ),
@@ -250,21 +257,22 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
         show: true,
         drawVerticalLine: false,
         horizontalInterval: maxY > 0 ? (maxY / 4) : 100,
-        getDrawingHorizontalLine: (value) => const FlLine(
-          color: Color(0xFF222228),
-          strokeWidth: 1,
-        ),
+        getDrawingHorizontalLine: (value) =>
+            const FlLine(color: Color(0xFF222228), strokeWidth: 1),
       ),
       titlesData: FlTitlesData(
         show: true,
-        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        rightTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
         topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
             reservedSize: 26,
             interval: 1,
-            getTitlesWidget: (value, meta) => _bottomTitleWidgets(value, meta, points),
+            getTitlesWidget: (value, meta) =>
+                _bottomTitleWidgets(value, meta, points),
           ),
         ),
         leftTitles: AxisTitles(
@@ -276,9 +284,7 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
           ),
         ),
       ),
-      borderData: FlBorderData(
-        show: false,
-      ),
+      borderData: FlBorderData(show: false),
       minX: 0,
       maxX: (points.length - 1).toDouble(),
       minY: 0,
@@ -289,7 +295,9 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
           getTooltipItems: (touchedSpots) {
             return touchedSpots.map((spot) {
               final idx = spot.x.toInt();
-              final label = (idx >= 0 && idx < points.length) ? points[idx].label : '';
+              final label = (idx >= 0 && idx < points.length)
+                  ? points[idx].label
+                  : '';
               return LineTooltipItem(
                 '$label\n',
                 const TextStyle(
@@ -301,9 +309,9 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
                 children: [
                   TextSpan(
                     text: '₹${spot.y.toStringAsFixed(0)}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Google Sans',
-                      color: Color(0xFF00E5FF),
+                      color: AppChartColors.cyan,
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
                     ),
@@ -319,7 +327,7 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
           spots: spots,
           isCurved: true,
           curveSmoothness: 0.35,
-          gradient: const LinearGradient(colors: _gradientColors),
+          gradient: LinearGradient(colors: _gradientColors),
           barWidth: 3.5,
           isStrokeCapRound: true,
           dotData: FlDotData(
@@ -327,7 +335,7 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
             getDotPainter: (spot, percent, barData, index) {
               return FlDotCirclePainter(
                 radius: 3,
-                color: const Color(0xFF00E5FF),
+                color: AppChartColors.cyan,
                 strokeWidth: 1.5,
                 strokeColor: const Color(0xFF141416),
               );
@@ -356,7 +364,10 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
       total += p.amount;
     }
     final avg = points.isNotEmpty ? total / points.length : 0.0;
-    final spots = List.generate(points.length, (i) => FlSpot(i.toDouble(), avg));
+    final spots = List.generate(
+      points.length,
+      (i) => FlSpot(i.toDouble(), avg),
+    );
     final maxY = _calculateMaxY(points);
 
     return LineChartData(
@@ -364,21 +375,22 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
         show: true,
         drawVerticalLine: false,
         horizontalInterval: maxY > 0 ? (maxY / 4) : 100,
-        getDrawingHorizontalLine: (value) => const FlLine(
-          color: Color(0xFF222228),
-          strokeWidth: 1,
-        ),
+        getDrawingHorizontalLine: (value) =>
+            const FlLine(color: Color(0xFF222228), strokeWidth: 1),
       ),
       titlesData: FlTitlesData(
         show: true,
-        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        rightTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
         topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
             reservedSize: 26,
             interval: 1,
-            getTitlesWidget: (value, meta) => _bottomTitleWidgets(value, meta, points),
+            getTitlesWidget: (value, meta) =>
+                _bottomTitleWidgets(value, meta, points),
           ),
         ),
         leftTitles: AxisTitles(
@@ -399,13 +411,13 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
         LineChartBarData(
           spots: spots,
           isCurved: false,
-          color: const Color(0xFF007AFF),
+          color: AppChartColors.blue,
           barWidth: 2.5,
           dashArray: [6, 4],
           dotData: const FlDotData(show: false),
           belowBarData: BarAreaData(
             show: true,
-            color: const Color(0xFF007AFF).withValues(alpha: 0.12),
+            color: AppChartColors.blue.withValues(alpha: 0.12),
           ),
         ),
       ],
@@ -426,21 +438,22 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
         show: true,
         drawVerticalLine: false,
         horizontalInterval: maxY > 0 ? (maxY / 4) : 100,
-        getDrawingHorizontalLine: (value) => const FlLine(
-          color: Color(0xFF222228),
-          strokeWidth: 1,
-        ),
+        getDrawingHorizontalLine: (value) =>
+            const FlLine(color: Color(0xFF222228), strokeWidth: 1),
       ),
       titlesData: FlTitlesData(
         show: true,
         topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        rightTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
             reservedSize: 26,
             interval: 1,
-            getTitlesWidget: (value, meta) => _bottomTitleWidgets(value, meta, points),
+            getTitlesWidget: (value, meta) =>
+                _bottomTitleWidgets(value, meta, points),
           ),
         ),
         leftTitles: AxisTitles(
@@ -492,7 +505,11 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
     );
   }
 
-  Widget _bottomTitleWidgets(double value, TitleMeta meta, List<_TrendPoint> points) {
+  Widget _bottomTitleWidgets(
+    double value,
+    TitleMeta meta,
+    List<_TrendPoint> points,
+  ) {
     final idx = value.toInt();
     if (idx < 0 || idx >= points.length) return const SizedBox.shrink();
 
@@ -551,7 +568,8 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
     // Map last 7 days ending today
     for (int i = 6; i >= 0; i--) {
       final targetDate = now.subtract(Duration(days: i));
-      final dayKey = '${targetDate.year}-${targetDate.month.toString().padLeft(2, '0')}-${targetDate.day.toString().padLeft(2, '0')}';
+      final dayKey =
+          '${targetDate.year}-${targetDate.month.toString().padLeft(2, '0')}-${targetDate.day.toString().padLeft(2, '0')}';
       final label = i == 0 ? 'Today' : dayNames[targetDate.weekday - 1];
 
       double sum = 0;
@@ -571,7 +589,9 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
     if (!hasData && payments.isNotEmpty) {
       // If payments don't match today's date range, distribute them across points
       int idx = 0;
-      for (final p in payments.where((p) => p.status.toUpperCase() != 'FAILED')) {
+      for (final p in payments.where(
+        (p) => p.status.toUpperCase() != 'FAILED',
+      )) {
         points[idx % points.length] = _TrendPoint(
           label: points[idx % points.length].label,
           amount: points[idx % points.length].amount + p.amount,

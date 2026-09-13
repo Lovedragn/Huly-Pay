@@ -22,7 +22,7 @@ void main() {
 
     // Verify key elements from the dashboard mockup are present.
     expect(find.text('Good Morning,'), findsNothing);
-    expect(find.text('Sujith'), findsOneWidget);
+    expect(find.text('Sujith'), findsNothing);
     expect(find.text('TOTAL SPENT'), findsOneWidget);
     expect(find.text('₹12,480'), findsOneWidget);
 
@@ -34,7 +34,7 @@ void main() {
 
     // Verify BarChart from fl_chart & verify Recent Transactions section is removed from Home
     expect(find.byType(BarChart), findsOneWidget);
-    expect(find.text('Spending This Month'), findsOneWidget);
+    expect(find.text('WEEKLY SPENDING'), findsOneWidget);
     expect(find.text('Recent Transactions'), findsNothing);
 
     // Verify CustomBottomNavBar and its tabs

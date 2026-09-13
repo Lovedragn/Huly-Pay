@@ -1,6 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+
 import '../models/payment_model.dart';
+import '../theme/chart_colors.dart';
 
 /// Weekly Spending Bar Chart inspired by bar_chart_sample1.dart
 /// Features interactive touch tooltips, touched rod highlights,
@@ -9,11 +11,7 @@ class HomeWeeklyBarChart extends StatefulWidget {
   final List<PaymentModel> payments;
   final VoidCallback? onTap;
 
-  const HomeWeeklyBarChart({
-    super.key,
-    required this.payments,
-    this.onTap,
-  });
+  const HomeWeeklyBarChart({super.key, required this.payments, this.onTap});
 
   @override
   State<HomeWeeklyBarChart> createState() => _HomeWeeklyBarChartState();
@@ -22,10 +20,10 @@ class HomeWeeklyBarChart extends StatefulWidget {
 class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
   int _touchedIndex = -1;
 
-  static const Color _defaultBarColor = Color(0xFF6B6B70);
-  static const Color _todayBarColor = Color(0xFFFFFFFF);
-  static const Color _touchedBarColor = Color(0xFF00E5FF);
-  static const Color _trackColor = Color(0xFF1C1C20);
+  static Color get _defaultBarColor => AppChartColors.barDefault;
+  static Color get _todayBarColor => const Color(0xFFFFFFFF);
+  static Color get _touchedBarColor => AppChartColors.barTouched;
+  static Color get _trackColor => AppChartColors.barTrack;
 
   @override
   Widget build(BuildContext context) {
@@ -42,10 +40,7 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
         decoration: BoxDecoration(
           color: const Color(0xFF141416),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: const Color(0xFF222226),
-            width: 1,
-          ),
+          border: Border.all(color: const Color(0xFF222226), width: 1),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,19 +62,13 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
                       ),
                     ),
                     SizedBox(height: 4),
-                    Text(
-                      'Spending This Month',
-                      style: TextStyle(
-                        fontFamily: 'Google Sans',
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
                   ],
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1E1E24),
                     borderRadius: BorderRadius.circular(10),
@@ -122,7 +111,11 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
     );
   }
 
-  Widget _buildLegendItem(String label, Color color, {bool isBordered = false}) {
+  Widget _buildLegendItem(
+    String label,
+    Color color, {
+    bool isBordered = false,
+  }) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -132,7 +125,9 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(2),
-            border: isBordered ? Border.all(color: const Color(0xFF3A3A42)) : null,
+            border: isBordered
+                ? Border.all(color: const Color(0xFF3A3A42))
+                : null,
           ),
         ),
         const SizedBox(width: 6),
@@ -170,7 +165,9 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
               'Saturday',
               'Sunday',
             ];
-            final dayName = (group.x >= 0 && group.x < 7) ? dayNames[group.x] : '';
+            final dayName = (group.x >= 0 && group.x < 7)
+                ? dayNames[group.x]
+                : '';
             final amount = weeklyAmounts[group.x];
             return BarTooltipItem(
               '$dayName\n',
@@ -182,10 +179,11 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
               ),
               children: [
                 TextSpan(
-                  text: '₹${amount.toStringAsFixed(amount.truncateToDouble() == amount ? 0 : 2)}',
-                  style: const TextStyle(
+                  text:
+                      '₹${amount.toStringAsFixed(amount.truncateToDouble() == amount ? 0 : 2)}',
+                  style: TextStyle(
                     fontFamily: 'Google Sans',
-                    color: Color(0xFF00E5FF),
+                    color: AppChartColors.cyan,
                     fontWeight: FontWeight.w800,
                     fontSize: 14,
                   ),
@@ -208,14 +206,17 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
       ),
       titlesData: FlTitlesData(
         show: true,
-        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        rightTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
         topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
             reservedSize: 28,
-            getTitlesWidget: (value, meta) => _getBottomTitles(value, meta, todayIndex),
+            getTitlesWidget: (value, meta) =>
+                _getBottomTitles(value, meta, todayIndex),
           ),
         ),
       ),
@@ -248,8 +249,8 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
             BarChartRodData(
               toY: isTouched ? (barY * 1.05) : barY,
               color: barColor,
-              width: 18,
-              borderRadius: BorderRadius.circular(6),
+              width: 36,
+              borderRadius: BorderRadius.circular(12),
               backDrawRodData: BackgroundBarChartRodData(
                 show: true,
                 toY: maxSpend,
