@@ -87,7 +87,10 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   }
 
   void _setAllPayments(List<PaymentModel> payments) {
-    _allPayments = payments.where((p) => p.status.toUpperCase() != 'FAILED').toList();
+    _allPayments = payments.where((p) {
+      final s = p.status.toUpperCase();
+      return s == 'CONFIRMED' || s == 'SUCCESS';
+    }).toList();
     _filterAndRecalculate();
   }
 

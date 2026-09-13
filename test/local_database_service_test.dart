@@ -177,6 +177,67 @@ void main() {
       expect(payments, isEmpty);
       expect(profile, isNull);
     });
+
+    test('cleanupStalePayments purges initiated >30min and pending >1day while preserving confirmed and fresh records', () async {
+      final now = DateTime.now().toUtc();
+      final oldInitiated = PaymentModel(
+        id: 'p_old_init',
+        amount: 100,
+        currency: 'INR',
+        status: 'INITIATED',
+        createdAt: now.subtract(const Duration(minutes: 35)).toIso8601String(),
+      );
+      final freshInitiated = PaymentModel(
+        id: 'p_fresh_init',
+        amount: 100,
+        currency: 'INR',
+        status: 'INITIATED',
+        createdAt: now.subtract(const Duration(minutes: 10)).toIso8601String(),
+      );
+      final oldPending = PaymentModel(
+        id: 'p_old_pending',
+        amount: 250,
+        currency: 'INR',
+        status: 'PENDING',
+        createdAt: now.subtract(const Duration(hours: 26)).toIso8601String(),
+      );
+      final freshPending = PaymentModel(
+        id: 'p_fresh_pending',
+        amount: 250,
+        currency: 'INR',
+        status: 'PENDING',
+        createdAt: now.subtract(const Duration(hours: 12)).toIso8601String(),
+      );
+      final oldConfirmed = PaymentModel(
+        id: 'p_old_confirmed',
+        amount: 500,
+        currency: 'INR',
+        status: 'CONFIRMED',
+        createdAt: now.subtract(const Duration(days: 30)).toIso8601String(),
+      );
+
+      await dbService.upsertPayments([
+        oldInitiated,
+        freshInitiated,
+        oldPending,
+        freshPending,
+        oldConfirmed,
+      ]);
+
+      // Manually trigger cleanup
+      final deletedCount = await dbService.cleanupStalePayments();
+      expect(deletedCount, equals(2)); // oldInitiated and oldPending
+
+      // Retrieve remaining payments
+      final remaining = await dbService.getPayments();
+      final ids = remaining.map((p) => p.id).toList();
+
+      expect(ids, contains('p_fresh_init'));
+      expect(ids, contains('p_fresh_pending'));
+      expect(ids, contains('p_old_confirmed'));
+      expect(ids, isNot(contains('p_old_init')));
+      expect(ids, isNot(contains('p_old_pending')));
+    });
   });
 
   group('PaymentRepository & UserRepository SQLite Offline Integration Tests', () {
@@ -196,6 +257,114 @@ void main() {
       expect(cached.length, equals(1));
       expect(cached.first.id, equals('offline_cache_p1'));
       expect(cached.first.merchantName, equals('Offline Merchant'));
+    });
+
+    test('PaymentRepository cleanupStalePayments removes initiated >30m and pending >1day and returns deleted count', () async {
+      final now = DateTime.now().toUtc();
+      final staleInit = PaymentModel(
+        id: 'repo_init_stale',
+        amount: 150.0,
+        currency: 'INR',
+        merchantName: 'Old Initiated Merchant',
+        status: 'INITIATED',
+        createdAt: now.subtract(const Duration(minutes: 40)).toIso8601String(),
+      );
+      final freshInit = PaymentModel(
+        id: 'repo_init_fresh',
+        amount: 200.0,
+        currency: 'INR',
+        merchantName: 'Fresh Initiated Merchant',
+        status: 'INITIATED',
+        createdAt: now.subtract(const Duration(minutes: 5)).toIso8601String(),
+      );
+      final stalePending = PaymentModel(
+        id: 'repo_pend_stale',
+        amount: 300.0,
+        currency: 'INR',
+        merchantName: 'Old Pending Merchant',
+        status: 'PENDING',
+        createdAt: now.subtract(const Duration(hours: 28)).toIso8601String(),
+      );
+      final freshPending = PaymentModel(
+        id: 'repo_pend_fresh',
+        amount: 350.0,
+        currency: 'INR',
+        merchantName: 'Fresh Pending Merchant',
+        status: 'PENDING',
+        createdAt: now.subtract(const Duration(hours: 4)).toIso8601String(),
+      );
+      final confirmed = PaymentModel(
+        id: 'repo_confirmed',
+        amount: 999.0,
+        currency: 'INR',
+        merchantName: 'Confirmed Merchant',
+        status: 'CONFIRMED',
+        createdAt: now.subtract(const Duration(days: 7)).toIso8601String(),
+      );
+
+      await dbService.upsertPayments([
+        staleInit,
+        freshInit,
+        stalePending,
+        freshPending,
+        confirmed,
+      ]);
+
+      final repo = PaymentRepository();
+      final deletedCount = await repo.cleanupStalePayments();
+      expect(deletedCount, equals(2));
+
+      final cached = await repo.getCachedPayments();
+      final cachedIds = cached.map((p) => p.id).toList();
+
+      expect(cachedIds, contains('repo_init_fresh'));
+      expect(cachedIds, contains('repo_pend_fresh'));
+      expect(cachedIds, contains('repo_confirmed'));
+      expect(cachedIds, isNot(contains('repo_init_stale')));
+      expect(cachedIds, isNot(contains('repo_pend_stale')));
+    });
+
+    test('PaymentRepository getCachedPayments automatically purges stale payments on invocation', () async {
+      final now = DateTime.now().toUtc();
+      final staleInit = PaymentModel(
+        id: 'auto_purge_init',
+        amount: 50.0,
+        currency: 'INR',
+        status: 'PAYMENT_INITIATED',
+        createdAt: now.subtract(const Duration(minutes: 45)).toIso8601String(),
+      );
+      final stalePend = PaymentModel(
+        id: 'auto_purge_pend',
+        amount: 75.0,
+        currency: 'INR',
+        status: 'PENDING',
+        createdAt: now.subtract(const Duration(days: 2)).toIso8601String(),
+      );
+      final validConfirmed = PaymentModel(
+        id: 'auto_purge_confirmed',
+        amount: 500.0,
+        currency: 'INR',
+        status: 'CONFIRMED',
+        createdAt: now.subtract(const Duration(days: 10)).toIso8601String(),
+      );
+
+      await dbService.upsertPayments([staleInit, stalePend, validConfirmed]);
+
+      // Calling getCachedPayments() directly without calling cleanupStalePayments()
+      final repo = PaymentRepository();
+      final cached = await repo.getCachedPayments();
+      final cachedIds = cached.map((p) => p.id).toList();
+
+      expect(cachedIds, contains('auto_purge_confirmed'));
+      expect(cachedIds, isNot(contains('auto_purge_init')));
+      expect(cachedIds, isNot(contains('auto_purge_pend')));
+
+      // Verify the SQLite table itself was pruned
+      final inDb = await dbService.getPayments();
+      final inDbIds = inDb.map((p) => p.id).toList();
+      expect(inDbIds, contains('auto_purge_confirmed'));
+      expect(inDbIds, isNot(contains('auto_purge_init')));
+      expect(inDbIds, isNot(contains('auto_purge_pend')));
     });
 
     test('UserRepository getCachedUserProfile returns local SQLite profile without network', () async {

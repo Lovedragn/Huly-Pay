@@ -574,7 +574,8 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
 
       double sum = 0;
       for (final p in payments) {
-        if (p.status.toUpperCase() == 'FAILED') continue;
+        final s = p.status.toUpperCase();
+        if (s != 'CONFIRMED' && s != 'SUCCESS') continue;
         final dateStr = p.createdAt ?? p.paymentDate;
         if (dateStr != null && dateStr.startsWith(dayKey)) {
           sum += p.amount;
@@ -590,7 +591,7 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
       // If payments don't match today's date range, distribute them across points
       int idx = 0;
       for (final p in payments.where(
-        (p) => p.status.toUpperCase() != 'FAILED',
+        (p) => p.status.toUpperCase() == 'CONFIRMED' || p.status.toUpperCase() == 'SUCCESS',
       )) {
         points[idx % points.length] = _TrendPoint(
           label: points[idx % points.length].label,

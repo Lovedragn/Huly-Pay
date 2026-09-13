@@ -53,9 +53,19 @@ class PaymentRepository {
   /// Get cached payments directly from SQLite without network call
   Future<List<PaymentModel>> getCachedPayments() async {
     try {
+      await _localDb.cleanupStalePayments();
       return await _localDb.getPayments();
     } catch (_) {
       return [];
+    }
+  }
+
+  /// Explicitly triggers stale payment cleanup in local SQLite
+  Future<int> cleanupStalePayments() async {
+    try {
+      return await _localDb.cleanupStalePayments();
+    } catch (_) {
+      return 0;
     }
   }
 
@@ -112,11 +122,35 @@ class PaymentRepository {
       return mock;
     }
 
-    final payment = await _apiClient.createPayment(payload);
     try {
-      await _localDb.upsertPayment(payment);
-    } catch (_) {}
-    return payment;
+      final payment = await _apiClient.createPayment(payload);
+      try {
+        await _localDb.upsertPayment(payment);
+      } catch (_) {}
+      return payment;
+    } catch (_) {
+      // Offline / connection fallback: save locally so the user payment flow is never blocked
+      final localPayment = PaymentModel(
+        id: 'local_${DateTime.now().millisecondsSinceEpoch}',
+        amount: payload.amount,
+        currency: payload.currency,
+        merchantName: payload.merchantName,
+        upiId: payload.upiId,
+        paymentMethod: payload.paymentMethod,
+        transactionReference: payload.transactionReference,
+        status: 'INITIATED',
+        latitude: payload.latitude,
+        longitude: payload.longitude,
+        locationAccuracyMeters: payload.locationAccuracyMeters,
+        createdAt: DateTime.now().toIso8601String(),
+      );
+      try {
+        await _localDb.upsertPayment(localPayment);
+        return localPayment;
+      } catch (_) {
+        rethrow;
+      }
+    }
   }
 
   /// Reconcile payment status and update SQLite cache
@@ -148,15 +182,32 @@ class PaymentRepository {
       return updated;
     }
 
-    final payment = await _apiClient.reconcilePayment(
-      id,
-      status,
-      upiTransactionId: upiTransactionId,
-      transactionReference: transactionReference,
-    );
     try {
-      await _localDb.upsertPayment(payment);
-    } catch (_) {}
-    return payment;
+      final payment = await _apiClient.reconcilePayment(
+        id,
+        status,
+        upiTransactionId: upiTransactionId,
+        transactionReference: transactionReference,
+      );
+      try {
+        await _localDb.upsertPayment(payment);
+      } catch (_) {}
+      return payment;
+    } catch (_) {
+      // Offline fallback: update local record if remote connection fails
+      final existing = await _localDb.getPaymentById(id);
+      if (existing != null) {
+        final updated = existing.copyWith(
+          status: status,
+          upiTransactionId: upiTransactionId ?? existing.upiTransactionId,
+          transactionReference: transactionReference ?? existing.transactionReference,
+        );
+        try {
+          await _localDb.upsertPayment(updated);
+        } catch (_) {}
+        return updated;
+      }
+      rethrow;
+    }
   }
 }

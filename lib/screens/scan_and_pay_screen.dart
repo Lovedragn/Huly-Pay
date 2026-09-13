@@ -25,7 +25,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   void initState() {
     super.initState();
     _scannerController = MobileScannerController(
-      detectionSpeed: DetectionSpeed.noDuplicates,
+      detectionSpeed: DetectionSpeed.normal,
       facing: CameraFacing.back,
       torchEnabled: false,
       formats: const [BarcodeFormat.qrCode],
@@ -142,36 +142,28 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       _isProcessing = true;
     });
 
-    try {
-      await _scannerController.stop();
-    } catch (_) {}
-
     if (!mounted) return;
 
-    // Capture GPS location before opening payment confirmation
-    final locationResult = await LocationService().getPaymentLocationWithStatus();
-
-    if (!mounted) return;
-    await _showPaymentConfirmationModal(upiData, locationResult);
+    // Immediately open payment confirmation modal (0ms latency, like Google Pay)
+    await _showPaymentConfirmationModal(upiData);
 
     if (mounted) {
       setState(() {
         _isProcessing = false;
       });
-      try {
-        await _scannerController.start();
-      } catch (_) {}
     }
   }
 
   Future<void> _showPaymentConfirmationModal(
-    UpiPaymentData upiData,
-    LocationResult locationResult,
-  ) async {
+    UpiPaymentData upiData, [
+    LocationResult? initialLocationResult,
+  ]) async {
     final amountController = TextEditingController(
       text: upiData.amount != null ? upiData.amount!.toStringAsFixed(2) : '',
     );
-    PaymentLocation? capturedLocation = locationResult.location;
+    PaymentLocation? capturedLocation = initialLocationResult?.location;
+    LocationResult? locationResult = initialLocationResult;
+    bool isLocationFetching = capturedLocation == null;
 
     await showModalBottomSheet(
       context: context,
@@ -180,6 +172,18 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       builder: (modalContext) {
         return StatefulBuilder(
           builder: (context, setModalState) {
+            // Concurrent background GPS resolution without blocking UI
+            if (isLocationFetching) {
+              isLocationFetching = false;
+              LocationService().getPaymentLocationWithStatus().then((result) {
+                if (modalContext.mounted) {
+                  setModalState(() {
+                    locationResult = result;
+                    capturedLocation = result.location;
+                  });
+                }
+              });
+            }
             final hasPayeeName = upiData.payeeName != null && upiData.payeeName!.trim().isNotEmpty;
             final primaryTitle = hasPayeeName ? upiData.payeeName!.trim() : upiData.upiId;
             final subtitle = hasPayeeName ? upiData.upiId : 'UPI Payee';
@@ -328,13 +332,15 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                                 child: Text(
                                   currentLoc != null
                                       ? 'GPS: ${currentLoc.latitude.toStringAsFixed(4)}, ${currentLoc.longitude.toStringAsFixed(4)} (±${currentLoc.accuracyMeters.toStringAsFixed(1)}m)'
-                                      : (locationResult.failureReason == LocationFailureReason.serviceDisabled
-                                          ? 'Location disabled: Please turn on GPS'
-                                          : (locationResult.failureReason == LocationFailureReason.permissionDenied
-                                              ? 'Location permission denied'
-                                              : (locationResult.failureReason == LocationFailureReason.permissionDeniedForever
-                                                  ? 'Location permission denied forever'
-                                                  : 'Location unavailable'))),
+                                      : (locationResult == null
+                                          ? 'Acquiring GPS location...'
+                                          : (locationResult!.failureReason == LocationFailureReason.serviceDisabled
+                                              ? 'Location disabled: Please turn on GPS'
+                                              : (locationResult!.failureReason == LocationFailureReason.permissionDenied
+                                                  ? 'Location permission denied'
+                                                  : (locationResult!.failureReason == LocationFailureReason.permissionDeniedForever
+                                                      ? 'Location permission denied forever'
+                                                      : 'Location unavailable')))),
                                   style: TextStyle(
                                     fontFamily: 'Google Sans',
                                     fontSize: 12,
@@ -349,15 +355,16 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                           if (capturedLocation == null)
                             GestureDetector(
                               onTap: () async {
-                                if (locationResult.failureReason == LocationFailureReason.permissionDeniedForever) {
+                                if (locationResult?.failureReason == LocationFailureReason.permissionDeniedForever) {
                                   await LocationService.openAppSettings();
-                                } else if (locationResult.failureReason == LocationFailureReason.serviceDisabled) {
+                                } else if (locationResult?.failureReason == LocationFailureReason.serviceDisabled) {
                                   await LocationService.openLocationSettings();
                                 } else {
                                   final retry = await LocationService().getPaymentLocationWithStatus();
                                   if (retry.isSuccess && modalContext.mounted) {
                                     setModalState(() {
                                       capturedLocation = retry.location;
+                                      locationResult = retry;
                                     });
                                   }
                                 }
@@ -369,10 +376,10 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
-                                  locationResult.failureReason == LocationFailureReason.permissionDeniedForever ||
-                                          locationResult.failureReason == LocationFailureReason.serviceDisabled
+                                  locationResult?.failureReason == LocationFailureReason.permissionDeniedForever ||
+                                          locationResult?.failureReason == LocationFailureReason.serviceDisabled
                                       ? 'Settings'
-                                      : 'Retry',
+                                      : (locationResult == null ? '...' : 'Retry'),
                                   style: const TextStyle(
                                     fontFamily: 'Google Sans',
                                     fontSize: 11,
