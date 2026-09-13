@@ -4,8 +4,8 @@ import '../data/mock_data.dart';
 import '../models/dashboard_data.dart';
 import '../models/payment_model.dart';
 import '../repositories/payment_repository.dart';
+import '../widgets/analysis_category_pie_chart.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
-import '../widgets/donut_chart.dart';
 import 'home_dashboard_screen.dart';
 import 'scan_and_pay_screen.dart';
 import 'transactions_screen.dart';
@@ -176,16 +176,12 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildHeader(),
-          const SizedBox(height: 28),
-          Center(
-            child: DonutChart(
-              items: _categories,
-              totalAmount: _totalSpent,
-              size: 210,
-              strokeWidth: 26,
-            ),
+          const SizedBox(height: 24),
+          AnalysisCategoryPieChart(
+            items: _categories,
+            totalAmount: _totalSpent,
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 28),
           _buildCategoryList(),
         ],
       ),
