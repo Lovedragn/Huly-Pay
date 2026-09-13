@@ -1,0 +1,1 @@
+{"nodes": [{"id": "backend_docker_compose", "label": "Docker Compose Configuration", "file_type": "code", "source_file": "backend/docker-compose.yml", "rationale": "Defines the local development environment using PostgreSQL 17.", "verification": "unverified"}], "edges": [], "hyperedges": []}

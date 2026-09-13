@@ -24,6 +24,8 @@ class TransactionItem {
     this.isIncome = false,
     this.type = 'Expense',
   });
+
+  bool get isFailed => category.toLowerCase() == 'failed';
 }
 
 class TransactionGroup {
@@ -69,3 +71,18 @@ class DashboardData {
     required this.recentTransactions,
   });
 }
+
+class CategorySpendingItem {
+  final String title;
+  final int percentage;
+  final String amount;
+  final Color color;
+
+  const CategorySpendingItem({
+    required this.title,
+    required this.percentage,
+    required this.amount,
+    required this.color,
+  });
+}
+

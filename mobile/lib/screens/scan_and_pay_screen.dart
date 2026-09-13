@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 
 class ScanAndPayScreen extends StatefulWidget {
@@ -10,11 +11,36 @@ class ScanAndPayScreen extends StatefulWidget {
 
 class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   bool _isFlashOn = false;
+  bool _isFrontCamera = false;
 
-  void _handleBack() {
+  void _handleBack([int? targetIndex]) {
     if (Navigator.canPop(context)) {
-      Navigator.pop(context);
+      Navigator.pop(context, targetIndex);
     }
+  }
+
+  void _toggleCamera() {
+    setState(() {
+      _isFrontCamera = !_isFrontCamera;
+    });
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _isFrontCamera ? 'Switched to Front Camera' : 'Switched to Rear Camera',
+          style: const TextStyle(
+            fontFamily: 'Google Sans',
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: const Color(0xFF1E1E24),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        duration: const Duration(milliseconds: 1500),
+      ),
+    );
   }
 
   @override
@@ -36,7 +62,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 ),
                 child: Column(
                   children: [
-                    // Top Bar (Back & Flash)
+                    // Top Bar (Back Button)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -64,39 +90,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                             ),
                           ),
                         ),
-
-                        // Flash Toggle Button
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _isFlashOn = !_isFlashOn;
-                            });
-                          },
-                          behavior: HitTestBehavior.opaque,
-                          child: Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: _isFlashOn
-                                  ? const Color(0xFF007AFF)
-                                  : const Color(0xFF161619),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: _isFlashOn
-                                    ? const Color(0xFF007AFF)
-                                    : const Color(0xFF24242A),
-                                width: 1,
-                              ),
-                            ),
-                            child: Center(
-                              child: Icon(
-                                Icons.bolt_rounded,
-                                color: Colors.white,
-                                size: 22,
-                              ),
-                            ),
-                          ),
-                        ),
+                        const SizedBox(width: 44),
                       ],
                     ),
 
@@ -153,7 +147,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
 
                     // Back to Home Button
                     GestureDetector(
-                      onTap: _handleBack,
+                      onTap: () => _handleBack(0),
                       behavior: HitTestBehavior.opaque,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
@@ -186,6 +180,85 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
               ),
             ),
 
+            // Vertical Flash & Switch buttons on right side bottom near blue QR icon
+            Positioned(
+              right: 34,
+              bottom: 118,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Flash Toggle Button
+                  GestureDetector(
+                    key: const Key('flash_button'),
+                    onTap: () {
+                      setState(() {
+                        _isFlashOn = !_isFlashOn;
+                      });
+                    },
+                    behavior: HitTestBehavior.opaque,
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: _isFlashOn
+                            ? const Color(0xFF007AFF)
+                            : const Color(0xFF161619),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: _isFlashOn
+                              ? const Color(0xFF007AFF)
+                              : const Color(0xFF24242A),
+                          width: 1,
+                        ),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.bolt_rounded,
+                          color: Colors.white,
+                          size: 22,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Switch Camera Button (using switch.svg)
+                  GestureDetector(
+                    key: const Key('switch_camera_button'),
+                    onTap: _toggleCamera,
+                    behavior: HitTestBehavior.opaque,
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: _isFrontCamera
+                            ? const Color(0xFF007AFF)
+                            : const Color(0xFF161619),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: _isFrontCamera
+                              ? const Color(0xFF007AFF)
+                              : const Color(0xFF24242A),
+                          width: 1,
+                        ),
+                      ),
+                      child: Center(
+                        child: SvgPicture.asset(
+                          'asserts/icon/switch.svg',
+                          width: 20,
+                          height: 20,
+                          colorFilter: const ColorFilter.mode(
+                            Colors.white,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             // Bottom Navigation Bar (with QR active in blue)
             Positioned(
               left: 0,
@@ -195,9 +268,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 selectedIndex: -1, // No tab active
                 isQrActive: true, // QR button active in bright blue
                 onItemSelected: (index) {
-                  if (index == 0) {
-                    _handleBack();
-                  }
+                  _handleBack(index);
                 },
                 onQrScanTap: () {},
               ),
