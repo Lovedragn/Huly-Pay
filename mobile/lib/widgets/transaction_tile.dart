@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/dashboard_data.dart';
 import '../models/payment_model.dart';
 import '../screens/single_transaction_screen.dart';
+import '../theme/app_theme.dart';
 
 class TransactionTile extends StatelessWidget {
   final TransactionItem transaction;
@@ -17,6 +18,9 @@ class TransactionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeManager.colors;
+    final iconBgColor = colors.isDark ? transaction.iconBgColor : colors.iconBackground;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -42,8 +46,14 @@ class TransactionTile extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: transaction.iconBgColor,
+              color: iconBgColor,
               borderRadius: BorderRadius.circular(14),
+              border: colors.isDark
+                  ? null
+                  : Border.all(
+                      color: colors.border.withValues(alpha: 0.7),
+                      width: 1,
+                    ),
             ),
             child: Icon(
               transaction.icon,
@@ -58,9 +68,9 @@ class TransactionTile extends StatelessWidget {
               children: [
                 Text(
                   transaction.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Google Sans',
-                    color: Colors.white,
+                    color: AppThemeManager.colors.textPrimary,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -68,9 +78,9 @@ class TransactionTile extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   transaction.category,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Google Sans',
-                    color: Color(0xFF8E8E93),
+                    color: AppThemeManager.colors.textSecondary,
                     fontSize: 13,
                   ),
                 ),
@@ -137,7 +147,7 @@ class TransactionTile extends StatelessWidget {
                               ? const Color(0xFFFF9F0A)
                               : transaction.isIncome
                                   ? const Color(0xFF30D158)
-                                  : Colors.white,
+                                  : AppThemeManager.colors.textPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
@@ -147,9 +157,9 @@ class TransactionTile extends StatelessWidget {
               const SizedBox(height: 3),
               Text(
                 transaction.time,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Google Sans',
-                  color: Color(0xFF8E8E93),
+                  color: AppThemeManager.colors.textSecondary,
                   fontSize: 12,
                 ),
               ),

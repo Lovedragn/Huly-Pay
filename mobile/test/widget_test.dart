@@ -151,7 +151,7 @@ void main() {
 
     // 4. Tap Home - returns directly to Home
     await tester.tap(find.text('Home'));
-    await tester.runAsync(() async => await Future.delayed(const Duration(milliseconds: 100)));
+    await tester.runAsync(() async => await Future.delayed(const Duration(milliseconds: 250)));
     await tester.pumpAndSettle();
     expect(find.text('TOTAL SPENT'), findsOneWidget);
   });
@@ -183,17 +183,23 @@ void main() {
     // 4. Verify Preferences section
     expect(find.text('Expense Categories'), findsNothing);
     expect(find.text('Notifications'), findsOneWidget);
-    expect(find.text('Themes & Skins'), findsOneWidget);
+    expect(find.text('Customization'), findsOneWidget);
+    expect(find.text('Themes & Skins'), findsNothing);
     expect(find.text('Dark Mode'), findsNothing);
 
-    // Open Themes & Skins modal sheet
-    await tester.tap(find.text('Themes & Skins'));
+    // Open Customization modal sheet
+    await tester.tap(find.text('Customization'));
     await tester.pumpAndSettle();
     expect(find.text('Midnight Dark'), findsOneWidget);
     expect(find.text('Cyber Purple'), findsOneWidget);
 
-    // Select Midnight Dark (dismisses modal sheet)
+    // Select Midnight Dark
     await tester.tap(find.text('Midnight Dark'));
+    await tester.runAsync(() async => await Future.delayed(const Duration(milliseconds: 100)));
+    await tester.pumpAndSettle();
+
+    // Dismiss modal sheet via close icon
+    await tester.tap(find.byIcon(Icons.close_rounded));
     await tester.pumpAndSettle();
 
     // 5. Verify Support & About section

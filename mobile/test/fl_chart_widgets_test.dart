@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/models/dashboard_data.dart';
 import 'package:mobile/models/payment_model.dart';
 import 'package:mobile/screens/analysis_screen.dart';
+import 'package:mobile/theme/app_theme.dart';
 import 'package:mobile/theme/chart_colors.dart';
 import 'package:mobile/widgets/analysis_category_pie_chart.dart';
 import 'package:mobile/widgets/home_spend_trend_line_chart.dart';
@@ -103,6 +104,46 @@ void main() {
       expect(find.text('M'), findsOneWidget);
       expect(find.text('W'), findsOneWidget);
       expect(find.text('F'), findsOneWidget);
+    });
+
+    testWidgets('HomeWeeklyBarChart dynamically adopts active chart palette colors', (tester) async {
+      // 1. Set to Cyber Purple
+      AppThemeManager.setChartPalette('Cyber Purple');
+      expect(AppChartColors.barToday, equals(const Color(0xFFAF52DE)));
+      expect(AppChartColors.barTouched, equals(const Color(0xFF00E5FF)));
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HomeWeeklyBarChart(payments: samplePayments),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify BarChart rendered with Cyber Purple today rod
+      final barChart = tester.widget<BarChart>(find.byType(BarChart));
+      final todayIndex = DateTime.now().weekday - 1;
+      final todayRod = barChart.data.barGroups[todayIndex].barRods.first;
+      expect(todayRod.color, equals(const Color(0xFFAF52DE)));
+
+      // 2. Switch to Emerald Mint
+      AppThemeManager.setChartPalette('Emerald Mint');
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HomeWeeklyBarChart(payments: samplePayments),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final updatedBarChart = tester.widget<BarChart>(find.byType(BarChart));
+      final updatedTodayRod = updatedBarChart.data.barGroups[todayIndex].barRods.first;
+      expect(updatedTodayRod.color, equals(const Color(0xFF00C076)));
+
+      // Reset to Default
+      AppThemeManager.setChartPalette('Default');
     });
 
     testWidgets('HomeTodaySpendGaugeChart calculates today spend and renders speedometer gauge', (tester) async {

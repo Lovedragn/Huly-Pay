@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import '../models/dashboard_data.dart';
+import '../theme/app_theme.dart';
 
 /// Interactive Donut / Pie Chart inspired by pie_chart_sample2.dart
 /// Features touch selection expanding active section radius, dynamic font sizes,
@@ -28,16 +29,18 @@ class _AnalysisCategoryPieChartState extends State<AnalysisCategoryPieChart> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeManager.colors;
+
     return Column(
       children: [
         Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           decoration: BoxDecoration(
-            color: const Color(0xFF141416),
+            color: colors.surface,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: const Color(0xFF222226),
+              color: colors.border,
               width: 1,
             ),
           ),
@@ -98,9 +101,9 @@ class _AnalysisCategoryPieChartState extends State<AnalysisCategoryPieChart> {
                         const SizedBox(height: 2),
                         Text(
                           widget.totalAmount,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Google Sans',
-                            color: Colors.white,
+                            color: AppThemeManager.colors.textPrimary,
                             fontSize: 22,
                             fontWeight: FontWeight.w800,
                             letterSpacing: -0.3,

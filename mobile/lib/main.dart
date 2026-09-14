@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 
 import 'screens/home_dashboard_screen.dart';
 import 'screens/splash_screen.dart';
+import 'services/user_preferences_service.dart';
+import 'theme/app_theme.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -13,6 +15,11 @@ void main() {
       statusBarBrightness: Brightness.dark,
     ),
   );
+
+  // Load previously cached theme & color presets before the first frame to eliminate theme flicker
+  try {
+    await UserPreferencesService().loadLocalPreferences();
+  } catch (_) {}
 
   // Instantly render SplashScreen on the very first frame without blocking on auth or dotenv
   runApp(const HulyPayApp(showSplash: true));
@@ -34,44 +41,48 @@ class HulyPayApp extends StatelessWidget {
     this.isAuthenticated,
   });
 
-  static const String appFontFamily = 'Google Sans';
-  static const List<String> appFontFallback = [
-    'GoogleSans',
-    'Open Sans',
-    'sans-serif',
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'HulyPay',
-      debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.system,
-      theme: ThemeData(
-        useMaterial3: true,
-        fontFamily: appFontFamily,
-        fontFamilyFallback: appFontFallback,
-      ),
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF000000),
-        fontFamily: appFontFamily,
-        fontFamilyFallback: appFontFallback,
-        colorScheme: const ColorScheme.dark(
-          primary: Colors.white,
-          surface: Color(0xFF141416),
-        ),
-      ),
-      home:
-          home ??
-          (showSplash
-              ? SplashScreen(
-                  initializeAuth: initializeAuth,
-                  nextScreen: nextScreen,
-                  isAuthenticated: isAuthenticated,
-                )
-              : const HomeDashboardScreen()),
+    return ValueListenableBuilder<String>(
+      valueListenable: AppThemeManager.currentTheme,
+      builder: (context, currentThemeName, _) {
+        return ValueListenableBuilder<String>(
+          valueListenable: AppThemeManager.currentChartPalette,
+          builder: (context, currentChartPaletteName, _) {
+            final activeThemeColors = AppThemeManager.colors;
+            final materialTheme = AppThemeManager.getMaterialTheme(currentThemeName);
+
+            // Update system status bar icons based on theme brightness
+            SystemChrome.setSystemUIOverlayStyle(
+              SystemUiOverlayStyle(
+                statusBarColor: Colors.transparent,
+                statusBarIconBrightness: activeThemeColors.isDark
+                    ? Brightness.light
+                    : Brightness.dark,
+                statusBarBrightness: activeThemeColors.isDark
+                    ? Brightness.dark
+                    : Brightness.light,
+              ),
+            );
+
+            return MaterialApp(
+              title: 'HulyPay',
+              debugShowCheckedModeBanner: false,
+              theme: materialTheme,
+              darkTheme: materialTheme,
+              themeMode: activeThemeColors.isDark ? ThemeMode.dark : ThemeMode.light,
+              home: home ??
+                  (showSplash
+                      ? SplashScreen(
+                          initializeAuth: initializeAuth,
+                          nextScreen: nextScreen,
+                          isAuthenticated: isAuthenticated,
+                        )
+                      : const HomeDashboardScreen()),
+            );
+          },
+        );
+      },
     );
   }
 }

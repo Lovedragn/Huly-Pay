@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../theme/app_theme.dart';
 
 class QuickActionButton extends StatelessWidget {
   final IconData? icon;
@@ -17,18 +18,20 @@ class QuickActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeManager.colors;
+
     Widget iconWidget;
     if (svgAsset != null) {
       iconWidget = SvgPicture.asset(
         svgAsset!,
         width: 26,
         height: 26,
-        colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+        colorFilter: ColorFilter.mode(colors.textPrimary, BlendMode.srcIn),
       );
     } else {
       iconWidget = Icon(
         icon,
-        color: Colors.white,
+        color: colors.textPrimary,
         size: 26,
       );
     }
@@ -43,10 +46,10 @@ class QuickActionButton extends StatelessWidget {
             width: 70,
             height: 70,
             decoration: BoxDecoration(
-              color: const Color(0xFF161619),
+              color: colors.iconBackground,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: const Color(0xFF24242A),
+                color: colors.border,
                 width: 1,
               ),
             ),
@@ -57,9 +60,9 @@ class QuickActionButton extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Google Sans',
-              color: Color(0xFF8E8E93),
+              color: colors.textSecondary,
               fontSize: 13,
               fontWeight: FontWeight.w500,
             ),

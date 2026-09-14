@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'app_theme.dart';
 
 /// Centralized Global Chart Color Schema for Huly.Pay
 ///
 /// All charts across the application (Line Chart, Gauge Chart, Weekly Bar Chart,
 /// Analysis Donut / Pie Chart, and Spending Heatmap) are controlled by this
-/// single, unified list of colors.
+/// single, unified list of colors and dynamically reactive to AppThemeManager.
 class AppChartColors {
   AppChartColors._();
 
   // ---------------------------------------------------------------------------
-  // 1. Unified Global List of Colors (Single Source of Truth)
+  // 1. Static Reference Colors (for backward compatibility & baseline definitions)
   // ---------------------------------------------------------------------------
 
   static const Color blue = Color(0xFF007AFF); // 0: Electric Blue (Primary)
@@ -20,8 +21,12 @@ class AppChartColors {
   static const Color purple = Color(0xFFAF52DE); // 5: Electric Purple
   static const Color indigo = Color(0xFF5856D6); // 6: Deep Royal Indigo
 
-  /// The global list of colors controlling all charts across the app.
-  static const List<Color> globalPalette = [
+  // ---------------------------------------------------------------------------
+  // 2. Pre-defined Chart Color Palettes corresponding to kChartPaletteNames
+  // ---------------------------------------------------------------------------
+
+  /// Default Palette (Original Curated Scheme)
+  static const List<Color> defaultPalette = [
     blue,
     cyan,
     green,
@@ -31,41 +36,113 @@ class AppChartColors {
     indigo,
   ];
 
+  /// Emerald Mint Palette (Growth & Green Finance Focus)
+  static const List<Color> emeraldMintPalette = [
+    Color(0xFF00C076), // 0: Emerald
+    Color(0xFF00E5FF), // 1: Turquoise Cyan
+    Color(0xFF30D158), // 2: Mint Green
+    Color(0xFFA3E635), // 3: Bright Lime
+    Color(0xFF10B981), // 4: Jade
+    Color(0xFF2DD4BF), // 5: Aqua
+    Color(0xFF059669), // 6: Forest
+  ];
+
+  /// Cyber Purple Palette (Neon Cyberpunk & Violet)
+  static const List<Color> cyberPurplePalette = [
+    Color(0xFFAF52DE), // 0: Electric Purple
+    Color(0xFF00E5FF), // 1: Neon Cyan
+    Color(0xFF30D158), // 2: Mint
+    Color(0xFFFFD60A), // 3: Amber
+    Color(0xFFFF375F), // 4: Neon Pink
+    Color(0xFFBF5AF2), // 5: Violet
+    Color(0xFF5856D6), // 6: Royal Indigo
+  ];
+
+  /// Sunset Gold Palette (Warm Amber & Radiant Coral)
+  static const List<Color> sunsetGoldPalette = [
+    Color(0xFFFF9500), // 0: Sunset Orange
+    Color(0xFFFFD60A), // 1: Amber Gold
+    Color(0xFF30D158), // 2: Green
+    Color(0xFFFB923C), // 3: Warm Peach
+    Color(0xFFFF375F), // 4: Coral Red
+    Color(0xFFF59E0B), // 5: Honey
+    Color(0xFFEF4444), // 6: Crimson
+  ];
+
+  /// Ocean Blue Palette (Sapphire & Marine Azure)
+  static const List<Color> oceanBluePalette = [
+    Color(0xFF007AFF), // 0: Electric Blue
+    Color(0xFF00E5FF), // 1: Sky Cyan
+    Color(0xFF30D158), // 2: Mint
+    Color(0xFF38BDF8), // 3: Light Sky
+    Color(0xFFFF375F), // 4: Rose Accent
+    Color(0xFF2563EB), // 5: Deep Blue
+    Color(0xFF06B6D4), // 6: Ocean Teal
+  ];
+
+  /// Palette lookup map
+  static const Map<String, List<Color>> allPalettes = {
+    'Default': defaultPalette,
+    'Emerald Mint': emeraldMintPalette,
+    'Emerald Slate': emeraldMintPalette,
+    'Cyber Purple': cyberPurplePalette,
+    'Sunset Gold': sunsetGoldPalette,
+    'Ocean Blue': oceanBluePalette,
+  };
+
+  /// The active global list of colors controlling all charts across the app.
+  static List<Color> get globalPalette {
+    final active = AppThemeManager.currentChartPalette.value;
+    return allPalettes[active] ?? defaultPalette;
+  }
+
   // ---------------------------------------------------------------------------
-  // 2. Semantic Palette Aliases & Derived Sets (Driven by globalPalette)
+  // 3. Semantic Palette Aliases & Derived Sets (Dynamically driven by active palette)
   // ---------------------------------------------------------------------------
 
-  /// Primary gradient pair (Cyan -> Electric Blue) for curves and flow lines
-  static List<Color> get primaryGradient => [cyan, blue];
+  /// Primary gradient pair for curves and flow lines
+  static List<Color> get primaryGradient {
+    final p = globalPalette;
+    return [p[1], p[0]];
+  }
 
   /// Dual-zone / Range threshold colors (Line chart)
-  static Color get thresholdMain => amber;
-  static Color get thresholdBelow => green;
-  static Color get thresholdAbove => rose;
+  static Color get thresholdMain => globalPalette[3];
+  static Color get thresholdBelow => globalPalette[2];
+  static Color get thresholdAbove => globalPalette[4];
 
   /// Gauge threshold zone colors (Safe, Moderate, High)
-  static Color get gaugeSafe => green;
-  static Color get gaugeModerate => amber;
-  static Color get gaugeHigh => rose;
+  static Color get gaugeSafe => globalPalette[2];
+  static Color get gaugeModerate => globalPalette[3];
+  static Color get gaugeHigh => globalPalette[4];
 
-  /// Bar chart state colors
-  static Color get barTouched => cyan;
-  static Color get barToday => blue;
-  static Color get barDefault => const Color(0xFF6B6B70);
-  static Color get barTrack => const Color(0xFF1C1C20);
+  /// Bar chart state colors driven by active chart palette
+  static Color get barTouched => globalPalette[1];
+  static Color get barToday => globalPalette[0];
+  static Color get barDefault => globalPalette[0].withValues(alpha: 0.45);
 
-  /// Heatmap activity intensity palette (from dark surface up to peak green)
-  static List<Color> get heatmapPalette => const [
-        Color(0xFF1C1C22), // Level 0: Inactive
-        Color(0xFF0B3820), // Level 1: Subtle
-        Color(0xFF136E38), // Level 2: Moderate
-        Color(0xFF1FA352), // Level 3: High
-        green, // Level 4: Peak Activity (matches global green)
-      ];
+  static Color get barTrack => AppThemeManager.colors.isDark
+      ? const Color(0xFF1C1C20)
+      : const Color(0xFFE5E7EB);
+
+  /// Heatmap activity intensity palette (from dark/light surface up to peak accent)
+  static List<Color> get heatmapPalette {
+    final p = globalPalette;
+    final base = p[2]; // Level 4 peak color
+    final isDark = AppThemeManager.colors.isDark;
+
+    return [
+      isDark ? const Color(0xFF1C1C22) : const Color(0xFFE5E7EB), // Level 0: Inactive
+      base.withValues(alpha: 0.22), // Level 1: Subtle
+      base.withValues(alpha: 0.48), // Level 2: Moderate
+      base.withValues(alpha: 0.76), // Level 3: High
+      base, // Level 4: Peak Activity
+    ];
+  }
 
   /// Heatmap selected cell highlight color
-  static Color get heatmapSelected => cyan;
+  static Color get heatmapSelected => globalPalette[1];
 
   /// Heatmap active inspector chip border/accent
-  static Color get heatmapChipBorder => blue;
+  static Color get heatmapChipBorder => globalPalette[0];
 }

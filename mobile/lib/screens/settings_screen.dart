@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import '../repositories/user_repository.dart';
 import '../services/auth_service.dart';
 import '../services/local_database_service.dart';
+import '../services/user_preferences_service.dart';
+import '../theme/app_theme.dart';
+import '../theme/chart_colors.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import 'scan_and_pay_screen.dart';
 import 'sign_in_screen.dart';
@@ -24,7 +27,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  String _selectedTheme = 'OLED Black';
   late String _displayName;
   late String _displayEmail;
   String _avatarUrl = '';
@@ -99,33 +101,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return 'HP';
   }
 
-  final List<Map<String, dynamic>> _themeOptions = const [
-    {
-      'name': 'OLED Black',
-      'description': 'Pure black for AMOLED displays',
-      'previewColor': Color(0xFF000000),
-      'accentColor': Color(0xFF007AFF),
-    },
-    {
-      'name': 'Midnight Dark',
-      'description': 'Deep navy and titanium tones',
-      'previewColor': Color(0xFF0D1117),
-      'accentColor': Color(0xFF58A6FF),
-    },
-    {
-      'name': 'Cyber Purple',
-      'description': 'Neon violet highlights',
-      'previewColor': Color(0xFF140D20),
-      'accentColor': Color(0xFFAF52DE),
-    },
-    {
-      'name': 'Emerald Slate',
-      'description': 'Mint and emerald accents',
-      'previewColor': Color(0xFF0C1914),
-      'accentColor': Color(0xFF00C076),
-    },
-  ];
-
   void _handleBack([int? targetIndex]) {
     if (Navigator.canPop(context)) {
       Navigator.pop(context, targetIndex);
@@ -140,162 +115,400 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _showThemeSelector() {
+  /// Transferred Customization modal presenting both App Themes and Chart Colors presets
+  void _showCustomizationModal() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF141416),
+      useSafeArea: true,
+      backgroundColor: AppThemeManager.colors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (BuildContext ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final colors = AppThemeManager.colors;
+            final currentAppTheme = AppThemeManager.currentTheme.value;
+            final currentChartPalette = AppThemeManager.currentChartPalette.value;
+
+            // Transferred Theme presets from previous Themes & Skins section
+            final List<Map<String, dynamic>> themePresets = const [
+              {
+                'id': 'Black',
+                'name': 'OLED Black',
+                'label': 'Black',
+                'description': 'Pure black for AMOLED displays (Default)',
+              },
+              {
+                'id': 'White',
+                'name': 'Clean White',
+                'label': 'White',
+                'description': 'Crisp daytime light mode with high clarity',
+              },
+              {
+                'id': 'Blue',
+                'name': 'Midnight Dark',
+                'label': 'Blue',
+                'description': 'Deep navy and titanium tones (Blue aesthetic)',
+              },
+            ];
+
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Themes & Skins',
-                        style: TextStyle(
-                          fontFamily: 'Google Sans',
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
+                      // Top Sheet Drag Handle
+                      Center(
+                        child: Container(
+                          width: 38,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: colors.textSecondary.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.close_rounded, color: Color(0xFF8E8E93)),
-                        onPressed: () => Navigator.of(ctx).pop(),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  for (final theme in _themeOptions) ...[
-                    Material(
-                      color: _selectedTheme == theme['name']
-                          ? const Color(0xFF1E1E24)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(14),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(14),
-                        onTap: () {
-                          setState(() {
-                            _selectedTheme = theme['name'] as String;
-                          });
-                          Navigator.of(ctx).pop();
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                              color: _selectedTheme == theme['name']
-                                  ? const Color(0xFF383842)
-                                  : const Color(0xFF222226),
-                            ),
-                          ),
-                          child: Row(
+                      const SizedBox(height: 18),
+
+                      // Header
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                width: 32,
-                                height: 32,
-                                decoration: BoxDecoration(
-                                  color: theme['previewColor'] as Color,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: theme['accentColor'] as Color,
-                                    width: 2,
-                                  ),
+                              Text(
+                                'Customization',
+                                style: TextStyle(
+                                  fontFamily: 'Google Sans',
+                                  color: colors.textPrimary,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w800,
                                 ),
                               ),
-                              const SizedBox(width: 14),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      theme['name'] as String,
-                                      style: const TextStyle(
-                                        fontFamily: 'Google Sans',
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      theme['description'] as String,
-                                      style: const TextStyle(
-                                        fontFamily: 'Google Sans',
-                                        color: Color(0xFF8E8E93),
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
+                              const SizedBox(height: 4),
+                              Text(
+                                'Themes & Chart Color Palettes',
+                                style: TextStyle(
+                                  fontFamily: 'Google Sans',
+                                  color: colors.textSecondary,
+                                  fontSize: 13,
                                 ),
                               ),
-                              if (_selectedTheme == theme['name'])
-                                const Icon(
-                                  Icons.check_circle_rounded,
-                                  color: Color(0xFF30D158),
-                                  size: 20,
-                                ),
                             ],
                           ),
+                          IconButton(
+                            icon: Icon(Icons.close_rounded, color: colors.textSecondary),
+                            onPressed: () => Navigator.of(ctx).pop(),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Section 1: App Theme Presets
+                      Text(
+                        'APP THEME',
+                        style: TextStyle(
+                          fontFamily: 'Google Sans',
+                          color: colors.accent,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.1,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                  ],
-                ],
+                      const SizedBox(height: 10),
+
+                      for (final theme in themePresets) ...[
+                        _buildThemeOptionCard(
+                          name: theme['name'] as String,
+                          label: theme['label'] as String,
+                          description: theme['description'] as String,
+                          isSelected: currentAppTheme == theme['id'],
+                          onTap: () {
+                            final selectedTheme = theme['id'] as String;
+                            AppThemeManager.setTheme(selectedTheme);
+                            UserPreferencesService().savePreferences(
+                              theme: selectedTheme,
+                              chartPalette: AppThemeManager.chartPalette,
+                            );
+                            setState(() {});
+                            setModalState(() {});
+                          },
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+
+                      const SizedBox(height: 16),
+                      Divider(color: colors.divider, height: 1, thickness: 1),
+                      const SizedBox(height: 16),
+
+                      // Section 2: Chart Color & Skin Presets
+                      Text(
+                        'CHART COLORS',
+                        style: TextStyle(
+                          fontFamily: 'Google Sans',
+                          color: colors.accent,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.1,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      for (final paletteName in kChartPaletteNames) ...[
+                        _buildChartPaletteOptionCard(
+                          name: paletteName,
+                          isSelected: currentChartPalette == paletteName,
+                          onTap: () {
+                            AppThemeManager.setChartPalette(paletteName);
+                            UserPreferencesService().savePreferences(
+                              theme: AppThemeManager.theme,
+                              chartPalette: paletteName,
+                            );
+                            setState(() {});
+                            setModalState(() {});
+                          },
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );
   }
 
+  Widget _buildThemeOptionCard({
+    required String name,
+    required String label,
+    required String description,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final colors = AppThemeManager.colors;
+
+    return Material(
+      color: isSelected ? colors.surfaceSecondary : Colors.transparent,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isSelected ? colors.accent : colors.border,
+              width: isSelected ? 1.5 : 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          name,
+                          style: TextStyle(
+                            fontFamily: 'Google Sans',
+                            color: colors.textPrimary,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: colors.surfaceSecondary,
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: colors.border, width: 0.5),
+                          ),
+                          child: Text(
+                            label,
+                            style: TextStyle(
+                              fontFamily: 'Google Sans',
+                              color: colors.textSecondary,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      description,
+                      style: TextStyle(
+                        fontFamily: 'Google Sans',
+                        color: colors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (isSelected)
+                Icon(
+                  Icons.check_circle_rounded,
+                  color: colors.accent,
+                  size: 22,
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChartPaletteOptionCard({
+    required String name,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final colors = AppThemeManager.colors;
+    final swatches = AppChartColors.allPalettes[name] ?? AppChartColors.defaultPalette;
+    final String description;
+
+    switch (name) {
+      case 'Emerald Mint':
+      case 'Emerald Slate':
+        description = 'Mint and emerald accents for growth and tracking';
+        break;
+      case 'Cyber Purple':
+        description = 'Neon violet highlights and cyberpunk glow';
+        break;
+      case 'Sunset Gold':
+        description = 'Warm amber, golden orange and coral radiant gradients';
+        break;
+      case 'Ocean Blue':
+        description = 'Sky cyan, electric blue and sapphire marine curves';
+        break;
+      case 'Default':
+      default:
+        description = 'Electric Blue, vibrant Cyan, Mint, Amber & Rose (Default)';
+        break;
+    }
+
+    return Material(
+      color: isSelected ? colors.surfaceSecondary : Colors.transparent,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isSelected ? colors.accent : colors.border,
+              width: isSelected ? 1.5 : 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              // Swatches row (5 dots)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (int i = 0; i < 5 && i < swatches.length; i++)
+                    Container(
+                      margin: const EdgeInsets.only(right: 3),
+                      width: 9,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: swatches[i],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: TextStyle(
+                        fontFamily: 'Google Sans',
+                        color: colors.textPrimary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      description,
+                      style: TextStyle(
+                        fontFamily: 'Google Sans',
+                        color: colors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (isSelected)
+                Icon(
+                  Icons.check_circle_rounded,
+                  color: colors.accent,
+                  size: 22,
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showLogoutDialog() {
+    final colors = AppThemeManager.colors;
     showDialog(
       context: context,
       builder: (BuildContext ctx) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF1E1E24),
+          backgroundColor: colors.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: const Text(
+          title: Text(
             'Logout',
             style: TextStyle(
               fontFamily: 'Google Sans',
-              color: Colors.white,
+              color: colors.textPrimary,
               fontWeight: FontWeight.w700,
             ),
           ),
-          content: const Text(
+          content: Text(
             'Are you sure you want to log out of Huly Pay?',
             style: TextStyle(
               fontFamily: 'Google Sans',
-              color: Color(0xFF8E8E93),
+              color: colors.textSecondary,
               fontSize: 14,
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text(
+              child: Text(
                 'Cancel',
                 style: TextStyle(
                   fontFamily: 'Google Sans',
-                  color: Color(0xFF8E8E93),
+                  color: colors.textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -349,8 +562,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeManager.colors;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF000000),
+      backgroundColor: colors.background,
       body: SafeArea(
         bottom: false,
         child: Stack(
@@ -405,27 +620,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildTopBar() {
+    final colors = AppThemeManager.colors;
     return Row(
       children: [
         GestureDetector(
           onTap: () => _handleBack(),
           behavior: HitTestBehavior.opaque,
-          child: const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
             child: Icon(
               Icons.arrow_back,
-              color: Colors.white,
+              color: colors.textPrimary,
               size: 24,
             ),
           ),
         ),
-        const Expanded(
+        Expanded(
           child: Center(
             child: Text(
               'Profile & Settings',
               style: TextStyle(
                 fontFamily: 'Google Sans',
-                color: Colors.white,
+                color: colors.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 letterSpacing: -0.2,
@@ -439,14 +655,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildProfileCard() {
+    final colors = AppThemeManager.colors;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFF141416),
+        color: colors.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFF222226),
+          color: colors.border,
           width: 1,
         ),
       ),
@@ -496,9 +714,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 Text(
                   _displayName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Google Sans',
-                    color: Colors.white,
+                    color: colors.textPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.3,
@@ -507,9 +725,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 4),
                 Text(
                   _displayEmail,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Google Sans',
-                    color: Color(0xFF8E8E93),
+                    color: colors.textSecondary,
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
                   ),
@@ -517,9 +735,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
           ),
-          const Icon(
+          Icon(
             Icons.chevron_right_rounded,
-            color: Color(0xFF6B6B70),
+            color: colors.textMuted,
             size: 20,
           ),
         ],
@@ -534,7 +752,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: 'Personal Information',
         onTap: () {},
       ),
-      const Divider(color: Color(0xFF202024), height: 1, thickness: 1, indent: 52),
+      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
       _buildSettingRow(
         icon: Icons.credit_card_rounded,
         title: 'Payment Methods',
@@ -550,12 +768,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: 'Notifications',
         onTap: () {},
       ),
-      const Divider(color: Color(0xFF202024), height: 1, thickness: 1, indent: 52),
+      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
+      // Customization option with both transferred Themes and Chart Colors presets
       _buildSettingRow(
-        icon: Icons.palette_outlined,
-        title: 'Themes & Skins',
-        trailingText: _selectedTheme,
-        onTap: _showThemeSelector,
+        icon: Icons.tune_rounded,
+        title: 'Customization',
+        trailingText: '${AppThemeManager.theme} • ${AppThemeManager.chartPalette}',
+        onTap: _showCustomizationModal,
       ),
     ]);
   }
@@ -567,13 +786,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: 'Privacy & Security',
         onTap: () {},
       ),
-      const Divider(color: Color(0xFF202024), height: 1, thickness: 1, indent: 52),
+      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
       _buildSettingRow(
         icon: Icons.help_outline_rounded,
         title: 'Help & Support',
         onTap: () {},
       ),
-      const Divider(color: Color(0xFF202024), height: 1, thickness: 1, indent: 52),
+      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
       _buildSettingRow(
         icon: Icons.info_outline_rounded,
         title: 'About Hulypay',
@@ -584,13 +803,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildLogoutCard() {
+    final colors = AppThemeManager.colors;
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color(0xFF141416),
+        color: colors.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFF222226),
+          color: colors.border,
           width: 1,
         ),
       ),
@@ -599,17 +820,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: _showLogoutDialog,
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.logout_rounded,
                   color: Color(0xFFFF453A),
                   size: 22,
                 ),
-                SizedBox(width: 14),
-                Text(
+                const SizedBox(width: 14),
+                const Text(
                   'Logout',
                   style: TextStyle(
                     fontFamily: 'Google Sans',
@@ -618,10 +839,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                Spacer(),
+                const Spacer(),
                 Icon(
                   Icons.chevron_right_rounded,
-                  color: Color(0xFF6B6B70),
+                  color: colors.textMuted,
                   size: 20,
                 ),
               ],
@@ -633,13 +854,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildGroupCard(List<Widget> children) {
+    final colors = AppThemeManager.colors;
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color(0xFF141416),
+        color: colors.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFF222226),
+          color: colors.border,
           width: 1,
         ),
       ),
@@ -655,6 +878,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     String? trailingText,
     required VoidCallback onTap,
   }) {
+    final colors = AppThemeManager.colors;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -666,15 +891,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               Icon(
                 icon,
-                color: Colors.white,
+                color: colors.textPrimary,
                 size: 22,
               ),
               const SizedBox(width: 14),
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Google Sans',
-                  color: Colors.white,
+                  color: colors.textPrimary,
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
                 ),
@@ -683,18 +908,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
               if (trailingText != null) ...[
                 Text(
                   trailingText,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Google Sans',
-                    color: Color(0xFF8E8E93),
+                    color: colors.textSecondary,
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(width: 8),
               ],
-              const Icon(
+              Icon(
                 Icons.chevron_right_rounded,
-                color: Color(0xFF6B6B70),
+                color: colors.textMuted,
                 size: 20,
               ),
             ],

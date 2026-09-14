@@ -1,6 +1,7 @@
 import 'package:fl_heatmap/fl_heatmap.dart';
 import 'package:flutter/material.dart';
 import '../models/payment_model.dart';
+import '../theme/app_theme.dart';
 import '../theme/chart_colors.dart';
 
 enum HeatmapPeriod {
@@ -62,15 +63,16 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
     final period = _effectivePeriod;
     final heatmapData = _buildHeatmapData(widget.payments, period);
     final periodTotal = _computePeriodTotal(widget.payments, period);
+    final colors = AppThemeManager.colors;
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
       decoration: BoxDecoration(
-        color: const Color(0xFF141416),
+        color: colors.surface,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFF222226),
+          color: colors.border,
           width: 1,
         ),
       ),
@@ -117,11 +119,11 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
+        Text(
           'Heatmap',
           style: TextStyle(
             fontFamily: 'Google Sans',
-            color: Colors.white,
+            color: AppThemeManager.colors.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w700,
           ),
