@@ -1,5 +1,6 @@
 import '../models/payment_model.dart';
 import '../services/api_client.dart';
+import '../services/auth_service.dart';
 import '../services/local_database_service.dart';
 
 class PaymentRepository {
@@ -19,6 +20,11 @@ class PaymentRepository {
     try {
       cached = await _localDb.getPayments();
     } catch (_) {}
+
+    // Avoid making an unauthenticated network request that triggers a 401 error in DevTools Network tab
+    if (!AuthService().hasValidActiveToken) {
+      return cached;
+    }
 
     // If we have cached data and not forcing refresh, return immediately or continue background sync
     try {

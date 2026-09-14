@@ -18,6 +18,16 @@ class UserRepository {
       cached = await _localDb.getUserProfile();
     } catch (_) {}
 
+    // Avoid making an unauthenticated network request that triggers a 401 error in DevTools Network tab
+    if (!AuthService().hasValidActiveToken) {
+      final authProfile = AuthService().currentUserProfile;
+      if (authProfile != null) {
+        await _localDb.saveUserProfile(authProfile);
+        return authProfile;
+      }
+      return cached;
+    }
+
     try {
       final remote = await _apiClient.getCurrentUser();
       final authProfile = AuthService().currentUserProfile;

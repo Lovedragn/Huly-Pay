@@ -221,32 +221,38 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final content = SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 12,
-        bottom: 110, // padding for bottom nav
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(),
-          const SizedBox(height: 24),
-          AnalysisCategoryPieChart(
-            items: _categories,
-            totalAmount: _totalSpent,
-            centerLabel: _getCenterLabel(_selectedPeriod),
-          ),
-          const SizedBox(height: 24),
-          SpendingHeatmap(
-            payments: _allPayments,
-            period: _selectedPeriod,
-          ),
-          const SizedBox(height: 28),
-          _buildCategoryList(),
-        ],
+    final content = RefreshIndicator(
+      onRefresh: _loadData,
+      color: Colors.white,
+      backgroundColor: const Color(0xFF1C1C1E),
+      displacement: 28,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+        padding: const EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 12,
+          bottom: 110, // padding for bottom nav
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            const SizedBox(height: 24),
+            AnalysisCategoryPieChart(
+              items: _categories,
+              totalAmount: _totalSpent,
+              centerLabel: _getCenterLabel(_selectedPeriod),
+            ),
+            const SizedBox(height: 24),
+            SpendingHeatmap(
+              payments: _allPayments,
+              period: _selectedPeriod,
+            ),
+            const SizedBox(height: 28),
+            _buildCategoryList(),
+          ],
+        ),
       ),
     );
 

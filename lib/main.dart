@@ -46,7 +46,7 @@ class HulyPayApp extends StatelessWidget {
     return MaterialApp(
       title: 'HulyPay',
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.system,
       theme: ThemeData(
         useMaterial3: true,
         fontFamily: appFontFamily,
