@@ -15,6 +15,7 @@ import 'analysis_screen.dart';
 import 'scan_and_pay_screen.dart';
 import 'settings_screen.dart';
 import 'transactions_screen.dart';
+import '../theme/app_theme.dart';
 
 class HomeDashboardScreen extends StatefulWidget {
   final DashboardData? initialData;
@@ -86,7 +87,11 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
       final user = await UserRepository().getUserProfile(forceRefresh: true).catchError((_) => null);
       final payments = await PaymentRepository().getPayments(forceRefresh: true).catchError((_) => <PaymentModel>[]);
       if (mounted) {
-        _applyData(user, payments);
+        if (payments.isNotEmpty || _payments.isEmpty) {
+          _applyData(user, payments);
+        } else if (user != null) {
+          _applyData(user, _payments);
+        }
       }
     } catch (_) {}
   }
@@ -200,7 +205,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFF000000),
+        backgroundColor: AppThemeManager.colors.background,
         body: SafeArea(
           bottom: false,
           child: Stack(
@@ -245,10 +250,12 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
   }
 
   Widget _buildDashboardContent() {
+    final colors = AppThemeManager.colors;
+
     return RefreshIndicator(
       onRefresh: _loadRealData,
-      color: Colors.white,
-      backgroundColor: const Color(0xFF1C1C1E),
+      color: colors.accent,
+      backgroundColor: colors.surfaceSecondary,
       displacement: 28,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
@@ -296,6 +303,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
         _selectedNavIndex = targetIndex;
       });
     }
+    // Refresh dashboard data so new transaction reflects in Daily Limit chart immediately
+    _loadRealData();
   }
 
   Future<void> _openSettings() async {
@@ -312,6 +321,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
   }
 
   Widget _buildHeader() {
+    final colors = AppThemeManager.colors;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -321,6 +332,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
             SvgPicture.asset(
               'asserts/logo/logo.svg',
               height: 24,
+              colorFilter: colors.isDark
+                  ? null
+                  : ColorFilter.mode(colors.textPrimary, BlendMode.srcIn),
             ),
             Tooltip(
               message: 'Profile & Settings',
@@ -336,7 +350,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: const Color(0xFF2A2A30),
+                        color: colors.border,
                         width: 1.5,
                       ),
                     ),
@@ -364,25 +378,27 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
   }
 
   Widget _buildTotalSpentCard() {
+    final colors = AppThemeManager.colors;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: const Color(0xFF141416),
+        color: colors.surface,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFF222226),
+          color: colors.border,
           width: 1,
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'TOTAL SPENT',
             style: TextStyle(
               fontFamily: 'Google Sans',
-              color: Color(0xFF8E8E93),
+              color: colors.textSecondary,
               fontSize: 12,
               fontWeight: FontWeight.w600,
               letterSpacing: 1.2,
@@ -391,9 +407,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
           const SizedBox(height: 12),
           Text(
             _data.totalSpentFormatted,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Google Sans',
-              color: Colors.white,
+              color: colors.textPrimary,
               fontSize: 40,
               fontWeight: FontWeight.w800,
               letterSpacing: -0.5,
@@ -419,9 +435,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
               ),
               Text(
                 _data.changePeriodLabel,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Google Sans',
-                  color: Color(0xFF8E8E93),
+                  color: colors.textSecondary,
                   fontSize: 13,
                 ),
               ),

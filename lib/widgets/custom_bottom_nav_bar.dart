@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../theme/app_theme.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final int selectedIndex;
@@ -17,8 +18,18 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeManager.colors;
+
     return Container(
-      color: const Color(0xFF000000),
+      decoration: BoxDecoration(
+        color: colors.navBarBackground,
+        border: Border(
+          top: BorderSide(
+            color: colors.divider,
+            width: 0.5,
+          ),
+        ),
+      ),
       child: SafeArea(
         top: false,
         child: Padding(
@@ -84,8 +95,8 @@ class CustomBottomNavBar extends StatelessWidget {
                       height: 52,
                       decoration: BoxDecoration(
                         color: isQrActive
-                            ? const Color(0xFF007AFF)
-                            : const Color(0xFF202024),
+                            ? colors.accent
+                            : colors.iconBackground,
                         shape: BoxShape.circle,
                       ),
                       child: Center(
@@ -96,7 +107,7 @@ class CustomBottomNavBar extends StatelessWidget {
                           colorFilter: ColorFilter.mode(
                             isQrActive
                                 ? Colors.white
-                                : const Color(0xFF8E8E93),
+                                : colors.iconDefault,
                             BlendMode.srcIn,
                           ),
                         ),
@@ -117,34 +128,31 @@ class CustomBottomNavBar extends StatelessWidget {
     required String label,
     required Widget Function(Color color) iconBuilder,
   }) {
+    final colors = AppThemeManager.colors;
     final isSelected = selectedIndex == index;
-    final color = isSelected ? Colors.white : const Color(0xFF6B6B70);
+    final itemColor = isSelected
+        ? colors.navBarActive
+        : colors.navBarInactive;
 
     return GestureDetector(
       onTap: () => onItemSelected(index),
       behavior: HitTestBehavior.opaque,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              height: 26,
-              child: Center(child: iconBuilder(color)),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          iconBuilder(itemColor),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontFamily: 'Google Sans',
+              color: itemColor,
+              fontSize: 11,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
             ),
-            const SizedBox(height: 6),
-            Text(
-              label,
-              style: TextStyle(
-                fontFamily: 'Google Sans',
-                color: color,
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                letterSpacing: -0.1,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

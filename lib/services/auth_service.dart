@@ -48,6 +48,9 @@ class AuthService {
     }
   }
 
+  /// Safe accessor for initialized SupabaseClient
+  SupabaseClient? get client => _client;
+
   Session? get currentSession => _client?.auth.currentSession;
   User? get currentUser => _client?.auth.currentUser;
 

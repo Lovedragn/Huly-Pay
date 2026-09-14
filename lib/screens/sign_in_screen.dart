@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../repositories/payment_repository.dart';
 import '../repositories/user_repository.dart';
 import '../services/auth_service.dart';
+import '../services/user_preferences_service.dart';
 import 'home_dashboard_screen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -83,6 +84,11 @@ class _SignInScreenState extends State<SignInScreen> {
     // 3. Pre-fetch payments from backend and cache in SQLite
     try {
       await PaymentRepository().getPayments(forceRefresh: true);
+    } catch (_) {}
+
+    // 4. Sync user theme and chart color presets from Supabase users_preference
+    try {
+      await UserPreferencesService().loadRemotePreferences();
     } catch (_) {}
   }
 

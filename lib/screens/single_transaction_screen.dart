@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/dashboard_data.dart';
 import '../models/payment_model.dart';
 import '../repositories/payment_repository.dart';
+import '../theme/app_theme.dart';
 
 class SingleTransactionScreen extends StatefulWidget {
   final TransactionItem transaction;
@@ -322,7 +323,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
     final topPadding = mediaQuery.padding.top;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF000000),
+      backgroundColor: AppThemeManager.colors.background,
       body: Stack(
         children: [
           // 1. FULL WIDTH & FULL HEIGHT GOOGLE MAP / STREET VIEW IN BACKGROUND (With Parallax Offset)

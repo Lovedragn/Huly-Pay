@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../models/payment_model.dart';
+import '../theme/app_theme.dart';
 import '../theme/chart_colors.dart';
 
 enum SpendChartStyle {
@@ -37,14 +38,15 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
   @override
   Widget build(BuildContext context) {
     final dailyPoints = _computeTrendPoints(widget.payments);
+    final colors = AppThemeManager.colors;
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
       decoration: BoxDecoration(
-        color: const Color(0xFF141416),
+        color: colors.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFF222226), width: 1),
+        border: Border.all(color: colors.border, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,9 +94,9 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
               _currentStyle == SpendChartStyle.curvedGradient
                   ? ('Daily Average')
                   : 'Range Threshold',
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Google Sans',
-                color: Colors.white,
+                color: AppThemeManager.colors.textPrimary,
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
               ),

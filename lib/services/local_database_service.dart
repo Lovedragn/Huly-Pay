@@ -15,7 +15,7 @@ class LocalDatabaseService {
   }
 
   static const String dbName = 'huly_pay.db';
-  static const int dbVersion = 1;
+  static const int dbVersion = 2;
 
   Database? _db;
   bool _isFfiInitialized = false;
@@ -68,13 +68,23 @@ class LocalDatabaseService {
       version: dbVersion,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
+      onOpen: (db) async {
+        await _ensureAllTablesExist(db);
+      },
     );
 
     _db = db;
     return db;
   }
 
+  bool _forceTestMode = false;
+
+  void setTestMode(bool isTest) {
+    _forceTestMode = isTest;
+  }
+
   bool get _isTest {
+    if (_forceTestMode) return true;
     try {
       return Platform.environment.containsKey('FLUTTER_TEST');
     } catch (_) {
@@ -86,24 +96,44 @@ class LocalDatabaseService {
     if (_isTest) {
       return inMemoryDatabasePath;
     }
+    String targetPath;
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       final databasesPath = await getDatabasesPath();
-      return p.join(databasesPath, dbName);
+      targetPath = p.join(databasesPath, dbName);
     } else {
       try {
         final docsDir = await getApplicationDocumentsDirectory();
-        return p.join(docsDir.path, 'HulyPay', dbName);
+        targetPath = p.join(docsDir.path, 'HulyPay', dbName);
       } catch (_) {
         final databasesPath = await getDatabasesPath();
-        return p.join(databasesPath, dbName);
+        targetPath = p.join(databasesPath, dbName);
       }
     }
+
+    // Ensure the enclosing directory actually exists on disk before opening
+    try {
+      final dir = Directory(p.dirname(targetPath));
+      if (!await dir.exists()) {
+        await dir.create(recursive: true);
+      }
+    } catch (_) {}
+
+    return targetPath;
   }
 
   Future<void> _onCreate(Database db, int version) async {
+    await _ensureAllTablesExist(db);
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    await _ensureAllTablesExist(db);
+  }
+
+  /// Guarantees that all required tables and indexes exist regardless of database age or upgrade state
+  Future<void> _ensureAllTablesExist(Database db) async {
     // 1. Cached Payments Table
     await db.execute('''
-      CREATE TABLE cached_payments (
+      CREATE TABLE IF NOT EXISTS cached_payments (
         id TEXT PRIMARY KEY,
         user_id TEXT,
         amount REAL NOT NULL,
@@ -128,17 +158,17 @@ class LocalDatabaseService {
 
     // Index on created_at for fast descending queries
     await db.execute('''
-      CREATE INDEX idx_cached_payments_created_at ON cached_payments (created_at DESC)
+      CREATE INDEX IF NOT EXISTS idx_cached_payments_created_at ON cached_payments (created_at DESC)
     ''');
 
     // Index on status
     await db.execute('''
-      CREATE INDEX idx_cached_payments_status ON cached_payments (status)
+      CREATE INDEX IF NOT EXISTS idx_cached_payments_status ON cached_payments (status)
     ''');
 
     // 2. Cached User Profile Table
     await db.execute('''
-      CREATE TABLE cached_user_profile (
+      CREATE TABLE IF NOT EXISTS cached_user_profile (
         id TEXT PRIMARY KEY,
         email TEXT NOT NULL,
         full_name TEXT,
@@ -154,7 +184,7 @@ class LocalDatabaseService {
 
     // 3. Cached Categories Table
     await db.execute('''
-      CREATE TABLE cached_categories (
+      CREATE TABLE IF NOT EXISTS cached_categories (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
         icon TEXT,
@@ -165,16 +195,12 @@ class LocalDatabaseService {
 
     // 4. Cache Metadata Table
     await db.execute('''
-      CREATE TABLE cache_metadata (
+      CREATE TABLE IF NOT EXISTS cache_metadata (
         key TEXT PRIMARY KEY,
         value TEXT NOT NULL,
         updated_at TEXT NOT NULL
       )
     ''');
-  }
-
-  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Schema migration logic for future versions
   }
 
   // ==========================================
@@ -424,6 +450,13 @@ class LocalDatabaseService {
 
   Future<void> setMetadata(String key, String value) async {
     final db = await database;
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS cache_metadata (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    ''');
     await db.insert(
       'cache_metadata',
       {
@@ -437,6 +470,13 @@ class LocalDatabaseService {
 
   Future<String?> getMetadata(String key) async {
     final db = await database;
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS cache_metadata (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    ''');
     final rows = await db.query(
       'cache_metadata',
       where: 'key = ?',
@@ -445,6 +485,25 @@ class LocalDatabaseService {
     );
     if (rows.isEmpty) return null;
     return rows.first['value'] as String?;
+  }
+
+  Future<Map<String, dynamic>?> getMetadataEntry(String key) async {
+    final db = await database;
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS cache_metadata (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    ''');
+    final rows = await db.query(
+      'cache_metadata',
+      where: 'key = ?',
+      whereArgs: [key],
+      limit: 1,
+    );
+    if (rows.isEmpty) return null;
+    return rows.first;
   }
 
   // ==========================================
@@ -463,8 +522,10 @@ class LocalDatabaseService {
   }
 
   Future<void> close() async {
-    if (_db != null && _db!.isOpen) {
-      await _db!.close();
+    if (_db != null) {
+      if (_db!.isOpen) {
+        await _db!.close();
+      }
       _db = null;
     }
   }

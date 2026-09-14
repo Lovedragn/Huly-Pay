@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/dashboard_data.dart';
 import '../models/payment_model.dart';
 import '../repositories/payment_repository.dart';
+import '../services/user_preferences_service.dart';
+import '../theme/app_theme.dart';
 import '../theme/chart_colors.dart';
 import '../widgets/analysis_category_pie_chart.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
@@ -45,6 +47,11 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   @override
   void initState() {
     super.initState();
+    final cached = UserPreferencesService().cachedAnalysisPeriod;
+    if (cached != null && _periodOptions.contains(cached)) {
+      _selectedPeriod = cached;
+    }
+    _loadSavedPeriod();
     if (widget.initialPayments != null) {
       _allPayments = List.from(widget.initialPayments!);
       _filterAndRecalculate();
@@ -56,6 +63,18 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
       _totalSpent = widget.totalSpent ?? '₹0';
       _loadData();
     }
+  }
+
+  Future<void> _loadSavedPeriod() async {
+    try {
+      final saved = await UserPreferencesService().getAnalysisPeriod();
+      if (saved != null && _periodOptions.contains(saved) && mounted) {
+        setState(() {
+          _selectedPeriod = saved;
+        });
+        _filterAndRecalculate();
+      }
+    } catch (_) {}
   }
 
   Future<void> _loadData() async {
@@ -221,10 +240,12 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeManager.colors;
+
     final content = RefreshIndicator(
       onRefresh: _loadData,
-      color: Colors.white,
-      backgroundColor: const Color(0xFF1C1C1E),
+      color: colors.accent,
+      backgroundColor: colors.surfaceSecondary,
       displacement: 28,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
@@ -261,7 +282,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF000000),
+      backgroundColor: colors.background,
       body: SafeArea(
         bottom: false,
         child: Stack(
@@ -293,14 +314,16 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   }
 
   Widget _buildHeader() {
+    final colors = AppThemeManager.colors;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
+        Text(
           'Spending Insights',
           style: TextStyle(
             fontFamily: 'Google Sans',
-            color: Colors.white,
+            color: colors.textPrimary,
             fontSize: 24,
             fontWeight: FontWeight.w800,
             letterSpacing: -0.4,
@@ -311,9 +334,10 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
             setState(() {
               _selectedPeriod = val;
             });
+            UserPreferencesService().saveAnalysisPeriod(val);
             _filterAndRecalculate();
           },
-          color: const Color(0xFF1E1E24),
+          color: colors.surfaceSecondary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -326,8 +350,8 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                   style: TextStyle(
                     fontFamily: 'Google Sans',
                     color: period == _selectedPeriod
-                        ? Colors.white
-                        : const Color(0xFF8E8E93),
+                        ? colors.accent
+                        : colors.textSecondary,
                     fontSize: 14,
                     fontWeight: period == _selectedPeriod
                         ? FontWeight.w700
@@ -340,10 +364,10 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFF141416),
+              color: colors.surface,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: const Color(0xFF222226),
+                color: colors.border,
                 width: 1,
               ),
             ),
@@ -352,17 +376,17 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
               children: [
                 Text(
                   _selectedPeriod,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Google Sans',
-                    color: Colors.white,
+                    color: colors.textPrimary,
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(width: 6),
-                const Icon(
+                Icon(
                   Icons.keyboard_arrow_down_rounded,
-                  color: Colors.white,
+                  color: colors.textPrimary,
                   size: 18,
                 ),
               ],
@@ -374,42 +398,44 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   }
 
   Widget _buildCategoryList() {
+    final colors = AppThemeManager.colors;
+
     if (_categories.isEmpty) {
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
         decoration: BoxDecoration(
-          color: const Color(0xFF141416),
+          color: colors.surface,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: const Color(0xFF222226),
+            color: colors.border,
             width: 1,
           ),
         ),
-        child: const Column(
+        child: Column(
           children: [
             Icon(
               Icons.pie_chart_outline_rounded,
-              color: Color(0xFF8E8E93),
+              color: colors.textSecondary,
               size: 32,
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
               'No spending data yet',
               style: TextStyle(
                 fontFamily: 'Google Sans',
-                color: Colors.white,
+                color: colors.textPrimary,
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               'Categorized insights will appear here as you spend.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Google Sans',
-                color: Color(0xFF8E8E93),
+                color: colors.textSecondary,
                 fontSize: 13,
               ),
             ),
@@ -424,10 +450,10 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
           decoration: BoxDecoration(
-            color: const Color(0xFF141416),
+            color: colors.surface,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: const Color(0xFF202024),
+              color: colors.border,
               width: 1,
             ),
           ),
@@ -444,9 +470,9 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
               const SizedBox(width: 14),
               Text(
                 cat.title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Google Sans',
-                  color: Colors.white,
+                  color: colors.textPrimary,
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
@@ -454,9 +480,9 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
               const Spacer(),
               Text(
                 '${cat.percentage}%',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Google Sans',
-                  color: Color(0xFF8E8E93),
+                  color: colors.textSecondary,
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
@@ -464,9 +490,9 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
               const SizedBox(width: 14),
               Text(
                 cat.amount,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Google Sans',
-                  color: Colors.white,
+                  color: colors.textPrimary,
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                 ),

@@ -7,6 +7,7 @@ import '../widgets/transaction_tile.dart';
 import 'analysis_screen.dart';
 import 'home_dashboard_screen.dart';
 import 'scan_and_pay_screen.dart';
+import '../theme/app_theme.dart';
 
 class TransactionsScreen extends StatefulWidget {
   final List<TransactionGroup>? initialGroups;
@@ -170,12 +171,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeManager.colors;
     final groupsToDisplay = _filteredGroups;
 
     final content = RefreshIndicator(
       onRefresh: _loadPayments,
-      color: Colors.white,
-      backgroundColor: const Color(0xFF1C1C1E),
+      color: colors.accent,
+      backgroundColor: colors.surfaceSecondary,
       displacement: 28,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
@@ -205,7 +207,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF000000),
+      backgroundColor: colors.background,
       body: SafeArea(
         bottom: false,
         child: Stack(
@@ -237,14 +239,16 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   }
 
   Widget _buildHeader() {
+    final colors = AppThemeManager.colors;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
+        Text(
           'Transactions',
           style: TextStyle(
             fontFamily: 'Google Sans',
-            color: Colors.white,
+            color: colors.textPrimary,
             fontSize: 26,
             fontWeight: FontWeight.w800,
             letterSpacing: -0.5,
@@ -254,17 +258,17 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           width: 44,
           height: 44,
           decoration: BoxDecoration(
-            color: const Color(0xFF161619),
+            color: colors.iconBackground,
             shape: BoxShape.circle,
             border: Border.all(
-              color: const Color(0xFF24242A),
+              color: colors.border,
               width: 1,
             ),
           ),
-          child: const Center(
+          child: Center(
             child: Icon(
               Icons.search_rounded,
-              color: Colors.white,
+              color: colors.textPrimary,
               size: 22,
             ),
           ),
@@ -274,22 +278,24 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   }
 
   Widget _buildSearchBar() {
+    final colors = AppThemeManager.colors;
+
     return Container(
       height: 48,
       decoration: BoxDecoration(
-        color: const Color(0xFF141416),
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFF222226),
+          color: colors.border,
           width: 1,
         ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 14),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             Icons.search_rounded,
-            color: Color(0xFF6B6B70),
+            color: colors.textMuted,
             size: 20,
           ),
           const SizedBox(width: 10),
@@ -301,16 +307,16 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   _searchQuery = val;
                 });
               },
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Google Sans',
-                color: Colors.white,
+                color: colors.textPrimary,
                 fontSize: 15,
               ),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Search transactions',
                 hintStyle: TextStyle(
                   fontFamily: 'Google Sans',
-                  color: Color(0xFF6B6B70),
+                  color: colors.textMuted,
                   fontSize: 15,
                 ),
                 border: InputBorder.none,
@@ -327,9 +333,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   _searchQuery = '';
                 });
               },
-              child: const Icon(
+              child: Icon(
                 Icons.close_rounded,
-                color: Color(0xFF8E8E93),
+                color: colors.textSecondary,
                 size: 18,
               ),
             ),
@@ -339,6 +345,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   }
 
   Widget _buildFilterChips() {
+    final colors = AppThemeManager.colors;
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       physics: const BouncingScrollPhysics(),
@@ -363,12 +371,12 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   vertical: 10,
                 ),
                 decoration: BoxDecoration(
-                  color: isSelected ? Colors.white : const Color(0xFF161619),
+                  color: isSelected ? colors.accent : colors.surfaceSecondary,
                   borderRadius: BorderRadius.circular(12),
                   border: isSelected
                       ? null
                       : Border.all(
-                          color: const Color(0xFF24242A),
+                          color: colors.border,
                           width: 1,
                         ),
                 ),
@@ -376,7 +384,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   _filters[index],
                   style: TextStyle(
                     fontFamily: 'Google Sans',
-                    color: isSelected ? Colors.black : const Color(0xFF8E8E93),
+                    color: isSelected ? Colors.white : colors.textSecondary,
                     fontSize: 14,
                     fontWeight:
                         isSelected ? FontWeight.w700 : FontWeight.w500,
@@ -391,16 +399,18 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   }
 
   Widget _buildGroupedTransactions(List<TransactionGroup> groups) {
+    final colors = AppThemeManager.colors;
+
     if (groups.isEmpty) {
       return Container(
         width: double.infinity,
         margin: const EdgeInsets.only(top: 16),
         padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 24),
         decoration: BoxDecoration(
-          color: const Color(0xFF141416),
+          color: colors.surface,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: const Color(0xFF222226),
+            color: colors.border,
             width: 1,
           ),
         ),
@@ -409,33 +419,33 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             Container(
               width: 52,
               height: 52,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Color(0xFF1E1E24),
+                color: colors.iconBackground,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.receipt_long_outlined,
-                color: Color(0xFF8E8E93),
+                color: colors.textSecondary,
                 size: 26,
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'No transactions found',
               style: TextStyle(
                 fontFamily: 'Google Sans',
-                color: Colors.white,
+                color: colors.textPrimary,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 6),
-            const Text(
+            Text(
               'Transactions will appear here once you make payments.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Google Sans',
-                color: Color(0xFF8E8E93),
+                color: colors.textSecondary,
                 fontSize: 13,
                 height: 1.4,
               ),
@@ -455,9 +465,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             children: [
               Text(
                 group.title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Google Sans',
-                  color: Color(0xFF6B6B70),
+                  color: colors.textMuted,
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 1.0,
@@ -467,10 +477,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF141416),
+                  color: colors.surface,
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: const Color(0xFF222226),
+                    color: colors.border,
                     width: 1,
                   ),
                 ),
@@ -479,8 +489,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     for (int i = 0; i < group.transactions.length; i++) ...[
                       TransactionTile(transaction: group.transactions[i]),
                       if (i < group.transactions.length - 1)
-                        const Divider(
-                          color: Color(0xFF202024),
+                        Divider(
+                          color: colors.divider,
                           height: 1,
                           thickness: 1,
                           indent: 74,

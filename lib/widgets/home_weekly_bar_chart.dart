@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../models/payment_model.dart';
+import '../theme/app_theme.dart';
 import '../theme/chart_colors.dart';
 
 /// Weekly Spending Bar Chart inspired by bar_chart_sample1.dart
@@ -21,7 +22,7 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
   int _touchedIndex = -1;
 
   static Color get _defaultBarColor => AppChartColors.barDefault;
-  static Color get _todayBarColor => const Color(0xFFFFFFFF);
+  static Color get _todayBarColor => AppChartColors.barToday;
   static Color get _touchedBarColor => AppChartColors.barTouched;
   static Color get _trackColor => AppChartColors.barTrack;
 
@@ -30,6 +31,7 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
     final weeklyAmounts = _computeWeeklyData(widget.payments);
     final totalWeekSpend = weeklyAmounts.fold<double>(0, (sum, v) => sum + v);
     final maxSpend = _calculateMax(weeklyAmounts);
+    final colors = AppThemeManager.colors;
 
     return GestureDetector(
       onTap: widget.onTap,
@@ -38,9 +40,9 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
         decoration: BoxDecoration(
-          color: const Color(0xFF141416),
+          color: colors.surface,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: const Color(0xFF222226), width: 1),
+          border: Border.all(color: colors.border, width: 1),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,17 +72,17 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1E1E24),
+                    color: _todayBarColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: const Color(0xFF2A2A30)),
+                    border: Border.all(color: _todayBarColor.withValues(alpha: 0.3)),
                   ),
                   child: Text(
                     totalWeekSpend == 0
                         ? '₹0.00'
                         : '₹${totalWeekSpend.toStringAsFixed(0)}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Google Sans',
-                      color: Color(0xFF30D158),
+                      color: _todayBarColor,
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                     ),
@@ -183,7 +185,7 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
                       '₹${amount.toStringAsFixed(amount.truncateToDouble() == amount ? 0 : 2)}',
                   style: TextStyle(
                     fontFamily: 'Google Sans',
-                    color: AppChartColors.cyan,
+                    color: _touchedBarColor,
                     fontWeight: FontWeight.w800,
                     fontSize: 14,
                   ),
@@ -230,14 +232,33 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
         final amount = weeklyAmounts[i];
 
         Color barColor;
+        Gradient? barGradient;
         if (isTouched) {
           barColor = _touchedBarColor;
+          barGradient = LinearGradient(
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+            colors: [_touchedBarColor.withValues(alpha: 0.7), _touchedBarColor],
+          );
         } else if (isToday) {
           barColor = _todayBarColor;
+          barGradient = LinearGradient(
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+            colors: [_todayBarColor.withValues(alpha: 0.7), _todayBarColor],
+          );
         } else if (amount > 0) {
           barColor = _defaultBarColor;
+          barGradient = LinearGradient(
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+            colors: [_defaultBarColor.withValues(alpha: 0.5), _defaultBarColor],
+          );
         } else {
-          barColor = const Color(0xFF26262B);
+          barColor = AppThemeManager.colors.isDark
+              ? const Color(0xFF26262B)
+              : const Color(0xFFE5E7EB);
+          barGradient = null;
         }
 
         // Keep a minimum height so zero amounts show a small subtle indicator
@@ -249,6 +270,7 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
             BarChartRodData(
               toY: isTouched ? (barY * 1.05) : barY,
               color: barColor,
+              gradient: barGradient,
               width: 36,
               borderRadius: BorderRadius.circular(12),
               backDrawRodData: BackgroundBarChartRodData(
@@ -277,7 +299,11 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
         dayLabels[idx],
         style: TextStyle(
           fontFamily: 'Google Sans',
-          color: isToday ? Colors.white : const Color(0xFF6B6B70),
+          color: isToday
+              ? _todayBarColor
+              : (AppThemeManager.colors.isDark
+                  ? const Color(0xFF6B6B70)
+                  : const Color(0xFF9CA3AF)),
           fontWeight: isToday ? FontWeight.w800 : FontWeight.w600,
           fontSize: 13,
         ),
