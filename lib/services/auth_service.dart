@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user_profile.dart';
+import 'token_validator.dart';
 
 class AuthService {
   static final AuthService _instance = AuthService._internal();
@@ -53,6 +54,23 @@ class AuthService {
   String? get currentAccessToken => _client?.auth.currentSession?.accessToken;
 
   bool get isAuthenticated => currentAccessToken != null && currentAccessToken!.isNotEmpty;
+
+  /// Step 1 Client-Side Check: Fast in-memory token expiry verification (0 KB network).
+  bool get isTokenExpiredLocally {
+    final token = currentAccessToken;
+    if (token == null || token.isEmpty) return true;
+    return TokenValidator.isExpired(token);
+  }
+
+  /// Whether the session has an active, non-expired access token.
+  bool get hasValidActiveToken => isAuthenticated && !isTokenExpiredLocally;
+
+  /// Wipes expired session from memory and storage without network calls if already expired.
+  Future<void> wipeSessionIfExpired() async {
+    if (isAuthenticated && isTokenExpiredLocally) {
+      await signOut();
+    }
+  }
 
   UserProfile? get currentUserProfile {
     final user = currentUser;

@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../repositories/payment_repository.dart';
 import '../repositories/user_repository.dart';
 import '../services/auth_service.dart';
+import '../services/token_validator.dart';
 import 'home_dashboard_screen.dart';
 import 'sign_in_screen.dart';
 
@@ -95,8 +96,24 @@ class _SplashScreenState extends State<SplashScreen>
       );
     }
 
-    // 4. Auto-fetch fresh data every time user opens application
-    if (AuthService().isAuthenticated || _hasLocalUser) {
+    // --- STEP 1: Fast Client-Side Check (Zero-Network) ---
+    // If a token exists but has expired locally, wipe it immediately without making any remote calls!
+    // This saves 100% of network round-trips and avoids hitting backend endpoints with dead credentials.
+    final token = AuthService().currentAccessToken;
+    if (token != null && TokenValidator.isExpired(token)) {
+      if (kDebugMode) {
+        print('SplashScreen [Step 1]: Token expired locally. Wiping stale session (0 KB network overhead).');
+      }
+      try {
+        await AuthService().signOut();
+      } catch (_) {}
+      _hasLocalUser = false;
+      return; // Do NOT proceed to Step 2 remote calls
+    }
+
+    // --- STEP 2: Server-Side Validation (Secure & Authoritative) ---
+    // Only if the token passed Step 1 (or we have local profile), fetch fresh data
+    if (AuthService().hasValidActiveToken || _hasLocalUser) {
       try {
         UserRepository().getUserProfile(forceRefresh: true);
         PaymentRepository().getPayments(forceRefresh: true);
@@ -109,8 +126,9 @@ class _SplashScreenState extends State<SplashScreen>
     _navigated = true;
     _navigationTimer?.cancel();
 
-    // Check local storage first, then go to application: Authenticated / Cached -> HomeDashboardScreen; Unauthenticated -> SignInScreen
-    final bool hasValidSessionOrCache = widget.isAuthenticated ?? (AuthService().isAuthenticated || _hasLocalUser);
+    // Two-step validation result: Time-valid session or cached profile -> HomeDashboardScreen; else -> SignInScreen
+    final bool hasValidActiveToken = AuthService().hasValidActiveToken;
+    final bool hasValidSessionOrCache = widget.isAuthenticated ?? (hasValidActiveToken || _hasLocalUser);
     final Widget targetScreen = widget.nextScreen ??
         (hasValidSessionOrCache
             ? const HomeDashboardScreen()
