@@ -245,36 +245,42 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
   }
 
   Widget _buildDashboardContent() {
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 12,
-        bottom: 110, // padding for bottom nav
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(),
-          const SizedBox(height: 20),
-          _buildTotalSpentCard(),
-          const SizedBox(height: 20),
-          _buildQuickActions(),
-          const SizedBox(height: 20),
-          HomeSpendTrendLineChart(payments: _payments),
-          const SizedBox(height: 20),
-          HomeTodaySpendGaugeChart(payments: _payments),
-          const SizedBox(height: 20),
-          HomeWeeklyBarChart(
-            payments: _payments,
-            onTap: () {
-              setState(() {
-                _selectedNavIndex = 1;
-              });
-            },
-          ),
-        ],
+    return RefreshIndicator(
+      onRefresh: _loadRealData,
+      color: Colors.white,
+      backgroundColor: const Color(0xFF1C1C1E),
+      displacement: 28,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+        padding: const EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 12,
+          bottom: 110, // padding for bottom nav
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            const SizedBox(height: 20),
+            _buildTotalSpentCard(),
+            const SizedBox(height: 20),
+            _buildQuickActions(),
+            const SizedBox(height: 20),
+            HomeSpendTrendLineChart(payments: _payments),
+            const SizedBox(height: 20),
+            HomeTodaySpendGaugeChart(payments: _payments),
+            const SizedBox(height: 20),
+            HomeWeeklyBarChart(
+              payments: _payments,
+              onTap: () {
+                setState(() {
+                  _selectedNavIndex = 1;
+                });
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../repositories/payment_repository.dart';
 import '../repositories/user_repository.dart';
+import '../services/api_client.dart';
 import '../services/auth_service.dart';
 import '../services/token_validator.dart';
 import 'home_dashboard_screen.dart';
@@ -79,6 +80,10 @@ class _SplashScreenState extends State<SplashScreen>
     if (!dotenv.isInitialized) {
       try {
         await dotenv.load(fileName: '.env');
+        final envApiBase = dotenv.env['API_BASE_URL'];
+        if (envApiBase != null && envApiBase.isNotEmpty) {
+          ApiClient().updateBaseUrl(envApiBase);
+        }
       } catch (e) {
         if (kDebugMode) {
           print('dotenv load warning: $e');
@@ -112,8 +117,8 @@ class _SplashScreenState extends State<SplashScreen>
     }
 
     // --- STEP 2: Server-Side Validation (Secure & Authoritative) ---
-    // Only if the token passed Step 1 (or we have local profile), fetch fresh data
-    if (AuthService().hasValidActiveToken || _hasLocalUser) {
+    // Only if the token passed Step 1 and is active, fetch fresh data to avoid 401 error in network tab
+    if (AuthService().hasValidActiveToken) {
       try {
         UserRepository().getUserProfile(forceRefresh: true);
         PaymentRepository().getPayments(forceRefresh: true);

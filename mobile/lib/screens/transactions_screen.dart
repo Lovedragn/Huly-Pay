@@ -172,25 +172,31 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   Widget build(BuildContext context) {
     final groupsToDisplay = _filteredGroups;
 
-    final content = SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 12,
-        bottom: 110, // padding for bottom nav
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(),
-          const SizedBox(height: 20),
-          _buildSearchBar(),
-          const SizedBox(height: 18),
-          _buildFilterChips(),
-          const SizedBox(height: 26),
-          _buildGroupedTransactions(groupsToDisplay),
-        ],
+    final content = RefreshIndicator(
+      onRefresh: _loadPayments,
+      color: Colors.white,
+      backgroundColor: const Color(0xFF1C1C1E),
+      displacement: 28,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+        padding: const EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 12,
+          bottom: 110, // padding for bottom nav
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            const SizedBox(height: 20),
+            _buildSearchBar(),
+            const SizedBox(height: 18),
+            _buildFilterChips(),
+            const SizedBox(height: 26),
+            _buildGroupedTransactions(groupsToDisplay),
+          ],
+        ),
       ),
     );
 
