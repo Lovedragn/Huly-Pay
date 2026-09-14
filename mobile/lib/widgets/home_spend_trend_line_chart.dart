@@ -277,13 +277,8 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
                 _bottomTitleWidgets(value, meta, points),
           ),
         ),
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 46,
-            interval: maxY > 0 ? (maxY / 4) : 100,
-            getTitlesWidget: _leftTitleWidgets,
-          ),
+        leftTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
         ),
       ),
       borderData: FlBorderData(show: false),
@@ -395,13 +390,8 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
                 _bottomTitleWidgets(value, meta, points),
           ),
         ),
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 46,
-            interval: maxY > 0 ? (maxY / 4) : 100,
-            getTitlesWidget: _leftTitleWidgets,
-          ),
+        leftTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
         ),
       ),
       borderData: FlBorderData(show: false),
@@ -458,13 +448,8 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
                 _bottomTitleWidgets(value, meta, points),
           ),
         ),
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            interval: maxY > 0 ? (maxY / 4) : 100,
-            reservedSize: 46,
-            getTitlesWidget: _leftTitleWidgets,
-          ),
+        leftTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
         ),
       ),
       borderData: FlBorderData(show: false),
@@ -518,6 +503,7 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
     return SideTitleWidget(
       meta: meta,
       space: 8,
+      fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
       child: Text(
         points[idx].label,
         style: const TextStyle(
@@ -577,10 +563,21 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
       double sum = 0;
       for (final p in payments) {
         final s = p.status.toUpperCase();
-        if (s != 'CONFIRMED' && s != 'SUCCESS') continue;
+        if (s == 'FAILED' || s == 'CANCELLED') continue;
         final dateStr = p.createdAt ?? p.paymentDate;
-        if (dateStr != null && dateStr.startsWith(dayKey)) {
-          sum += p.amount;
+        if (dateStr != null) {
+          try {
+            final dt = DateTime.parse(dateStr).toLocal();
+            if (dt.year == targetDate.year &&
+                dt.month == targetDate.month &&
+                dt.day == targetDate.day) {
+              sum += p.amount;
+            }
+          } catch (_) {
+            if (dateStr.startsWith(dayKey)) {
+              sum += p.amount;
+            }
+          }
         }
       }
 
@@ -593,7 +590,7 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
       // If payments don't match today's date range, distribute them across points
       int idx = 0;
       for (final p in payments.where(
-        (p) => p.status.toUpperCase() == 'CONFIRMED' || p.status.toUpperCase() == 'SUCCESS',
+        (p) => p.status.toUpperCase() != 'FAILED' && p.status.toUpperCase() != 'CANCELLED',
       )) {
         points[idx % points.length] = _TrendPoint(
           label: points[idx % points.length].label,

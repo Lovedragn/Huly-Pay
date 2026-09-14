@@ -15,6 +15,7 @@ import 'analysis_screen.dart';
 import 'scan_and_pay_screen.dart';
 import 'settings_screen.dart';
 import 'transactions_screen.dart';
+import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
 
 class HomeDashboardScreen extends StatefulWidget {
@@ -33,11 +34,13 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
   int _selectedNavIndex = 0;
   late DashboardData _data;
   List<PaymentModel> _payments = [];
+  double _dailyLimit = 5000.0;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _dailyLimit = UserPreferencesService().cachedDailyLimit ?? 5000.0;
 
     if (widget.initialData != null) {
       _data = widget.initialData!;
@@ -94,6 +97,16 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
         }
       }
     } catch (_) {}
+
+    // 3. Load daily spending limit from UserPreferencesService (local SQLite & remote Supabase)
+    try {
+      final limit = await UserPreferencesService().getDailyLimit();
+      if (mounted && _dailyLimit != limit) {
+        setState(() {
+          _dailyLimit = limit;
+        });
+      }
+    } catch (_) {}
   }
 
   void _applyData(UserProfile? user, List<PaymentModel> payments) {
@@ -113,7 +126,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
 
     final confirmedPayments = payments.where((p) {
       final s = p.status.toUpperCase();
-      return s == 'CONFIRMED' || s == 'SUCCESS';
+      return s != 'FAILED' && s != 'CANCELLED';
     }).toList();
 
     double sum = 0;
@@ -126,8 +139,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
     if (payments.isNotEmpty) {
       final sorted = List<PaymentModel>.from(payments)
         ..sort((a, b) {
-          final aDate = a.createdAt ?? '';
-          final bDate = b.createdAt ?? '';
+          final aDate = a.createdAt ?? a.paymentDate ?? '';
+          final bDate = b.createdAt ?? b.paymentDate ?? '';
           return bDate.compareTo(aDate);
         });
       recentTxs = sorted.take(5).map((p) => p.toTransactionItem()).toList();
@@ -160,11 +173,13 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
 
     for (final p in payments) {
       final s = p.status.toUpperCase();
-      if (s != 'CONFIRMED' && s != 'SUCCESS') continue;
-      if (p.createdAt == null) continue;
+      if (s == 'FAILED' || s == 'CANCELLED') continue;
+      final dateStr = p.createdAt ?? p.paymentDate;
+      if (dateStr == null) continue;
       try {
-        final dt = DateTime.parse(p.createdAt!);
-        if (dt.isAfter(weekStart.subtract(const Duration(seconds: 1)))) {
+        final dt = DateTime.parse(dateStr).toLocal();
+        if (dt.isAfter(weekStart.subtract(const Duration(seconds: 1))) &&
+            dt.isBefore(weekStart.add(const Duration(days: 7)))) {
           final dayIdx = dt.weekday - 1;
           if (dayIdx >= 0 && dayIdx < 7) {
             dayTotals[dayIdx] += p.amount;
@@ -276,7 +291,11 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
             const SizedBox(height: 20),
             HomeSpendTrendLineChart(payments: _payments),
             const SizedBox(height: 20),
-            HomeTodaySpendGaugeChart(payments: _payments),
+            HomeTodaySpendGaugeChart(
+              payments: _payments,
+              dailyBudget: _dailyLimit,
+              onLimitChanged: _loadRealData,
+            ),
             const SizedBox(height: 20),
             HomeWeeklyBarChart(
               payments: _payments,

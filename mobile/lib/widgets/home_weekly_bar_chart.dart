@@ -328,13 +328,14 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
 
     for (final p in payments) {
       final s = p.status.toUpperCase();
-      if (s != 'CONFIRMED' && s != 'SUCCESS') continue;
+      if (s == 'FAILED' || s == 'CANCELLED') continue;
       final dateStr = p.createdAt ?? p.paymentDate;
       if (dateStr == null) continue;
 
       try {
-        final dt = DateTime.parse(dateStr);
-        if (dt.isAfter(weekStart.subtract(const Duration(seconds: 1)))) {
+        final dt = DateTime.parse(dateStr).toLocal();
+        if (dt.isAfter(weekStart.subtract(const Duration(seconds: 1))) &&
+            dt.isBefore(weekStart.add(const Duration(days: 7)))) {
           final dayIdx = dt.weekday - 1;
           if (dayIdx >= 0 && dayIdx < 7) {
             amounts[dayIdx] += p.amount;

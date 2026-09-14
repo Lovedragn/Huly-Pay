@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../models/payment_model.dart';
-import '../services/local_database_service.dart';
 import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
 import '../theme/chart_colors.dart';
@@ -36,70 +35,23 @@ class HomeTodaySpendGaugeChart extends StatefulWidget {
 }
 
 class _HomeTodaySpendGaugeChartState extends State<HomeTodaySpendGaugeChart> {
-  double? _configuredDailyLimit;
-  List<PaymentModel> _fallbackPayments = [];
-  bool _isLoadingFallback = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadDailyLimit();
-    if (widget.payments.isEmpty) {
-      _loadFallbackPayments();
-    }
-  }
+  double? _customLimit;
 
   @override
   void didUpdateWidget(covariant HomeTodaySpendGaugeChart oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.payments.isNotEmpty && _fallbackPayments.isNotEmpty) {
-      _fallbackPayments = [];
-    } else if (widget.payments.isEmpty && oldWidget.payments.isNotEmpty) {
-      _loadFallbackPayments();
-    }
     if (widget.dailyBudget != oldWidget.dailyBudget) {
-      _loadDailyLimit();
-    }
-  }
-
-  Future<void> _loadDailyLimit() async {
-    final saved = await UserPreferencesService().getDailyLimit();
-    if (mounted) {
-      setState(() {
-        _configuredDailyLimit = saved;
-      });
-    }
-  }
-
-  Future<void> _loadFallbackPayments() async {
-    if (_isLoadingFallback) return;
-    _isLoadingFallback = true;
-    try {
-      final cached = await LocalDatabaseService().getPayments();
-      if (mounted && cached.isNotEmpty && widget.payments.isEmpty) {
-        setState(() {
-          _fallbackPayments = cached;
-        });
-      }
-    } catch (_) {
-    } finally {
-      _isLoadingFallback = false;
+      _customLimit = null;
     }
   }
 
   double get _effectiveLimit {
-    // If widget explicitly passed a custom non-default dailyBudget, prioritize it (e.g. tests)
-    if (widget.dailyBudget != 5000.0) {
-      return widget.dailyBudget;
-    }
-    return _configuredDailyLimit ?? widget.dailyBudget;
+    return _customLimit ?? widget.dailyBudget;
   }
 
   @override
   Widget build(BuildContext context) {
-    final effectivePayments =
-        widget.payments.isNotEmpty ? widget.payments : _fallbackPayments;
-    final todaySpend = _computeTodaySpend(effectivePayments);
+    final todaySpend = _computeTodaySpend(widget.payments);
     final limit = _effectiveLimit > 0 ? _effectiveLimit : 5000.0;
     final ratio = limit > 0 ? (todaySpend / limit) : 0.0;
     final clampedSpend = math.min(todaySpend, limit * 1.5);
@@ -419,7 +371,7 @@ class _HomeTodaySpendGaugeChartState extends State<HomeTodaySpendGaugeChart> {
                           await UserPreferencesService().saveDailyLimit(parsed);
                           if (mounted) {
                             setState(() {
-                              _configuredDailyLimit = parsed;
+                              _customLimit = parsed;
                             });
                           }
                           widget.onLimitChanged?.call();
@@ -527,12 +479,7 @@ class _HomeTodaySpendGaugeChartState extends State<HomeTodaySpendGaugeChart> {
     double total = 0.0;
     for (final p in payments) {
       final s = p.status.toUpperCase();
-      final isConfirmed = s == 'CONFIRMED' ||
-          s == 'SUCCESS' ||
-          s == 'COMPLETED' ||
-          s == 'PAID' ||
-          s == 'SETTLED';
-      if (!isConfirmed) continue;
+      if (s == 'FAILED' || s == 'CANCELLED') continue;
 
       if (_isToday(p.createdAt, now) || _isToday(p.paymentDate, now)) {
         total += p.amount;
