@@ -69,8 +69,8 @@ class AppThemeData {
     background: Color(0xFF000000),
     surface: Color(0xFF141416),
     surfaceSecondary: Color(0xFF1C1C20),
-    border: Color(0xFF222226),
-    divider: Color(0xFF202024),
+    border: Color(0x33FFFFFF), // Light white border for cards
+    divider: Color(0x24FFFFFF),
     textPrimary: Color(0xFFFFFFFF),
     textSecondary: Color(0xFF8E8E93),
     textMuted: Color(0xFF6B6B70),
@@ -111,8 +111,8 @@ class AppThemeData {
     background: Color(0xFF060B18),
     surface: Color(0xFF0C1630),
     surfaceSecondary: Color(0xFF132042),
-    border: Color(0xFF1B2C56),
-    divider: Color(0xFF18284E),
+    border: Color(0x33FFFFFF), // Light white border for cards
+    divider: Color(0x24FFFFFF),
     textPrimary: Color(0xFFFFFFFF),
     textSecondary: Color(0xFF8CA5C8),
     textMuted: Color(0xFF5B759C),

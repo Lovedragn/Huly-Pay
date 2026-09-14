@@ -26,21 +26,41 @@ class PaymentRepository {
       return cached;
     }
 
-    // If we have cached data and not forcing refresh, return immediately or continue background sync
+    // 2. Fetch fresh payments from Spring Boot backend
     try {
       final remote = await _apiClient.getPayments();
       if (remote.isNotEmpty) {
         await _localDb.upsertPayments(remote);
         return remote;
       }
-      return cached.isNotEmpty ? cached : remote;
-    } catch (_) {
-      // Return cached list if remote request fails (e.g. offline)
-      if (cached.isNotEmpty) {
-        return cached;
+    } catch (_) {}
+
+    // 3. Direct Supabase query fallback (works on cellular, outside LAN, or direct Supabase cloud)
+    try {
+      final client = AuthService().client;
+      final user = AuthService().currentUser;
+      if (client != null && user != null) {
+        final data = await client
+            .from('payments')
+            .select()
+            .order('created_at', ascending: false);
+
+        if (data is List && data.isNotEmpty) {
+          final supabasePayments = data
+              .map((row) => PaymentModel.fromJson(Map<String, dynamic>.from(row as Map)))
+              .where((p) => p.userId == null || p.userId == user.id)
+              .toList();
+
+          if (supabasePayments.isNotEmpty) {
+            await _localDb.upsertPayments(supabasePayments);
+            return supabasePayments;
+          }
+        }
       }
-      rethrow;
-    }
+    } catch (_) {}
+
+    // 4. Return cached list if remote requests fail
+    return cached;
   }
 
   /// Get cached payments directly from SQLite without network call
@@ -68,15 +88,32 @@ class PaymentRepository {
       final remote = await _apiClient.getPaymentById(id);
       await _localDb.upsertPayment(remote);
       return remote;
-    } catch (_) {
-      if (local != null) {
-        return local;
+    } catch (_) {}
+
+    // Supabase direct fallback
+    try {
+      final client = AuthService().client;
+      if (client != null) {
+        final data = await client
+            .from('payments')
+            .select()
+            .eq('id', id)
+            .maybeSingle();
+        if (data != null) {
+          final payment = PaymentModel.fromJson(Map<String, dynamic>.from(data));
+          await _localDb.upsertPayment(payment);
+          return payment;
+        }
       }
-      rethrow;
+    } catch (_) {}
+
+    if (local != null) {
+      return local;
     }
+    throw Exception('Payment not found');
   }
 
-  /// Create a payment and immediately persist to local SQLite
+  /// Create a payment and immediately persist to local SQLite and Supabase
   Future<PaymentModel> createPayment(CreatePaymentPayload payload) async {
     try {
       final payment = await _apiClient.createPayment(payload);
@@ -85,6 +122,33 @@ class PaymentRepository {
       } catch (_) {}
       return payment;
     } catch (_) {
+      // Direct Supabase sync if backend is offline or unreachable
+      try {
+        final client = AuthService().client;
+        final user = AuthService().currentUser;
+        if (client != null && user != null) {
+          final now = DateTime.now().toUtc().toIso8601String();
+          final response = await client.from('payments').insert({
+            'user_id': user.id,
+            'amount': payload.amount,
+            'currency': payload.currency,
+            'merchant_name': payload.merchantName,
+            'upi_id': payload.upiId,
+            'payment_method': payload.paymentMethod,
+            'transaction_reference': payload.transactionReference,
+            'status': 'INITIATED',
+            'latitude': payload.latitude,
+            'longitude': payload.longitude,
+            'location_accuracy_meters': payload.locationAccuracyMeters,
+            'created_at': now,
+            'updated_at': now,
+          }).select().single();
+          final payment = PaymentModel.fromJson(Map<String, dynamic>.from(response as Map));
+          await _localDb.upsertPayment(payment);
+          return payment;
+        }
+      } catch (_) {}
+
       // Offline / connection fallback: save locally so the user payment flow is never blocked
       final localPayment = PaymentModel(
         id: 'local_${DateTime.now().millisecondsSinceEpoch}',

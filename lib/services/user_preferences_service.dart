@@ -122,6 +122,29 @@ class UserPreferencesService {
           AppThemeManager.setChartPalette(remotePalette);
           await LocalDatabaseService().setMetadata(keyChartPalette, remotePalette);
         }
+
+        final remoteDaily = (response['daily_limit'] ??
+                response['spending_limit'] ??
+                response['daily_budget']) as num?;
+        final remoteMonthly = (response['monthly_limit'] ??
+                response['monthly_target']) as num?;
+        final remoteLimit = remoteDaily != null
+            ? remoteDaily.toDouble()
+            : (remoteMonthly != null ? (remoteMonthly.toDouble() / 30.0).roundToDouble() : null);
+
+        if (remoteLimit != null && remoteLimit > 0) {
+          final localLimitEntry = await LocalDatabaseService().getMetadataEntry(keyDailyLimit);
+          final localLimitUpdated = localLimitEntry != null && localLimitEntry['updated_at'] != null
+              ? DateTime.tryParse(localLimitEntry['updated_at'] as String)
+              : null;
+          final shouldApplyLimit = localLimitEntry == null ||
+              (remoteUpdatedAt != null && localLimitUpdated != null && remoteUpdatedAt.isAfter(localLimitUpdated));
+
+          if (shouldApplyLimit) {
+            _cachedDailyLimit = remoteLimit;
+            await LocalDatabaseService().setMetadata(keyDailyLimit, remoteLimit.toString());
+          }
+        }
       }
     } catch (e) {
       if (kDebugMode) {
@@ -232,6 +255,7 @@ class UserPreferencesService {
   }
 
   /// Saves the user's customized daily spending limit in local storage (SQLite cache_metadata)
+  /// and syncs to Supabase users_preference table if authenticated.
   Future<void> saveDailyLimit(double limit) async {
     _cachedDailyLimit = limit;
     try {
@@ -240,6 +264,18 @@ class UserPreferencesService {
       if (kDebugMode) {
         print('UserPreferencesService: saveDailyLimit error: $e');
       }
+    }
+
+    final client = _client;
+    final user = AuthService().currentUser;
+    if (client != null && user != null) {
+      try {
+        await client.from(tableUsersPreference).upsert({
+          'user_id': user.id,
+          'daily_limit': limit,
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
+        }, onConflict: 'user_id');
+      } catch (_) {}
     }
   }
 

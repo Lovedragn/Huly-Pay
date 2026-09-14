@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/models/payment_model.dart';
 import 'package:mobile/services/local_database_service.dart';
 import 'package:mobile/services/user_preferences_service.dart';
-import 'package:mobile/theme/app_theme.dart';
 import 'package:mobile/widgets/home_today_spend_gauge.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -18,10 +17,12 @@ void main() {
     dbService = LocalDatabaseService();
     dbService.setTestMode(true);
     await dbService.initDatabase(inMemory: true);
+    await UserPreferencesService().saveDailyLimit(5000.0);
   });
 
   tearDown(() async {
-    await dbService.close();
+    await dbService.clearAll();
+    await UserPreferencesService().saveDailyLimit(5000.0);
   });
 
   group('Daily Limit Chart & Real Data Fetching Tests', () {
@@ -177,9 +178,12 @@ void main() {
     });
 
     testWidgets('Persists custom daily limit in UserPreferencesService and updates UI', (tester) async {
-      await UserPreferencesService().saveDailyLimit(10000.0);
-      final savedLimit = await UserPreferencesService().getDailyLimit();
-      expect(savedLimit, equals(10000.0));
+      double savedLimit = 5000.0;
+      await tester.runAsync(() async {
+        await UserPreferencesService().saveDailyLimit(10000.0);
+        savedLimit = await UserPreferencesService().getDailyLimit();
+        expect(savedLimit, equals(10000.0));
+      });
 
       final nowStr = DateTime.now().toIso8601String();
       final payments = [
@@ -197,6 +201,7 @@ void main() {
           home: Scaffold(
             body: HomeTodaySpendGaugeChart(
               payments: payments,
+              dailyBudget: savedLimit,
             ),
           ),
         ),

@@ -358,7 +358,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
                 decoration: BoxDecoration(
                   color: const Color(0xDD141416),
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFF2E2E36), width: 1),
+                  border: Border.all(color: AppThemeManager.colors.border, width: 1),
                   boxShadow: const [
                     BoxShadow(
                       color: Colors.black45,
@@ -487,7 +487,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFF1B1B20),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFF2E2E36), width: 1),
+            border: Border.all(color: AppThemeManager.colors.border, width: 1),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -978,7 +978,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
             borderRadius: BorderRadius.circular(16),
             border: isPrimary
                 ? null
-                : Border.all(color: const Color(0xFF222226), width: 1),
+                : Border.all(color: AppThemeManager.colors.border, width: 1),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -1024,7 +1024,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF141416),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF222226), width: 1),
+        border: Border.all(color: AppThemeManager.colors.border, width: 1),
       ),
       child: Column(
         children: [
@@ -1169,7 +1169,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF141416),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF222226), width: 1),
+        border: Border.all(color: AppThemeManager.colors.border, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -98,7 +98,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   void _setAllPayments(List<PaymentModel> payments) {
     _allPayments = payments.where((p) {
       final s = p.status.toUpperCase();
-      return s == 'CONFIRMED' || s == 'SUCCESS';
+      return s != 'FAILED' && s != 'CANCELLED';
     }).toList();
     _filterAndRecalculate();
   }
@@ -153,11 +153,11 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 
     final cutoff = _getCutoffForPeriod(_selectedPeriod);
     final filtered = _allPayments.where((p) {
-      if (p.status.toUpperCase() == 'FAILED') return false;
+      if (p.status.toUpperCase() == 'FAILED' || p.status.toUpperCase() == 'CANCELLED') return false;
       final dateStr = p.createdAt ?? p.paymentDate;
       if (dateStr == null) return false;
       try {
-        final dt = DateTime.parse(dateStr);
+        final dt = DateTime.parse(dateStr).toLocal();
         return dt.isAfter(cutoff.subtract(const Duration(seconds: 1)));
       } catch (_) {
         return false;
