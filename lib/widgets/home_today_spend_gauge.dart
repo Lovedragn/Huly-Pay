@@ -148,9 +148,6 @@ class _HomeTodaySpendGaugeChartState extends State<HomeTodaySpendGaugeChart> {
                 decoration: BoxDecoration(
                   color: activeColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: activeColor.withValues(alpha: 0.35),
-                  ),
                 ),
                 child: Text(
                   statusText,
@@ -508,68 +505,26 @@ class _SpeedometerGaugePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height - 10);
-    final outerRadius = (size.width / 2) - 8;
-    const outerStrokeWidth = 7.0;
-    const innerStrokeWidth = 18.0;
-    const ringSpacing = 8.0;
-    final innerRadius =
-        outerRadius -
-        (outerStrokeWidth / 2) -
-        ringSpacing -
-        (innerStrokeWidth / 2);
-
-    // 1. Draw Outer Zones Ring (gauge_chart_sample3 zones)
-    // Sweep is 180 degrees from math.pi to 2 * math.pi
-    final zones = [
-      (from: 0.0, to: 0.50, color: AppChartColors.gaugeSafe),
-      (from: 0.50, to: 0.80, color: AppChartColors.gaugeModerate),
-      (from: 0.80, to: 1.0, color: AppChartColors.gaugeHigh),
-    ];
-
+    const strokeWidth = 18.0;
+    final radius = (size.width / 2) - (strokeWidth / 2) - 8;
     const totalAngle = math.pi;
-    const gapAngle = 0.07; // Gap between zones
 
-    for (int i = 0; i < zones.length; i++) {
-      final z = zones[i];
-      final start =
-          math.pi + (z.from * totalAngle) + (i == 0 ? 0 : gapAngle / 2);
-      final end =
-          math.pi +
-          (z.to * totalAngle) -
-          (i == zones.length - 1 ? 0 : gapAngle / 2);
-      final sweep = math.max(0.01, end - start);
-
-      final paint = Paint()
-        ..color = z.color
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = outerStrokeWidth
-        ..strokeCap = StrokeCap.round;
-
-      canvas.drawArc(
-        Rect.fromCircle(center: center, radius: outerRadius),
-        start,
-        sweep,
-        false,
-        paint,
-      );
-    }
-
-    // 2. Draw Inner Progress Ring Background
+    // 1. Draw Progress Ring Background
     final bgPaint = Paint()
       ..color = trackColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = innerStrokeWidth
+      ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round;
 
     canvas.drawArc(
-      Rect.fromCircle(center: center, radius: innerRadius),
+      Rect.fromCircle(center: center, radius: radius),
       math.pi,
       totalAngle,
       false,
       bgPaint,
     );
 
-    // 3. Draw Inner Progress Ring Measurement Fill
+    // 2. Draw Progress Ring Measurement Fill
     final progressFraction = maxValue > 0
         ? (value / maxValue).clamp(0.0, 1.0)
         : 0.0;
@@ -577,11 +532,11 @@ class _SpeedometerGaugePainter extends CustomPainter {
       final progressPaint = Paint()
         ..color = activeColor
         ..style = PaintingStyle.stroke
-        ..strokeWidth = innerStrokeWidth
+        ..strokeWidth = strokeWidth
         ..strokeCap = StrokeCap.round;
 
       canvas.drawArc(
-        Rect.fromCircle(center: center, radius: innerRadius),
+        Rect.fromCircle(center: center, radius: radius),
         math.pi,
         totalAngle * progressFraction,
         false,

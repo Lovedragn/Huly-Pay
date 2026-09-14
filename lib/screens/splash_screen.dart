@@ -207,8 +207,8 @@ class _SplashScreenState extends State<SplashScreen>
                     // Staggered animated SVG paths matching svg-animation.md
                     AnimatedHulyLogo(
                       controller: _controller,
-                      width: 130,
-                      height: 78,
+                      width: 155,
+                      height: 98,
                     ),
                     const SizedBox(height: 18),
                     // "Hulypay" text in bold matching hypay-splash.png
@@ -354,8 +354,8 @@ class AnimatedHulyLogo extends StatelessWidget {
   const AnimatedHulyLogo({
     super.key,
     required this.controller,
-    this.width = 130,
-    this.height = 78,
+    this.width = 155,
+    this.height = 98,
   });
 
   static const List<String> _paths = [

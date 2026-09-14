@@ -35,12 +35,13 @@ class UpiPaymentData {
     if (finalAmount != null && finalAmount > 0) {
       params['am'] = finalAmount.toStringAsFixed(2);
     }
-    if (transactionRef != null && transactionRef!.isNotEmpty) {
-      params['tr'] = transactionRef!;
-    }
-    if (transactionId != null && transactionId!.isNotEmpty) {
-      params['tid'] = transactionId!;
-    }
+    // Modern NPCI and Google Pay intent standard requires 'tr' (Transaction Reference ID).
+    // 'tid' (Terminal ID) is deprecated for mobile app intents and is reserved only for physical POS hardware.
+    final ref = (transactionRef != null && transactionRef!.isNotEmpty)
+        ? transactionRef!
+        : 'REF-${DateTime.now().millisecondsSinceEpoch}';
+    params['tr'] = ref;
+
     if (note != null && note!.isNotEmpty) {
       params['tn'] = note!;
     }
@@ -56,6 +57,9 @@ class UpiPaymentData {
 }
 
 class UpiService {
+  /// Official package identifier for Google Pay India on Android
+  static const String googlePayPackageName = 'com.google.android.apps.nbu.paisa.user';
+
   /// Checks whether a raw string represents a valid UPI payment QR or UPI ID.
   static bool isUpiUri(String rawString) => parseUpiUri(rawString) != null;
 

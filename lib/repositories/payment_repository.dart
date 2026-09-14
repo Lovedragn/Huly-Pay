@@ -35,43 +35,19 @@ class PaymentRepository {
       }
     } catch (_) {}
 
-    // 3. Direct Supabase query fallback (works on cellular, outside LAN, or direct Supabase cloud)
+    // 3. Auto-sync pending local payments to Supabase & query fresh cloud payments
     try {
       final client = AuthService().client;
       final user = AuthService().currentUser;
       if (client != null && user != null) {
-        // Auto-sync any pending local offline payments to Supabase
-        final unsynced = cached.where((p) => p.id.startsWith('local_')).toList();
-        for (final p in unsynced) {
-          try {
-            final nowStr = p.createdAt ?? DateTime.now().toUtc().toIso8601String();
-            final res = await client.from('payments').insert({
-              'user_id': user.id,
-              'amount': p.amount,
-              'currency': p.currency,
-              'merchant_name': p.merchantName,
-              'upi_id': p.upiId,
-              'payment_method': p.paymentMethod,
-              'transaction_reference': p.transactionReference,
-              'status': p.status,
-              'created_at': nowStr,
-              'updated_at': nowStr,
-              'payment_date': p.paymentDate,
-            }).select().single();
-            if (res is Map && res['id'] != null) {
-              await _localDb.deletePayment(p.id);
-              final synced = PaymentModel.fromJson(Map<String, dynamic>.from(res));
-              await _localDb.upsertPayment(synced);
-            }
-          } catch (_) {}
-        }
+        await syncLocalPaymentsToSupabase();
 
         final data = await client
             .from('payments')
             .select()
             .order('created_at', ascending: false);
 
-        if (data is List && data.isNotEmpty) {
+        if (data.isNotEmpty) {
           final supabasePayments = data
               .map((row) => PaymentModel.fromJson(Map<String, dynamic>.from(row as Map)))
               .where((p) => p.userId == null || p.userId == user.id)
@@ -87,6 +63,78 @@ class PaymentRepository {
 
     // 4. Return cached list if remote requests fail
     return cached;
+  }
+
+  /// Sync all pending/unsynced local SQLite payments to Supabase & Spring Boot
+  Future<int> syncLocalPaymentsToSupabase() async {
+    final unsynced = await _localDb.getUnsyncedPayments();
+    if (unsynced.isEmpty) return 0;
+
+    int syncedCount = 0;
+    final client = AuthService().client;
+    final user = AuthService().currentUser;
+
+    for (final p in unsynced) {
+      bool synced = false;
+
+      // 1. Try syncing to Spring Boot backend first if authenticated
+      if (AuthService().hasValidActiveToken) {
+        try {
+          final payload = CreatePaymentPayload(
+            amount: p.amount,
+            currency: p.currency,
+            merchantName: p.merchantName,
+            upiId: p.upiId,
+            paymentMethod: p.paymentMethod,
+            transactionReference: p.transactionReference,
+            upiTransactionId: p.upiTransactionId,
+            status: p.status,
+            provider: p.provider,
+            latitude: p.latitude,
+            longitude: p.longitude,
+            locationAccuracyMeters: p.locationAccuracyMeters,
+          );
+          final remote = await _apiClient.createPayment(payload);
+          await _localDb.markPaymentSynced(p.id, remote);
+          synced = true;
+          syncedCount++;
+        } catch (_) {}
+      }
+
+      // 2. Fallback to direct Supabase insert if backend didn't handle it
+      if (!synced && client != null && user != null) {
+        try {
+          final nowStr = p.createdAt ?? DateTime.now().toUtc().toIso8601String();
+          final res = await client.from('payments').insert({
+            'user_id': user.id,
+            'amount': p.amount,
+            'currency': p.currency,
+            'merchant_name': p.merchantName,
+            'upi_id': p.upiId,
+            'payment_method': p.paymentMethod,
+            'transaction_reference': p.transactionReference,
+            'upi_transaction_id': p.upiTransactionId,
+            'status': p.status,
+            'provider': p.provider ?? 'GOOGLE_PAY',
+            'latitude': p.latitude,
+            'longitude': p.longitude,
+            'location_accuracy_meters': p.locationAccuracyMeters,
+            'payment_date': p.paymentDate,
+            'payment_time': p.paymentTime,
+            'created_at': nowStr,
+            'updated_at': nowStr,
+          }).select().single();
+
+          if (res['id'] != null) {
+            final syncedModel = PaymentModel.fromJson(Map<String, dynamic>.from(res));
+            await _localDb.markPaymentSynced(p.id, syncedModel);
+            syncedCount++;
+          }
+        } catch (_) {}
+      }
+    }
+
+    return syncedCount;
   }
 
   /// Get cached payments directly from SQLite without network call
@@ -141,13 +189,16 @@ class PaymentRepository {
 
   /// Create a payment and immediately persist to local SQLite and Supabase
   Future<PaymentModel> createPayment(CreatePaymentPayload payload) async {
-    try {
-      final payment = await _apiClient.createPayment(payload);
+    // Only attempt remote API if user has a valid active token
+    if (AuthService().hasValidActiveToken) {
       try {
-        await _localDb.upsertPayment(payment);
+        final payment = await _apiClient.createPayment(payload);
+        try {
+          await _localDb.upsertPayment(payment);
+        } catch (_) {}
+        return payment;
       } catch (_) {}
-      return payment;
-    } catch (_) {
+    }
       // Direct Supabase sync if backend is offline or unreachable
       try {
         final client = AuthService().client;
@@ -162,7 +213,9 @@ class PaymentRepository {
             'upi_id': payload.upiId,
             'payment_method': payload.paymentMethod,
             'transaction_reference': payload.transactionReference,
-            'status': 'INITIATED',
+            'upi_transaction_id': payload.upiTransactionId,
+            'status': payload.status ?? 'CONFIRMED',
+            'provider': payload.provider ?? 'GOOGLE_PAY',
             'latitude': payload.latitude,
             'longitude': payload.longitude,
             'location_accuracy_meters': payload.locationAccuracyMeters,
@@ -170,7 +223,7 @@ class PaymentRepository {
             'updated_at': now,
           }).select().single();
           final payment = PaymentModel.fromJson(Map<String, dynamic>.from(response as Map));
-          await _localDb.upsertPayment(payment);
+          await _localDb.upsertPayment(payment, syncStatus: 'SYNCED');
           return payment;
         }
       } catch (_) {}
@@ -184,28 +237,31 @@ class PaymentRepository {
         upiId: payload.upiId,
         paymentMethod: payload.paymentMethod,
         transactionReference: payload.transactionReference,
-        status: 'INITIATED',
+        upiTransactionId: payload.upiTransactionId,
+        status: payload.status ?? 'CONFIRMED',
+        provider: payload.provider ?? 'GOOGLE_PAY',
         latitude: payload.latitude,
         longitude: payload.longitude,
         locationAccuracyMeters: payload.locationAccuracyMeters,
         createdAt: DateTime.now().toIso8601String(),
+        updatedAt: DateTime.now().toIso8601String(),
       );
       try {
-        await _localDb.upsertPayment(localPayment);
+        await _localDb.upsertPayment(localPayment, syncStatus: 'PENDING');
         return localPayment;
       } catch (_) {
         rethrow;
       }
     }
-  }
 
-  /// Reconcile payment status and update SQLite cache
+  /// Reconcile payment status and update SQLite cache and Supabase
   Future<PaymentModel> reconcilePayment(
     String id,
     String status, {
     String? upiTransactionId,
     String? transactionReference,
   }) async {
+    // 1. Update Spring Boot backend
     try {
       final payment = await _apiClient.reconcilePayment(
         id,
@@ -214,11 +270,35 @@ class PaymentRepository {
         transactionReference: transactionReference,
       );
       try {
-        await _localDb.upsertPayment(payment);
+        await _localDb.upsertPayment(payment, syncStatus: 'SYNCED');
       } catch (_) {}
       return payment;
     } catch (_) {
-      // Offline fallback: update local record if remote connection fails
+      // 2. Direct Supabase update fallback
+      final client = AuthService().client;
+      if (client != null && !id.startsWith('local_')) {
+        try {
+          final Map<String, dynamic> updateFields = {
+            'status': status,
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
+          };
+          if (upiTransactionId != null) {
+            updateFields['upi_transaction_id'] = upiTransactionId;
+          }
+          if (transactionReference != null) {
+            updateFields['transaction_reference'] = transactionReference;
+          }
+          final res = await client.from('payments').update(updateFields).eq('id', id).select().maybeSingle();
+
+          if (res != null) {
+            final updatedSupabase = PaymentModel.fromJson(Map<String, dynamic>.from(res as Map));
+            await _localDb.upsertPayment(updatedSupabase, syncStatus: 'SYNCED');
+            return updatedSupabase;
+          }
+        } catch (_) {}
+      }
+
+      // 3. Offline fallback: update local record in SQLite
       final existing = await _localDb.getPaymentById(id);
       if (existing != null) {
         final updated = existing.copyWith(
@@ -227,7 +307,7 @@ class PaymentRepository {
           transactionReference: transactionReference ?? existing.transactionReference,
         );
         try {
-          await _localDb.upsertPayment(updated);
+          await _localDb.upsertPayment(updated, syncStatus: 'PENDING');
         } catch (_) {}
         return updated;
       }

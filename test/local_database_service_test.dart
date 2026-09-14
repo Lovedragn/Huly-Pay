@@ -379,5 +379,40 @@ void main() {
       expect(cached, isNotNull);
       expect(cached?.displayName, equals('Cached User'));
     });
+
+    test('getUnsyncedPayments retrieves pending local payments and markPaymentSynced replaces ID', () async {
+      final localPayment = PaymentModel(
+        id: 'local_1726325400000',
+        amount: 250.0,
+        currency: 'INR',
+        merchantName: 'Local Merchant',
+        upiId: 'merchant@okaxis',
+        status: 'CONFIRMED',
+        createdAt: '2026-09-14T10:00:00Z',
+      );
+
+      await dbService.upsertPayment(localPayment, syncStatus: 'PENDING');
+
+      final unsynced = await dbService.getUnsyncedPayments();
+      expect(unsynced.length, equals(1));
+      expect(unsynced.first.id, equals('local_1726325400000'));
+      expect(unsynced.first.status, equals('CONFIRMED'));
+
+      // Simulate remote sync with canonical Supabase UUID
+      final remoteSynced = localPayment.copyWith(
+        id: 'uuid-supabase-12345',
+      );
+      await dbService.markPaymentSynced('local_1726325400000', remoteSynced);
+
+      final remainingUnsynced = await dbService.getUnsyncedPayments();
+      expect(remainingUnsynced, isEmpty);
+
+      final inDb = await dbService.getPaymentById('uuid-supabase-12345');
+      expect(inDb, isNotNull);
+      expect(inDb?.id, equals('uuid-supabase-12345'));
+
+      final oldLocal = await dbService.getPaymentById('local_1726325400000');
+      expect(oldLocal, isNull);
+    });
   });
 }

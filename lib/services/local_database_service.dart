@@ -328,6 +328,26 @@ class LocalDatabaseService {
     return await db.delete('cached_payments');
   }
 
+  /// Retrieve all local payments that have not yet been synced to Supabase/backend
+  Future<List<PaymentModel>> getUnsyncedPayments() async {
+    final db = await database;
+    final rows = await db.query(
+      'cached_payments',
+      where: "sync_status = 'PENDING' OR id LIKE 'local_%'",
+      orderBy: 'created_at ASC',
+    );
+    return rows.map((row) => _mapRowToPayment(row)).toList();
+  }
+
+  /// Mark a local payment as synced to cloud, updating its ID if generated remotely
+  Future<void> markPaymentSynced(String oldLocalId, PaymentModel remotePayment) async {
+    final db = await database;
+    if (oldLocalId != remotePayment.id) {
+      await db.delete('cached_payments', where: 'id = ?', whereArgs: [oldLocalId]);
+    }
+    await upsertPayment(remotePayment, syncStatus: 'SYNCED');
+  }
+
   PaymentModel _mapRowToPayment(Map<String, dynamic> row) {
     return PaymentModel(
       id: row['id'] as String,

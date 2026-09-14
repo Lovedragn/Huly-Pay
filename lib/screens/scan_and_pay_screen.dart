@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/payment_model.dart';
 import '../repositories/payment_repository.dart';
+import '../services/google_pay_service.dart';
+import '../services/local_database_service.dart';
 import '../services/location_service.dart';
 import '../services/upi_service.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
@@ -171,7 +174,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       backgroundColor: Colors.transparent,
       builder: (modalContext) {
         return StatefulBuilder(
-          builder: (context, setModalState) {
+          builder: (modalStateContext, setModalState) {
             // Concurrent background GPS resolution without blocking UI
             if (isLocationFetching) {
               isLocationFetching = false;
@@ -416,31 +419,166 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
 
                         Navigator.of(modalContext).pop();
 
-                        // 1. Record pending payment on Spring Boot backend (Payment Status: INITIATED)
                         try {
-                          final payload = CreatePaymentPayload(
+                          // 1. App creates the UPI Intent directly with unique transaction reference
+                          final txnRef = upiData.transactionRef ?? 'REF-${DateTime.now().millisecondsSinceEpoch}';
+                          final upiPayloadData = UpiPaymentData(
+                            rawUri: upiData.rawUri,
+                            upiId: upiData.upiId,
+                            payeeName: upiData.payeeName,
                             amount: parsedAmount,
                             currency: upiData.currency,
-                            merchantName: upiData.payeeName,
-                            upiId: upiData.upiId,
+                            transactionRef: txnRef,
+                            transactionId: upiData.transactionId,
+                            note: upiData.note,
+                            merchantCode: upiData.merchantCode,
+                          );
+
+                          // 2. Open Google Pay App directly on Android device via UPI intent
+                          final gpayResult = await GooglePayService.payWithGooglePay(
+                            paymentData: upiPayloadData,
+                            customAmount: parsedAmount,
+                          );
+
+                          if (!mounted) return;
+
+                          // 3. Handle device installation / cancellation
+                          if (gpayResult.status == GooglePayStatus.notInstalled) {
+                            if (mounted) {
+                              showDialog(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  backgroundColor: const Color(0xFF1E1E24),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                  title: const Row(
+                                    children: [
+                                      Icon(Icons.warning_amber_rounded, color: Color(0xFFE5A93C), size: 24),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        'UPI App Not Found',
+                                        style: TextStyle(
+                                          fontFamily: 'Google Sans',
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  content: const Text(
+                                    'Google Pay (or a supported UPI app) is not installed on this device or emulator. To make real UPI payments, please install Google Pay or run on a physical Android device with Google Pay configured.',
+                                    style: TextStyle(fontFamily: 'Google Sans', color: Color(0xFFD0D0D5), fontSize: 14, height: 1.4),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(ctx).pop(),
+                                      child: const Text('Dismiss', style: TextStyle(color: Color(0xFF8E8E93))),
+                                    ),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(0xFF007AFF),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                      ),
+                                      onPressed: () async {
+                                        Navigator.of(ctx).pop();
+                                        final playStoreUri = Uri.parse(
+                                          'https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user',
+                                        );
+                                        try {
+                                          await launchUrl(playStoreUri, mode: LaunchMode.externalApplication);
+                                        } catch (_) {}
+                                      },
+                                      child: const Text(
+                                        'Get Google Pay',
+                                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            return;
+                          }
+
+                          if (gpayResult.isCancelled) {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: const Text(
+                                  'Payment was cancelled in Google Pay',
+                                  style: TextStyle(fontFamily: 'Google Sans', color: Colors.white),
+                                ),
+                                backgroundColor: const Color(0xFF2C2C34),
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              ),
+                            );
+                            return;
+                          }
+
+                          // 4. App processes UPI Intent Response directly on client
+                          final resolvedTxnId = gpayResult.upiTransactionId ?? txnRef;
+                          final resolvedTxnRef = gpayResult.transactionReference ?? txnRef;
+                          final resolvedVpa = gpayResult.payeeVpa ?? upiData.upiId;
+                          final resolvedAmount = gpayResult.amount ?? parsedAmount;
+                          final nowIso = DateTime.now().toIso8601String();
+
+                          final localPayment = PaymentModel(
+                            id: 'local_${DateTime.now().millisecondsSinceEpoch}',
+                            amount: resolvedAmount,
+                            currency: upiData.currency,
+                            merchantName: upiData.payeeName ?? resolvedVpa,
+                            upiId: resolvedVpa,
                             paymentMethod: 'GPAY',
-                            transactionReference: upiData.transactionRef ?? 'REF-${DateTime.now().millisecondsSinceEpoch}',
+                            transactionReference: resolvedTxnRef,
+                            upiTransactionId: resolvedTxnId,
+                            status: gpayResult.isSuccess
+                                ? 'CONFIRMED'
+                                : (gpayResult.isSubmitted ? 'PENDING' : 'FAILED'),
                             provider: 'GOOGLE_PAY',
                             latitude: capturedLocation?.latitude,
                             longitude: capturedLocation?.longitude,
                             locationAccuracyMeters: capturedLocation?.accuracyMeters,
+                            createdAt: nowIso,
+                            updatedAt: nowIso,
                           );
 
-                          final payment = await PaymentRepository().createPayment(payload);
+                          // Instant SQLite persistence with PENDING sync status
+                          try {
+                            await LocalDatabaseService().upsertPayment(localPayment, syncStatus: 'PENDING');
+                          } catch (_) {}
 
-                          // 2. Open external UPI app (Huly.Pay is the intelligent financial layer, not processor)
-                          final uri = upiData.buildPaymentUri(customAmount: parsedAmount);
-                          await UpiService.launchUpiPayment(uri);
+                          // Background synchronization with Spring Boot backend / Supabase
+                          PaymentRepository().createPayment(CreatePaymentPayload(
+                            amount: resolvedAmount,
+                            currency: upiData.currency,
+                            merchantName: upiData.payeeName,
+                            upiId: resolvedVpa,
+                            paymentMethod: 'GPAY',
+                            transactionReference: resolvedTxnRef,
+                            upiTransactionId: resolvedTxnId,
+                            status: localPayment.status,
+                            provider: 'GOOGLE_PAY',
+                            latitude: capturedLocation?.latitude,
+                            longitude: capturedLocation?.longitude,
+                            locationAccuracyMeters: capturedLocation?.accuracyMeters,
+                          )).then((remotePayment) async {
+                            if (gpayResult.isSuccess) {
+                              await PaymentRepository().reconcilePayment(
+                                remotePayment.id,
+                                'CONFIRMED',
+                                upiTransactionId: resolvedTxnId,
+                                transactionReference: resolvedTxnRef,
+                              );
+                            }
+                            await PaymentRepository().syncLocalPaymentsToSupabase();
+                          }).catchError((_) async {
+                            await PaymentRepository().syncLocalPaymentsToSupabase();
+                          });
 
-                          // 3. User returns from external UPI application
-                          if (mounted) {
-                            _showPaymentInitiatedDialog(payment);
-                          }
+                          if (!mounted) return;
+
+                          // 5. Present verified result dialog to user
+                          _showPaymentInitiatedDialog(localPayment, gpayResult);
                         } catch (e) {
                           if (mounted) {
                             messenger.showSnackBar(
@@ -472,8 +610,10 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     );
   }
 
-  void _showPaymentInitiatedDialog(PaymentModel payment) {
+  void _showPaymentInitiatedDialog(PaymentModel payment, [GooglePayResult? gpayResult]) {
     bool isReconciling = false;
+    final bool isGooglePayConfirmed = gpayResult?.isSuccess == true;
+    final String? resolvedTxnId = gpayResult?.upiTransactionId ?? payment.upiTransactionId;
 
     showDialog(
       context: context,
@@ -489,17 +629,35 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF007AFF).withValues(alpha: 0.15),
+                    color: isGooglePayConfirmed
+                        ? const Color(0xFF28A745).withValues(alpha: 0.15)
+                        : (gpayResult?.isFailure == true
+                            ? const Color(0xFFD93025).withValues(alpha: 0.15)
+                            : const Color(0xFF007AFF).withValues(alpha: 0.15)),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Center(
-                    child: Icon(Icons.send_rounded, color: Color(0xFF007AFF), size: 20),
+                  child: Center(
+                    child: Icon(
+                      isGooglePayConfirmed
+                          ? Icons.check_circle_rounded
+                          : (gpayResult?.isFailure == true
+                              ? Icons.error_outline_rounded
+                              : Icons.send_rounded),
+                      color: isGooglePayConfirmed
+                          ? const Color(0xFF28A745)
+                          : (gpayResult?.isFailure == true
+                              ? const Color(0xFFD93025)
+                              : const Color(0xFF007AFF)),
+                      size: 20,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Text(
-                  'Payment Initiated',
-                  style: TextStyle(
+                Text(
+                  isGooglePayConfirmed
+                      ? 'Google Pay Confirmed'
+                      : (gpayResult?.isFailure == true ? 'Payment Failed' : 'Payment Initiated'),
+                  style: const TextStyle(
                     fontFamily: 'Google Sans',
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
@@ -526,6 +684,27 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                   'Merchant: ${payment.merchantName ?? payment.upiId ?? "UPI Merchant"}',
                   style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 14),
                 ),
+                if (resolvedTxnId != null && resolvedTxnId.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    'UPI Txn ID: $resolvedTxnId',
+                    style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF007AFF), fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
+                ],
+                if (gpayResult?.payeeVpa != null && gpayResult!.payeeVpa!.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    'Payee VPA: ${gpayResult.payeeVpa}',
+                    style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 13),
+                  ),
+                ],
+                if (gpayResult?.responseCode != null && gpayResult!.responseCode!.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    'Response Code: ${gpayResult.responseCode}',
+                    style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 13),
+                  ),
+                ],
                 const SizedBox(height: 6),
                 Text(
                   'Location: ${payment.latitude != null ? "${payment.latitude!.toStringAsFixed(4)}, ${payment.longitude!.toStringAsFixed(4)}" : "Not captured"}',
@@ -541,14 +720,24 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF007AFF).withValues(alpha: 0.2),
+                        color: isGooglePayConfirmed
+                            ? const Color(0xFF28A745).withValues(alpha: 0.2)
+                            : (gpayResult?.isFailure == true
+                                ? const Color(0xFFD93025).withValues(alpha: 0.2)
+                                : const Color(0xFF007AFF).withValues(alpha: 0.2)),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        payment.status,
-                        style: const TextStyle(
+                        isGooglePayConfirmed
+                            ? 'SUCCESS'
+                            : (gpayResult?.isFailure == true ? 'FAILED' : payment.status),
+                        style: TextStyle(
                           fontFamily: 'Google Sans',
-                          color: Color(0xFF007AFF),
+                          color: isGooglePayConfirmed
+                              ? const Color(0xFF28A745)
+                              : (gpayResult?.isFailure == true
+                                  ? const Color(0xFFD93025)
+                                  : const Color(0xFF007AFF)),
                           fontWeight: FontWeight.w700,
                           fontSize: 12,
                         ),
@@ -557,9 +746,13 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'Payment was launched in your UPI app. If payment completed successfully, tap "Confirm Payment" to reconcile and create your expense entry.',
-                  style: TextStyle(
+                Text(
+                  isGooglePayConfirmed
+                      ? 'Payment was verified by Google Pay and recorded in your expense ledger.'
+                      : (gpayResult?.isFailure == true
+                          ? 'The payment could not be processed by Google Pay or your bank.'
+                          : 'Payment was launched in your UPI app. If payment completed successfully, tap "Confirm Payment" to reconcile and create your expense entry.'),
+                  style: const TextStyle(
                     fontFamily: 'Google Sans',
                     color: Color(0xFFA0A0A8),
                     fontSize: 12,
@@ -569,26 +762,35 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
               ],
             ),
             actions: [
-              TextButton(
-                onPressed: isReconciling
-                    ? null
-                    : () {
-                        Navigator.of(ctx).pop();
-                        _handleBack(0); // Return to home
-                      },
-                child: const Text(
-                  'I\'ll Reconcile Later',
-                  style: TextStyle(color: Color(0xFF8E8E93), fontWeight: FontWeight.w500),
+              if (!isGooglePayConfirmed && gpayResult?.isFailure != true)
+                TextButton(
+                  onPressed: isReconciling
+                      ? null
+                      : () {
+                          Navigator.of(ctx).pop();
+                          _handleBack(0); // Return to home
+                        },
+                  child: const Text(
+                    'I\'ll Reconcile Later',
+                    style: TextStyle(color: Color(0xFF8E8E93), fontWeight: FontWeight.w500),
+                  ),
                 ),
-              ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF007AFF),
+                  backgroundColor: (gpayResult?.isFailure == true)
+                      ? const Color(0xFFD93025)
+                      : (isGooglePayConfirmed ? const Color(0xFF28A745) : const Color(0xFF007AFF)),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
                 onPressed: isReconciling
                     ? null
                     : () async {
+                        if (isGooglePayConfirmed || gpayResult?.isFailure == true) {
+                          Navigator.of(ctx).pop();
+                          _handleBack(0); // Return to home
+                          return;
+                        }
+
                         setDialogState(() {
                           isReconciling = true;
                         });
@@ -597,7 +799,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                           await PaymentRepository().reconcilePayment(
                             payment.id,
                             'CONFIRMED',
-                            transactionReference: payment.transactionReference,
+                            upiTransactionId: resolvedTxnId,
+                            transactionReference: gpayResult?.transactionReference ?? payment.transactionReference,
                           );
 
                           if (dialogCtx.mounted) {
@@ -638,9 +841,11 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       )
-                    : const Text(
-                        'Confirm Payment',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                    : Text(
+                        isGooglePayConfirmed
+                            ? 'Done'
+                            : (gpayResult?.isFailure == true ? 'Dismiss' : 'Confirm Payment'),
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
                       ),
               ),
             ],
