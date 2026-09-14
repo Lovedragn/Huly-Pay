@@ -1,5 +1,6 @@
 package com.hulypay.backend.payments.dto;
 
+import com.hulypay.backend.payments.PaymentStatus;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -52,6 +53,8 @@ public class CreatePaymentRequest {
     private Double longitude;
 
     private Double locationAccuracyMeters;
+
+    private PaymentStatus status;
 
     private LocalDate paymentDate;
 

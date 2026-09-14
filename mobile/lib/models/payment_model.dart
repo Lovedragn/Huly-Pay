@@ -264,6 +264,7 @@ class CreatePaymentPayload {
   final double? longitude;
   final double? locationAccuracyMeters;
   final String? expenseId;
+  final String? status;
 
   CreatePaymentPayload({
     required this.amount,
@@ -278,6 +279,7 @@ class CreatePaymentPayload {
     this.longitude,
     this.locationAccuracyMeters,
     this.expenseId,
+    this.status,
   });
 
   Map<String, dynamic> toJson() {
@@ -295,6 +297,10 @@ class CreatePaymentPayload {
     if (longitude != null) map['longitude'] = longitude;
     if (locationAccuracyMeters != null) map['locationAccuracyMeters'] = locationAccuracyMeters;
     if (expenseId != null) map['expenseId'] = expenseId;
+    if (status != null) {
+      map['status'] = status;
+      map['paymentStatus'] = status;
+    }
     return map;
   }
 }
