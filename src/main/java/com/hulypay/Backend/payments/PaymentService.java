@@ -54,9 +54,11 @@ public class PaymentService {
                     .orElseThrow(() -> new ResourceNotFoundException("Expense not found with ID: " + request.getExpenseId()));
         }
 
-        PaymentStatus initialStatus = (request.getUpiTransactionId() != null && !request.getUpiTransactionId().isBlank())
-                ? PaymentStatus.PENDING
-                : PaymentStatus.INITIATED;
+        PaymentStatus initialStatus = request.getStatus() != null
+                ? request.getStatus()
+                : ((request.getUpiTransactionId() != null && !request.getUpiTransactionId().isBlank())
+                        ? PaymentStatus.PENDING
+                        : PaymentStatus.INITIATED);
 
         String currency = (request.getCurrency() != null && !request.getCurrency().isBlank())
                 ? request.getCurrency().toUpperCase()
@@ -67,6 +69,28 @@ public class PaymentService {
         String paymentMethod = (request.getPaymentMethod() != null && !request.getPaymentMethod().isBlank())
                 ? request.getPaymentMethod()
                 : "UPI";
+
+        // Auto-create and link expense if payment is already confirmed/successful from client
+        if ((initialStatus == PaymentStatus.CONFIRMED || initialStatus == PaymentStatus.SUCCESS) && expense == null) {
+            String payeeDesc = request.getMerchantName() != null ? request.getMerchantName()
+                    : (request.getUpiId() != null ? request.getUpiId() : "Merchant");
+
+            expense = Expense.builder()
+                    .user(user)
+                    .amount(request.getAmount())
+                    .currency(currency)
+                    .merchantName(request.getMerchantName())
+                    .paymentMethod(paymentMethod)
+                    .upiTransactionId(request.getUpiTransactionId())
+                    .status("COMPLETED")
+                    .latitude(request.getLatitude())
+                    .longitude(request.getLongitude())
+                    .transactionTime(Instant.now())
+                    .description("Payment to " + payeeDesc)
+                    .build();
+
+            expense = expenseRepository.save(expense);
+        }
 
         Payment payment = Payment.builder()
                 .user(user)

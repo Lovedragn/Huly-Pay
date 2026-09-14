@@ -147,4 +147,31 @@ class PaymentControllerTests {
                 .andExpect(jsonPath("$.paymentStatus").value("CONFIRMED"))
                 .andExpect(jsonPath("$.merchantName").value("ABC Store"));
     }
+
+    @Test
+    void createDirectConfirmedPaymentAutoLinksExpense() throws Exception {
+        UUID userId = UUID.randomUUID();
+        String email = "direct-confirmed-" + userId + "@hulypay.com";
+
+        mockMvc.perform(post("/api/v1/payments")
+                        .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "amount": 350.00,
+                                  "currency": "INR",
+                                  "merchantName": "Direct Merchant",
+                                  "upiId": "direct@upi",
+                                  "paymentMethod": "UPI",
+                                  "status": "CONFIRMED",
+                                  "upiTransactionId": "UPI_DIRECT_12345",
+                                  "transactionReference": "REF_DIRECT_99"
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value("CONFIRMED"))
+                .andExpect(jsonPath("$.paymentStatus").value("CONFIRMED"))
+                .andExpect(jsonPath("$.expenseId").isNotEmpty())
+                .andExpect(jsonPath("$.upiTransactionId").value("UPI_DIRECT_12345"));
+    }
 }
