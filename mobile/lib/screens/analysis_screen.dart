@@ -106,10 +106,13 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   DateTime _getCutoffForPeriod(String period) {
     final now = DateTime.now();
     final clean = period.toLowerCase().trim();
-    if (clean.contains('day')) {
-      return now.subtract(const Duration(days: 7));
+    if (clean.contains('day') || clean.contains('today')) {
+      // Days means today
+      return DateTime(now.year, now.month, now.day);
     } else if (clean.contains('week')) {
-      return now.subtract(const Duration(days: 14));
+      // Week means this week (Monday start)
+      final monday = now.subtract(Duration(days: now.weekday - 1));
+      return DateTime(monday.year, monday.month, monday.day);
     } else if (clean.contains('3') || clean.contains('three')) {
       return DateTime(now.year, now.month - 2, 1);
     } else if (clean.contains('6') || clean.contains('six')) {
@@ -124,10 +127,10 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 
   String _getCenterLabel(String period) {
     final clean = period.toLowerCase().trim();
-    if (clean.contains('day')) {
-      return 'Spent last 7 days';
+    if (clean.contains('day') || clean.contains('today')) {
+      return 'Spent today';
     } else if (clean.contains('week')) {
-      return 'Spent last 2 weeks';
+      return 'Spent this week';
     } else if (clean.contains('3') || clean.contains('three')) {
       return 'Spent last 3 months';
     } else if (clean.contains('6') || clean.contains('six')) {

@@ -206,10 +206,11 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
 
     switch (period) {
       case HeatmapPeriod.days:
-        cutoff = now.subtract(const Duration(days: 7));
+        cutoff = DateTime(now.year, now.month, now.day);
         break;
       case HeatmapPeriod.weeks:
-        cutoff = now.subtract(const Duration(days: 14));
+        final monday = now.subtract(Duration(days: now.weekday - 1));
+        cutoff = DateTime(monday.year, monday.month, monday.day);
         break;
       case HeatmapPeriod.month:
         cutoff = DateTime(now.year, now.month, 1);
@@ -254,7 +255,6 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
         columns = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
         grid = List.generate(rows.length, (_) => List<double>.filled(columns.length, 0.0));
 
-        final cutoff = now.subtract(const Duration(days: 7));
         for (final p in payments) {
           final s = p.status.toUpperCase();
           if (s == 'FAILED' || s == 'CANCELLED') continue;
@@ -262,8 +262,8 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
           if (dateStr == null) continue;
           try {
             final dt = DateTime.parse(dateStr).toLocal();
-            if (dt.isAfter(cutoff)) {
-              final dayIdx = (dt.weekday - 1).clamp(0, 6);
+            if (dt.year == now.year && dt.month == now.month && dt.day == now.day) {
+              final dayIdx = (now.weekday - 1).clamp(0, 6);
               grid[0][dayIdx] += p.amount;
             }
           } catch (_) {}
@@ -271,12 +271,11 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
         break;
 
       case HeatmapPeriod.weeks:
-        rows = ['r0', 'r1'];
+        rows = ['r0'];
         columns = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
         grid = List.generate(rows.length, (_) => List<double>.filled(columns.length, 0.0));
 
-        final thisWeekMonday = now.subtract(Duration(days: now.weekday - 1));
-        final lastWeekMonday = thisWeekMonday.subtract(const Duration(days: 7));
+        final thisWeekMonday = DateTime(now.year, now.month, now.day).subtract(Duration(days: now.weekday - 1));
 
         for (final p in payments) {
           final s = p.status.toUpperCase();
@@ -285,11 +284,9 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
           if (dateStr == null) continue;
           try {
             final dt = DateTime.parse(dateStr).toLocal();
-            final dayIdx = (dt.weekday - 1).clamp(0, 6);
             if (dt.isAfter(thisWeekMonday.subtract(const Duration(seconds: 1)))) {
+              final dayIdx = (dt.weekday - 1).clamp(0, 6);
               grid[0][dayIdx] += p.amount;
-            } else if (dt.isAfter(lastWeekMonday.subtract(const Duration(seconds: 1)))) {
-              grid[1][dayIdx] += p.amount;
             }
           } catch (_) {}
         }
