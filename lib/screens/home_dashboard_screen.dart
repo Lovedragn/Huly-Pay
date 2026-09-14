@@ -100,7 +100,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
 
     // 3. Load daily spending limit from UserPreferencesService (local SQLite & remote Supabase)
     try {
-      final limit = await UserPreferencesService().getDailyLimit();
+      final limit = await UserPreferencesService().getDailyLimit(forceRefresh: true);
       if (mounted && _dailyLimit != limit) {
         setState(() {
           _dailyLimit = limit;

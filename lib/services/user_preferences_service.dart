@@ -267,21 +267,25 @@ class UserPreferencesService {
     }
 
     final client = _client;
-    final user = AuthService().currentUser;
-    if (client != null && user != null) {
+    final userId = AuthService().currentUser?.id ?? AuthService().currentUserProfile?.id;
+    if (client != null && userId != null) {
       try {
         await client.from(tableUsersPreference).upsert({
-          'user_id': user.id,
+          'user_id': userId,
           'daily_limit': limit,
           'updated_at': DateTime.now().toUtc().toIso8601String(),
         }, onConflict: 'user_id');
-      } catch (_) {}
+      } catch (e) {
+        if (kDebugMode) {
+          print('UserPreferencesService: saveDailyLimit remote error: $e');
+        }
+      }
     }
   }
 
-  /// Retrieves the saved daily spending limit from local storage, defaulting to 5000.0
-  Future<double> getDailyLimit() async {
-    if (_cachedDailyLimit != null) {
+  /// Retrieves the saved daily spending limit from local storage or remote Supabase, defaulting to 5000.0
+  Future<double> getDailyLimit({bool forceRefresh = false}) async {
+    if (!forceRefresh && _cachedDailyLimit != null) {
       return _cachedDailyLimit!;
     }
     try {
@@ -290,14 +294,43 @@ class UserPreferencesService {
         final parsed = double.tryParse(saved);
         if (parsed != null && parsed > 0) {
           _cachedDailyLimit = parsed;
-          return parsed;
+          if (!forceRefresh) return parsed;
         }
       }
     } catch (e) {
       if (kDebugMode) {
-        print('UserPreferencesService: getDailyLimit error: $e');
+        print('UserPreferencesService: getDailyLimit local error: $e');
       }
     }
-    return 5000.0;
+
+    final client = _client;
+    final userId = AuthService().currentUser?.id ?? AuthService().currentUserProfile?.id;
+    if (client != null && userId != null) {
+      try {
+        final response = await client
+            .from(tableUsersPreference)
+            .select()
+            .eq('user_id', userId)
+            .maybeSingle();
+
+        if (response != null) {
+          final remoteDaily = (response['daily_limit'] ??
+                  response['spending_limit'] ??
+                  response['daily_budget']) as num?;
+          if (remoteDaily != null && remoteDaily > 0) {
+            final val = remoteDaily.toDouble();
+            _cachedDailyLimit = val;
+            await LocalDatabaseService().setMetadata(keyDailyLimit, val.toString());
+            return val;
+          }
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('UserPreferencesService: getDailyLimit remote error: $e');
+        }
+      }
+    }
+
+    return _cachedDailyLimit ?? 5000.0;
   }
 }

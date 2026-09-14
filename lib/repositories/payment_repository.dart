@@ -31,7 +31,7 @@ class PaymentRepository {
       final remote = await _apiClient.getPayments();
       if (remote.isNotEmpty) {
         await _localDb.upsertPayments(remote);
-        return remote;
+        return await _localDb.getPayments();
       }
     } catch (_) {}
 
@@ -40,6 +40,32 @@ class PaymentRepository {
       final client = AuthService().client;
       final user = AuthService().currentUser;
       if (client != null && user != null) {
+        // Auto-sync any pending local offline payments to Supabase
+        final unsynced = cached.where((p) => p.id.startsWith('local_')).toList();
+        for (final p in unsynced) {
+          try {
+            final nowStr = p.createdAt ?? DateTime.now().toUtc().toIso8601String();
+            final res = await client.from('payments').insert({
+              'user_id': user.id,
+              'amount': p.amount,
+              'currency': p.currency,
+              'merchant_name': p.merchantName,
+              'upi_id': p.upiId,
+              'payment_method': p.paymentMethod,
+              'transaction_reference': p.transactionReference,
+              'status': p.status,
+              'created_at': nowStr,
+              'updated_at': nowStr,
+              'payment_date': p.paymentDate,
+            }).select().single();
+            if (res is Map && res['id'] != null) {
+              await _localDb.deletePayment(p.id);
+              final synced = PaymentModel.fromJson(Map<String, dynamic>.from(res));
+              await _localDb.upsertPayment(synced);
+            }
+          } catch (_) {}
+        }
+
         final data = await client
             .from('payments')
             .select()
@@ -53,7 +79,7 @@ class PaymentRepository {
 
           if (supabasePayments.isNotEmpty) {
             await _localDb.upsertPayments(supabasePayments);
-            return supabasePayments;
+            return await _localDb.getPayments();
           }
         }
       }

@@ -293,10 +293,19 @@ void main() {
       await tester.tap(find.text('Weeks'));
       await tester.pumpAndSettle();
 
-      // Verify donut chart updated
-      expect(find.text('Spent last 2 weeks'), findsOneWidget);
+      // Verify donut chart updated to this week
+      expect(find.text('Spent this week'), findsOneWidget);
       expect(find.text('Current month breakdown'), findsNothing);
       expect(find.text('W1'), findsNothing);
+
+      // Select 'Days'
+      await tester.tap(find.text('Weeks'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Days'));
+      await tester.pumpAndSettle();
+
+      // Verify donut chart updated to today
+      expect(find.text('Spent today'), findsOneWidget);
     });
 
     test('AppChartColors globalPalette unifies color schema across all charts', () {
