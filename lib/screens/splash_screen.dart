@@ -96,7 +96,9 @@ class _SplashScreenState extends State<SplashScreen>
     // 3. Initialize Supabase / AuthService in background if not yet initialized
     if (!AuthService.isInitialized) {
       final supabaseUrl = dotenv.env['SUPABASE_URL'] ?? 'https://aszhhxnbzstzemyhcjvi.supabase.co';
-      final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
+      final supabaseAnonKey = dotenv.env['SUPABASE_PUBLISHABLE_KEY'] ??
+          dotenv.env['SUPABASE_ANON_KEY'] ??
+          '';
       await AuthService.initialize(
         url: supabaseUrl,
         anonKey: supabaseAnonKey,
@@ -205,10 +207,13 @@ class _SplashScreenState extends State<SplashScreen>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Staggered animated SVG paths matching svg-animation.md
-                    AnimatedHulyLogo(
-                      controller: _controller,
-                      width: 155,
-                      height: 98,
+                    Hero(
+                      tag: 'huly_pay_brand_logo',
+                      child: AnimatedHulyLogo(
+                        controller: _controller,
+                        width: 155,
+                        height: 98,
+                      ),
                     ),
                     const SizedBox(height: 18),
                     // "Hulypay" text in bold matching hypay-splash.png

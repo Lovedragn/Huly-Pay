@@ -18,7 +18,7 @@ class AuthService {
   }) async {
     if (anonKey.trim().isEmpty) {
       if (kDebugMode) {
-        print('AuthService: SUPABASE_ANON_KEY is empty. Supabase authentication is not configured.');
+        print('AuthService: SUPABASE_ANON_KEY / SUPABASE_PUBLISHABLE_KEY is empty. Supabase authentication is not configured.');
       }
       _initialized = false;
       return;
@@ -113,7 +113,7 @@ class AuthService {
     }
 
     throw const AuthException(
-      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY in .env.',
+      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY / SUPABASE_PUBLISHABLE_KEY in .env.',
     );
   }
 
@@ -132,7 +132,7 @@ class AuthService {
     }
 
     throw const AuthException(
-      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY in .env.',
+      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY / SUPABASE_PUBLISHABLE_KEY in .env.',
     );
   }
 
@@ -146,7 +146,7 @@ class AuthService {
     }
 
     throw const AuthException(
-      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY in .env.',
+      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY / SUPABASE_PUBLISHABLE_KEY in .env.',
     );
   }
 
@@ -160,7 +160,7 @@ class AuthService {
     }
 
     throw const AuthException(
-      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY in .env.',
+      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY / SUPABASE_PUBLISHABLE_KEY in .env.',
     );
   }
 

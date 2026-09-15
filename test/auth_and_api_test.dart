@@ -74,33 +74,27 @@ void main() {
     });
   });
 
-  group('SignInScreen Email Integration Tests', () {
-    testWidgets('Email button opens email authentication dialog', (WidgetTester tester) async {
+  group('SignInScreen Integration Tests', () {
+    testWidgets('SignInScreen displays Experience HulyPay, quote, and OAuth buttons', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: SignInScreen(),
         ),
       );
 
-      // Verify email button exists
-      final emailButton = find.byKey(const Key('email_signin_button'));
-      expect(emailButton, findsOneWidget);
-      expect(find.text('Continue with Email'), findsOneWidget);
+      // Verify new title and application quote
+      expect(find.text('Experience HulyPay'), findsOneWidget);
+      expect(find.text('Track. Pay. Grow.'), findsOneWidget);
 
-      // Tap email button
-      await tester.tap(emailButton);
-      await tester.pumpAndSettle();
+      // Verify top back and sign up buttons are removed
+      expect(find.byKey(const Key('signin_back_button')), findsNothing);
+      expect(find.text('Sign Up'), findsNothing);
 
-      // Verify email dialog appeared
-      expect(find.byType(AlertDialog), findsOneWidget);
-      expect(find.text('Sign In with Email'), findsOneWidget);
-      expect(find.text('Email address'), findsOneWidget);
-      expect(find.text('Password'), findsOneWidget);
-
-      // Cancel dialog
-      await tester.tap(find.text('Cancel'));
-      await tester.pumpAndSettle();
-      expect(find.byType(AlertDialog), findsNothing);
+      // Verify OAuth buttons exist and email button is removed
+      expect(find.byKey(const Key('google_signin_button')), findsOneWidget);
+      expect(find.byKey(const Key('github_signin_button')), findsOneWidget);
+      expect(find.byKey(const Key('email_signin_button')), findsNothing);
+      expect(find.byKey(const Key('auth_processing_button')), findsNothing);
     });
   });
 }
