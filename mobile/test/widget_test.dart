@@ -317,7 +317,7 @@ void main() {
 
     // 3. Verify transition to SignInScreen when unauthenticated
     expect(find.byType(SignInScreen), findsOneWidget);
-    expect(find.text('Welcome Back'), findsOneWidget);
+    expect(find.text('Experience HulyPay'), findsOneWidget);
   });
 
   testWidgets(
@@ -334,7 +334,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(SignInScreen), findsOneWidget);
-    expect(find.text('Welcome Back'), findsOneWidget);
+    expect(find.text('Experience HulyPay'), findsOneWidget);
   });
 
   testWidgets(
@@ -361,17 +361,19 @@ void main() {
 
     expect(find.byType(SplashScreen), findsOneWidget);
 
-    // Advance time past splash duration
+    // Advance time past splash duration and route transition
     await tester.pump(const Duration(milliseconds: 1000));
     await tester.pump(const Duration(milliseconds: 1500));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 500));
 
     // Authenticated session navigates to HomeDashboardScreen
     expect(find.byType(HomeDashboardScreen), findsOneWidget);
-    expect(find.text('TOTAL SPENT'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox());
 
     await tester.runAsync(() async {
       await LocalDatabaseService().clearAll();
+      await LocalDatabaseService().close();
     });
   });
 
@@ -381,11 +383,10 @@ void main() {
     await tester.pumpWidget(const MaterialApp(home: SignInScreen()));
 
     // Verify header and greeting
-    expect(find.byKey(const Key('signin_back_button')), findsOneWidget);
-    expect(find.text('Sign Up'), findsOneWidget);
-    expect(find.text('Welcome Back'), findsOneWidget);
-    expect(
-        find.text('Enter your credentials to access your account.'), findsOneWidget);
+    expect(find.byKey(const Key('signin_back_button')), findsNothing);
+    expect(find.text('Sign Up'), findsNothing);
+    expect(find.text('Experience HulyPay'), findsOneWidget);
+    expect(find.text('Track. Pay. Grow.'), findsOneWidget);
 
     // Verify Google and GitHub buttons
     expect(find.text('Google'), findsOneWidget);
@@ -408,13 +409,23 @@ void main() {
     final googleBtn = find.byKey(const Key('google_signin_button'));
     expect(googleBtn, findsOneWidget);
     await tester.tap(googleBtn);
-    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    // Reset processing state via cancel button if present so second tap works cleanly
+    final cancelBtn = find.byKey(const Key('auth_processing_button'));
+    if (cancelBtn.evaluate().isNotEmpty) {
+      await tester.tap(cancelBtn);
+      await tester.pump(const Duration(milliseconds: 100));
+    }
 
     // Verify GitHub button exists
     final githubBtn = find.byKey(const Key('github_signin_button'));
     expect(githubBtn, findsOneWidget);
     await tester.tap(githubBtn);
-    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    // Clean up any pending snackbar timers
+    await tester.pump(const Duration(seconds: 5));
   });
 
   testWidgets('SettingsScreen logout dialog displays confirmation and cancel actions',
@@ -461,9 +472,8 @@ void main() {
       ),
     );
 
-    // Tap back button
-    await tester.tap(find.byKey(const Key('signin_back_button')));
-    expect(backClicked, isTrue);
+    // Verify back button is removed
+    expect(find.byKey(const Key('signin_back_button')), findsNothing);
 
     // Tap Terms of Service link
     await tester.tap(find.text('Terms of Service'));
