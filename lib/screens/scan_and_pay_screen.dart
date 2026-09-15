@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -7,6 +8,7 @@ import '../repositories/payment_repository.dart';
 import '../services/google_pay_service.dart';
 import '../services/local_database_service.dart';
 import '../services/location_service.dart';
+import '../services/sms_filter_service.dart';
 import '../services/upi_service.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 
@@ -418,177 +420,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                         }
 
                         Navigator.of(modalContext).pop();
-
-                        try {
-                          // 1. App creates the UPI Intent directly with unique transaction reference
-                          final txnRef = upiData.transactionRef ?? 'REF-${DateTime.now().millisecondsSinceEpoch}';
-                          final upiPayloadData = UpiPaymentData(
-                            rawUri: upiData.rawUri,
-                            upiId: upiData.upiId,
-                            payeeName: upiData.payeeName,
-                            amount: parsedAmount,
-                            currency: upiData.currency,
-                            transactionRef: txnRef,
-                            transactionId: upiData.transactionId,
-                            note: upiData.note,
-                            merchantCode: upiData.merchantCode,
-                          );
-
-                          // 2. Open Google Pay App directly on Android device via UPI intent
-                          final gpayResult = await GooglePayService.payWithGooglePay(
-                            paymentData: upiPayloadData,
-                            customAmount: parsedAmount,
-                          );
-
-                          if (!mounted) return;
-
-                          // 3. Handle device installation / cancellation
-                          if (gpayResult.status == GooglePayStatus.notInstalled) {
-                            if (mounted) {
-                              showDialog(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  backgroundColor: const Color(0xFF1E1E24),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                  title: const Row(
-                                    children: [
-                                      Icon(Icons.warning_amber_rounded, color: Color(0xFFE5A93C), size: 24),
-                                      SizedBox(width: 10),
-                                      Text(
-                                        'UPI App Not Found',
-                                        style: TextStyle(
-                                          fontFamily: 'Google Sans',
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  content: const Text(
-                                    'Google Pay (or a supported UPI app) is not installed on this device or emulator. To make real UPI payments, please install Google Pay or run on a physical Android device with Google Pay configured.',
-                                    style: TextStyle(fontFamily: 'Google Sans', color: Color(0xFFD0D0D5), fontSize: 14, height: 1.4),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.of(ctx).pop(),
-                                      child: const Text('Dismiss', style: TextStyle(color: Color(0xFF8E8E93))),
-                                    ),
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(0xFF007AFF),
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                      ),
-                                      onPressed: () async {
-                                        Navigator.of(ctx).pop();
-                                        final playStoreUri = Uri.parse(
-                                          'https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user',
-                                        );
-                                        try {
-                                          await launchUrl(playStoreUri, mode: LaunchMode.externalApplication);
-                                        } catch (_) {}
-                                      },
-                                      child: const Text(
-                                        'Get Google Pay',
-                                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-                            return;
-                          }
-
-                          if (gpayResult.isCancelled) {
-                            messenger.showSnackBar(
-                              SnackBar(
-                                content: const Text(
-                                  'Payment was cancelled in Google Pay',
-                                  style: TextStyle(fontFamily: 'Google Sans', color: Colors.white),
-                                ),
-                                backgroundColor: const Color(0xFF2C2C34),
-                                behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              ),
-                            );
-                            return;
-                          }
-
-                          // 4. App processes UPI Intent Response directly on client
-                          final resolvedTxnId = gpayResult.upiTransactionId ?? txnRef;
-                          final resolvedTxnRef = gpayResult.transactionReference ?? txnRef;
-                          final resolvedVpa = gpayResult.payeeVpa ?? upiData.upiId;
-                          final resolvedAmount = gpayResult.amount ?? parsedAmount;
-                          final nowIso = DateTime.now().toIso8601String();
-
-                          final localPayment = PaymentModel(
-                            id: 'local_${DateTime.now().millisecondsSinceEpoch}',
-                            amount: resolvedAmount,
-                            currency: upiData.currency,
-                            merchantName: upiData.payeeName ?? resolvedVpa,
-                            upiId: resolvedVpa,
-                            paymentMethod: 'GPAY',
-                            transactionReference: resolvedTxnRef,
-                            upiTransactionId: resolvedTxnId,
-                            status: gpayResult.isSuccess
-                                ? 'CONFIRMED'
-                                : (gpayResult.isSubmitted ? 'PENDING' : 'FAILED'),
-                            provider: 'GOOGLE_PAY',
-                            latitude: capturedLocation?.latitude,
-                            longitude: capturedLocation?.longitude,
-                            locationAccuracyMeters: capturedLocation?.accuracyMeters,
-                            createdAt: nowIso,
-                            updatedAt: nowIso,
-                          );
-
-                          // Instant SQLite persistence with PENDING sync status
-                          try {
-                            await LocalDatabaseService().upsertPayment(localPayment, syncStatus: 'PENDING');
-                          } catch (_) {}
-
-                          // Background synchronization with Spring Boot backend / Supabase
-                          PaymentRepository().createPayment(CreatePaymentPayload(
-                            amount: resolvedAmount,
-                            currency: upiData.currency,
-                            merchantName: upiData.payeeName,
-                            upiId: resolvedVpa,
-                            paymentMethod: 'GPAY',
-                            transactionReference: resolvedTxnRef,
-                            upiTransactionId: resolvedTxnId,
-                            status: localPayment.status,
-                            provider: 'GOOGLE_PAY',
-                            latitude: capturedLocation?.latitude,
-                            longitude: capturedLocation?.longitude,
-                            locationAccuracyMeters: capturedLocation?.accuracyMeters,
-                          )).then((remotePayment) async {
-                            if (gpayResult.isSuccess) {
-                              await PaymentRepository().reconcilePayment(
-                                remotePayment.id,
-                                'CONFIRMED',
-                                upiTransactionId: resolvedTxnId,
-                                transactionReference: resolvedTxnRef,
-                              );
-                            }
-                            await PaymentRepository().syncLocalPaymentsToSupabase();
-                          }).catchError((_) async {
-                            await PaymentRepository().syncLocalPaymentsToSupabase();
-                          });
-
-                          if (!mounted) return;
-
-                          // 5. Present verified result dialog to user
-                          _showPaymentInitiatedDialog(localPayment, gpayResult);
-                        } catch (e) {
-                          if (mounted) {
-                            messenger.showSnackBar(
-                              SnackBar(
-                                content: Text('Payment initiation error: $e'),
-                                backgroundColor: const Color(0xFFD93025),
-                              ),
-                            );
-                          }
-                        }
+                        await _startSmsVerificationWorkflow(upiData, parsedAmount, capturedLocation);
                       },
                       child: const Text(
                         'Proceed to Pay via UPI / GPay',
@@ -607,6 +439,500 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
           },
         );
       },
+    );
+  }
+
+  static const Duration paymentVerificationTimeout = Duration(minutes: 5);
+
+  Future<void> _startSmsVerificationWorkflow(
+    UpiPaymentData upiData,
+    double parsedAmount,
+    PaymentLocation? capturedLocation,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+
+    // 1. Check & Request SMS Permission (Part 4)
+    bool hasPermission = await GooglePayService.isSmsPermissionGranted();
+    if (!hasPermission) {
+      hasPermission = await GooglePayService.requestSmsPermission();
+    }
+
+    if (!hasPermission) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            backgroundColor: const Color(0xFF1E1E24),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Row(
+              children: [
+                Icon(Icons.sms_failed_rounded, color: Color(0xFFE5A93C), size: 24),
+                SizedBox(width: 10),
+                Text(
+                  'SMS Permission Required',
+                  style: TextStyle(
+                    fontFamily: 'Google Sans',
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                  ),
+                ),
+              ],
+            ),
+            content: const Text(
+              'SMS permission is required to verify this development payment. Payment verification through SMS cannot proceed without it.',
+              style: TextStyle(fontFamily: 'Google Sans', color: Color(0xFFD0D0D5), fontSize: 14, height: 1.4),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('Dismiss', style: TextStyle(color: Color(0xFF8E8E93))),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF007AFF),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                onPressed: () async {
+                  Navigator.of(ctx).pop();
+                  final retryGranted = await GooglePayService.requestSmsPermission();
+                  if (retryGranted && mounted) {
+                    _startSmsVerificationWorkflow(upiData, parsedAmount, capturedLocation);
+                  }
+                },
+                child: const Text('Grant Permission', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+              ),
+            ],
+          ),
+        );
+      }
+      return;
+    }
+
+    // 2. Check if Google Pay is installed
+    final isGPayReady = await GooglePayService.isReadyToPay();
+    if (!isGPayReady) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            backgroundColor: const Color(0xFF1E1E24),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, color: Color(0xFFE5A93C), size: 24),
+                SizedBox(width: 10),
+                Text(
+                  'UPI App Not Found',
+                  style: TextStyle(
+                    fontFamily: 'Google Sans',
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                  ),
+                ),
+              ],
+            ),
+            content: const Text(
+              'Google Pay is not installed on this device or emulator. To make real UPI payments, please install Google Pay or run on a physical Android device with Google Pay configured.',
+              style: TextStyle(fontFamily: 'Google Sans', color: Color(0xFFD0D0D5), fontSize: 14, height: 1.4),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('Dismiss', style: TextStyle(color: Color(0xFF8E8E93))),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF007AFF),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                onPressed: () async {
+                  Navigator.of(ctx).pop();
+                  final playStoreUri = Uri.parse(
+                    'https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user',
+                  );
+                  try {
+                    await launchUrl(playStoreUri, mode: LaunchMode.externalApplication);
+                  } catch (_) {}
+                },
+                child: const Text('Get Google Pay', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+              ),
+            ],
+          ),
+        );
+      }
+      return;
+    }
+
+    // 3. Create PENDING Payment in Spring Boot / Local DB (Part 2)
+    final txnRef = 'HULY${DateTime.now().millisecondsSinceEpoch}';
+    final nowIso = DateTime.now().toIso8601String();
+
+    PaymentModel pendingPayment;
+    try {
+      pendingPayment = await PaymentRepository().createPayment(CreatePaymentPayload(
+        amount: parsedAmount,
+        currency: upiData.currency,
+        merchantName: upiData.payeeName,
+        upiId: upiData.upiId,
+        paymentMethod: 'GPAY',
+        transactionReference: txnRef,
+        status: 'PENDING',
+        provider: 'GOOGLE_PAY',
+        latitude: capturedLocation?.latitude,
+        longitude: capturedLocation?.longitude,
+        locationAccuracyMeters: capturedLocation?.accuracyMeters,
+      ));
+    } catch (e) {
+      pendingPayment = PaymentModel(
+        id: 'local_${DateTime.now().millisecondsSinceEpoch}',
+        amount: parsedAmount,
+        currency: upiData.currency,
+        merchantName: upiData.payeeName ?? upiData.upiId,
+        upiId: upiData.upiId,
+        paymentMethod: 'GPAY',
+        transactionReference: txnRef,
+        status: 'PENDING',
+        provider: 'GOOGLE_PAY',
+        latitude: capturedLocation?.latitude,
+        longitude: capturedLocation?.longitude,
+        locationAccuracyMeters: capturedLocation?.accuracyMeters,
+        createdAt: nowIso,
+        updatedAt: nowIso,
+      );
+    }
+
+    // 4. Launch Google Pay as a Standalone Application (Part 3 & Part 14)
+    try {
+      await GooglePayService.launchStandaloneGooglePay();
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(content: Text('Could not open Google Pay: $e')),
+      );
+    }
+
+    // 5. Open 5-Minute Verification Modal and start listening for SMS (Part 5 & 13)
+    if (mounted) {
+      _showSmsVerificationDialog(pendingPayment, upiData);
+    }
+  }
+
+  void _showSmsVerificationDialog(PaymentModel payment, UpiPaymentData upiData) {
+    int remainingSeconds = paymentVerificationTimeout.inSeconds;
+    Timer? timer;
+    String statusState = 'WAITING'; // 'WAITING', 'VERIFYING', 'SUCCESS', 'FAILED', 'TIMEOUT'
+    String? statusMessage;
+    String? resolvedUpiTxnId;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogCtx) => StatefulBuilder(
+        builder: (ctx, setDialogState) {
+          if (timer == null && statusState == 'WAITING') {
+            timer = Timer.periodic(const Duration(seconds: 1), (t) {
+              if (!dialogCtx.mounted) {
+                t.cancel();
+                GooglePayService.stopSmsListener();
+                return;
+              }
+
+              if (remainingSeconds > 0) {
+                setDialogState(() {
+                  remainingSeconds--;
+                });
+              } else {
+                t.cancel();
+                GooglePayService.stopSmsListener();
+                setDialogState(() {
+                  statusState = 'TIMEOUT';
+                  statusMessage = 'Payment verification timed out after 5 minutes.';
+                });
+                PaymentRepository().reconcilePayment(payment.id, 'TIMEOUT');
+              }
+            });
+
+            // Start listening for incoming SMS
+            GooglePayService.startSmsListener((smsData) async {
+              final body = smsData['body']?.toString() ?? '';
+              final sender = smsData['sender']?.toString();
+              final timestamp = smsData['timestamp']?.toString();
+
+              // Preliminary local financial filter (Part 6)
+              if (!SmsFilterService.isFinancialTransactionSms(body)) {
+                return;
+              }
+
+              if (dialogCtx.mounted) {
+                setDialogState(() {
+                  statusState = 'VERIFYING';
+                  statusMessage = 'Analyzing incoming bank transaction SMS...';
+                });
+              }
+
+              try {
+                final result = await PaymentRepository().verifyPaymentSms(
+                  paymentId: payment.id,
+                  smsBody: body,
+                  sender: sender,
+                  receivedAt: timestamp,
+                );
+
+                final bool isVerified = result['verified'] == true;
+                final String? resultStatus = result['status']?.toString();
+                final String? upiRef = result['extractedUpiReference']?.toString();
+
+                if (isVerified && dialogCtx.mounted) {
+                  timer?.cancel();
+                  await GooglePayService.stopSmsListener();
+
+                  if (resultStatus == 'SUCCESS' || resultStatus == 'CONFIRMED') {
+                    setDialogState(() {
+                      statusState = 'SUCCESS';
+                      statusMessage = result['message']?.toString() ?? 'Payment verified successfully';
+                      resolvedUpiTxnId = upiRef;
+                    });
+                  } else if (resultStatus == 'FAILED') {
+                    setDialogState(() {
+                      statusState = 'FAILED';
+                      statusMessage = result['message']?.toString() ?? 'Payment failed according to bank SMS';
+                      resolvedUpiTxnId = upiRef;
+                    });
+                  }
+                } else if (dialogCtx.mounted) {
+                  setDialogState(() {
+                    statusState = 'WAITING';
+                    statusMessage = null;
+                  });
+                }
+              } catch (_) {
+                if (dialogCtx.mounted) {
+                  setDialogState(() {
+                    statusState = 'WAITING';
+                    statusMessage = null;
+                  });
+                }
+              }
+            });
+          }
+
+          final minutes = (remainingSeconds ~/ 60).toString().padLeft(2, '0');
+          final seconds = (remainingSeconds % 60).toString().padLeft(2, '0');
+          final timerText = '$minutes:$seconds remaining';
+
+          final bool isSuccess = statusState == 'SUCCESS';
+          final bool isFailed = statusState == 'FAILED';
+          final bool isTimeout = statusState == 'TIMEOUT';
+          final bool isVerifying = statusState == 'VERIFYING';
+
+          return AlertDialog(
+            backgroundColor: const Color(0xFF1E1E24),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: isSuccess
+                        ? const Color(0xFF28A745).withValues(alpha: 0.15)
+                        : (isFailed
+                            ? const Color(0xFFD93025).withValues(alpha: 0.15)
+                            : (isTimeout
+                                ? const Color(0xFFE5A93C).withValues(alpha: 0.15)
+                                : const Color(0xFF007AFF).withValues(alpha: 0.15))),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: isVerifying
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Color(0xFF007AFF),
+                            ),
+                          )
+                        : Icon(
+                            isSuccess
+                                ? Icons.check_circle_rounded
+                                : (isFailed
+                                    ? Icons.error_outline_rounded
+                                    : (isTimeout
+                                        ? Icons.timer_off_rounded
+                                        : Icons.hourglass_top_rounded)),
+                            color: isSuccess
+                                ? const Color(0xFF28A745)
+                                : (isFailed
+                                    ? const Color(0xFFD93025)
+                                    : (isTimeout
+                                        ? const Color(0xFFE5A93C)
+                                        : const Color(0xFF007AFF))),
+                            size: 20,
+                          ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    isSuccess
+                        ? 'Payment Successful'
+                        : (isFailed
+                            ? 'Payment Failed'
+                            : (isTimeout
+                                ? 'Verification Timed Out'
+                                : (isVerifying
+                                    ? 'Verifying SMS...'
+                                    : 'Waiting for Confirmation'))),
+                    style: const TextStyle(
+                      fontFamily: 'Google Sans',
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 17,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Amount: ₹${payment.amount.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    fontFamily: 'Google Sans',
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Merchant: ${payment.merchantName ?? payment.upiId ?? "UPI Merchant"}',
+                  style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 13),
+                ),
+                if (resolvedUpiTxnId != null && resolvedUpiTxnId!.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    'UPI Ref / UTR: $resolvedUpiTxnId',
+                    style: const TextStyle(
+                      fontFamily: 'Google Sans',
+                      color: Color(0xFF007AFF),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 14),
+
+                // Timer badge & status indicator
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF161619),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: isSuccess
+                          ? const Color(0xFF28A745).withValues(alpha: 0.3)
+                          : (isFailed
+                              ? const Color(0xFFD93025).withValues(alpha: 0.3)
+                              : (isTimeout
+                                  ? const Color(0xFFE5A93C).withValues(alpha: 0.3)
+                                  : const Color(0xFF007AFF).withValues(alpha: 0.3))),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        isSuccess
+                            ? Icons.verified_rounded
+                            : (isTimeout ? Icons.timer_off_outlined : Icons.schedule_rounded),
+                        size: 16,
+                        color: isSuccess
+                            ? const Color(0xFF28A745)
+                            : (isTimeout ? const Color(0xFFE5A93C) : const Color(0xFF007AFF)),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          isSuccess
+                              ? 'Verified via SMS'
+                              : (isFailed
+                                  ? 'Transaction Failed'
+                                  : (isTimeout ? '5-minute window expired' : 'SMS verification active • $timerText')),
+                          style: TextStyle(
+                            fontFamily: 'Google Sans',
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: isSuccess
+                                ? const Color(0xFF28A745)
+                                : (isTimeout ? const Color(0xFFE5A93C) : const Color(0xFFD0D0D5)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  isSuccess
+                      ? 'Payment has been confirmed via bank transaction SMS and recorded in your ledger.'
+                      : (isFailed
+                          ? (statusMessage ?? 'Payment failed according to bank SMS notification.')
+                          : (isTimeout
+                              ? 'Payment verification timed out. If money was debited from your account, it will reflect upon refresh.'
+                              : 'Complete the payment in Google Pay. Huly.Pay is actively listening for your bank transaction SMS.')),
+                  style: const TextStyle(
+                    fontFamily: 'Google Sans',
+                    color: Color(0xFFA0A0A8),
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              if (!isSuccess && !isFailed && !isTimeout)
+                TextButton(
+                  onPressed: () {
+                    timer?.cancel();
+                    GooglePayService.stopSmsListener();
+                    PaymentRepository().reconcilePayment(payment.id, 'CANCELLED');
+                    Navigator.of(dialogCtx).pop();
+                  },
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Color(0xFF8E8E93), fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isSuccess
+                      ? const Color(0xFF28A745)
+                      : (isFailed ? const Color(0xFFD93025) : const Color(0xFF007AFF)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                onPressed: () {
+                  timer?.cancel();
+                  GooglePayService.stopSmsListener();
+                  Navigator.of(dialogCtx).pop();
+                  if (isSuccess) {
+                    _handleBack(0); // Return to home on success
+                  }
+                },
+                child: Text(
+                  isSuccess ? 'Done' : (isFailed || isTimeout ? 'Dismiss' : 'Waiting...'),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 

@@ -198,6 +198,27 @@ class ApiClient {
     }
   }
 
+  Future<Map<String, dynamic>> verifyPaymentSms({
+    required String paymentId,
+    required String smsBody,
+    String? sender,
+    String? receivedAt,
+  }) async {
+    try {
+      final response = await dio.post(
+        '/api/v1/payments/$paymentId/sms-verification',
+        data: {
+          'smsBody': smsBody,
+          if (sender != null) 'sender': sender,
+          if (receivedAt != null) 'receivedAt': receivedAt,
+        },
+      );
+      return Map<String, dynamic>.from(response.data as Map);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
   // --- Category Endpoints ---
 
   Future<List<CategoryModel>> getCategories() async {
