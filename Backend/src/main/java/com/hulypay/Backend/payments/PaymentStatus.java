@@ -8,5 +8,7 @@ public enum PaymentStatus {
     SUCCESS,
     FAILED,
     CANCELLED,
+    TIMEOUT,
+    VERIFYING_SMS,
     UNKNOWN
 }

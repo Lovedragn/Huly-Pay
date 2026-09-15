@@ -174,4 +174,101 @@ class PaymentControllerTests {
                 .andExpect(jsonPath("$.expenseId").isNotEmpty())
                 .andExpect(jsonPath("$.upiTransactionId").value("UPI_DIRECT_12345"));
     }
+
+    @Test
+    void verifySmsSuccessAndIdempotency() throws Exception {
+        UUID userId = UUID.randomUUID();
+        String email = "sms-" + userId + "@hulypay.com";
+
+        // 1. Create a PENDING payment
+        MvcResult createResult = mockMvc.perform(post("/api/v1/payments")
+                        .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "amount": 420.00,
+                                  "currency": "INR",
+                                  "merchantName": "Cafe CCD",
+                                  "upiId": "ccd@okhdfcbank",
+                                  "paymentMethod": "GPAY",
+                                  "status": "PENDING",
+                                  "transactionReference": "HULY_REF_10101"
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value("PENDING"))
+                .andReturn();
+
+        String paymentId = JsonPath.read(createResult.getResponse().getContentAsString(), "$.id");
+
+        // 2. Post matching SMS
+        String smsBody = "Dear Customer, Rs.420.00 debited from A/C **9999 to ccd@okhdfcbank. UPI Ref: 425611223344.";
+        mockMvc.perform(post("/api/v1/payments/" + paymentId + "/sms-verification")
+                        .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(String.format("""
+                                {
+                                  "smsBody": "%s",
+                                  "sender": "HDFCBK"
+                                }
+                                """, smsBody)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.verified").value(true))
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.extractedAmount").value(420.00))
+                .andExpect(jsonPath("$.extractedUpiReference").value("425611223344"))
+                .andExpect(jsonPath("$.payment.expenseId").isNotEmpty());
+
+        // 3. Idempotent call with duplicate SMS
+        mockMvc.perform(post("/api/v1/payments/" + paymentId + "/sms-verification")
+                        .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(String.format("""
+                                {
+                                  "smsBody": "%s",
+                                  "sender": "HDFCBK"
+                                }
+                                """, smsBody)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.verified").value(true))
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Payment is already confirmed"));
+    }
+
+    @Test
+    void verifySmsFailedPaymentFlow() throws Exception {
+        UUID userId = UUID.randomUUID();
+        String email = "sms-fail-" + userId + "@hulypay.com";
+
+        MvcResult createResult = mockMvc.perform(post("/api/v1/payments")
+                        .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "amount": 199.00,
+                                  "currency": "INR",
+                                  "merchantName": "Grocery Store",
+                                  "upiId": "grocer@upi",
+                                  "status": "PENDING"
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String paymentId = JsonPath.read(createResult.getResponse().getContentAsString(), "$.id");
+
+        String failSms = "UPI payment of Rs.199.00 to grocer@upi failed due to network timeout.";
+        mockMvc.perform(post("/api/v1/payments/" + paymentId + "/sms-verification")
+                        .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(String.format("""
+                                {
+                                  "smsBody": "%s",
+                                  "sender": "SBIBNK"
+                                }
+                                """, failSms)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.verified").value(true))
+                .andExpect(jsonPath("$.status").value("FAILED"));
+    }
 }

@@ -314,4 +314,30 @@ class PaymentRepository {
       rethrow;
     }
   }
+
+  /// Verify an incoming transaction SMS against a pending payment with Spring Boot
+  Future<Map<String, dynamic>> verifyPaymentSms({
+    required String paymentId,
+    required String smsBody,
+    String? sender,
+    String? receivedAt,
+  }) async {
+    try {
+      final res = await _apiClient.verifyPaymentSms(
+        paymentId: paymentId,
+        smsBody: smsBody,
+        sender: sender,
+        receivedAt: receivedAt,
+      );
+
+      if (res['payment'] != null && res['payment'] is Map) {
+        final paymentMap = Map<String, dynamic>.from(res['payment'] as Map);
+        final payment = PaymentModel.fromJson(paymentMap);
+        await _localDb.upsertPayment(payment, syncStatus: 'SYNCED');
+      }
+      return res;
+    } catch (_) {
+      rethrow;
+    }
+  }
 }

@@ -3,6 +3,8 @@ package com.hulypay.backend.payments;
 import com.hulypay.backend.payments.dto.CreatePaymentRequest;
 import com.hulypay.backend.payments.dto.PaymentResponse;
 import com.hulypay.backend.payments.dto.ReconcilePaymentRequest;
+import com.hulypay.backend.payments.dto.SmsVerificationRequest;
+import com.hulypay.backend.payments.dto.SmsVerificationResponse;
 import com.hulypay.backend.users.User;
 import com.hulypay.backend.users.UserService;
 import jakarta.validation.Valid;
@@ -57,6 +59,17 @@ public class PaymentController {
     ) {
         User user = userService.getUserFromJwt(jwt);
         PaymentResponse response = paymentService.reconcilePayment(user, id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/sms-verification")
+    public ResponseEntity<SmsVerificationResponse> verifyPaymentSms(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable UUID id,
+            @Valid @RequestBody SmsVerificationRequest request
+    ) {
+        User user = userService.getUserFromJwt(jwt);
+        SmsVerificationResponse response = paymentService.verifyPaymentSms(user, id, request);
         return ResponseEntity.ok(response);
     }
 }

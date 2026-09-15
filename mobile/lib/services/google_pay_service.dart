@@ -214,6 +214,88 @@ class GooglePayService {
     }
   }
 
+  /// Launch Google Pay as a completely separate external application (Part 3 & Part 14)
+  static Future<bool> launchStandaloneGooglePay() async {
+    if (kIsWeb) return false;
+
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      try {
+        final bool? success = await _channel.invokeMethod<bool>('launchStandaloneGooglePay');
+        return success ?? false;
+      } on PlatformException catch (pe) {
+        if (pe.code == 'NOT_INSTALLED') {
+          return false;
+        }
+        rethrow;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    final playStoreUri = Uri.parse(
+      'https://play.google.com/store/apps/details?id=$googlePayPackage',
+    );
+    return await launchUrl(playStoreUri, mode: LaunchMode.externalApplication);
+  }
+
+  /// Check whether SMS reading/receiving permissions are granted
+  static Future<bool> isSmsPermissionGranted() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return false;
+    try {
+      final bool? granted = await _channel.invokeMethod<bool>('isSmsPermissionGranted');
+      return granted ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Request runtime Android SMS permissions (Part 4)
+  static Future<bool> requestSmsPermission() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return false;
+    try {
+      final bool? granted = await _channel.invokeMethod<bool>('requestSmsPermission');
+      return granted ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  static void Function(Map<String, dynamic> smsData)? _onSmsReceivedCallback;
+
+  /// Start listening for incoming SMS during the payment verification window (Part 5)
+  static Future<bool> startSmsListener(void Function(Map<String, dynamic> smsData) onSmsReceived) async {
+    _onSmsReceivedCallback = onSmsReceived;
+    _channel.setMethodCallHandler((call) async {
+      if (call.method == 'onSmsReceived') {
+        final args = call.arguments;
+        if (args is Map) {
+          final map = Map<String, dynamic>.from(args);
+          _onSmsReceivedCallback?.call(map);
+        }
+      }
+    });
+
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+      try {
+        final bool? result = await _channel.invokeMethod<bool>('startSmsListener');
+        return result ?? false;
+      } catch (_) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /// Stop listening for incoming SMS
+  static Future<void> stopSmsListener() async {
+    _onSmsReceivedCallback = null;
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+      try {
+        await _channel.invokeMethod('stopSmsListener');
+      } catch (_) {}
+    }
+  }
+
   /// Launch Google Pay India with pre-configured UPI parameters
   ///
   /// Parameters strictly adhere to NPCI and Google Pay India specs:
