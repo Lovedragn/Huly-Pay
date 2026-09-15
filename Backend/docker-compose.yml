@@ -1,23 +1,4 @@
 services:
-  # ── PostgreSQL (local dev only) ─────────────────────────────
-  postgres:
-    image: postgres:17
-    container_name: hulypay-postgres
-    environment:
-      POSTGRES_DB: hulypay
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-
-  # ── Spring Boot Backend ─────────────────────────────────────
   backend:
     build:
       context: .
@@ -25,16 +6,13 @@ services:
     container_name: hulypay-backend
     ports:
       - "8080:8080"
+    env_file:
+      - .env
     environment:
       DB_URL: ${SUPABASE_DB_URL}
       DB_USERNAME: ${SUPABASE_DB_USERNAME}
       DB_PASSWORD: ${SUPABASE_DB_PASSWORD}
       SUPABASE_URL: ${SUPABASE_URL:-https://aszhhxnbzstzemyhcjvi.supabase.co}
       DDL_AUTO: update
-    depends_on:
-      postgres:
-        condition: service_healthy
+      PORT: "8080"
     restart: unless-stopped
-
-volumes:
-  postgres_data:
