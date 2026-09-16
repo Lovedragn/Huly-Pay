@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../repositories/payment_repository.dart';
 import '../repositories/user_repository.dart';
@@ -63,6 +64,9 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _controller.forward();
+
+    // Smoothly hand off from the native splash screen to the Flutter animated splash screen
+    FlutterNativeSplash.remove();
 
     _navigationTimer = Timer(widget.duration, _navigateToNext);
   }

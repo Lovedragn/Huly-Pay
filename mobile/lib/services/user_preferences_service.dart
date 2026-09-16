@@ -25,7 +25,7 @@ class UserPreferencesService {
 
   String? _cachedAnalysisPeriod;
   double? _cachedDailyLimit;
-  String _cachedDefaultPaymentApp = 'google_pay'; // 'google_pay' or 'amazon_pay'
+  String _cachedDefaultPaymentApp = 'ask_every_time';
 
   /// Synchronously returns preferred default payment app identifier
   String get cachedDefaultPaymentApp => _cachedDefaultPaymentApp;
