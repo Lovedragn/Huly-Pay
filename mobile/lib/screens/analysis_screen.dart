@@ -9,7 +9,6 @@ import '../widgets/analysis_category_pie_chart.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import '../widgets/spending_heatmap.dart';
 import 'home_dashboard_screen.dart';
-import 'scan_and_pay_screen.dart';
 import 'transactions_screen.dart';
 
 class AnalysisScreen extends StatefulWidget {
@@ -34,14 +33,13 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   late List<CategorySpendingItem> _categories;
   late String _totalSpent;
   List<PaymentModel> _allPayments = [];
-  String _selectedPeriod = 'This Month';
+  String _selectedPeriod = 'Month';
   final List<String> _periodOptions = const [
-    'Days',
-    'Weeks',
-    'This Month',
-    '3 Months',
-    '6 Months',
-    '1 Year',
+    'Day',
+    'Week',
+    'Month',
+    'Quarter',
+    'Year',
   ];
 
   @override
@@ -115,20 +113,16 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     final now = DateTime.now();
     final clean = period.toLowerCase().trim();
     if (clean.contains('day') || clean.contains('today')) {
-      // Days means today
       return DateTime(now.year, now.month, now.day);
     } else if (clean.contains('week')) {
-      // Week means this week (Monday start)
       final monday = now.subtract(Duration(days: now.weekday - 1));
       return DateTime(monday.year, monday.month, monday.day);
-    } else if (clean.contains('3') || clean.contains('three')) {
+    } else if (clean.contains('quarter') || clean.contains('3') || clean.contains('three')) {
       return DateTime(now.year, now.month - 2, 1);
-    } else if (clean.contains('6') || clean.contains('six')) {
-      return DateTime(now.year, now.month - 5, 1);
     } else if (clean.contains('year')) {
       return DateTime(now.year - 1, now.month, 1);
     } else {
-      // Month / This Month
+      // Month
       return DateTime(now.year, now.month, 1);
     }
   }
@@ -139,10 +133,8 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
       return 'Spent today';
     } else if (clean.contains('week')) {
       return 'Spent this week';
-    } else if (clean.contains('3') || clean.contains('three')) {
-      return 'Spent last 3 months';
-    } else if (clean.contains('6') || clean.contains('six')) {
-      return 'Spent last 6 months';
+    } else if (clean.contains('quarter') || clean.contains('3') || clean.contains('three')) {
+      return 'Spent this quarter';
     } else if (clean.contains('year')) {
       return 'Spent this year';
     } else {
@@ -219,14 +211,6 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
       _totalSpent = '₹${total.toStringAsFixed(total.truncateToDouble() == total ? 0 : 2)}';
       _categories = computed;
     });
-  }
-
-  void _openScanAndPay() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const ScanAndPayScreen(),
-      ),
-    );
   }
 
   void _openTransactions() {

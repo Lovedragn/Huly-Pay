@@ -56,18 +56,7 @@ void main() {
       // Verify LineChart is rendered
       expect(find.byType(LineChart), findsOneWidget);
       expect(find.text('SPEND TREND'), findsOneWidget);
-      expect(find.text('Daily Average'), findsOneWidget);
-      expect(find.text('AVG'), findsOneWidget);
-
-      // Toggle AVG line in Sample 2
-      await tester.tap(find.text('AVG'));
-      await tester.pumpAndSettle();
-      expect(find.text('Daily Average'), findsOneWidget);
-
-      // Toggle AVG back off
-      await tester.tap(find.text('AVG'));
-      await tester.pumpAndSettle();
-      expect(find.text('Daily Average'), findsOneWidget);
+      expect(find.text('Daily Spend'), findsOneWidget);
 
       // Toggle to Sample 4 (Dual Threshold / Range style)
       final sample4Button = find.byIcon(Icons.stacked_line_chart);
@@ -83,7 +72,7 @@ void main() {
       await tester.tap(sample2Button);
       await tester.pumpAndSettle();
 
-      expect(find.text('Daily Average'), findsOneWidget);
+      expect(find.text('Daily Spend'), findsOneWidget);
     });
 
     testWidgets('HomeWeeklyBarChart renders 7 weekday groups and calculates weekly total', (tester) async {
@@ -217,13 +206,13 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Verify SpendingHeatmap renders clean title and legends
+      // Verify SpendingHeatmap renders clean title and legends without Less/More text labels
       expect(find.byType(SpendingHeatmap), findsOneWidget);
       expect(find.text('Heatmap'), findsOneWidget);
       expect(find.text('SPENDING INTENSITY'), findsNothing);
       expect(find.text('Activity Heatmap'), findsNothing);
-      expect(find.text('Less'), findsOneWidget);
-      expect(find.text('More'), findsOneWidget);
+      expect(find.text('Less'), findsNothing);
+      expect(find.text('More'), findsNothing);
 
       // Verify W1, W2, W3, W4 labels are removed
       expect(find.text('W1'), findsNothing);
@@ -270,38 +259,35 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Initial state: 'This Month'
+      // Initial state: 'Month'
       expect(find.text('Spending Insights'), findsOneWidget);
-      expect(find.text('This Month'), findsOneWidget);
+      expect(find.text('Month'), findsOneWidget);
       expect(find.text('Spent this month'), findsOneWidget);
       expect(find.text('Heatmap'), findsOneWidget);
       expect(find.text('Current month breakdown'), findsNothing);
-      expect(find.text('W1'), findsNothing);
 
       // Open global period selector popup menu
-      await tester.tap(find.text('This Month'));
+      await tester.tap(find.text('Month'));
       await tester.pumpAndSettle();
 
       // Verify menu options
-      expect(find.text('Days'), findsOneWidget);
-      expect(find.text('Weeks'), findsOneWidget);
-      expect(find.text('3 Months'), findsOneWidget);
-      expect(find.text('6 Months'), findsOneWidget);
-      expect(find.text('1 Year'), findsOneWidget);
+      expect(find.text('Day'), findsOneWidget);
+      expect(find.text('Week'), findsOneWidget);
+      expect(find.text('Quarter'), findsOneWidget);
+      expect(find.text('Year'), findsOneWidget);
 
-      // Select 'Weeks'
-      await tester.tap(find.text('Weeks'));
+      // Select 'Week'
+      await tester.tap(find.text('Week'));
       await tester.pumpAndSettle();
 
       // Verify donut chart updated to this week
       expect(find.text('Spent this week'), findsOneWidget);
       expect(find.text('Current month breakdown'), findsNothing);
-      expect(find.text('W1'), findsNothing);
 
-      // Select 'Days'
-      await tester.tap(find.text('Weeks'));
+      // Select 'Day'
+      await tester.tap(find.text('Week'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Days'));
+      await tester.tap(find.text('Day'));
       await tester.pumpAndSettle();
 
       // Verify donut chart updated to today

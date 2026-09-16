@@ -4888,7 +4888,7 @@
       "file_type": "code",
       "norm_label": "_buildgrid",
       "source_file": "mobile/lib/widgets/spending_heatmap.dart",
-      "source_location": "L240"
+      "source_location": "L258"
     },
     {
       "id": "mobile_lib_widgets_spending_heatmap_buildheader",
@@ -4932,7 +4932,7 @@
       "file_type": "code",
       "norm_label": "_computeperiodtotal",
       "source_file": "mobile/lib/widgets/spending_heatmap.dart",
-      "source_location": "L198"
+      "source_location": "L216"
     },
     {
       "id": "mobile_lib_widgets_spending_heatmap_createstate",
@@ -4954,7 +4954,7 @@
       "file_type": "code",
       "norm_label": "_getcolorforvalue",
       "source_file": "mobile/lib/widgets/spending_heatmap.dart",
-      "source_location": "L697"
+      "source_location": "L715"
     },
     {
       "id": "mobile_lib_widgets_spending_heatmap_heatmapcelldata",
@@ -5009,7 +5009,7 @@
       "file_type": "code",
       "norm_label": "oncellselected",
       "source_file": "mobile/lib/widgets/spending_heatmap.dart",
-      "source_location": "L571"
+      "source_location": "L589"
     },
     {
       "id": "mobile_lib_widgets_spending_heatmap_palette",
@@ -5075,7 +5075,7 @@
       "file_type": "code",
       "norm_label": "selectedcolor",
       "source_file": "mobile/lib/widgets/spending_heatmap.dart",
-      "source_location": "L570"
+      "source_location": "L588"
     },
     {
       "id": "mobile_lib_widgets_spending_heatmap_spendingheatmap",
@@ -5977,7 +5977,7 @@
       "file_type": "code",
       "norm_label": "_heatmapgridwidget",
       "source_file": "mobile/lib/widgets/spending_heatmap.dart",
-      "source_location": "L564"
+      "source_location": "L582"
     },
     {
       "id": "mobile_lib_widgets_transaction_tile_transactiontile",
@@ -32923,6 +32923,18 @@
     },
     {
       "source": "mobile_lib_widgets_spending_heatmap",
+      "target": "static_const",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "variable_type",
+      "source_file": "mobile/lib/widgets/spending_heatmap.dart",
+      "source_location": "L58",
+      "weight": 1.0
+    },
+    {
+      "source": "mobile_lib_widgets_spending_heatmap",
       "target": "color",
       "relation": "references",
       "_origin": "ast",
@@ -32930,7 +32942,7 @@
       "confidence_score": 1.0,
       "context": "variable_type",
       "source_file": "mobile/lib/widgets/spending_heatmap.dart",
-      "source_location": "L570",
+      "source_location": "L588",
       "weight": 1.0
     },
     {
@@ -32942,19 +32954,7 @@
       "confidence_score": 1.0,
       "context": "variable_type",
       "source_file": "mobile/lib/widgets/spending_heatmap.dart",
-      "source_location": "L571",
-      "weight": 1.0
-    },
-    {
-      "source": "mobile_lib_widgets_spending_heatmap",
-      "target": "static_const",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "variable_type",
-      "source_file": "mobile/lib/widgets/spending_heatmap.dart",
-      "source_location": "L58",
+      "source_location": "L589",
       "weight": 1.0
     },
     {
@@ -43071,7 +43071,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/lib/widgets/spending_heatmap.dart",
-      "source_location": "L198",
+      "source_location": "L216",
       "weight": 1.0
     },
     {
@@ -43098,17 +43098,6 @@
     },
     {
       "source": "mobile_lib_widgets_spending_heatmap",
-      "target": "mobile_lib_widgets_spending_heatmap_buildgrid",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "mobile/lib/widgets/spending_heatmap.dart",
-      "source_location": "L240",
-      "weight": 1.0
-    },
-    {
-      "source": "mobile_lib_widgets_spending_heatmap",
       "target": "mobile_lib_widgets_spending_heatmap_rows",
       "relation": "defines",
       "_origin": "ast",
@@ -43116,6 +43105,17 @@
       "confidence_score": 1.0,
       "source_file": "mobile/lib/widgets/spending_heatmap.dart",
       "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "mobile_lib_widgets_spending_heatmap",
+      "target": "mobile_lib_widgets_spending_heatmap_buildgrid",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "mobile/lib/widgets/spending_heatmap.dart",
+      "source_location": "L258",
       "weight": 1.0
     },
     {
@@ -43208,39 +43208,6 @@
     },
     {
       "source": "mobile_lib_widgets_spending_heatmap",
-      "target": "mobile_lib_widgets_spending_heatmap_heatmapgridwidget",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "mobile/lib/widgets/spending_heatmap.dart",
-      "source_location": "L564",
-      "weight": 1.0
-    },
-    {
-      "source": "mobile_lib_widgets_spending_heatmap",
-      "target": "mobile_lib_widgets_spending_heatmap_selectedcolor",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "mobile/lib/widgets/spending_heatmap.dart",
-      "source_location": "L570",
-      "weight": 1.0
-    },
-    {
-      "source": "mobile_lib_widgets_spending_heatmap",
-      "target": "mobile_lib_widgets_spending_heatmap_oncellselected",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "mobile/lib/widgets/spending_heatmap.dart",
-      "source_location": "L571",
-      "weight": 1.0
-    },
-    {
-      "source": "mobile_lib_widgets_spending_heatmap",
       "target": "mobile_lib_widgets_spending_heatmap_monthnames",
       "relation": "defines",
       "_origin": "ast",
@@ -43252,13 +43219,35 @@
     },
     {
       "source": "mobile_lib_widgets_spending_heatmap",
-      "target": "mobile_lib_widgets_spending_heatmap_getcolorforvalue",
+      "target": "mobile_lib_widgets_spending_heatmap_heatmapgridwidget",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/lib/widgets/spending_heatmap.dart",
-      "source_location": "L697",
+      "source_location": "L582",
+      "weight": 1.0
+    },
+    {
+      "source": "mobile_lib_widgets_spending_heatmap",
+      "target": "mobile_lib_widgets_spending_heatmap_selectedcolor",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "mobile/lib/widgets/spending_heatmap.dart",
+      "source_location": "L588",
+      "weight": 1.0
+    },
+    {
+      "source": "mobile_lib_widgets_spending_heatmap",
+      "target": "mobile_lib_widgets_spending_heatmap_oncellselected",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "mobile/lib/widgets/spending_heatmap.dart",
+      "source_location": "L589",
       "weight": 1.0
     },
     {
@@ -43270,6 +43259,17 @@
       "confidence_score": 1.0,
       "source_file": "mobile/lib/widgets/spending_heatmap.dart",
       "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "mobile_lib_widgets_spending_heatmap",
+      "target": "mobile_lib_widgets_spending_heatmap_getcolorforvalue",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "mobile/lib/widgets/spending_heatmap.dart",
+      "source_location": "L715",
       "weight": 1.0
     },
     {
@@ -47768,7 +47768,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/lib/widgets/spending_heatmap.dart",
-      "source_location": "L564",
+      "source_location": "L582",
       "weight": 1.0
     },
     {
