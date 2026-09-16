@@ -28,7 +28,7 @@ void main() {
 
       expect(item.id, equals('pay_test_12345'));
       expect(item.title, equals('Starbucks Coffee'));
-      expect(item.amount, equals('- ₹450'));
+      expect(item.amount, equals('₹450'));
       expect(item.category, equals('GPAY'));
       expect(item.isFailed, isFalse);
       expect(item.payment, isNotNull);
@@ -137,7 +137,7 @@ void main() {
       );
 
       expect(find.text('Whole Foods Market'), findsOneWidget);
-      expect(find.text('- ₹890'), findsOneWidget);
+      expect(find.text('₹890'), findsOneWidget);
 
       await tester.tap(find.byType(TransactionTile));
       await tester.pumpAndSettle();

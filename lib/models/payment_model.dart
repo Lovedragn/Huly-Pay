@@ -154,9 +154,8 @@ class PaymentModel {
     final bool isPendingStatus = sUpper == 'PENDING' || sUpper == 'INITIATED' || sUpper == 'PAYMENT_INITIATED';
     final categoryText = isFailedStatus ? 'Failed' : (isPendingStatus ? 'Pending' : (paymentMethod ?? 'UPI'));
 
-    final amountText = (isFailedStatus || isPendingStatus)
-        ? '₹${amount.toStringAsFixed(amount.truncateToDouble() == amount ? 0 : 2)}'
-        : '- ₹${amount.toStringAsFixed(amount.truncateToDouble() == amount ? 0 : 2)}';
+    final amountText =
+        '₹${amount.toStringAsFixed(amount.truncateToDouble() == amount ? 0 : 2)}';
 
     String timeText = 'Today';
     if (paymentTime != null && paymentTime!.isNotEmpty) {

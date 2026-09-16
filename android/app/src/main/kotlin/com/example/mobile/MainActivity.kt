@@ -106,6 +106,54 @@ class MainActivity : FlutterActivity() {
                         stopListeningForSms()
                         result.success(true)
                     }
+                    "getInstalledUpiApps" -> {
+                        val installedApps = getInstalledUpiPackages()
+                        result.success(installedApps)
+                    }
+                    "launchUpiIntent" -> {
+                        val upiUri = call.argument<String>("upiUri")
+                        val packageName = call.argument<String>("packageName")
+                        if (upiUri.isNullOrBlank()) {
+                            result.error("INVALID_ARGS", "upiUri is required", null)
+                            return@setMethodCallHandler
+                        }
+
+                        val uri = Uri.parse(upiUri)
+                        val intent = Intent(Intent.ACTION_VIEW, uri)
+                        if (!packageName.isNullOrBlank()) {
+                            intent.setPackage(packageName)
+                        }
+
+                        // Check if an activity can resolve this intent
+                        val canResolve = intent.resolveActivity(packageManager) != null
+                        val intentToLaunch = if (canResolve) {
+                            intent
+                        } else if (!packageName.isNullOrBlank()) {
+                            // Fallback to generic chooser if specific package cannot resolve
+                            val genericIntent = Intent(Intent.ACTION_VIEW, uri)
+                            if (genericIntent.resolveActivity(packageManager) != null) {
+                                Intent.createChooser(genericIntent, "Pay with UPI")
+                            } else {
+                                null
+                            }
+                        } else {
+                            // Generic chooser
+                            Intent.createChooser(intent, "Pay with UPI")
+                        }
+
+                        if (intentToLaunch == null) {
+                            result.error("NOT_INSTALLED", "No UPI application found to handle payment", null)
+                            return@setMethodCallHandler
+                        }
+
+                        pendingResult = result
+                        try {
+                            startActivityForResult(intentToLaunch, googlePayRequestCode)
+                        } catch (e: Exception) {
+                            pendingResult = null
+                            result.error("LAUNCH_FAILED", e.localizedMessage, null)
+                        }
+                    }
                     "launchGooglePay" -> {
                         val upiUri = call.argument<String>("upiUri")
                         if (upiUri.isNullOrBlank()) {
@@ -226,6 +274,16 @@ class MainActivity : FlutterActivity() {
             activities.isNotEmpty()
         } catch (e: Exception) {
             false
+        }
+    }
+
+    private fun getInstalledUpiPackages(): List<String> {
+        return try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("upi://pay"))
+            val activities = packageManager.queryIntentActivities(intent, 0)
+            activities.mapNotNull { it.activityInfo?.packageName }.distinct()
+        } catch (e: Exception) {
+            emptyList()
         }
     }
 

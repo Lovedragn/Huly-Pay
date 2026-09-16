@@ -763,9 +763,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _buildSettingRow(
         icon: Icons.credit_card_rounded,
         title: 'Payment Methods',
-        trailingText: UserPreferencesService().cachedDefaultPaymentApp == 'amazon_pay'
-            ? 'Amazon Pay'
-            : 'Google Pay',
+        trailingText: () {
+          final pref = UserPreferencesService().cachedDefaultPaymentApp;
+          switch (pref) {
+            case 'google_pay':
+              return 'Google Pay';
+            case 'amazon_pay':
+              return 'Amazon Pay';
+            case 'phonepe':
+              return 'PhonePe';
+            case 'bhim':
+              return 'BHIM';
+            default:
+              return 'Ask every time';
+          }
+        }(),
         onTap: () async {
           await Navigator.of(context).push(
             MaterialPageRoute(

@@ -37,7 +37,23 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     await UserPreferencesService().setDefaultPaymentApp(appId);
     if (!mounted) return;
 
-    final appName = appId == 'google_pay' ? 'Google Pay' : 'Amazon Pay';
+    final String appName;
+    switch (appId) {
+      case 'google_pay':
+        appName = 'Google Pay';
+        break;
+      case 'amazon_pay':
+        appName = 'Amazon Pay';
+        break;
+      case 'phonepe':
+        appName = 'PhonePe';
+        break;
+      case 'bhim':
+        appName = 'BHIM UPI';
+        break;
+      default:
+        appName = 'Ask every time (Android Chooser)';
+    }
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -73,40 +89,74 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                         color: colors.accent,
                       ),
                     )
-                    : SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildSectionTitle(colors, 'Preferred Payment Applications'),
-                            const SizedBox(height: 12),
-                            _buildPaymentAppCard(
-                              colors: colors,
-                              appId: 'google_pay',
-                              appName: 'Google Pay',
-                              isDefault: _selectedDefaultApp == 'google_pay',
-                              iconWidget: _buildGPayBrandIcon(),
+                  : SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildSectionTitle(colors, 'Preferred Payment Applications'),
+                          const SizedBox(height: 12),
+                          _buildPaymentAppCard(
+                            colors: colors,
+                            appId: 'ask_every_time',
+                            appName: 'Ask every time (Android Chooser)',
+                            isDefault: _selectedDefaultApp == 'ask_every_time',
+                            iconWidget: Icon(
+                              Icons.alt_route_rounded,
+                              color: colors.textPrimary,
+                              size: 24,
                             ),
-                            const SizedBox(height: 12),
-                            _buildPaymentAppCard(
-                              colors: colors,
-                              appId: 'amazon_pay',
-                              appName: 'Amazon Pay',
-                              isDefault: _selectedDefaultApp == 'amazon_pay',
-                              iconWidget: _buildAmazonPayBrandIcon(),
+                          ),
+                          const SizedBox(height: 12),
+                          _buildPaymentAppCard(
+                            colors: colors,
+                            appId: 'google_pay',
+                            appName: 'Google Pay',
+                            isDefault: _selectedDefaultApp == 'google_pay',
+                            iconWidget: _buildGPayBrandIcon(),
+                          ),
+                          const SizedBox(height: 12),
+                          _buildPaymentAppCard(
+                            colors: colors,
+                            appId: 'phonepe',
+                            appName: 'PhonePe',
+                            isDefault: _selectedDefaultApp == 'phonepe',
+                            iconWidget: SvgPicture.asset(
+                              'asserts/icon/phonepe.svg',
+                              width: 26,
+                              height: 26,
                             ),
-                            const SizedBox(height: 24),
-                            _buildPermissionsDisclosureCard(colors),
-                            const SizedBox(height: 40),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 12),
+                          _buildPaymentAppCard(
+                            colors: colors,
+                            appId: 'amazon_pay',
+                            appName: 'Amazon Pay',
+                            isDefault: _selectedDefaultApp == 'amazon_pay',
+                            iconWidget: _buildAmazonPayBrandIcon(),
+                          ),
+                          const SizedBox(height: 12),
+                          _buildPaymentAppCard(
+                            colors: colors,
+                            appId: 'bhim',
+                            appName: 'BHIM UPI',
+                            isDefault: _selectedDefaultApp == 'bhim',
+                            iconWidget: SvgPicture.asset(
+                              'asserts/icon/bhim.svg',
+                              width: 26,
+                              height: 26,
+                            ),
+                          ),
+                          const SizedBox(height: 40),
+                        ],
                       ),
-              ),
-            ],
-          ),
+                    ),
+            ),
+          ],
         ),
-      );
+      ),
+    );
   }
 
   Widget _buildAppBar(AppThemeData colors) {
@@ -223,7 +273,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
 
   Widget _buildGPayBrandIcon() {
     return SvgPicture.asset(
-      'asserts/icon/google-pay-icon.svg',
+      'asserts/icon/google-pay.svg',
       width: 26,
       height: 26,
     );
@@ -234,64 +284,6 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
       'asserts/icon/amazon-icon.svg',
       width: 26,
       height: 26,
-    );
-  }
-
-  Widget _buildPermissionsDisclosureCard(AppThemeData colors) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: colors.border,
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: colors.surfaceSecondary,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              Icons.security_update_good_rounded,
-              color: colors.textPrimary,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Package Visibility & Opening Permissions',
-                  style: TextStyle(
-                    fontFamily: 'Google Sans',
-                    color: colors.textPrimary,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  'Package visibility queries are granted for Google Pay (com.google.android.apps.nbu.paisa.user) and Amazon Shopping/Pay (in.amazon.mShop.android.shopping). UPI intent queries permit HulyPay to handoff QR payment payloads seamlessly.',
-                  style: TextStyle(
-                    fontFamily: 'Google Sans',
-                    color: colors.textSecondary,
-                    fontSize: 12.5,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

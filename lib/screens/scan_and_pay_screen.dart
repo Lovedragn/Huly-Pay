@@ -2,13 +2,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../models/payment_model.dart';
 import '../repositories/payment_repository.dart';
 import '../services/google_pay_service.dart';
 import '../services/location_service.dart';
 import '../services/sms_filter_service.dart';
+import '../services/upi_payment_service.dart';
 import '../services/upi_service.dart';
+import '../services/user_preferences_service.dart';
+import 'payment_methods_screen.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 
 class ScanAndPayScreen extends StatefulWidget {
@@ -480,9 +482,16 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                           Navigator.of(modalContext).pop();
                           await _startSmsVerificationWorkflow(updatedUpiData, parsedAmount, capturedLocation);
                         },
-                        child: const Text(
-                          'Proceed to Pay via UPI / GPay',
-                          style: TextStyle(
+                        child: Text(
+                          () {
+                            final pref = UserPreferencesService().cachedDefaultPaymentApp;
+                            final app = UpiApps.findById(pref);
+                            final target = app?.name ?? 'UPI App';
+                            final currentAmt = double.tryParse(amountController.text.trim()) ?? upiData.amount;
+                            final amtStr = currentAmt != null && currentAmt > 0 ? '₹${currentAmt.toStringAsFixed(2)} ' : '';
+                            return 'Pay ${amtStr}via $target';
+                          }(),
+                          style: const TextStyle(
                             fontFamily: 'Google Sans',
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -508,7 +517,6 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     double parsedAmount,
     PaymentLocation? capturedLocation,
   ) async {
-    final messenger = ScaffoldMessenger.of(context);
 
     // 1. Check & Request SMS Permission (Part 4)
     bool hasPermission = await GooglePayService.isSmsPermissionGranted();
@@ -568,38 +576,67 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       return;
     }
 
-    // 2. Check if Google Pay is installed
-    final isGPayReady = await GooglePayService.isReadyToPay();
-    if (!isGPayReady) {
+    // 2. Determine Preferred UPI Application & Check Availability
+    final preferredAppId = await UserPreferencesService().getDefaultPaymentApp();
+    bool isAppReady = true;
+    SupportedUpiApp? targetApp;
+
+    if (preferredAppId != UpiApps.askEveryTime) {
+      targetApp = UpiApps.findById(preferredAppId);
+      if (targetApp != null) {
+        isAppReady = await UpiPaymentService.isAppInstalled(targetApp.id);
+      }
+    } else {
+      // For ask_every_time, check if at least one UPI app exists on Android
+      final installed = await UpiPaymentService.getInstalledUpiPackages();
+      if (installed.isEmpty) {
+        // Fallback: Check if Google Pay or standard intent resolves
+        isAppReady = await GooglePayService.isReadyToPay();
+      }
+    }
+
+    if (!isAppReady) {
       if (mounted) {
+        final missingAppName = targetApp?.name ?? 'Preferred UPI App';
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
             backgroundColor: const Color(0xFF1E1E24),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: const Row(
+            title: Row(
               children: [
-                Icon(Icons.warning_amber_rounded, color: Color(0xFFE5A93C), size: 24),
-                SizedBox(width: 10),
-                Text(
-                  'UPI App Not Found',
-                  style: TextStyle(
-                    fontFamily: 'Google Sans',
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
+                const Icon(Icons.warning_amber_rounded, color: Color(0xFFE5A93C), size: 24),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    '$missingAppName Not Installed',
+                    style: const TextStyle(
+                      fontFamily: 'Google Sans',
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                    ),
                   ),
                 ),
               ],
             ),
-            content: const Text(
-              'Google Pay is not installed on this device or emulator. To make real UPI payments, please install Google Pay or run on a physical Android device with Google Pay configured.',
-              style: TextStyle(fontFamily: 'Google Sans', color: Color(0xFFD0D0D5), fontSize: 14, height: 1.4),
+            content: Text(
+              '$missingAppName is not installed on this device. Would you like to use the Android app chooser or select another UPI application?',
+              style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFFD0D0D5), fontSize: 14, height: 1.4),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('Dismiss', style: TextStyle(color: Color(0xFF8E8E93))),
+                child: const Text('Cancel', style: TextStyle(color: Color(0xFF8E8E93))),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const PaymentMethodsScreen()),
+                  );
+                },
+                child: const Text('Change Default App', style: TextStyle(color: Color(0xFF007AFF), fontWeight: FontWeight.w600)),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -608,14 +645,15 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 ),
                 onPressed: () async {
                   Navigator.of(ctx).pop();
-                  final playStoreUri = Uri.parse(
-                    'https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user',
+                  // Fallback to Ask every time mode
+                  await _launchUpiAndStartVerification(
+                    upiData: upiData,
+                    parsedAmount: parsedAmount,
+                    capturedLocation: capturedLocation,
+                    forceAskEveryTime: true,
                   );
-                  try {
-                    await launchUrl(playStoreUri, mode: LaunchMode.externalApplication);
-                  } catch (_) {}
                 },
-                child: const Text('Get Google Pay', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                child: const Text('Pay with Chooser', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
               ),
             ],
           ),
@@ -624,9 +662,34 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       return;
     }
 
-    // 3. Create PENDING Payment in Spring Boot / Local DB (Part 2)
+    await _launchUpiAndStartVerification(
+      upiData: upiData,
+      parsedAmount: parsedAmount,
+      capturedLocation: capturedLocation,
+      forceAskEveryTime: false,
+    );
+  }
+
+  Future<void> _launchUpiAndStartVerification({
+    required UpiPaymentData upiData,
+    required double parsedAmount,
+    required PaymentLocation? capturedLocation,
+    bool forceAskEveryTime = false,
+  }) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final currentPref = await UserPreferencesService().getDefaultPaymentApp();
+    final effectiveAppId = forceAskEveryTime ? UpiApps.askEveryTime : currentPref;
+
+    // 3. Create PENDING Payment in Spring Boot / Local DB (never assuming success on launch)
     final txnRef = 'HULY${DateTime.now().millisecondsSinceEpoch}';
     final nowIso = DateTime.now().toIso8601String();
+    final providerName = effectiveAppId == 'google_pay'
+        ? 'GOOGLE_PAY'
+        : (effectiveAppId == 'amazon_pay'
+            ? 'AMAZON_PAY'
+            : (effectiveAppId == 'phonepe'
+                ? 'PHONEPE'
+                : (effectiveAppId == 'bhim' ? 'BHIM' : 'UPI')));
 
     PaymentModel pendingPayment;
     try {
@@ -635,10 +698,10 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
         currency: upiData.currency,
         merchantName: upiData.payeeName,
         upiId: upiData.upiId,
-        paymentMethod: 'GPAY',
+        paymentMethod: 'UPI',
         transactionReference: txnRef,
         status: 'PENDING',
-        provider: 'GOOGLE_PAY',
+        provider: providerName,
         latitude: capturedLocation?.latitude,
         longitude: capturedLocation?.longitude,
         locationAccuracyMeters: capturedLocation?.accuracyMeters,
@@ -650,10 +713,10 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
         currency: upiData.currency,
         merchantName: upiData.payeeName ?? upiData.upiId,
         upiId: upiData.upiId,
-        paymentMethod: 'GPAY',
+        paymentMethod: 'UPI',
         transactionReference: txnRef,
         status: 'PENDING',
-        provider: 'GOOGLE_PAY',
+        provider: providerName,
         latitude: capturedLocation?.latitude,
         longitude: capturedLocation?.longitude,
         locationAccuracyMeters: capturedLocation?.accuracyMeters,
@@ -662,16 +725,24 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       );
     }
 
-    // 4. Launch Google Pay as a Standalone Application (Part 3 & Part 14)
-    try {
-      await GooglePayService.launchStandaloneGooglePay();
-    } catch (e) {
+    // 4. Launch Standalone External UPI Application (Separate Android Application)
+    final launchResult = await UpiPaymentService.launchPayment(
+      paymentData: upiData,
+      customAmount: parsedAmount,
+      preferredAppId: effectiveAppId,
+    );
+
+    if (!launchResult.success) {
       messenger.showSnackBar(
-        SnackBar(content: Text('Could not open Google Pay: $e')),
+        SnackBar(
+          content: Text(launchResult.errorMessage ?? 'Could not launch UPI application.'),
+          backgroundColor: const Color(0xFFD93025),
+        ),
       );
+      return;
     }
 
-    // 5. Open 5-Minute Verification Modal and start listening for SMS (Part 5 & 13)
+    // 5. Open Verification Modal and start listening for SMS
     if (mounted) {
       _showSmsVerificationDialog(pendingPayment, upiData);
     }
