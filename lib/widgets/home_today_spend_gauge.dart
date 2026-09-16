@@ -475,8 +475,7 @@ class _HomeTodaySpendGaugeChartState extends State<HomeTodaySpendGaugeChart> {
     final now = DateTime.now();
     double total = 0.0;
     for (final p in payments) {
-      final s = p.status.toUpperCase();
-      if (s == 'FAILED' || s == 'CANCELLED') continue;
+      if (!p.isSuccessful) continue;
 
       if (_isToday(p.createdAt, now) || _isToday(p.paymentDate, now)) {
         total += p.amount;

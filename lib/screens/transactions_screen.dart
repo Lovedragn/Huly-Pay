@@ -6,7 +6,6 @@ import '../widgets/custom_bottom_nav_bar.dart';
 import '../widgets/transaction_tile.dart';
 import 'analysis_screen.dart';
 import 'home_dashboard_screen.dart';
-import 'scan_and_pay_screen.dart';
 import '../theme/app_theme.dart';
 
 class TransactionsScreen extends StatefulWidget {
@@ -29,7 +28,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   final List<String> _filters = const [
     'All',
     'Pending',
-    'Failed',
     'Food',
     'Internet',
     'Shopping',
@@ -49,12 +47,39 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     }
   }
 
+  List<PaymentModel> _filterActivePayments(List<PaymentModel> payments) {
+    final oneDayAgo = DateTime.now().subtract(const Duration(days: 1));
+    return payments.where((p) {
+      final s = p.status.toUpperCase();
+      // Remove failed or cancelled transactions
+      if (s == 'FAILED' || s == 'CANCELLED') return false;
+
+      // Auto delete/omit pending transactions older than 1 day
+      final isPending = s == 'PENDING' || s == 'INITIATED' || s == 'PAYMENT_INITIATED';
+      if (isPending) {
+        if (p.createdAt != null && p.createdAt!.isNotEmpty) {
+          try {
+            final dt = DateTime.parse(p.createdAt!).toLocal();
+            if (dt.isBefore(oneDayAgo)) return false;
+          } catch (_) {}
+        }
+      }
+      return true;
+    }).toList();
+  }
+
   Future<void> _loadPayments() async {
+    // Run cleanup on local database to auto-delete stale pending (> 1 day) and failed payments
+    try {
+      await PaymentRepository().cleanupStalePayments();
+    } catch (_) {}
+
     // 1. Instantly display cached payments from SQLite
     try {
       final cached = await PaymentRepository().getCachedPayments();
       if (mounted) {
-        final sorted = List<PaymentModel>.from(cached)
+        final activeList = _filterActivePayments(cached);
+        final sorted = List<PaymentModel>.from(activeList)
           ..sort((a, b) {
             final aDate = a.createdAt ?? '';
             final bDate = b.createdAt ?? '';
@@ -70,7 +95,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     try {
       final payments = await PaymentRepository().getPayments(forceRefresh: true);
       if (!mounted) return;
-      final sorted = List<PaymentModel>.from(payments)
+      final activeList = _filterActivePayments(payments);
+      final sorted = List<PaymentModel>.from(activeList)
         ..sort((a, b) {
           final aDate = a.createdAt ?? '';
           final bDate = b.createdAt ?? '';
@@ -98,12 +124,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
 
     for (final group in _allGroups) {
       final filteredTx = group.transactions.where((tx) {
+        // Exclude failed transactions completely from transaction page
+        if (tx.isFailed) return false;
+
         // Filter by category
         bool matchesType = true;
         if (selectedFilter == 'Pending') {
           matchesType = tx.isPending;
-        } else if (selectedFilter == 'Failed') {
-          matchesType = tx.isFailed;
         } else if (selectedFilter == 'Food') {
           matchesType = tx.category.toLowerCase().contains('food');
         } else if (selectedFilter == 'Internet') {
@@ -139,14 +166,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     }
 
     return result;
-  }
-
-  void _openScanAndPay() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const ScanAndPayScreen(),
-      ),
-    );
   }
 
   void _openHome() {
@@ -221,7 +240,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               bottom: 0,
               child: CustomBottomNavBar(
                 selectedIndex: 2, // Transactions active
-                isQrActive: false,
                 onItemSelected: (index) {
                   if (index == 0) {
                     _openHome();
@@ -229,7 +247,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     _openAnalysis();
                   }
                 },
-                onQrScanTap: _openScanAndPay,
               ),
             ),
           ],
@@ -252,25 +269,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             fontSize: 26,
             fontWeight: FontWeight.w800,
             letterSpacing: -0.5,
-          ),
-        ),
-        Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: colors.iconBackground,
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: colors.border,
-              width: 1,
-            ),
-          ),
-          child: Center(
-            child: Icon(
-              Icons.search_rounded,
-              color: colors.textPrimary,
-              size: 22,
-            ),
           ),
         ),
       ],

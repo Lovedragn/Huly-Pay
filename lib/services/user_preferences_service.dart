@@ -21,9 +21,14 @@ class UserPreferencesService {
   static const String keyChartPalette = 'user_pref_chart_palette';
   static const String keyAnalysisPeriod = 'user_pref_analysis_period';
   static const String keyDailyLimit = 'user_pref_daily_limit';
+  static const String keyDefaultPaymentApp = 'user_pref_default_payment_app';
 
   String? _cachedAnalysisPeriod;
   double? _cachedDailyLimit;
+  String _cachedDefaultPaymentApp = 'google_pay'; // 'google_pay' or 'amazon_pay'
+
+  /// Synchronously returns preferred default payment app identifier
+  String get cachedDefaultPaymentApp => _cachedDefaultPaymentApp;
 
   /// Synchronously returns any cached period in memory (e.g. from loadLocalPreferences)
   String? get cachedAnalysisPeriod => _cachedAnalysisPeriod;
@@ -65,6 +70,11 @@ class UserPreferencesService {
         if (parsed != null && parsed > 0) {
           _cachedDailyLimit = parsed;
         }
+      }
+
+      final savedApp = await LocalDatabaseService().getMetadata(keyDefaultPaymentApp);
+      if (savedApp != null && savedApp.isNotEmpty) {
+        _cachedDefaultPaymentApp = savedApp;
       }
     } catch (e) {
       if (kDebugMode) {
@@ -332,5 +342,29 @@ class UserPreferencesService {
     }
 
     return _cachedDailyLimit ?? 5000.0;
+  }
+
+  /// Sets the preferred default payment application ('google_pay' or 'amazon_pay')
+  Future<void> setDefaultPaymentApp(String appId) async {
+    _cachedDefaultPaymentApp = appId;
+    try {
+      await LocalDatabaseService().setMetadata(keyDefaultPaymentApp, appId);
+    } catch (e) {
+      if (kDebugMode) {
+        print('UserPreferencesService: setDefaultPaymentApp error: $e');
+      }
+    }
+  }
+
+  /// Gets the preferred default payment application ('google_pay' or 'amazon_pay')
+  Future<String> getDefaultPaymentApp() async {
+    try {
+      final saved = await LocalDatabaseService().getMetadata(keyDefaultPaymentApp);
+      if (saved != null && saved.isNotEmpty) {
+        _cachedDefaultPaymentApp = saved;
+        return saved;
+      }
+    } catch (_) {}
+    return _cachedDefaultPaymentApp;
   }
 }

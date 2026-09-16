@@ -27,7 +27,6 @@ class HomeSpendTrendLineChart extends StatefulWidget {
 
 class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
   SpendChartStyle _currentStyle = SpendChartStyle.curvedGradient;
-  bool _showAvg = false;
 
   // Curated Luxury Palette derived from global AppChartColors
   static List<Color> get _gradientColors => AppChartColors.primaryGradient;
@@ -57,9 +56,7 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
             aspectRatio: 1.85,
             child: LineChart(
               _currentStyle == SpendChartStyle.curvedGradient
-                  ? (_showAvg
-                        ? _buildAvgData(dailyPoints)
-                        : _buildCurvedGradientData(dailyPoints))
+                  ? _buildCurvedGradientData(dailyPoints)
                   : _buildDualZoneData(dailyPoints),
               duration: const Duration(milliseconds: 350),
               curve: Curves.easeInOut,
@@ -92,7 +89,7 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
             const SizedBox(height: 4),
             Text(
               _currentStyle == SpendChartStyle.curvedGradient
-                  ? ('Daily Average')
+                  ? 'Daily Spend'
                   : 'Range Threshold',
               style: TextStyle(
                 fontFamily: 'Google Sans',
@@ -106,48 +103,6 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (_currentStyle == SpendChartStyle.curvedGradient)
-              Container(
-                height: 32,
-                margin: const EdgeInsets.only(right: 8),
-                decoration: BoxDecoration(
-                  color: _showAvg
-                      ? AppChartColors.blue.withValues(alpha: 0.2)
-                      : const Color(0xFF1E1E24),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: _showAvg
-                        ? AppChartColors.blue
-                        : const Color(0xFF2E2E34),
-                  ),
-                ),
-                child: TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _showAvg = !_showAvg;
-                    });
-                  },
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 0,
-                    ),
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: Text(
-                    'AVG',
-                    style: TextStyle(
-                      fontFamily: 'Google Sans',
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: _showAvg
-                          ? AppChartColors.cyan
-                          : const Color(0xFF8E8E93),
-                    ),
-                  ),
-                ),
-              ),
             // Style Switcher Button (Toggles between Sample 2 and Sample 4)
             Container(
               height: 32,
@@ -219,22 +174,12 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
     for (final p in points) {
       total += p.amount;
     }
-    final avg = points.isNotEmpty ? total / points.length : 0.0;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           '7-Day Total: ₹${total.toStringAsFixed(0)}',
-          style: const TextStyle(
-            fontFamily: 'Google Sans',
-            color: Color(0xFF8E8E93),
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        Text(
-          'Daily Avg: ₹${avg.toStringAsFixed(0)}',
           style: const TextStyle(
             fontFamily: 'Google Sans',
             color: Color(0xFF8E8E93),
@@ -354,67 +299,6 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
     );
   }
 
-  /// LineChartSample2 Average Data View
-  LineChartData _buildAvgData(List<_TrendPoint> points) {
-    double total = 0;
-    for (final p in points) {
-      total += p.amount;
-    }
-    final avg = points.isNotEmpty ? total / points.length : 0.0;
-    final spots = List.generate(
-      points.length,
-      (i) => FlSpot(i.toDouble(), avg),
-    );
-    final maxY = _calculateMaxY(points);
-
-    return LineChartData(
-      gridData: FlGridData(
-        show: true,
-        drawVerticalLine: false,
-        horizontalInterval: maxY > 0 ? (maxY / 4) : 100,
-        getDrawingHorizontalLine: (value) =>
-            const FlLine(color: Color(0xFF222228), strokeWidth: 1),
-      ),
-      titlesData: FlTitlesData(
-        show: true,
-        rightTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 26,
-            interval: 1,
-            getTitlesWidget: (value, meta) =>
-                _bottomTitleWidgets(value, meta, points),
-          ),
-        ),
-        leftTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-      ),
-      borderData: FlBorderData(show: false),
-      minX: 0,
-      maxX: (points.length - 1).toDouble(),
-      minY: 0,
-      maxY: maxY,
-      lineBarsData: [
-        LineChartBarData(
-          spots: spots,
-          isCurved: false,
-          color: AppChartColors.blue,
-          barWidth: 2.5,
-          dashArray: [6, 4],
-          dotData: const FlDotData(show: false),
-          belowBarData: BarAreaData(
-            show: true,
-            color: AppChartColors.blue.withValues(alpha: 0.12),
-          ),
-        ),
-      ],
-    );
-  }
 
   /// LineChartSample4 Implementation: Dual-zone Cut-Off Line Chart
   LineChartData _buildDualZoneData(List<_TrendPoint> points) {
@@ -516,28 +400,6 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
     );
   }
 
-  Widget _leftTitleWidgets(double value, TitleMeta meta) {
-    if (value == 0) {
-      return const SizedBox.shrink();
-    }
-    String text;
-    if (value >= 1000) {
-      text = '₹${(value / 1000).toStringAsFixed(1)}k';
-    } else {
-      text = '₹${value.toInt()}';
-    }
-    return SideTitleWidget(
-      meta: meta,
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontFamily: 'Google Sans',
-          color: Color(0xFF636366),
-          fontSize: 10,
-        ),
-      ),
-    );
-  }
 
   double _calculateMaxY(List<_TrendPoint> points) {
     double max = 0;
@@ -562,8 +424,7 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
 
       double sum = 0;
       for (final p in payments) {
-        final s = p.status.toUpperCase();
-        if (s == 'FAILED' || s == 'CANCELLED') continue;
+        if (!p.isSuccessful) continue;
         final dateStr = p.createdAt ?? p.paymentDate;
         if (dateStr != null) {
           try {
@@ -590,7 +451,7 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
       // If payments don't match today's date range, distribute them across points
       int idx = 0;
       for (final p in payments.where(
-        (p) => p.status.toUpperCase() != 'FAILED' && p.status.toUpperCase() != 'CANCELLED',
+        (p) => p.isSuccessful,
       )) {
         points[idx % points.length] = _TrendPoint(
           label: points[idx % points.length].label,

@@ -146,9 +146,13 @@ class PaymentRepository {
     }
   }
 
-  /// Retains all payment history in local SQLite
+  /// Purges failed/cancelled payments and pending payments older than 1 day
   Future<int> cleanupStalePayments() async {
-    return 0;
+    try {
+      return await _localDb.cleanupStalePayments();
+    } catch (_) {
+      return 0;
+    }
   }
 
   /// Retrieve payment by ID with cache fallback

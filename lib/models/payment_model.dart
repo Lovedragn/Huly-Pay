@@ -44,6 +44,13 @@ class PaymentModel {
     this.updatedAt,
   });
 
+  /// Whether this payment completed successfully.
+  /// Only SUCCESS and CONFIRMED statuses count toward charts and totals.
+  bool get isSuccessful {
+    final s = status.toUpperCase();
+    return s == 'SUCCESS' || s == 'CONFIRMED';
+  }
+
   PaymentModel copyWith({
     String? id,
     String? userId,

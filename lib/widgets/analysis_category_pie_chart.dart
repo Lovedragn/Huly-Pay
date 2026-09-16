@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+
 import '../models/dashboard_data.dart';
 import '../theme/app_theme.dart';
 
@@ -11,6 +12,7 @@ class AnalysisCategoryPieChart extends StatefulWidget {
   final String totalAmount;
   final String centerLabel;
   final bool showLegend;
+  final bool showCardBackground;
 
   const AnalysisCategoryPieChart({
     super.key,
@@ -18,10 +20,12 @@ class AnalysisCategoryPieChart extends StatefulWidget {
     required this.totalAmount,
     this.centerLabel = 'Spent this month',
     this.showLegend = false,
+    this.showCardBackground = false,
   });
 
   @override
-  State<AnalysisCategoryPieChart> createState() => _AnalysisCategoryPieChartState();
+  State<AnalysisCategoryPieChart> createState() =>
+      _AnalysisCategoryPieChartState();
 }
 
 class _AnalysisCategoryPieChartState extends State<AnalysisCategoryPieChart> {
@@ -35,20 +39,22 @@ class _AnalysisCategoryPieChartState extends State<AnalysisCategoryPieChart> {
       children: [
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: colors.border,
-              width: 1,
-            ),
+          padding: EdgeInsets.symmetric(
+            horizontal: widget.showCardBackground ? 20 : 0,
+            vertical: widget.showCardBackground ? 24 : 12,
           ),
+          decoration: widget.showCardBackground
+              ? BoxDecoration(
+                  color: colors.surface,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: colors.border, width: 1),
+                )
+              : null,
           child: Column(
             children: [
               // Donut Chart with Center Total
               SizedBox(
-                height: 220,
+                height: 240,
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
@@ -64,19 +70,20 @@ class _AnalysisCategoryPieChartState extends State<AnalysisCategoryPieChart> {
                                 return;
                               }
                               _touchedIndex = pieTouchResponse
-                                  .touchedSection!.touchedSectionIndex;
+                                  .touchedSection!
+                                  .touchedSectionIndex;
                             });
                           },
                         ),
                         borderData: FlBorderData(show: false),
                         sectionsSpace: widget.items.isEmpty ? 0 : 3,
-                        centerSpaceRadius: 52,
+                        centerSpaceRadius: 48,
                         sections: widget.items.isEmpty
                             ? [
                                 PieChartSectionData(
                                   color: const Color(0xFF222226),
                                   value: 100,
-                                  radius: 48,
+                                  radius: 46,
                                   showTitle: false,
                                 ),
                               ]
@@ -131,12 +138,19 @@ class _AnalysisCategoryPieChartState extends State<AnalysisCategoryPieChart> {
                         });
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFF22222A) : Colors.transparent,
+                          color: isSelected
+                              ? const Color(0xFF22222A)
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(8),
                           border: isSelected
-                              ? Border.all(color: item.color.withValues(alpha: 0.6))
+                              ? Border.all(
+                                  color: item.color.withValues(alpha: 0.6),
+                                )
                               : null,
                         ),
                         child: Row(
@@ -155,9 +169,13 @@ class _AnalysisCategoryPieChartState extends State<AnalysisCategoryPieChart> {
                               item.title,
                               style: TextStyle(
                                 fontFamily: 'Google Sans',
-                                color: isSelected ? Colors.white : const Color(0xFF8E8E93),
+                                color: isSelected
+                                    ? Colors.white
+                                    : const Color(0xFF8E8E93),
                                 fontSize: 12,
-                                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                fontWeight: isSelected
+                                    ? FontWeight.w700
+                                    : FontWeight.w500,
                               ),
                             ),
                             const SizedBox(width: 5),
@@ -188,23 +206,30 @@ class _AnalysisCategoryPieChartState extends State<AnalysisCategoryPieChart> {
     return List.generate(widget.items.length, (i) {
       final isTouched = (i == _touchedIndex);
       final item = widget.items[i];
-      final fontSize = isTouched ? 18.0 : 12.0;
-      final radius = isTouched ? 58.0 : 48.0;
-      const shadows = [
-        Shadow(color: Colors.black87, blurRadius: 4),
-      ];
+      final fontSize = isTouched ? 16.0 : 13.0;
+      final radius = isTouched ? 54.0 : 46.0;
+      // Show label if section is touched or large enough (> 4%), otherwise keep it clean
+      final showTitle = isTouched || item.percentage >= 4;
 
       return PieChartSectionData(
         color: item.color,
         value: item.percentage.toDouble().clamp(1.0, 100.0),
-        title: '${item.percentage}%',
+        title: showTitle ? '${item.percentage}%' : '',
         radius: radius,
+        cornerRadius: 8,
+        titlePositionPercentageOffset: 0.55,
         titleStyle: TextStyle(
           fontFamily: 'Google Sans',
           fontSize: fontSize,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
           color: Colors.white,
-          shadows: shadows,
+          shadows: const [
+            Shadow(
+              color: Color(0xCC000000),
+              blurRadius: 6,
+              offset: Offset(0, 1),
+            ),
+          ],
         ),
       );
     });

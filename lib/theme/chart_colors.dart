@@ -125,18 +125,23 @@ class AppChartColors {
       ? const Color(0xFF1C1C20)
       : const Color(0xFFE5E7EB);
 
-  /// Heatmap activity intensity palette (from dark/light surface up to peak accent)
+  /// Heatmap activity intensity palette (from dark/light surface up to peak accent).
+  /// Uses opaque colors (lerped from background toward peak) so that each
+  /// intensity level is clearly distinguishable regardless of background.
   static List<Color> get heatmapPalette {
     final p = globalPalette;
-    final base = p[2]; // Level 4 peak color
+    final base = p[2]; // Level 4 peak color (green / mint)
     final isDark = AppThemeManager.colors.isDark;
 
+    // Background tint to blend towards – keeps the "empty" cell on‑theme
+    final bg = isDark ? const Color(0xFF1C1C22) : const Color(0xFFE5E7EB);
+
     return [
-      isDark ? const Color(0xFF1C1C22) : const Color(0xFFE5E7EB), // Level 0: Inactive
-      base.withValues(alpha: 0.22), // Level 1: Subtle
-      base.withValues(alpha: 0.48), // Level 2: Moderate
-      base.withValues(alpha: 0.76), // Level 3: High
-      base, // Level 4: Peak Activity
+      bg, // Level 0: No activity / empty cell
+      Color.lerp(bg, base, 0.25)!, // Level 1: Subtle
+      Color.lerp(bg, base, 0.50)!, // Level 2: Moderate
+      Color.lerp(bg, base, 0.75)!, // Level 3: High
+      base, // Level 4: Peak Activity – full bright green
     ];
   }
 

@@ -9,6 +9,11 @@ import '../theme/chart_colors.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import 'scan_and_pay_screen.dart';
 import 'sign_in_screen.dart';
+import 'about_hulypay_screen.dart';
+import 'help_support_screen.dart';
+import 'privacy_security_screen.dart';
+import 'notifications_screen.dart';
+import 'payment_methods_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   final String? userName;
@@ -203,9 +208,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                             ],
                           ),
-                          IconButton(
-                            icon: Icon(Icons.close_rounded, color: colors.textSecondary),
-                            onPressed: () => Navigator.of(ctx).pop(),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: colors.surfaceSecondary,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: colors.border),
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.close_rounded, color: colors.textPrimary, size: 18),
+                              onPressed: () => Navigator.of(ctx).pop(),
+                              tooltip: 'Close',
+                            ),
                           ),
                         ],
                       ),
@@ -606,11 +619,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               bottom: 0,
               child: CustomBottomNavBar(
                 selectedIndex: -1,
-                isQrActive: false,
                 onItemSelected: (index) {
                   _handleBack(index);
                 },
-                onQrScanTap: _openScanAndPay,
               ),
             ),
           ],
@@ -623,33 +634,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final colors = AppThemeManager.colors;
     return Row(
       children: [
-        GestureDetector(
-          onTap: () => _handleBack(),
-          behavior: HitTestBehavior.opaque,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-            child: Icon(
-              Icons.arrow_back,
+        Container(
+          decoration: BoxDecoration(
+            color: colors.surface,
+            shape: BoxShape.circle,
+            border: Border.all(color: colors.border),
+          ),
+          child: IconButton(
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
               color: colors.textPrimary,
-              size: 24,
+              size: 18,
             ),
+            onPressed: () => _handleBack(),
+            tooltip: 'Back',
           ),
         ),
+        const SizedBox(width: 14),
         Expanded(
-          child: Center(
-            child: Text(
-              'Profile & Settings',
-              style: TextStyle(
-                fontFamily: 'Google Sans',
-                color: colors.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.2,
-              ),
+          child: Text(
+            'Profile & Settings',
+            style: TextStyle(
+              fontFamily: 'Google Sans',
+              color: colors.textPrimary,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.4,
             ),
           ),
         ),
-        const SizedBox(width: 32), // balancing arrow width
       ],
     );
   }
@@ -748,15 +761,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildAccountSection() {
     return _buildGroupCard([
       _buildSettingRow(
-        icon: Icons.person_outline_rounded,
-        title: 'Personal Information',
-        onTap: () {},
-      ),
-      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
-      _buildSettingRow(
         icon: Icons.credit_card_rounded,
         title: 'Payment Methods',
-        onTap: () {},
+        trailingText: UserPreferencesService().cachedDefaultPaymentApp == 'amazon_pay'
+            ? 'Amazon Pay'
+            : 'Google Pay',
+        onTap: () async {
+          await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const PaymentMethodsScreen(),
+            ),
+          );
+          if (mounted) setState(() {});
+        },
       ),
     ]);
   }
@@ -766,7 +783,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _buildSettingRow(
         icon: Icons.notifications_none_rounded,
         title: 'Notifications',
-        onTap: () {},
+        trailingText: 'In Dev',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const NotificationsScreen(),
+            ),
+          );
+        },
       ),
       Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
       // Customization option with both transferred Themes and Chart Colors presets
@@ -784,20 +808,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _buildSettingRow(
         icon: Icons.shield_outlined,
         title: 'Privacy & Security',
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const PrivacySecurityScreen(),
+            ),
+          );
+        },
       ),
       Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
       _buildSettingRow(
         icon: Icons.help_outline_rounded,
         title: 'Help & Support',
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const HelpSupportScreen(),
+            ),
+          );
+        },
       ),
       Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
       _buildSettingRow(
         icon: Icons.info_outline_rounded,
         title: 'About Hulypay',
         trailingText: widget.appVersion,
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => AboutHulyPayScreen(
+                appVersion: widget.appVersion,
+              ),
+            ),
+          );
+        },
       ),
     ]);
   }

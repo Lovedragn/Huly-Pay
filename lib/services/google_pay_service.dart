@@ -193,6 +193,57 @@ class GooglePayService {
   /// Official package identifier for Google Pay India
   static const String googlePayPackage = 'com.google.android.apps.nbu.paisa.user';
 
+  /// Official package identifier for Amazon India / Amazon Pay
+  static const String amazonPayPackage = 'in.amazon.mShop.android.shopping';
+
+  /// Check if a specific package is installed on the device
+  static Future<bool> isPackageInstalled(String packageName) async {
+    if (kIsWeb) return false;
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      try {
+        final bool? result = await _channel.invokeMethod<bool>('isPackageInstalled', {
+          'packageName': packageName,
+        });
+        return result ?? false;
+      } catch (_) {
+        return false;
+      }
+    }
+    return false;
+  }
+
+  /// Launch an external app by package name
+  static Future<bool> launchAppPackage(String packageName, {String? storeUrl}) async {
+    if (kIsWeb) return false;
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      try {
+        final bool? success = await _channel.invokeMethod<bool>('launchAppPackage', {
+          'packageName': packageName,
+        });
+        return success ?? false;
+      } on PlatformException catch (pe) {
+        if (pe.code == 'NOT_INSTALLED' && storeUrl != null) {
+          return await launchUrl(Uri.parse(storeUrl), mode: LaunchMode.externalApplication);
+        }
+        return false;
+      } catch (_) {
+        return false;
+      }
+    }
+    if (storeUrl != null) {
+      return await launchUrl(Uri.parse(storeUrl), mode: LaunchMode.externalApplication);
+    }
+    return false;
+  }
+
+  /// Launch Amazon Pay / Amazon Shopping as a separate application
+  static Future<bool> launchStandaloneAmazonPay() async {
+    return launchAppPackage(
+      amazonPayPackage,
+      storeUrl: 'https://play.google.com/store/apps/details?id=$amazonPayPackage',
+    );
+  }
+
   /// Check if Google Pay (India) is installed and available to receive payment intents
   static Future<bool> isReadyToPay() async {
     if (kIsWeb) return false;

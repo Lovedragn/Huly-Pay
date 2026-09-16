@@ -96,7 +96,7 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
                     ),
               ),
               child: Heatmap(
-                key: ValueKey(widget.period),
+                key: ValueKey('${widget.period}_${widget.payments.length}_${periodTotal.toStringAsFixed(2)}'),
                 heatmapData: heatmapData,
                 showXAxisLabels: true,
                 showYAxisLabels: false,
@@ -108,7 +108,7 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
               ),
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           _buildFooter(),
         ],
       ),
@@ -206,7 +206,8 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
 
     switch (period) {
       case HeatmapPeriod.days:
-        cutoff = DateTime(now.year, now.month, now.day);
+        final monday = now.subtract(Duration(days: now.weekday - 1));
+        cutoff = DateTime(monday.year, monday.month, monday.day);
         break;
       case HeatmapPeriod.weeks:
         final monday = now.subtract(Duration(days: now.weekday - 1));
@@ -228,8 +229,7 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
 
     double total = 0;
     for (final p in payments) {
-      final s = p.status.toUpperCase();
-      if (s == 'FAILED' || s == 'CANCELLED') continue;
+      if (!p.isSuccessful) continue;
       final dateStr = p.createdAt ?? p.paymentDate;
       if (dateStr == null) continue;
       try {
@@ -251,19 +251,20 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
 
     switch (period) {
       case HeatmapPeriod.days:
+        // Show spending across the current week (Monday to Sunday)
         rows = ['r0'];
         columns = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
         grid = List.generate(rows.length, (_) => List<double>.filled(columns.length, 0.0));
 
+        final weekStart = DateTime(now.year, now.month, now.day).subtract(Duration(days: now.weekday - 1));
         for (final p in payments) {
-          final s = p.status.toUpperCase();
-          if (s == 'FAILED' || s == 'CANCELLED') continue;
+          if (!p.isSuccessful) continue;
           final dateStr = p.createdAt ?? p.paymentDate;
           if (dateStr == null) continue;
           try {
             final dt = DateTime.parse(dateStr).toLocal();
-            if (dt.year == now.year && dt.month == now.month && dt.day == now.day) {
-              final dayIdx = (now.weekday - 1).clamp(0, 6);
+            if (dt.isAfter(weekStart.subtract(const Duration(seconds: 1)))) {
+              final dayIdx = (dt.weekday - 1).clamp(0, 6);
               grid[0][dayIdx] += p.amount;
             }
           } catch (_) {}
@@ -278,8 +279,7 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
         final thisWeekMonday = DateTime(now.year, now.month, now.day).subtract(Duration(days: now.weekday - 1));
 
         for (final p in payments) {
-          final s = p.status.toUpperCase();
-          if (s == 'FAILED' || s == 'CANCELLED') continue;
+          if (!p.isSuccessful) continue;
           final dateStr = p.createdAt ?? p.paymentDate;
           if (dateStr == null) continue;
           try {
@@ -298,8 +298,7 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
         grid = List.generate(rows.length, (_) => List<double>.filled(columns.length, 0.0));
 
         for (final p in payments) {
-          final s = p.status.toUpperCase();
-          if (s == 'FAILED' || s == 'CANCELLED') continue;
+          if (!p.isSuccessful) continue;
           final dateStr = p.createdAt ?? p.paymentDate;
           if (dateStr == null) continue;
           try {
@@ -323,8 +322,7 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
         grid = List.generate(rows.length, (_) => List<double>.filled(columns.length, 0.0));
 
         for (final p in payments) {
-          final s = p.status.toUpperCase();
-          if (s == 'FAILED' || s == 'CANCELLED') continue;
+          if (!p.isSuccessful) continue;
           final dateStr = p.createdAt ?? p.paymentDate;
           if (dateStr == null) continue;
           try {
@@ -349,8 +347,7 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
         grid = List.generate(rows.length, (_) => List<double>.filled(columns.length, 0.0));
 
         for (final p in payments) {
-          final s = p.status.toUpperCase();
-          if (s == 'FAILED' || s == 'CANCELLED') continue;
+          if (!p.isSuccessful) continue;
           final dateStr = p.createdAt ?? p.paymentDate;
           if (dateStr == null) continue;
           try {
@@ -371,8 +368,7 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
         grid = List.generate(rows.length, (_) => List<double>.filled(columns.length, 0.0));
 
         for (final p in payments) {
-          final s = p.status.toUpperCase();
-          if (s == 'FAILED' || s == 'CANCELLED') continue;
+          if (!p.isSuccessful) continue;
           final dateStr = p.createdAt ?? p.paymentDate;
           if (dateStr == null) continue;
           try {
@@ -388,6 +384,17 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
     }
 
     final List<HeatmapItem> items = [];
+
+    // Check if all values are identical and non-zero
+    // fl_heatmap requires min != max to calculate classSize = (max - min) / colorPalette.length
+    double foundMax = 0;
+    for (int r = 0; r < rows.length; r++) {
+      for (int c = 0; c < columns.length; c++) {
+        if (grid[r][c] > foundMax) {
+          foundMax = grid[r][c];
+        }
+      }
+    }
 
     // Row-major order matching fl_heatmap expectation:
     // for (row in rows) for (col in columns)
