@@ -10,11 +10,11 @@ import '../widgets/action_button.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import '../widgets/home_spend_trend_line_chart.dart';
 import '../widgets/home_today_spend_gauge.dart';
-import '../widgets/home_weekly_bar_chart.dart';
 import 'analysis_screen.dart';
 import 'scan_and_pay_screen.dart';
 import 'settings_screen.dart';
 import 'transactions_screen.dart';
+import 'notifications_screen.dart';
 import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
 
@@ -30,17 +30,38 @@ class HomeDashboardScreen extends StatefulWidget {
   State<HomeDashboardScreen> createState() => _HomeDashboardScreenState();
 }
 
-class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsBindingObserver {
+class _HomeDashboardScreenState extends State<HomeDashboardScreen>
+    with WidgetsBindingObserver, TickerProviderStateMixin {
   int _selectedNavIndex = 0;
   late DashboardData _data;
   List<PaymentModel> _payments = [];
   double _dailyLimit = 5000.0;
+
+  // Scroll-aware scanner button
+  final ScrollController _scrollController = ScrollController();
+  late final AnimationController _scannerAnimController;
+  late final Animation<Offset> _scannerSlideAnimation;
+  double _lastScrollOffset = 0;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _dailyLimit = UserPreferencesService().cachedDailyLimit ?? 5000.0;
+
+    _scannerAnimController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+    );
+    _scannerSlideAnimation = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(0, 2.5), // slide down out of view
+    ).animate(CurvedAnimation(
+      parent: _scannerAnimController,
+      curve: Curves.easeInOut,
+    ));
+
+    _scrollController.addListener(_onScroll);
 
     if (widget.initialData != null) {
       _data = widget.initialData!;
@@ -61,8 +82,24 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
     }
   }
 
+  void _onScroll() {
+    final current = _scrollController.offset;
+    final delta = current - _lastScrollOffset;
+    if (delta > 4 && _scannerAnimController.status != AnimationStatus.forward) {
+      // scrolling down → hide
+      _scannerAnimController.forward();
+    } else if (delta < -4 && _scannerAnimController.status != AnimationStatus.reverse) {
+      // scrolling up → show
+      _scannerAnimController.reverse();
+    }
+    _lastScrollOffset = current;
+  }
+
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    _scannerAnimController.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -124,10 +161,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
 
     String avatarUrl = user?.avatarUrl ?? AuthService().currentUserProfile?.avatarUrl ?? _data.avatarUrl;
 
-    final confirmedPayments = payments.where((p) {
-      final s = p.status.toUpperCase();
-      return s != 'FAILED' && s != 'CANCELLED';
-    }).toList();
+    final confirmedPayments = payments.where((p) => p.isSuccessful).toList();
 
     double sum = 0;
     for (final p in confirmedPayments) {
@@ -172,8 +206,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
     final weekStart = DateTime(monday.year, monday.month, monday.day);
 
     for (final p in payments) {
-      final s = p.status.toUpperCase();
-      if (s == 'FAILED' || s == 'CANCELLED') continue;
+      if (!p.isSuccessful) continue;
       final dateStr = p.createdAt ?? p.paymentDate;
       if (dateStr == null) continue;
       try {
@@ -242,7 +275,48 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
                       _selectedNavIndex = index;
                     });
                   },
-                  onQrScanTap: _openScanAndPay,
+                ),
+              ),
+
+              // Floating Scanner Button — centered above bottom nav bar
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: MediaQuery.of(context).padding.bottom + 62,
+                child: SlideTransition(
+                  position: _scannerSlideAnimation,
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: _openScanAndPay,
+                      child: Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: AppThemeManager.colors.accent,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppThemeManager.colors.accent.withValues(alpha: 0.35),
+                              blurRadius: 16,
+                              spreadRadius: 2,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: SvgPicture.asset(
+                            'asserts/icon/qr.svg',
+                            width: 24,
+                            height: 24,
+                            colorFilter: const ColorFilter.mode(
+                              Colors.white,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -255,7 +329,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
   Widget _buildBody() {
     switch (_selectedNavIndex) {
       case 1:
-        return const AnalysisScreen(isEmbedded: true);
+        return AnalysisScreen(isEmbedded: true, initialPayments: _payments);
       case 2:
         return const TransactionsScreen(isEmbedded: true);
       case 0:
@@ -273,6 +347,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
       backgroundColor: colors.surfaceSecondary,
       displacement: 28,
       child: SingleChildScrollView(
+        controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
         padding: const EdgeInsets.only(
           left: 20,
@@ -296,15 +371,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
               dailyBudget: _dailyLimit,
               onLimitChanged: _loadRealData,
             ),
-            const SizedBox(height: 20),
-            HomeWeeklyBarChart(
-              payments: _payments,
-              onTap: () {
-                setState(() {
-                  _selectedNavIndex = 1;
-                });
-              },
-            ),
+
           ],
         ),
       ),
@@ -355,40 +422,92 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
                   ? null
                   : ColorFilter.mode(colors.textPrimary, BlendMode.srcIn),
             ),
-            Tooltip(
-              message: 'Profile & Settings',
-              child: GestureDetector(
-                key: const Key('profile_button'),
-                onTap: _openSettings,
-                behavior: HitTestBehavior.opaque,
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: colors.border,
-                        width: 1.5,
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Tooltip(
+                  message: 'Notifications (In Dev)',
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const NotificationsScreen(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: colors.surface,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: colors.border,
+                          width: 1.5,
+                        ),
                       ),
-                    ),
-                    child: ClipOval(
-                      child: _data.avatarUrl.isNotEmpty && _data.avatarUrl.startsWith('http')
-                          ? Image.network(
-                              _data.avatarUrl,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => _buildAvatarFallback(),
-                            )
-                          : Image.asset(
-                              'asserts/pictures/profile.png',
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => _buildAvatarFallback(),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Icon(
+                            Icons.notifications_outlined,
+                            color: colors.textPrimary,
+                            size: 22,
+                          ),
+                          Positioned(
+                            top: 10,
+                            right: 11,
+                            child: Container(
+                              width: 7,
+                              height: 7,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFFF9500),
+                                shape: BoxShape.circle,
+                              ),
                             ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
+                const SizedBox(width: 10),
+                Tooltip(
+                  message: 'Profile & Settings',
+                  child: GestureDetector(
+                    key: const Key('profile_button'),
+                    onTap: _openSettings,
+                    behavior: HitTestBehavior.opaque,
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Container(
+                        width: 46,
+                        height: 46,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: colors.border,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: ClipOval(
+                          child: _data.avatarUrl.isNotEmpty && _data.avatarUrl.startsWith('http')
+                              ? Image.network(
+                                  _data.avatarUrl,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) => _buildAvatarFallback(),
+                                )
+                              : Image.asset(
+                                  'asserts/pictures/profile.png',
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) => _buildAvatarFallback(),
+                                ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -399,65 +518,40 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> with WidgetsB
   Widget _buildTotalSpentCard() {
     final colors = AppThemeManager.colors;
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: colors.border,
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
         children: [
-          Text(
-            'TOTAL SPENT',
-            style: TextStyle(
-              fontFamily: 'Google Sans',
-              color: colors.textSecondary,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 1.2,
-            ),
-          ),
-          const SizedBox(height: 12),
           Text(
             _data.totalSpentFormatted,
             style: TextStyle(
               fontFamily: 'Google Sans',
               color: colors.textPrimary,
-              fontSize: 40,
+              fontSize: 50,
               fontWeight: FontWeight.w800,
-              letterSpacing: -0.5,
+              letterSpacing: -1.0,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(width: 8),
           Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Icon(
                 Icons.north,
                 color: Color(0xFF30D158),
-                size: 14,
+                size: 16,
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: 2),
               Text(
-                '${_data.changePercent.toInt()}% ',
+                '${_data.changePercent.toInt()}%',
                 style: const TextStyle(
                   fontFamily: 'Google Sans',
                   color: Color(0xFF30D158),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Text(
-                _data.changePeriodLabel,
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: colors.textSecondary,
-                  fontSize: 13,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],

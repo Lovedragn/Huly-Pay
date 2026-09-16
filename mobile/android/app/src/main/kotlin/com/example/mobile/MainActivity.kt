@@ -37,6 +37,15 @@ class MainActivity : FlutterActivity() {
                         val isInstalled = checkGooglePayInstalled()
                         result.success(isInstalled)
                     }
+                    "isPackageInstalled" -> {
+                        val packageName = call.argument<String>("packageName")
+                        if (packageName.isNullOrBlank()) {
+                            result.error("INVALID_ARGS", "packageName is required", null)
+                        } else {
+                            val isInstalled = checkPackageInstalled(packageName)
+                            result.success(isInstalled)
+                        }
+                    }
                     "launchStandaloneGooglePay" -> {
                         val launchIntent = packageManager.getLaunchIntentForPackage(googlePayPackageName)
                         if (launchIntent != null) {
@@ -49,6 +58,25 @@ class MainActivity : FlutterActivity() {
                             }
                         } else {
                             result.error("NOT_INSTALLED", "Google Pay is not installed on this device", null)
+                        }
+                    }
+                    "launchAppPackage" -> {
+                        val packageName = call.argument<String>("packageName")
+                        if (packageName.isNullOrBlank()) {
+                            result.error("INVALID_ARGS", "packageName is required", null)
+                        } else {
+                            val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+                            if (launchIntent != null) {
+                                launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                try {
+                                    startActivity(launchIntent)
+                                    result.success(true)
+                                } catch (e: Exception) {
+                                    result.error("LAUNCH_FAILED", e.localizedMessage, null)
+                                }
+                            } else {
+                                result.error("NOT_INSTALLED", "$packageName is not installed on this device", null)
+                            }
                         }
                     }
                     "isSmsPermissionGranted" -> {
@@ -184,12 +212,16 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun checkGooglePayInstalled(): Boolean {
+        return checkPackageInstalled(googlePayPackageName)
+    }
+
+    private fun checkPackageInstalled(pkg: String): Boolean {
         return try {
-            val launchIntent = packageManager.getLaunchIntentForPackage(googlePayPackageName)
+            val launchIntent = packageManager.getLaunchIntentForPackage(pkg)
             if (launchIntent != null) return true
 
             val testIntent = Intent(Intent.ACTION_VIEW, Uri.parse("upi://pay"))
-            testIntent.setPackage(googlePayPackageName)
+            testIntent.setPackage(pkg)
             val activities = packageManager.queryIntentActivities(testIntent, 0)
             activities.isNotEmpty()
         } catch (e: Exception) {

@@ -6,7 +6,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/payment_model.dart';
 import '../repositories/payment_repository.dart';
 import '../services/google_pay_service.dart';
-import '../services/local_database_service.dart';
 import '../services/location_service.dart';
 import '../services/sms_filter_service.dart';
 import '../services/upi_service.dart';
@@ -166,9 +165,20 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     final amountController = TextEditingController(
       text: upiData.amount != null ? upiData.amount!.toStringAsFixed(2) : '',
     );
+    final noteController = TextEditingController(
+      text: upiData.note ?? '',
+    );
+    final amountFocusNode = FocusNode();
     PaymentLocation? capturedLocation = initialLocationResult?.location;
     LocationResult? locationResult = initialLocationResult;
     bool isLocationFetching = capturedLocation == null;
+
+    // Immediately open keyboard for typing amount after modal pops up
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (amountFocusNode.canRequestFocus) {
+        amountFocusNode.requestFocus();
+      }
+    });
 
     await showModalBottomSheet(
       context: context,
@@ -206,233 +216,282 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                     top: BorderSide(color: Color(0xFF2A2A30), width: 1),
                   ),
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF33333A),
-                          borderRadius: BorderRadius.circular(2),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF33333A),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-                    Row(
-                      children: [
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF24242A),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.storefront_rounded,
-                              color: Color(0xFF007AFF),
-                              size: 26,
+                      Row(
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF24242A),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                Icons.storefront_rounded,
+                                color: Color(0xFF007AFF),
+                                size: 26,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                primaryTitle,
-                                style: const TextStyle(
-                                  fontFamily: 'Google Sans',
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  primaryTitle,
+                                  style: const TextStyle(
+                                    fontFamily: 'Google Sans',
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                subtitle,
-                                style: const TextStyle(
-                                  fontFamily: 'Google Sans',
-                                  fontSize: 13,
-                                  color: Color(0xFF8E8E93),
+                                const SizedBox(height: 2),
+                                Text(
+                                  subtitle,
+                                  style: const TextStyle(
+                                    fontFamily: 'Google Sans',
+                                    fontSize: 13,
+                                    color: Color(0xFF8E8E93),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Amount Field
-                    TextField(
-                      controller: amountController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      style: const TextStyle(
-                        fontFamily: 'Google Sans',
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
+                        ],
                       ),
-                      decoration: InputDecoration(
-                        labelText: 'Amount (INR)',
-                        hintText: 'Enter amount',
-                        hintStyle: const TextStyle(color: Color(0xFF55555C)),
-                        labelStyle: const TextStyle(color: Color(0xFF8E8E93)),
-                        prefixText: '₹ ',
-                        prefixStyle: const TextStyle(
-                          color: Color(0xFF007AFF),
+
+                      const SizedBox(height: 20),
+
+                      // Amount Field with immediate autofocus
+                      TextField(
+                        controller: amountController,
+                        focusNode: amountFocusNode,
+                        autofocus: true,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        style: const TextStyle(
+                          fontFamily: 'Google Sans',
+                          color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.w700,
                         ),
-                        filled: true,
-                        fillColor: const Color(0xFF1E1E24),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
+                        decoration: InputDecoration(
+                          labelText: 'Amount (INR)',
+                          hintText: '0.00',
+                          hintStyle: const TextStyle(color: Color(0xFF55555C)),
+                          labelStyle: const TextStyle(color: Color(0xFF8E8E93)),
+                          prefixText: '₹ ',
+                          prefixStyle: const TextStyle(
+                            color: Color(0xFF007AFF),
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xFF1E1E24),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide.none,
+                          ),
                         ),
                       ),
-                    ),
 
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 14),
 
-                    // GPS Location Capture Badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1E1E24),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: capturedLocation != null
-                              ? const Color(0xFF28A745).withValues(alpha: 0.4)
-                              : const Color(0xFFE5A93C).withValues(alpha: 0.3),
+                      // Editable Transaction Note / Message
+                      TextField(
+                        controller: noteController,
+                        textInputAction: TextInputAction.done,
+                        style: const TextStyle(
+                          fontFamily: 'Google Sans',
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        decoration: InputDecoration(
+                          labelText: 'Add a note / message',
+                          hintText: 'e.g. Dinner, Groceries, Rent',
+                          hintStyle: const TextStyle(color: Color(0xFF55555C), fontSize: 13),
+                          labelStyle: const TextStyle(color: Color(0xFF8E8E93), fontSize: 13),
+                          prefixIcon: const Icon(
+                            Icons.edit_note_rounded,
+                            color: Color(0xFF007AFF),
+                            size: 22,
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xFF1E1E24),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                         ),
                       ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            capturedLocation != null
-                                ? Icons.location_on_rounded
-                                : Icons.location_off_rounded,
+
+                      const SizedBox(height: 16),
+
+                      // GPS Location Capture Badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1E1E24),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
                             color: capturedLocation != null
-                                ? const Color(0xFF28A745)
-                                : const Color(0xFFE5A93C),
-                            size: 20,
+                                ? const Color(0xFF28A745).withValues(alpha: 0.4)
+                                : const Color(0xFFE5A93C).withValues(alpha: 0.3),
                           ),
-                          const SizedBox(width: 10),
-                          Builder(
-                            builder: (context) {
-                              final currentLoc = capturedLocation;
-                              return Expanded(
-                                child: Text(
-                                  currentLoc != null
-                                      ? 'GPS: ${currentLoc.latitude.toStringAsFixed(4)}, ${currentLoc.longitude.toStringAsFixed(4)} (±${currentLoc.accuracyMeters.toStringAsFixed(1)}m)'
-                                      : (locationResult == null
-                                          ? 'Acquiring GPS location...'
-                                          : (locationResult!.failureReason == LocationFailureReason.serviceDisabled
-                                              ? 'Location disabled: Please turn on GPS'
-                                              : (locationResult!.failureReason == LocationFailureReason.permissionDenied
-                                                  ? 'Location permission denied'
-                                                  : (locationResult!.failureReason == LocationFailureReason.permissionDeniedForever
-                                                      ? 'Location permission denied forever'
-                                                      : 'Location unavailable')))),
-                                  style: TextStyle(
-                                    fontFamily: 'Google Sans',
-                                    fontSize: 12,
-                                    color: currentLoc != null
-                                        ? const Color(0xFFD0D0D5)
-                                        : const Color(0xFFE5A93C),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              capturedLocation != null
+                                  ? Icons.location_on_rounded
+                                  : Icons.location_off_rounded,
+                              color: capturedLocation != null
+                                  ? const Color(0xFF28A745)
+                                  : const Color(0xFFE5A93C),
+                              size: 20,
+                            ),
+                            const SizedBox(width: 10),
+                            Builder(
+                              builder: (context) {
+                                final currentLoc = capturedLocation;
+                                return Expanded(
+                                  child: Text(
+                                    currentLoc != null
+                                        ? 'GPS: ${currentLoc.latitude.toStringAsFixed(4)}, ${currentLoc.longitude.toStringAsFixed(4)} (±${currentLoc.accuracyMeters.toStringAsFixed(1)}m)'
+                                        : (locationResult == null
+                                            ? 'Acquiring GPS location...'
+                                            : (locationResult!.failureReason == LocationFailureReason.serviceDisabled
+                                                ? 'Location disabled: Please turn on GPS'
+                                                : (locationResult!.failureReason == LocationFailureReason.permissionDenied
+                                                    ? 'Location permission denied'
+                                                    : (locationResult!.failureReason == LocationFailureReason.permissionDeniedForever
+                                                        ? 'Location permission denied forever'
+                                                        : 'Location unavailable')))),
+                                    style: TextStyle(
+                                      fontFamily: 'Google Sans',
+                                      fontSize: 12,
+                                      color: currentLoc != null
+                                          ? const Color(0xFFD0D0D5)
+                                          : const Color(0xFFE5A93C),
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          ),
-                          if (capturedLocation == null)
-                            GestureDetector(
-                              onTap: () async {
-                                if (locationResult?.failureReason == LocationFailureReason.permissionDeniedForever) {
-                                  await LocationService.openAppSettings();
-                                } else if (locationResult?.failureReason == LocationFailureReason.serviceDisabled) {
-                                  await LocationService.openLocationSettings();
-                                } else {
-                                  final retry = await LocationService().getPaymentLocationWithStatus();
-                                  if (retry.isSuccess && modalContext.mounted) {
-                                    setModalState(() {
-                                      capturedLocation = retry.location;
-                                      locationResult = retry;
-                                    });
-                                  }
-                                }
+                                );
                               },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF2A2A30),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  locationResult?.failureReason == LocationFailureReason.permissionDeniedForever ||
-                                          locationResult?.failureReason == LocationFailureReason.serviceDisabled
-                                      ? 'Settings'
-                                      : (locationResult == null ? '...' : 'Retry'),
-                                  style: const TextStyle(
-                                    fontFamily: 'Google Sans',
-                                    fontSize: 11,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
+                            ),
+                            if (capturedLocation == null)
+                              GestureDetector(
+                                onTap: () async {
+                                  if (locationResult?.failureReason == LocationFailureReason.permissionDeniedForever) {
+                                    await LocationService.openAppSettings();
+                                  } else if (locationResult?.failureReason == LocationFailureReason.serviceDisabled) {
+                                    await LocationService.openLocationSettings();
+                                  } else {
+                                    final retry = await LocationService().getPaymentLocationWithStatus();
+                                    if (retry.isSuccess && modalContext.mounted) {
+                                      setModalState(() {
+                                        capturedLocation = retry.location;
+                                        locationResult = retry;
+                                      });
+                                    }
+                                  }
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF2A2A30),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    locationResult?.failureReason == LocationFailureReason.permissionDeniedForever ||
+                                            locationResult?.failureReason == LocationFailureReason.serviceDisabled
+                                        ? 'Settings'
+                                        : (locationResult == null ? '...' : 'Retry'),
+                                    style: const TextStyle(
+                                      fontFamily: 'Google Sans',
+                                      fontSize: 11,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Proceed to Pay Button
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF007AFF),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          ],
                         ),
                       ),
-                      onPressed: () async {
-                        final messenger = ScaffoldMessenger.of(context);
-                        final parsedAmount = double.tryParse(amountController.text.trim()) ?? 0.0;
-                        if (parsedAmount <= 0) {
-                          messenger.showSnackBar(
-                            const SnackBar(content: Text('Please enter a valid amount greater than 0')),
+
+                      const SizedBox(height: 24),
+
+                      // Proceed to Pay Button
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF007AFF),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        onPressed: () async {
+                          final messenger = ScaffoldMessenger.of(context);
+                          final parsedAmount = double.tryParse(amountController.text.trim()) ?? 0.0;
+                          if (parsedAmount <= 0) {
+                            messenger.showSnackBar(
+                              const SnackBar(content: Text('Please enter a valid amount greater than 0')),
+                            );
+                            return;
+                          }
+
+                          final updatedNote = noteController.text.trim();
+                          final updatedUpiData = UpiPaymentData(
+                            rawUri: upiData.rawUri,
+                            upiId: upiData.upiId,
+                            payeeName: upiData.payeeName,
+                            amount: parsedAmount,
+                            currency: upiData.currency,
+                            transactionRef: upiData.transactionRef,
+                            transactionId: upiData.transactionId,
+                            note: updatedNote.isNotEmpty ? updatedNote : upiData.note,
+                            merchantCode: upiData.merchantCode,
                           );
-                          return;
-                        }
 
-                        Navigator.of(modalContext).pop();
-                        await _startSmsVerificationWorkflow(upiData, parsedAmount, capturedLocation);
-                      },
-                      child: const Text(
-                        'Proceed to Pay via UPI / GPay',
-                        style: TextStyle(
-                          fontFamily: 'Google Sans',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
+                          Navigator.of(modalContext).pop();
+                          await _startSmsVerificationWorkflow(updatedUpiData, parsedAmount, capturedLocation);
+                        },
+                        child: const Text(
+                          'Proceed to Pay via UPI / GPay',
+                          style: TextStyle(
+                            fontFamily: 'Google Sans',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );
@@ -936,250 +995,6 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     );
   }
 
-  void _showPaymentInitiatedDialog(PaymentModel payment, [GooglePayResult? gpayResult]) {
-    bool isReconciling = false;
-    final bool isGooglePayConfirmed = gpayResult?.isSuccess == true;
-    final String? resolvedTxnId = gpayResult?.upiTransactionId ?? payment.upiTransactionId;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => StatefulBuilder(
-        builder: (dialogCtx, setDialogState) {
-          return AlertDialog(
-            backgroundColor: const Color(0xFF1E1E24),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: Row(
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: isGooglePayConfirmed
-                        ? const Color(0xFF28A745).withValues(alpha: 0.15)
-                        : (gpayResult?.isFailure == true
-                            ? const Color(0xFFD93025).withValues(alpha: 0.15)
-                            : const Color(0xFF007AFF).withValues(alpha: 0.15)),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      isGooglePayConfirmed
-                          ? Icons.check_circle_rounded
-                          : (gpayResult?.isFailure == true
-                              ? Icons.error_outline_rounded
-                              : Icons.send_rounded),
-                      color: isGooglePayConfirmed
-                          ? const Color(0xFF28A745)
-                          : (gpayResult?.isFailure == true
-                              ? const Color(0xFFD93025)
-                              : const Color(0xFF007AFF)),
-                      size: 20,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  isGooglePayConfirmed
-                      ? 'Google Pay Confirmed'
-                      : (gpayResult?.isFailure == true ? 'Payment Failed' : 'Payment Initiated'),
-                  style: const TextStyle(
-                    fontFamily: 'Google Sans',
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                  ),
-                ),
-              ],
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Amount: ₹${payment.amount.toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    fontFamily: 'Google Sans',
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Merchant: ${payment.merchantName ?? payment.upiId ?? "UPI Merchant"}',
-                  style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 14),
-                ),
-                if (resolvedTxnId != null && resolvedTxnId.isNotEmpty) ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    'UPI Txn ID: $resolvedTxnId',
-                    style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF007AFF), fontSize: 13, fontWeight: FontWeight.w600),
-                  ),
-                ],
-                if (gpayResult?.payeeVpa != null && gpayResult!.payeeVpa!.isNotEmpty) ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    'Payee VPA: ${gpayResult.payeeVpa}',
-                    style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 13),
-                  ),
-                ],
-                if (gpayResult?.responseCode != null && gpayResult!.responseCode!.isNotEmpty) ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    'Response Code: ${gpayResult.responseCode}',
-                    style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 13),
-                  ),
-                ],
-                const SizedBox(height: 6),
-                Text(
-                  'Location: ${payment.latitude != null ? "${payment.latitude!.toStringAsFixed(4)}, ${payment.longitude!.toStringAsFixed(4)}" : "Not captured"}',
-                  style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 13),
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    const Text(
-                      'Status: ',
-                      style: TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 13),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: isGooglePayConfirmed
-                            ? const Color(0xFF28A745).withValues(alpha: 0.2)
-                            : (gpayResult?.isFailure == true
-                                ? const Color(0xFFD93025).withValues(alpha: 0.2)
-                                : const Color(0xFF007AFF).withValues(alpha: 0.2)),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        isGooglePayConfirmed
-                            ? 'SUCCESS'
-                            : (gpayResult?.isFailure == true ? 'FAILED' : payment.status),
-                        style: TextStyle(
-                          fontFamily: 'Google Sans',
-                          color: isGooglePayConfirmed
-                              ? const Color(0xFF28A745)
-                              : (gpayResult?.isFailure == true
-                                  ? const Color(0xFFD93025)
-                                  : const Color(0xFF007AFF)),
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  isGooglePayConfirmed
-                      ? 'Payment was verified by Google Pay and recorded in your expense ledger.'
-                      : (gpayResult?.isFailure == true
-                          ? 'The payment could not be processed by Google Pay or your bank.'
-                          : 'Payment was launched in your UPI app. If payment completed successfully, tap "Confirm Payment" to reconcile and create your expense entry.'),
-                  style: const TextStyle(
-                    fontFamily: 'Google Sans',
-                    color: Color(0xFFA0A0A8),
-                    fontSize: 12,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              if (!isGooglePayConfirmed && gpayResult?.isFailure != true)
-                TextButton(
-                  onPressed: isReconciling
-                      ? null
-                      : () {
-                          Navigator.of(ctx).pop();
-                          _handleBack(0); // Return to home
-                        },
-                  child: const Text(
-                    'I\'ll Reconcile Later',
-                    style: TextStyle(color: Color(0xFF8E8E93), fontWeight: FontWeight.w500),
-                  ),
-                ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: (gpayResult?.isFailure == true)
-                      ? const Color(0xFFD93025)
-                      : (isGooglePayConfirmed ? const Color(0xFF28A745) : const Color(0xFF007AFF)),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-                onPressed: isReconciling
-                    ? null
-                    : () async {
-                        if (isGooglePayConfirmed || gpayResult?.isFailure == true) {
-                          Navigator.of(ctx).pop();
-                          _handleBack(0); // Return to home
-                          return;
-                        }
-
-                        setDialogState(() {
-                          isReconciling = true;
-                        });
-
-                        try {
-                          await PaymentRepository().reconcilePayment(
-                            payment.id,
-                            'CONFIRMED',
-                            upiTransactionId: resolvedTxnId,
-                            transactionReference: gpayResult?.transactionReference ?? payment.transactionReference,
-                          );
-
-                          if (dialogCtx.mounted) {
-                            Navigator.of(ctx).pop();
-                          }
-
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: const Text(
-                                  'Payment confirmed and reconciled to expense successfully!',
-                                  style: TextStyle(fontFamily: 'Google Sans', color: Colors.white),
-                                ),
-                                backgroundColor: const Color(0xFF28A745),
-                                behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              ),
-                            );
-                            _handleBack(0); // Return to home
-                          }
-                        } catch (e) {
-                          setDialogState(() {
-                            isReconciling = false;
-                          });
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Reconciliation error: $e'),
-                                backgroundColor: const Color(0xFFD93025),
-                              ),
-                            );
-                          }
-                        }
-                      },
-                child: isReconciling
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                      )
-                    : Text(
-                        isGooglePayConfirmed
-                            ? 'Done'
-                            : (gpayResult?.isFailure == true ? 'Dismiss' : 'Confirm Payment'),
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
-                      ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1414,11 +1229,9 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
               bottom: 0,
               child: CustomBottomNavBar(
                 selectedIndex: -1,
-                isQrActive: true,
                 onItemSelected: (index) {
                   _handleBack(index);
                 },
-                onQrScanTap: () {},
               ),
             ),
           ],

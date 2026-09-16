@@ -60,6 +60,9 @@ class UpiService {
   /// Official package identifier for Google Pay India on Android
   static const String googlePayPackageName = 'com.google.android.apps.nbu.paisa.user';
 
+  /// Official package identifier for Amazon Pay / Amazon Shopping on Android
+  static const String amazonPayPackageName = 'in.amazon.mShop.android.shopping';
+
   /// Checks whether a raw string represents a valid UPI payment QR or UPI ID.
   static bool isUpiUri(String rawString) => parseUpiUri(rawString) != null;
 

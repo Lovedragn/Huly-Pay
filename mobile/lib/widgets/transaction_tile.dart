@@ -93,29 +93,7 @@ class TransactionTile extends StatelessWidget {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (transaction.isFailed)
-                    Container(
-                      margin: const EdgeInsets.only(right: 6),
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2C1517),
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                          color: const Color(0xFF5A1C22),
-                          width: 0.5,
-                        ),
-                      ),
-                      child: const Text(
-                        'Failed',
-                        style: TextStyle(
-                          fontFamily: 'Google Sans',
-                          color: Color(0xFFFF453A),
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    )
-                  else if (transaction.isPending)
+                  if (transaction.isPending)
                     Container(
                       margin: const EdgeInsets.only(right: 6),
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),

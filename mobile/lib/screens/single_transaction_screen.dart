@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -32,6 +33,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
   PaymentModel? _currentPayment;
   bool _isLoading = false;
   bool _isReconciling = false;
+  bool _isCancelling = false;
   GoogleMapController? _mapController;
   final MapType _currentMapType = MapType.normal;
   final ValueNotifier<double> _sheetExtentNotifier = ValueNotifier<double>(
@@ -246,6 +248,118 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
         );
       }
     }
+  }
+
+  Future<void> _handleCancelPayment() async {
+    final s = _status.toUpperCase();
+    if (s == 'CONFIRMED' || s == 'SUCCESS' || s == 'SUCCESSFUL') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Successful transactions are finalized and cannot be deleted or cancelled.'),
+          backgroundColor: Color(0xFF1E1E24),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    final paymentId = _currentPayment?.id ?? widget.transaction.id;
+    setState(() => _isCancelling = true);
+
+    try {
+      final updated = await PaymentRepository().reconcilePayment(
+        paymentId,
+        'CANCELLED',
+      );
+      if (mounted) {
+        setState(() {
+          _currentPayment = updated;
+          _isCancelling = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Payment has been cancelled successfully.'),
+            backgroundColor: Color(0xFFE24C4C),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isCancelling = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Cancel error: $e'),
+            backgroundColor: const Color(0xFFD93025),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showCancelConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF1E1E24),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Row(
+            children: [
+              Icon(Icons.cancel_outlined, color: Color(0xFFFF453A), size: 22),
+              SizedBox(width: 8),
+              Text(
+                'Cancel Payment',
+                style: TextStyle(
+                  fontFamily: 'Google Sans',
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            'Are you sure you want to cancel this payment of $_displayAmount to $_merchantTitle?',
+            style: const TextStyle(
+              fontFamily: 'Google Sans',
+              color: Color(0xFF8E8E93),
+              fontSize: 14,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text(
+                'Keep Payment',
+                style: TextStyle(
+                  fontFamily: 'Google Sans',
+                  color: Color(0xFF8E8E93),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                _handleCancelPayment();
+              },
+              child: const Text(
+                'Yes, Cancel',
+                style: TextStyle(
+                  fontFamily: 'Google Sans',
+                  color: Color(0xFFFF453A),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showReportIssueDialog(BuildContext context) {
@@ -794,32 +908,42 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
   }
 
   Widget _buildHeroReceiptCard(BuildContext context) {
-    final isFailed = _status.toUpperCase() == 'FAILED';
-    final isPending =
-        _status.toUpperCase() == 'PENDING' ||
-        _status.toUpperCase() == 'INITIATED';
+    final s = _status.toUpperCase();
+    final isFailed = s == 'FAILED';
+    final isCancelled = s == 'CANCELLED';
+    final isPending = s == 'PENDING' || s == 'INITIATED' || s == 'PAYMENT_INITIATED';
 
-    final Color statusColor = isFailed
-        ? const Color(0xFFFF453A)
-        : (isPending ? const Color(0xFFE5A93C) : const Color(0xFF30D158));
+    final Color statusColor = isCancelled
+        ? const Color(0xFFFF9F0A)
+        : (isFailed
+            ? const Color(0xFFFF453A)
+            : (isPending ? const Color(0xFFE5A93C) : const Color(0xFF30D158)));
 
-    final Color statusBg = isFailed
-        ? const Color(0xFF2C1517)
-        : (isPending ? const Color(0xFF2A2210) : const Color(0xFF10281B));
+    final Color statusBg = isCancelled
+        ? const Color(0xFF2C2210)
+        : (isFailed
+            ? const Color(0xFF2C1517)
+            : (isPending ? const Color(0xFF2A2210) : const Color(0xFF10281B)));
 
-    final Color statusBorder = isFailed
-        ? const Color(0xFF5A1C22)
-        : (isPending ? const Color(0xFF554117) : const Color(0xFF1B4D2E));
+    final Color statusBorder = isCancelled
+        ? const Color(0xFF5A441C)
+        : (isFailed
+            ? const Color(0xFF5A1C22)
+            : (isPending ? const Color(0xFF554117) : const Color(0xFF1B4D2E)));
 
-    final String statusText = isFailed
-        ? 'Payment Failed'
-        : (isPending ? 'Payment Initiated' : 'Payment Successful');
+    final String statusText = isCancelled
+        ? 'Payment Cancelled'
+        : (isFailed
+            ? 'Payment Failed'
+            : (isPending ? 'Payment Initiated' : 'Payment Successful'));
 
-    final IconData statusIcon = isFailed
-        ? Icons.cancel_rounded
-        : (isPending
-              ? Icons.hourglass_top_rounded
-              : Icons.check_circle_rounded);
+    final IconData statusIcon = isCancelled
+        ? Icons.cancel_outlined
+        : (isFailed
+            ? Icons.cancel_rounded
+            : (isPending
+                ? Icons.hourglass_top_rounded
+                : Icons.check_circle_rounded));
 
     return Container(
       width: double.infinity,
@@ -901,35 +1025,51 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
   }
 
   Widget _buildQuickActionButtons(BuildContext context) {
-    final isFailed = _status.toUpperCase() == 'FAILED';
-    final isPending =
-        _status.toUpperCase() == 'PENDING' ||
-        _status.toUpperCase() == 'INITIATED';
+    final s = _status.toUpperCase();
+    final isFailed = s == 'FAILED';
+    final isCancelled = s == 'CANCELLED';
+    final isPending = s == 'PENDING' || s == 'INITIATED' || s == 'PAYMENT_INITIATED';
 
     return Row(
       children: [
-        if (isPending)
+        if (isPending) ...[
           Expanded(
             child: _buildActionButton(
               icon: Icons.verified_rounded,
               label: _isReconciling ? 'Confirming...' : 'Confirm',
               isPrimary: true,
-              onTap: _isReconciling ? () {} : _handleReconcilePayment,
+              onTap: (_isReconciling || _isCancelling)
+                  ? () {}
+                  : _handleReconcilePayment,
             ),
-          )
-        else
+          ),
+          const SizedBox(width: 10),
           Expanded(
             child: _buildActionButton(
-              icon: isFailed ? Icons.refresh_rounded : Icons.replay_rounded,
-              label: isFailed ? 'Retry' : 'Pay Again',
+              icon: Icons.cancel_outlined,
+              label: _isCancelling ? 'Cancelling...' : 'Cancel',
+              isPrimary: false,
+              textColor: const Color(0xFFFF453A),
+              iconColor: const Color(0xFFFF453A),
+              borderColor: const Color(0x55FF453A),
+              backgroundColor: const Color(0x18FF453A),
+              onTap: (_isReconciling || _isCancelling)
+                  ? () {}
+                  : () => _showCancelConfirmationDialog(context),
+            ),
+          ),
+          const SizedBox(width: 10),
+        ] else if (!isFailed && !isCancelled) ...[
+          Expanded(
+            child: _buildActionButton(
+              icon: Icons.replay_rounded,
+              label: 'Pay Again',
               isPrimary: true,
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      isFailed
-                          ? 'Retrying payment of $_displayAmount to $_merchantTitle...'
-                          : 'Initiating repeat payment to $_merchantTitle...',
+                      'Initiating repeat payment to $_merchantTitle...',
                       style: const TextStyle(fontFamily: 'Google Sans'),
                     ),
                     backgroundColor: const Color(0xFF1E1E24),
@@ -942,7 +1082,32 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
               },
             ),
           ),
-        const SizedBox(width: 12),
+          const SizedBox(width: 10),
+        ] else ...[
+          Expanded(
+            child: _buildActionButton(
+              icon: Icons.refresh_rounded,
+              label: 'Retry',
+              isPrimary: true,
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Retrying payment of $_displayAmount to $_merchantTitle...',
+                      style: const TextStyle(fontFamily: 'Google Sans'),
+                    ),
+                    backgroundColor: const Color(0xFF1E1E24),
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(width: 10),
+        ],
         // Share
         Expanded(
           child: _buildActionButton(
@@ -965,9 +1130,24 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
     required String label,
     required bool isPrimary,
     required VoidCallback onTap,
+    Color? textColor,
+    Color? iconColor,
+    Color? backgroundColor,
+    Color? borderColor,
   }) {
+    final effectiveBgColor = backgroundColor ??
+        (isPrimary ? Colors.white : const Color(0xFF141416));
+    final effectiveFgColor = isPrimary ? Colors.black : Colors.white;
+    final effectiveTextColor = textColor ?? effectiveFgColor;
+    final effectiveIconColor = iconColor ?? effectiveFgColor;
+    final effectiveBorder = borderColor != null
+        ? Border.all(color: borderColor, width: 1)
+        : (isPrimary
+            ? null
+            : Border.all(color: AppThemeManager.colors.border, width: 1));
+
     return Material(
-      color: isPrimary ? Colors.white : const Color(0xFF141416),
+      color: effectiveBgColor,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
@@ -976,24 +1156,24 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: isPrimary
-                ? null
-                : Border.all(color: AppThemeManager.colors.border, width: 1),
+            border: effectiveBorder,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 icon,
-                color: isPrimary ? Colors.black : Colors.white,
+                color: effectiveIconColor,
                 size: 20,
               ),
               const SizedBox(height: 6),
               Text(
                 label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontFamily: 'Google Sans',
-                  color: isPrimary ? Colors.black : Colors.white,
+                  color: effectiveTextColor,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
@@ -1028,7 +1208,30 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
       ),
       child: Column(
         children: [
-          _buildDetailRow(label: 'Payment Method', value: _paymentMethod),
+          _buildDetailRow(
+            label: 'Payment Method',
+            value: _paymentMethod,
+            leadingWidget: _paymentMethod.toLowerCase().contains('gpay') ||
+                    _paymentMethod.toLowerCase().contains('google')
+                ? Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: SvgPicture.asset(
+                      'asserts/icon/google-pay-icon.svg',
+                      width: 18,
+                      height: 18,
+                    ),
+                  )
+                : (_paymentMethod.toLowerCase().contains('amazon')
+                    ? Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: SvgPicture.asset(
+                          'asserts/icon/amazon-icon.svg',
+                          width: 18,
+                          height: 18,
+                        ),
+                      )
+                    : null),
+          ),
           const Divider(
             color: Color(0xFF202024),
             height: 1,
@@ -1107,6 +1310,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
   Widget _buildDetailRow({
     required String label,
     required String value,
+    Widget? leadingWidget,
     bool canCopy = false,
     VoidCallback? onCopy,
   }) {
@@ -1129,6 +1333,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
+                ?leadingWidget,
                 Flexible(
                   child: Text(
                     value,

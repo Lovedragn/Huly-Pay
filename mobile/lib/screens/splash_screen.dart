@@ -21,7 +21,7 @@ class SplashScreen extends StatefulWidget {
 
   const SplashScreen({
     super.key,
-    this.duration = const Duration(milliseconds: 2200),
+    this.duration = const Duration(milliseconds: 1320),
     this.nextScreen,
     this.initializeAuth = true,
     this.isAuthenticated,
@@ -47,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1400),
+      duration: const Duration(milliseconds: 840),
     );
 
     _fadeAnimation = CurvedAnimation(
@@ -160,7 +160,7 @@ class _SplashScreenState extends State<SplashScreen>
             child: child,
           );
         },
-        transitionDuration: const Duration(milliseconds: 400),
+        transitionDuration: const Duration(milliseconds: 240),
       ),
     );
   }

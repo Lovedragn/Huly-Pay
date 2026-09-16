@@ -22,8 +22,8 @@ const List<String> kChartPaletteNames = [
 /// Named Cloud White tint for Clean White mode icon backgrounds and elevated surfaces
 const Color kCloudWhite = Color(0xFFF4F6F9);
 
-/// Semantic Theme Color Model for HulyPay
-class AppThemeData {
+/// Semantic Theme Color Model for HulyPay (extends ThemeExtension for idiomatic Flutter ThemeData integration)
+class AppThemeData extends ThemeExtension<AppThemeData> {
   final String name;
   final bool isDark;
   final Color background;
@@ -61,6 +61,71 @@ class AppThemeData {
     required this.iconBackground,
     required this.brightness,
   });
+
+  @override
+  AppThemeData copyWith({
+    String? name,
+    bool? isDark,
+    Color? background,
+    Color? surface,
+    Color? surfaceSecondary,
+    Color? border,
+    Color? divider,
+    Color? textPrimary,
+    Color? textSecondary,
+    Color? textMuted,
+    Color? accent,
+    Color? navBarBackground,
+    Color? navBarActive,
+    Color? navBarInactive,
+    Color? iconDefault,
+    Color? iconBackground,
+    Brightness? brightness,
+  }) {
+    return AppThemeData(
+      name: name ?? this.name,
+      isDark: isDark ?? this.isDark,
+      background: background ?? this.background,
+      surface: surface ?? this.surface,
+      surfaceSecondary: surfaceSecondary ?? this.surfaceSecondary,
+      border: border ?? this.border,
+      divider: divider ?? this.divider,
+      textPrimary: textPrimary ?? this.textPrimary,
+      textSecondary: textSecondary ?? this.textSecondary,
+      textMuted: textMuted ?? this.textMuted,
+      accent: accent ?? this.accent,
+      navBarBackground: navBarBackground ?? this.navBarBackground,
+      navBarActive: navBarActive ?? this.navBarActive,
+      navBarInactive: navBarInactive ?? this.navBarInactive,
+      iconDefault: iconDefault ?? this.iconDefault,
+      iconBackground: iconBackground ?? this.iconBackground,
+      brightness: brightness ?? this.brightness,
+    );
+  }
+
+  @override
+  AppThemeData lerp(ThemeExtension<AppThemeData>? other, double t) {
+    if (other is! AppThemeData) return this;
+    return AppThemeData(
+      name: t < 0.5 ? name : other.name,
+      isDark: t < 0.5 ? isDark : other.isDark,
+      background: Color.lerp(background, other.background, t) ?? background,
+      surface: Color.lerp(surface, other.surface, t) ?? surface,
+      surfaceSecondary: Color.lerp(surfaceSecondary, other.surfaceSecondary, t) ?? surfaceSecondary,
+      border: Color.lerp(border, other.border, t) ?? border,
+      divider: Color.lerp(divider, other.divider, t) ?? divider,
+      textPrimary: Color.lerp(textPrimary, other.textPrimary, t) ?? textPrimary,
+      textSecondary: Color.lerp(textSecondary, other.textSecondary, t) ?? textSecondary,
+      textMuted: Color.lerp(textMuted, other.textMuted, t) ?? textMuted,
+      accent: Color.lerp(accent, other.accent, t) ?? accent,
+      navBarBackground: Color.lerp(navBarBackground, other.navBarBackground, t) ?? navBarBackground,
+      navBarActive: Color.lerp(navBarActive, other.navBarActive, t) ?? navBarActive,
+      navBarInactive: Color.lerp(navBarInactive, other.navBarInactive, t) ?? navBarInactive,
+      iconDefault: Color.lerp(iconDefault, other.iconDefault, t) ?? iconDefault,
+      iconBackground: Color.lerp(iconBackground, other.iconBackground, t) ?? iconBackground,
+      brightness: t < 0.5 ? brightness : other.brightness,
+    );
+  }
 
   /// 1. Black (Default OLED Scheme)
   static const AppThemeData black = AppThemeData(
@@ -205,7 +270,64 @@ class AppThemeManager {
               primary: themeColors.accent,
               surface: themeColors.surface,
             ),
+      extensions: <ThemeExtension<dynamic>>[
+        themeColors,
+      ],
       dividerColor: themeColors.divider,
     );
   }
 }
+
+/// ---------------------------------------------------------------------------
+/// Design Tokens: Spacing & Radii (Centralized Single Source of Truth)
+/// ---------------------------------------------------------------------------
+
+class AppSpacing {
+  AppSpacing._();
+
+  static const double xxs = 2.0;
+  static const double xs = 4.0;
+  static const double sm = 8.0;
+  static const double md = 12.0;
+  static const double lg = 16.0;
+  static const double xl = 20.0;
+  static const double xxl = 24.0;
+  static const double xxxl = 32.0;
+}
+
+class AppRadii {
+  AppRadii._();
+
+  static const double sm = 6.0;
+  static const double md = 10.0;
+  static const double lg = 16.0;
+  static const double xl = 20.0;
+  static const double card = 24.0;
+  static const double sheet = 32.0;
+  static const double pill = 100.0;
+}
+
+/// ---------------------------------------------------------------------------
+/// Idiomatic Flutter BuildContext Extension for Clean Theming
+/// Allows writing `context.appTheme.surface` or `context.colors.textPrimary`
+/// ---------------------------------------------------------------------------
+
+extension AppThemeContextExtension on BuildContext {
+  /// Access active AppThemeData via ThemeData extension or fallback to AppThemeManager
+  AppThemeData get appTheme {
+    final ext = Theme.of(this).extension<AppThemeData>();
+    return ext ?? AppThemeManager.colors;
+  }
+
+  /// Shorthand alias for `context.appTheme`
+  AppThemeData get colors => appTheme;
+
+  /// Quick brightness check
+  bool get isDarkMode => appTheme.isDark;
+
+  /// Core Theme.of(context) shortcuts
+  ThemeData get theme => Theme.of(this);
+  ColorScheme get colorScheme => Theme.of(this).colorScheme;
+  TextTheme get textTheme => Theme.of(this).textTheme;
+}
+

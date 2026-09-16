@@ -272,10 +272,34 @@ class LocalDatabaseService {
     await batch.commit(noResult: true);
   }
 
-  /// Retains all payments in SQLite history without purging stale records.
-  /// Returns 0 as no records are deleted.
+  /// Deletes pending payments older than 1 day and failed/cancelled payments from local SQLite cache.
   Future<int> cleanupStalePayments() async {
-    return 0;
+    try {
+      final db = await database;
+      final oneDayAgoIso = DateTime.now()
+          .toUtc()
+          .subtract(const Duration(days: 1))
+          .toIso8601String();
+
+      int deletedCount = 0;
+
+      // 1. Delete pending / initiated payments created more than 1 day ago
+      deletedCount += await db.delete(
+        'cached_payments',
+        where: "status IN ('PENDING', 'INITIATED', 'PAYMENT_INITIATED') AND (created_at IS NOT NULL AND created_at < ?)",
+        whereArgs: [oneDayAgoIso],
+      );
+
+      // 2. Delete failed and cancelled payments
+      deletedCount += await db.delete(
+        'cached_payments',
+        where: "status IN ('FAILED', 'CANCELLED')",
+      );
+
+      return deletedCount;
+    } catch (_) {
+      return 0;
+    }
   }
 
   Future<List<PaymentModel>> getPayments({String? status, int? limit, int? offset}) async {

@@ -52,16 +52,27 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
       _selectedPeriod = cached;
     }
     _loadSavedPeriod();
-    if (widget.initialPayments != null) {
+    if (widget.initialPayments != null && widget.initialPayments!.isNotEmpty) {
       _allPayments = List.from(widget.initialPayments!);
       _filterAndRecalculate();
     } else if (widget.initialCategories != null) {
       _categories = widget.initialCategories!;
       _totalSpent = widget.totalSpent ?? '₹0';
+      _loadData();
     } else {
       _categories = [];
       _totalSpent = widget.totalSpent ?? '₹0';
       _loadData();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant AnalysisScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialPayments != null &&
+        widget.initialPayments != oldWidget.initialPayments) {
+      _allPayments = List.from(widget.initialPayments!);
+      _filterAndRecalculate();
     }
   }
 
@@ -96,10 +107,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   }
 
   void _setAllPayments(List<PaymentModel> payments) {
-    _allPayments = payments.where((p) {
-      final s = p.status.toUpperCase();
-      return s != 'FAILED' && s != 'CANCELLED';
-    }).toList();
+    _allPayments = payments.where((p) => p.isSuccessful).toList();
     _filterAndRecalculate();
   }
 
@@ -156,7 +164,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 
     final cutoff = _getCutoffForPeriod(_selectedPeriod);
     final filtered = _allPayments.where((p) {
-      if (p.status.toUpperCase() == 'FAILED' || p.status.toUpperCase() == 'CANCELLED') return false;
+      if (!p.isSuccessful) return false;
       final dateStr = p.createdAt ?? p.paymentDate;
       if (dateStr == null) return false;
       try {
@@ -299,7 +307,6 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
               bottom: 0,
               child: CustomBottomNavBar(
                 selectedIndex: 1, // Analyze tab active
-                isQrActive: false,
                 onItemSelected: (index) {
                   if (index == 0) {
                     _openHome();
@@ -307,7 +314,6 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                     _openTransactions();
                   }
                 },
-                onQrScanTap: _openScanAndPay,
               ),
             ),
           ],
