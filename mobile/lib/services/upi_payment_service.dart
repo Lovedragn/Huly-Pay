@@ -24,13 +24,29 @@ class UpiApps {
   static const String googlePay = 'google_pay';
   static const String amazonPay = 'amazon_pay';
   static const String phonePe = 'phonepe';
+  static const String paytm = 'paytm';
   static const String bhim = 'bhim';
+  static const String whatsapp = 'whatsapp';
 
   static const SupportedUpiApp gpay = SupportedUpiApp(
     id: googlePay,
     name: 'Google Pay',
     packageName: 'com.google.android.apps.nbu.paisa.user',
     iconPath: 'asserts/icon/google-pay.svg',
+  );
+
+  static const SupportedUpiApp phonepeApp = SupportedUpiApp(
+    id: phonePe,
+    name: 'PhonePe',
+    packageName: 'com.phonepe.app',
+    iconPath: 'asserts/icon/phonepe.svg',
+  );
+
+  static const SupportedUpiApp paytmApp = SupportedUpiApp(
+    id: paytm,
+    name: 'Paytm',
+    packageName: 'net.one97.paytm',
+    iconPath: '',
   );
 
   static const SupportedUpiApp amazon = SupportedUpiApp(
@@ -40,13 +56,6 @@ class UpiApps {
     iconPath: 'asserts/icon/amazon-icon.svg',
   );
 
-  static const SupportedUpiApp phonepe = SupportedUpiApp(
-    id: phonePe,
-    name: 'PhonePe',
-    packageName: 'com.phonepe.app',
-    iconPath: 'asserts/icon/phonepe.svg',
-  );
-
   static const SupportedUpiApp bhimApp = SupportedUpiApp(
     id: bhim,
     name: 'BHIM',
@@ -54,11 +63,20 @@ class UpiApps {
     iconPath: 'asserts/icon/bhim.svg',
   );
 
+  static const SupportedUpiApp whatsappApp = SupportedUpiApp(
+    id: whatsapp,
+    name: 'WhatsApp',
+    packageName: 'com.whatsapp',
+    iconPath: '',
+  );
+
   static const List<SupportedUpiApp> allApps = [
     gpay,
+    phonepeApp,
+    paytmApp,
     amazon,
-    phonepe,
     bhimApp,
+    whatsappApp,
   ];
 
   static SupportedUpiApp? findById(String id) {
@@ -153,6 +171,48 @@ class UpiPaymentService {
     if (app == null) return false;
 
     return isPackageInstalled(app.packageName);
+  }
+
+  /// Launches an Android app by package name strictly as an external standalone application.
+  /// First checks if the package is installed before attempting to launch.
+  /// Returns `true` if launched successfully, `false` if not installed or launch failed.
+  static Future<bool> openApp(String packageName) async {
+    final installed = await isPackageInstalled(packageName);
+    if (!installed) {
+      return false;
+    }
+
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) {
+      return false;
+    }
+
+    try {
+      final bool? success = await _channel.invokeMethod<bool>('launchAppPackage', {
+        'packageName': packageName,
+      });
+      return success ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Launches the standalone external UPI application without inserting amount or intent parameters.
+  /// The user can manually enter the amount and pay the payee directly in their preferred app.
+  static Future<bool> launchStandaloneApp({String? preferredAppId}) async {
+    final appId = preferredAppId ?? UpiApps.askEveryTime;
+    if (appId != UpiApps.askEveryTime) {
+      final app = UpiApps.findById(appId);
+      if (app != null) {
+        return openApp(app.packageName);
+      }
+    }
+
+    // If 'ask_every_time', try launching first available installed UPI app
+    final available = await getAvailableSupportedApps();
+    if (available.isNotEmpty) {
+      return openApp(available.first.packageName);
+    }
+    return false;
   }
 
   /// Check if an Android package is installed and can handle intents

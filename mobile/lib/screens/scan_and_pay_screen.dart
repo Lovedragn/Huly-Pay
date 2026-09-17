@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../models/payment_model.dart';
@@ -269,15 +270,58 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 2),
-                                Text(
-                                  subtitle,
-                                  style: const TextStyle(
-                                    fontFamily: 'Google Sans',
-                                    fontSize: 13,
-                                    color: Color(0xFF8E8E93),
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        subtitle,
+                                        style: const TextStyle(
+                                          fontFamily: 'Google Sans',
+                                          fontSize: 13,
+                                          color: Color(0xFF8E8E93),
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Clipboard.setData(ClipboardData(text: upiData.upiId));
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text('UPI ID copied: ${upiData.upiId}'),
+                                            duration: const Duration(milliseconds: 1500),
+                                            backgroundColor: const Color(0xFF1E1E24),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFF24242A),
+                                          borderRadius: BorderRadius.circular(4),
+                                          border: Border.all(color: const Color(0xFF33333A)),
+                                        ),
+                                        child: const Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(Icons.copy_rounded, size: 11, color: Color(0xFF007AFF)),
+                                            SizedBox(width: 4),
+                                            Text(
+                                              'Copy',
+                                              style: TextStyle(
+                                                fontFamily: 'Google Sans',
+                                                fontSize: 10.5,
+                                                fontWeight: FontWeight.w600,
+                                                color: Color(0xFF007AFF),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -487,9 +531,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                             final pref = UserPreferencesService().cachedDefaultPaymentApp;
                             final app = UpiApps.findById(pref);
                             final target = app?.name ?? 'UPI App';
-                            final currentAmt = double.tryParse(amountController.text.trim()) ?? upiData.amount;
-                            final amtStr = currentAmt != null && currentAmt > 0 ? '₹${currentAmt.toStringAsFixed(2)} ' : '';
-                            return 'Pay ${amtStr}via $target';
+                            return 'Open $target';
                           }(),
                           style: const TextStyle(
                             fontFamily: 'Google Sans',
@@ -645,7 +687,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 ),
                 onPressed: () async {
                   Navigator.of(ctx).pop();
-                  // Fallback to Ask every time mode
+                  // Open available payment app standalone
                   await _launchUpiAndStartVerification(
                     upiData: upiData,
                     parsedAmount: parsedAmount,
@@ -653,7 +695,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                     forceAskEveryTime: true,
                   );
                 },
-                child: const Text('Pay with Chooser', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                child: const Text('Open Any Payment App', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
               ),
             ],
           ),
@@ -725,17 +767,39 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       );
     }
 
-    // 4. Launch Standalone External UPI Application (Separate Android Application)
-    final launchResult = await UpiPaymentService.launchPayment(
-      paymentData: upiData,
-      customAmount: parsedAmount,
-      preferredAppId: effectiveAppId,
-    );
+    // 4. Launch Standalone External Application Separately (without pre-filled amount)
+    // User can manually add amount and pay the user directly inside their payment app
+    bool launched = false;
+    String? launchedAppName;
 
-    if (!launchResult.success) {
+    if (effectiveAppId != UpiApps.askEveryTime) {
+      final app = UpiApps.findById(effectiveAppId);
+      if (app != null) {
+        launchedAppName = app.name;
+        launched = await UpiPaymentService.openApp(app.packageName);
+      }
+    } else {
+      // For ask_every_time, open first available payment app standalone
+      final available = await UpiPaymentService.getAvailableSupportedApps();
+      if (available.isNotEmpty) {
+        launchedAppName = available.first.name;
+        launched = await UpiPaymentService.openApp(available.first.packageName);
+      }
+    }
+
+    // Fallback: If direct package launch failed or wasn't resolved, use launchStandaloneApp
+    if (!launched) {
+      launched = await UpiPaymentService.launchStandaloneApp(preferredAppId: effectiveAppId);
+    }
+
+    if (!launched) {
       messenger.showSnackBar(
         SnackBar(
-          content: Text(launchResult.errorMessage ?? 'Could not launch UPI application.'),
+          content: Text(
+            launchedAppName != null
+                ? 'Could not open $launchedAppName. Please ensure it is installed.'
+                : 'Could not open payment application. Please ensure a payment app is installed.',
+          ),
           backgroundColor: const Color(0xFFD93025),
         ),
       );
@@ -1071,155 +1135,179 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF000000),
-      body: SafeArea(
-        bottom: false,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: 10,
-                  bottom: 80,
-                ),
-                child: Column(
-                  children: [
-                    // Top Bar (Back Button)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          key: const Key('back_button'),
-                          onTap: _handleBack,
-                          behavior: HitTestBehavior.opaque,
-                          child: Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF161619),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: const Color(0xFF24242A),
-                                width: 1,
-                              ),
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.chevron_left_rounded,
-                                color: Colors.white,
-                                size: 26,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final scanBoxSize = 260.0;
+          final centerOffset = Offset(
+            constraints.maxWidth / 2,
+            constraints.maxHeight * 0.40,
+          );
+          final cutoutRect = Rect.fromCenter(
+            center: centerOffset,
+            width: scanBoxSize,
+            height: scanBoxSize,
+          );
+
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              // 1. Live Camera Preview Fullscreen
+              MobileScanner(
+                controller: _scannerController,
+                onDetect: _handleBarcodeDetected,
+                errorBuilder: (context, error, child) {
+                  return const Center(
+                    child: Icon(
+                      Icons.camera_alt_outlined,
+                      color: Color(0xFF55555C),
+                      size: 48,
                     ),
+                  );
+                },
+              ),
 
-                    const Spacer(flex: 1),
-
-                    // Scanner Viewfinder Box with Live MobileScanner and Reticle
-                    Center(
-                      child: Container(
-                        width: 250,
-                        height: 250,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF141416),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
-                              child: MobileScanner(
-                                controller: _scannerController,
-                                onDetect: _handleBarcodeDetected,
-                                errorBuilder: (context, error, child) {
-                                  return const Center(
-                                    child: Icon(
-                                      Icons.camera_alt_outlined,
-                                      color: Color(0xFF55555C),
-                                      size: 48,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            CustomPaint(
-                              size: const Size(250, 250),
-                              painter: ScannerFramePainter(
-                                cornerColor: Colors.white,
-                                cornerLength: 36.0,
-                                strokeWidth: 4.0,
-                                cornerRadius: 8.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    const Text(
-                      'Scan any UPI QR code',
-                      style: TextStyle(
-                        fontFamily: 'Google Sans',
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -0.2,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Align the QR code within the frame',
-                      style: TextStyle(
-                        fontFamily: 'Google Sans',
-                        color: Color(0xFF8E8E93),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    GestureDetector(
-                      onTap: () => _handleBack(0),
-                      behavior: HitTestBehavior.opaque,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 28,
-                          vertical: 14,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF161619),
-                          borderRadius: BorderRadius.circular(100),
-                          border: Border.all(
-                            color: const Color(0xFF2A2A30),
-                            width: 1,
-                          ),
-                        ),
-                        child: const Text(
-                          'Back to Home',
-                          style: TextStyle(
-                            fontFamily: 'Google Sans',
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const Spacer(flex: 2),
-                  ],
+              // 2. Semi-transparent surrounding overlay with transparent viewfinder cutout
+              CustomPaint(
+                size: Size(constraints.maxWidth, constraints.maxHeight),
+                painter: ScannerOverlayPainter(
+                  cutoutRect: cutoutRect,
+                  cornerRadius: 20.0,
+                  overlayColor: const Color(0x99000000), // 60% semi-transparent dark surround
                 ),
               ),
-            ),
+
+              // 3. Viewfinder Reticle Frame exactly over the cutout
+              Positioned(
+                left: cutoutRect.left,
+                top: cutoutRect.top,
+                width: cutoutRect.width,
+                height: cutoutRect.height,
+                child: IgnorePointer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.18),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: CustomPaint(
+                      size: Size(scanBoxSize, scanBoxSize),
+                      painter: ScannerFramePainter(
+                        cornerColor: Colors.white,
+                        cornerLength: 36.0,
+                        strokeWidth: 4.0,
+                        cornerRadius: 12.0,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // 4. UI Foreground: Header, instructions, controls, and bottom navigation
+              SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    top: 10,
+                    bottom: 80,
+                  ),
+                  child: Column(
+                    children: [
+                      // Top Bar (Back Button)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GestureDetector(
+                            key: const Key('back_button'),
+                            onTap: () => _handleBack(0),
+                            behavior: HitTestBehavior.opaque,
+                            child: Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF161619).withValues(alpha: 0.8),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: const Color(0xFF24242A),
+                                  width: 1,
+                                ),
+                              ),
+                              child: const Center(
+                                child: Icon(
+                                  Icons.chevron_left_rounded,
+                                  color: Colors.white,
+                                  size: 26,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      // Spacing to align with cutout
+                      SizedBox(
+                        height: (cutoutRect.bottom - (MediaQuery.of(context).padding.top + 54)).clamp(0.0, double.infinity) + 24,
+                      ),
+
+                      const Text(
+                        'Scan any UPI QR code',
+                        style: TextStyle(
+                          fontFamily: 'Google Sans',
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.2,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Align the QR code within the frame',
+                        style: TextStyle(
+                          fontFamily: 'Google Sans',
+                          color: Color(0xFFD0D0D5),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      GestureDetector(
+                        onTap: () => _handleBack(0),
+                        behavior: HitTestBehavior.opaque,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 28,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF161619).withValues(alpha: 0.85),
+                            borderRadius: BorderRadius.circular(100),
+                            border: Border.all(
+                              color: const Color(0xFF2A2A30),
+                              width: 1,
+                            ),
+                          ),
+                          child: const Text(
+                            'Back to Home',
+                            style: TextStyle(
+                              fontFamily: 'Google Sans',
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
 
             // Controls on right side
             Positioned(
@@ -1306,10 +1394,11 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
+        );
+      },
+    ),
+  );
+}
 }
 
 class ScannerFramePainter extends CustomPainter {
@@ -1379,3 +1468,49 @@ class ScannerFramePainter extends CustomPainter {
       oldDelegate.strokeWidth != strokeWidth ||
       oldDelegate.cornerRadius != cornerRadius;
 }
+
+class ScannerOverlayPainter extends CustomPainter {
+  final Rect cutoutRect;
+  final double cornerRadius;
+  final Color overlayColor;
+
+  ScannerOverlayPainter({
+    required this.cutoutRect,
+    this.cornerRadius = 20.0,
+    this.overlayColor = const Color(0xB3000000), // ~70% black semi-transparent
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final backgroundPath = Path()
+      ..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    final cutoutPath = Path()
+      ..addRRect(
+        RRect.fromRectAndRadius(
+          cutoutRect,
+          Radius.circular(cornerRadius),
+        ),
+      );
+
+    // Subtract the cutout from the full screen background
+    final overlayPath = Path.combine(
+      PathOperation.difference,
+      backgroundPath,
+      cutoutPath,
+    );
+
+    final paint = Paint()
+      ..color = overlayColor
+      ..style = PaintingStyle.fill;
+
+    canvas.drawPath(overlayPath, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant ScannerOverlayPainter oldDelegate) =>
+      oldDelegate.cutoutRect != cutoutRect ||
+      oldDelegate.cornerRadius != cornerRadius ||
+      oldDelegate.overlayColor != overlayColor;
+}
+
