@@ -173,7 +173,6 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     );
     final amountFocusNode = FocusNode();
     PaymentLocation? capturedLocation = initialLocationResult?.location;
-    LocationResult? locationResult = initialLocationResult;
     bool isLocationFetching = capturedLocation == null;
 
     // Immediately open keyboard for typing amount after modal pops up
@@ -195,10 +194,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
               isLocationFetching = false;
               LocationService().getPaymentLocationWithStatus().then((result) {
                 if (modalContext.mounted) {
-                  setModalState(() {
-                    locationResult = result;
-                    capturedLocation = result.location;
-                  });
+                  capturedLocation = result.location;
                 }
               });
             }
@@ -395,99 +391,6 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 16),
-
-                      // GPS Location Capture Badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1E1E24),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: capturedLocation != null
-                                ? const Color(0xFF28A745).withValues(alpha: 0.4)
-                                : const Color(0xFFE5A93C).withValues(alpha: 0.3),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              capturedLocation != null
-                                  ? Icons.location_on_rounded
-                                  : Icons.location_off_rounded,
-                              color: capturedLocation != null
-                                  ? const Color(0xFF28A745)
-                                  : const Color(0xFFE5A93C),
-                              size: 20,
-                            ),
-                            const SizedBox(width: 10),
-                            Builder(
-                              builder: (context) {
-                                final currentLoc = capturedLocation;
-                                return Expanded(
-                                  child: Text(
-                                    currentLoc != null
-                                        ? 'GPS: ${currentLoc.latitude.toStringAsFixed(4)}, ${currentLoc.longitude.toStringAsFixed(4)} (±${currentLoc.accuracyMeters.toStringAsFixed(1)}m)'
-                                        : (locationResult == null
-                                            ? 'Acquiring GPS location...'
-                                            : (locationResult!.failureReason == LocationFailureReason.serviceDisabled
-                                                ? 'Location disabled: Please turn on GPS'
-                                                : (locationResult!.failureReason == LocationFailureReason.permissionDenied
-                                                    ? 'Location permission denied'
-                                                    : (locationResult!.failureReason == LocationFailureReason.permissionDeniedForever
-                                                        ? 'Location permission denied forever'
-                                                        : 'Location unavailable')))),
-                                    style: TextStyle(
-                                      fontFamily: 'Google Sans',
-                                      fontSize: 12,
-                                      color: currentLoc != null
-                                          ? const Color(0xFFD0D0D5)
-                                          : const Color(0xFFE5A93C),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                            if (capturedLocation == null)
-                              GestureDetector(
-                                onTap: () async {
-                                  if (locationResult?.failureReason == LocationFailureReason.permissionDeniedForever) {
-                                    await LocationService.openAppSettings();
-                                  } else if (locationResult?.failureReason == LocationFailureReason.serviceDisabled) {
-                                    await LocationService.openLocationSettings();
-                                  } else {
-                                    final retry = await LocationService().getPaymentLocationWithStatus();
-                                    if (retry.isSuccess && modalContext.mounted) {
-                                      setModalState(() {
-                                        capturedLocation = retry.location;
-                                        locationResult = retry;
-                                      });
-                                    }
-                                  }
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF2A2A30),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    locationResult?.failureReason == LocationFailureReason.permissionDeniedForever ||
-                                            locationResult?.failureReason == LocationFailureReason.serviceDisabled
-                                        ? 'Settings'
-                                        : (locationResult == null ? '...' : 'Retry'),
-                                    style: const TextStyle(
-                                      fontFamily: 'Google Sans',
-                                      fontSize: 11,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
 
                       const SizedBox(height: 24),
 
