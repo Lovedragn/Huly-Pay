@@ -35,6 +35,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   late String _displayName;
   late String _displayEmail;
   String _avatarUrl = '';
+  bool _quickConfirm = false;
 
   @override
   void initState() {
@@ -43,6 +44,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _displayName = widget.userName ?? authProfile?.displayName ?? 'User';
     _displayEmail = widget.userEmail ?? authProfile?.email ?? '';
     _avatarUrl = authProfile?.avatarUrl ?? '';
+    _quickConfirm = UserPreferencesService().cachedQuickConfirm;
     _resolveUser();
   }
 
@@ -792,6 +794,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildPreferencesSection() {
     return _buildGroupCard([
+      _buildSwitchSettingRow(
+        icon: Icons.bolt_rounded,
+        iconColor: const Color(0xFFFFB300),
+        title: 'Quick Confirm',
+        subtitle: 'Bypass SMS check & auto-confirm QR payments',
+        value: _quickConfirm,
+        onChanged: (bool value) async {
+          setState(() {
+            _quickConfirm = value;
+          });
+          await UserPreferencesService().setQuickConfirm(value);
+        },
+      ),
+      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
       _buildSettingRow(
         icon: Icons.notifications_none_rounded,
         title: 'Notifications',
@@ -977,6 +993,81 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Icons.chevron_right_rounded,
                 color: colors.textMuted,
                 size: 20,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSwitchSettingRow({
+    required IconData icon,
+    Color? iconColor,
+    required String title,
+    String? subtitle,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    final colors = AppThemeManager.colors;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () => onChanged(!value),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: (iconColor ?? colors.accent).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Icon(
+                    icon,
+                    color: iconColor ?? colors.accent,
+                    size: 20,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontFamily: 'Google Sans',
+                        color: colors.textPrimary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    if (subtitle != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontFamily: 'Google Sans',
+                          color: colors.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              Switch.adaptive(
+                value: value,
+                onChanged: onChanged,
+                activeThumbColor: colors.accent,
+                activeTrackColor: colors.accent.withValues(alpha: 0.4),
               ),
             ],
           ),

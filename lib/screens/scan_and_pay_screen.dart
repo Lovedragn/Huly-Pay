@@ -11,6 +11,7 @@ import '../services/sms_filter_service.dart';
 import '../services/upi_payment_service.dart';
 import '../services/upi_service.dart';
 import '../services/user_preferences_service.dart';
+import '../theme/app_theme.dart';
 import 'payment_methods_screen.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 
@@ -175,283 +176,371 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     PaymentLocation? capturedLocation = initialLocationResult?.location;
     bool isLocationFetching = capturedLocation == null;
 
-    // Immediately open keyboard for typing amount after modal pops up
+    // Immediately open keyboard for typing amount after page opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (amountFocusNode.canRequestFocus) {
         amountFocusNode.requestFocus();
       }
     });
 
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (modalContext) {
-        return StatefulBuilder(
-          builder: (modalStateContext, setModalState) {
-            // Concurrent background GPS resolution without blocking UI
-            if (isLocationFetching) {
-              isLocationFetching = false;
-              LocationService().getPaymentLocationWithStatus().then((result) {
-                if (modalContext.mounted) {
-                  capturedLocation = result.location;
-                }
-              });
-            }
-            final hasPayeeName = upiData.payeeName != null && upiData.payeeName!.trim().isNotEmpty;
-            final primaryTitle = hasPayeeName ? upiData.payeeName!.trim() : upiData.upiId;
-            final subtitle = hasPayeeName ? upiData.upiId : 'UPI Payee';
+    final hasPayeeName = upiData.payeeName != null && upiData.payeeName!.trim().isNotEmpty;
+    final primaryTitle = hasPayeeName ? upiData.payeeName!.trim() : upiData.upiId;
+    final subtitle = hasPayeeName ? upiData.upiId : 'UPI Payee';
 
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(modalContext).viewInsets.bottom,
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(24),
-                decoration: const BoxDecoration(
-                  color: Color(0xFF161619),
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-                  border: Border(
-                    top: BorderSide(color: Color(0xFF2A2A30), width: 1),
-                  ),
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (pageContext) {
+          final colors = AppThemeManager.colors;
+
+          // Concurrent background GPS resolution without blocking UI
+          if (isLocationFetching) {
+            isLocationFetching = false;
+            LocationService().getPaymentLocationWithStatus().then((result) {
+              if (pageContext.mounted) {
+                capturedLocation = result.location;
+              }
+            });
+          }
+
+          return Scaffold(
+            backgroundColor: colors.background,
+            appBar: AppBar(
+              backgroundColor: colors.background,
+              elevation: 0,
+              leading: Container(
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: colors.surfaceSecondary,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: colors.border, width: 0.5),
                 ),
+                child: IconButton(
+                  icon: Icon(Icons.close_rounded, color: colors.textPrimary, size: 20),
+                  onPressed: () => Navigator.of(pageContext).pop(),
+                  tooltip: 'Cancel',
+                ),
+              ),
+              centerTitle: true,
+              title: Text(
+                'Payment Details',
+                style: TextStyle(
+                  fontFamily: 'Google Sans',
+                  color: colors.textPrimary,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            body: SafeArea(
+              child: Center(
                 child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Center(
-                        child: Container(
-                          width: 40,
-                          height: 4,
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Centered Merchant Avatar
+                        Container(
+                          width: 68,
+                          height: 68,
                           decoration: BoxDecoration(
-                            color: const Color(0xFF33333A),
-                            borderRadius: BorderRadius.circular(2),
+                            color: colors.surfaceSecondary,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: colors.border, width: 1.5),
+                          ),
+                          child: Center(
+                            child: Icon(
+                              Icons.storefront_rounded,
+                              color: colors.accent,
+                              size: 34,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
+                        const SizedBox(height: 16),
 
-                      Row(
-                        children: [
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF24242A),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.storefront_rounded,
-                                color: Color(0xFF007AFF),
-                                size: 26,
+                        // Centered Merchant Name
+                        Text(
+                          primaryTitle,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Google Sans',
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                            color: colors.textPrimary,
+                            letterSpacing: -0.3,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 6),
+
+                        // Centered Subtitle & Copy Button
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                subtitle,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: 'Google Sans',
+                                  fontSize: 13,
+                                  color: colors.textSecondary,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  primaryTitle,
-                                  style: const TextStyle(
-                                    fontFamily: 'Google Sans',
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white,
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () {
+                                Clipboard.setData(ClipboardData(text: upiData.upiId));
+                                ScaffoldMessenger.of(pageContext).showSnackBar(
+                                  SnackBar(
+                                    content: Text('UPI ID copied: ${upiData.upiId}'),
+                                    duration: const Duration(milliseconds: 1500),
+                                    backgroundColor: colors.surfaceSecondary,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: colors.surfaceSecondary,
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(color: colors.border, width: 0.5),
                                 ),
-                                const SizedBox(height: 2),
-                                Row(
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Flexible(
-                                      child: Text(
-                                        subtitle,
-                                        style: const TextStyle(
-                                          fontFamily: 'Google Sans',
-                                          fontSize: 13,
-                                          color: Color(0xFF8E8E93),
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    GestureDetector(
-                                      onTap: () {
-                                        Clipboard.setData(ClipboardData(text: upiData.upiId));
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(
-                                            content: Text('UPI ID copied: ${upiData.upiId}'),
-                                            duration: const Duration(milliseconds: 1500),
-                                            backgroundColor: const Color(0xFF1E1E24),
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFF24242A),
-                                          borderRadius: BorderRadius.circular(4),
-                                          border: Border.all(color: const Color(0xFF33333A)),
-                                        ),
-                                        child: const Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(Icons.copy_rounded, size: 11, color: Color(0xFF007AFF)),
-                                            SizedBox(width: 4),
-                                            Text(
-                                              'Copy',
-                                              style: TextStyle(
-                                                fontFamily: 'Google Sans',
-                                                fontSize: 10.5,
-                                                fontWeight: FontWeight.w600,
-                                                color: Color(0xFF007AFF),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                    Icon(Icons.copy_rounded, size: 12, color: colors.accent),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'Copy',
+                                      style: TextStyle(
+                                        fontFamily: 'Google Sans',
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: colors.accent,
                                       ),
                                     ),
                                   ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Centered Amount Entry Box
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                          decoration: BoxDecoration(
+                            color: colors.surface,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: colors.border, width: 1.2),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'PAYING AMOUNT',
+                                style: TextStyle(
+                                  fontFamily: 'Google Sans',
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 1.2,
+                                  color: colors.accent,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    '₹',
+                                    style: TextStyle(
+                                      fontFamily: 'Google Sans',
+                                      fontSize: 34,
+                                      fontWeight: FontWeight.w700,
+                                      color: colors.textSecondary,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Flexible(
+                                    child: TextField(
+                                      controller: amountController,
+                                      focusNode: amountFocusNode,
+                                      autofocus: true,
+                                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontFamily: 'Google Sans',
+                                        color: colors.textPrimary,
+                                        fontSize: 40,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: -0.5,
+                                      ),
+                                      decoration: InputDecoration(
+                                        hintText: '0.00',
+                                        hintStyle: TextStyle(
+                                          color: colors.textMuted.withValues(alpha: 0.35),
+                                        ),
+                                        border: InputBorder.none,
+                                        isDense: true,
+                                        contentPadding: EdgeInsets.zero,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Centered Note / Message Field
+                        TextField(
+                          controller: noteController,
+                          textInputAction: TextInputAction.done,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Google Sans',
+                            color: colors.textPrimary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Add a note (optional)',
+                            hintStyle: TextStyle(color: colors.textMuted, fontSize: 13),
+                            prefixIcon: Icon(
+                              Icons.edit_note_rounded,
+                              color: colors.accent,
+                              size: 22,
+                            ),
+                            filled: true,
+                            fillColor: colors.surface,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide(color: colors.border),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide(color: colors.border),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide(color: colors.accent, width: 1.5),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          ),
+                        ),
+
+                        // Quick Confirm banner if enabled
+                        if (UserPreferencesService().cachedQuickConfirm) ...[
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFB300).withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: const Color(0xFFFFB300).withValues(alpha: 0.3)),
+                            ),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.bolt_rounded, color: Color(0xFFFFB300), size: 18),
+                                SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    'Quick Confirm active • Instant auto-confirmation',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontFamily: 'Google Sans',
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFFFFB300),
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
                           ),
                         ],
-                      ),
 
-                      const SizedBox(height: 20),
+                        const SizedBox(height: 32),
 
-                      // Amount Field with immediate autofocus
-                      TextField(
-                        controller: amountController,
-                        focusNode: amountFocusNode,
-                        autofocus: true,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        style: const TextStyle(
-                          fontFamily: 'Google Sans',
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w700,
-                        ),
-                        decoration: InputDecoration(
-                          labelText: 'Amount (INR)',
-                          hintText: '0.00',
-                          hintStyle: const TextStyle(color: Color(0xFF55555C)),
-                          labelStyle: const TextStyle(color: Color(0xFF8E8E93)),
-                          prefixText: '₹ ',
-                          prefixStyle: const TextStyle(
-                            color: Color(0xFF007AFF),
-                            fontSize: 24,
-                            fontWeight: FontWeight.w700,
-                          ),
-                          filled: true,
-                          fillColor: const Color(0xFF1E1E24),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                      ),
+                        // Button white based on theme color palette
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.black,
+                              side: colors.isDark ? BorderSide.none : BorderSide(color: colors.border, width: 1.5),
+                              elevation: colors.isDark ? 2 : 0,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            onPressed: () async {
+                              final messenger = ScaffoldMessenger.of(context);
+                              final parsedAmount = double.tryParse(amountController.text.trim()) ?? 0.0;
+                              if (parsedAmount <= 0) {
+                                messenger.showSnackBar(
+                                  const SnackBar(content: Text('Please enter a valid amount greater than 0')),
+                                );
+                                return;
+                              }
 
-                      const SizedBox(height: 14),
+                              final updatedNote = noteController.text.trim();
+                              final updatedUpiData = UpiPaymentData(
+                                rawUri: upiData.rawUri,
+                                upiId: upiData.upiId,
+                                payeeName: upiData.payeeName,
+                                amount: parsedAmount,
+                                currency: upiData.currency,
+                                transactionRef: upiData.transactionRef,
+                                transactionId: upiData.transactionId,
+                                note: updatedNote.isNotEmpty ? updatedNote : upiData.note,
+                                merchantCode: upiData.merchantCode,
+                              );
 
-                      // Editable Transaction Note / Message
-                      TextField(
-                        controller: noteController,
-                        textInputAction: TextInputAction.done,
-                        style: const TextStyle(
-                          fontFamily: 'Google Sans',
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        decoration: InputDecoration(
-                          labelText: 'Add a note / message',
-                          hintText: 'e.g. Dinner, Groceries, Rent',
-                          hintStyle: const TextStyle(color: Color(0xFF55555C), fontSize: 13),
-                          labelStyle: const TextStyle(color: Color(0xFF8E8E93), fontSize: 13),
-                          prefixIcon: const Icon(
-                            Icons.edit_note_rounded,
-                            color: Color(0xFF007AFF),
-                            size: 22,
-                          ),
-                          filled: true,
-                          fillColor: const Color(0xFF1E1E24),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: BorderSide.none,
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                        ),
-                      ),
-
-
-                      const SizedBox(height: 24),
-
-                      // Proceed to Pay Button
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF007AFF),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                              Navigator.of(pageContext).pop();
+                              await _startSmsVerificationWorkflow(updatedUpiData, parsedAmount, capturedLocation);
+                            },
+                            child: Text(
+                              () {
+                                final pref = UserPreferencesService().cachedDefaultPaymentApp;
+                                final app = UpiApps.findById(pref);
+                                final target = app?.name ?? 'UPI App';
+                                return 'Pay via $target';
+                              }(),
+                              style: const TextStyle(
+                                fontFamily: 'Google Sans',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black,
+                              ),
+                            ),
                           ),
                         ),
-                        onPressed: () async {
-                          final messenger = ScaffoldMessenger.of(context);
-                          final parsedAmount = double.tryParse(amountController.text.trim()) ?? 0.0;
-                          if (parsedAmount <= 0) {
-                            messenger.showSnackBar(
-                              const SnackBar(content: Text('Please enter a valid amount greater than 0')),
-                            );
-                            return;
-                          }
-
-                          final updatedNote = noteController.text.trim();
-                          final updatedUpiData = UpiPaymentData(
-                            rawUri: upiData.rawUri,
-                            upiId: upiData.upiId,
-                            payeeName: upiData.payeeName,
-                            amount: parsedAmount,
-                            currency: upiData.currency,
-                            transactionRef: upiData.transactionRef,
-                            transactionId: upiData.transactionId,
-                            note: updatedNote.isNotEmpty ? updatedNote : upiData.note,
-                            merchantCode: upiData.merchantCode,
-                          );
-
-                          Navigator.of(modalContext).pop();
-                          await _startSmsVerificationWorkflow(updatedUpiData, parsedAmount, capturedLocation);
-                        },
-                        child: Text(
-                          () {
-                            final pref = UserPreferencesService().cachedDefaultPaymentApp;
-                            final app = UpiApps.findById(pref);
-                            final target = app?.name ?? 'UPI App';
-                            return 'Open $target';
-                          }(),
-                          style: const TextStyle(
-                            fontFamily: 'Google Sans',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-            );
-          },
-        );
-      },
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -462,63 +551,66 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     double parsedAmount,
     PaymentLocation? capturedLocation,
   ) async {
+    final bool isQuickConfirm = UserPreferencesService().cachedQuickConfirm;
 
-    // 1. Check & Request SMS Permission (Part 4)
-    bool hasPermission = await GooglePayService.isSmsPermissionGranted();
-    if (!hasPermission) {
-      hasPermission = await GooglePayService.requestSmsPermission();
-    }
+    // 1. Check & Request SMS Permission (Part 4) - Bypassed if Quick Confirm is active
+    if (!isQuickConfirm) {
+      bool hasPermission = await GooglePayService.isSmsPermissionGranted();
+      if (!hasPermission) {
+        hasPermission = await GooglePayService.requestSmsPermission();
+      }
 
-    if (!hasPermission) {
-      if (mounted) {
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            backgroundColor: const Color(0xFF1E1E24),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: const Row(
-              children: [
-                Icon(Icons.sms_failed_rounded, color: Color(0xFFE5A93C), size: 24),
-                SizedBox(width: 10),
-                Text(
-                  'SMS Permission Required',
-                  style: TextStyle(
-                    fontFamily: 'Google Sans',
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
+      if (!hasPermission) {
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              backgroundColor: const Color(0xFF1E1E24),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              title: const Row(
+                children: [
+                  Icon(Icons.sms_failed_rounded, color: Color(0xFFE5A93C), size: 24),
+                  SizedBox(width: 10),
+                  Text(
+                    'SMS Permission Required',
+                    style: TextStyle(
+                      fontFamily: 'Google Sans',
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                    ),
                   ),
+                ],
+              ),
+              content: const Text(
+                'SMS permission is required to verify this development payment. Payment verification through SMS cannot proceed without it.',
+                style: TextStyle(fontFamily: 'Google Sans', color: Color(0xFFD0D0D5), fontSize: 14, height: 1.4),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text('Dismiss', style: TextStyle(color: Color(0xFF8E8E93))),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF007AFF),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  onPressed: () async {
+                    Navigator.of(ctx).pop();
+                    final retryGranted = await GooglePayService.requestSmsPermission();
+                    if (retryGranted && mounted) {
+                      _startSmsVerificationWorkflow(upiData, parsedAmount, capturedLocation);
+                    }
+                  },
+                  child: const Text('Grant Permission', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
                 ),
               ],
             ),
-            content: const Text(
-              'SMS permission is required to verify this development payment. Payment verification through SMS cannot proceed without it.',
-              style: TextStyle(fontFamily: 'Google Sans', color: Color(0xFFD0D0D5), fontSize: 14, height: 1.4),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('Dismiss', style: TextStyle(color: Color(0xFF8E8E93))),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF007AFF),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-                onPressed: () async {
-                  Navigator.of(ctx).pop();
-                  final retryGranted = await GooglePayService.requestSmsPermission();
-                  if (retryGranted && mounted) {
-                    _startSmsVerificationWorkflow(upiData, parsedAmount, capturedLocation);
-                  }
-                },
-                child: const Text('Grant Permission', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
-              ),
-            ],
-          ),
-        );
+          );
+        }
+        return;
       }
-      return;
     }
 
     // 2. Determine Preferred UPI Application & Check Availability
@@ -624,8 +716,10 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     final messenger = ScaffoldMessenger.of(context);
     final currentPref = await UserPreferencesService().getDefaultPaymentApp();
     final effectiveAppId = forceAskEveryTime ? UpiApps.askEveryTime : currentPref;
+    final bool isQuickConfirm = UserPreferencesService().cachedQuickConfirm;
+    final String paymentStatus = isQuickConfirm ? 'CONFIRMED' : 'PENDING';
 
-    // 3. Create PENDING Payment in Spring Boot / Local DB (never assuming success on launch)
+    // 3. Create Payment in Spring Boot / Local DB (CONFIRMED for Quick Confirm, PENDING for SMS verification)
     final txnRef = 'HULY${DateTime.now().millisecondsSinceEpoch}';
     final nowIso = DateTime.now().toIso8601String();
     final providerName = effectiveAppId == 'google_pay'
@@ -645,7 +739,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
         upiId: upiData.upiId,
         paymentMethod: 'UPI',
         transactionReference: txnRef,
-        status: 'PENDING',
+        status: paymentStatus,
         provider: providerName,
         latitude: capturedLocation?.latitude,
         longitude: capturedLocation?.longitude,
@@ -660,7 +754,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
         upiId: upiData.upiId,
         paymentMethod: 'UPI',
         transactionReference: txnRef,
-        status: 'PENDING',
+        status: paymentStatus,
         provider: providerName,
         latitude: capturedLocation?.latitude,
         longitude: capturedLocation?.longitude,
@@ -709,10 +803,139 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       return;
     }
 
-    // 5. Open Verification Modal and start listening for SMS
+    // 5. Open Verification Modal or Quick Confirm Dialog
     if (mounted) {
-      _showSmsVerificationDialog(pendingPayment, upiData);
+      if (isQuickConfirm) {
+        _showQuickConfirmSuccessDialog(pendingPayment, upiData);
+      } else {
+        _showSmsVerificationDialog(pendingPayment, upiData);
+      }
     }
+  }
+
+  void _showQuickConfirmSuccessDialog(PaymentModel payment, UpiPaymentData upiData) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E24),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: const Color(0xFF28A745).withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.check_circle_rounded,
+                  color: Color(0xFF28A745),
+                  size: 22,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Payment Successful',
+                style: TextStyle(
+                  fontFamily: 'Google Sans',
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Amount: ₹${payment.amount.toStringAsFixed(2)}',
+              style: const TextStyle(
+                fontFamily: 'Google Sans',
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Merchant: ${payment.merchantName ?? payment.upiId ?? "UPI Merchant"}',
+              style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 13),
+            ),
+            const SizedBox(height: 14),
+
+            // Quick Confirm Badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF161619),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: const Color(0xFF28A745).withValues(alpha: 0.3),
+                ),
+              ),
+              child: const Row(
+                children: [
+                  Icon(
+                    Icons.bolt_rounded,
+                    size: 18,
+                    color: Color(0xFFFFB300),
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Quick Confirm active • Confirmed',
+                      style: TextStyle(
+                        fontFamily: 'Google Sans',
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF28A745),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Payment has been marked as successful and recorded in your ledger without SMS verification.',
+              style: TextStyle(
+                fontFamily: 'Google Sans',
+                color: Color(0xFFA0A0A8),
+                fontSize: 12,
+                height: 1.4,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF28A745),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            ),
+            onPressed: () {
+              Navigator.of(dialogCtx).pop();
+              _handleBack(0); // Return to home on success
+            },
+            child: const Text(
+              'Done',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showSmsVerificationDialog(PaymentModel payment, UpiPaymentData upiData) {
