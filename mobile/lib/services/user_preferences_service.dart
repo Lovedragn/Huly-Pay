@@ -22,13 +22,18 @@ class UserPreferencesService {
   static const String keyAnalysisPeriod = 'user_pref_analysis_period';
   static const String keyDailyLimit = 'user_pref_daily_limit';
   static const String keyDefaultPaymentApp = 'user_pref_default_payment_app';
+  static const String keyQuickConfirm = 'user_pref_quick_confirm';
 
   String? _cachedAnalysisPeriod;
   double? _cachedDailyLimit;
   String _cachedDefaultPaymentApp = 'ask_every_time';
+  bool _cachedQuickConfirm = false;
 
   /// Synchronously returns preferred default payment app identifier
   String get cachedDefaultPaymentApp => _cachedDefaultPaymentApp;
+
+  /// Synchronously returns whether Quick Confirm is enabled
+  bool get cachedQuickConfirm => _cachedQuickConfirm;
 
   /// Synchronously returns any cached period in memory (e.g. from loadLocalPreferences)
   String? get cachedAnalysisPeriod => _cachedAnalysisPeriod;
@@ -75,6 +80,11 @@ class UserPreferencesService {
       final savedApp = await LocalDatabaseService().getMetadata(keyDefaultPaymentApp);
       if (savedApp != null && savedApp.isNotEmpty) {
         _cachedDefaultPaymentApp = savedApp;
+      }
+
+      final savedQuickConfirm = await LocalDatabaseService().getMetadata(keyQuickConfirm);
+      if (savedQuickConfirm != null) {
+        _cachedQuickConfirm = savedQuickConfirm.toLowerCase() == 'true';
       }
     } catch (e) {
       if (kDebugMode) {
@@ -154,6 +164,13 @@ class UserPreferencesService {
             _cachedDailyLimit = remoteLimit;
             await LocalDatabaseService().setMetadata(keyDailyLimit, remoteLimit.toString());
           }
+        }
+
+        if (response['quick_confirm'] != null) {
+          final bool remoteQuickConfirm = response['quick_confirm'] == true ||
+              response['quick_confirm'].toString().toLowerCase() == 'true';
+          _cachedQuickConfirm = remoteQuickConfirm;
+          await LocalDatabaseService().setMetadata(keyQuickConfirm, remoteQuickConfirm.toString());
         }
       }
     } catch (e) {
@@ -366,5 +383,45 @@ class UserPreferencesService {
       }
     } catch (_) {}
     return _cachedDefaultPaymentApp;
+  }
+
+  /// Sets whether Quick Confirm is enabled (bypassing SMS verification and auto-confirming scanned QR payments)
+  Future<void> setQuickConfirm(bool enabled) async {
+    _cachedQuickConfirm = enabled;
+    try {
+      await LocalDatabaseService().setMetadata(keyQuickConfirm, enabled.toString());
+    } catch (e) {
+      if (kDebugMode) {
+        print('UserPreferencesService: setQuickConfirm error: $e');
+      }
+    }
+
+    final client = _client;
+    final user = AuthService().currentUser;
+    if (client != null && user != null) {
+      try {
+        await client.from(tableUsersPreference).upsert({
+          'user_id': user.id,
+          'quick_confirm': enabled,
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
+        }, onConflict: 'user_id');
+      } catch (e) {
+        if (kDebugMode) {
+          print('UserPreferencesService: setQuickConfirm remote error: $e');
+        }
+      }
+    }
+  }
+
+  /// Gets whether Quick Confirm is enabled from local storage or cached state
+  Future<bool> getQuickConfirm() async {
+    try {
+      final saved = await LocalDatabaseService().getMetadata(keyQuickConfirm);
+      if (saved != null && saved.isNotEmpty) {
+        _cachedQuickConfirm = saved.toLowerCase() == 'true';
+        return _cachedQuickConfirm;
+      }
+    } catch (_) {}
+    return _cachedQuickConfirm;
   }
 }

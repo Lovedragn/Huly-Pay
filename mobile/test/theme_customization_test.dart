@@ -140,5 +140,32 @@ void main() {
       await tester.pumpAndSettle();
       expect(AppThemeManager.chartPalette, equals('Emerald Mint'));
     });
+
+    testWidgets('SettingsScreen displays and toggles Quick Confirm switch', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: SettingsScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final quickConfirmFinder = find.text('Quick Confirm');
+      await tester.ensureVisible(quickConfirmFinder);
+      await tester.pumpAndSettle();
+
+      expect(quickConfirmFinder, findsOneWidget);
+      expect(find.text('Bypass SMS check & auto-confirm QR payments'), findsOneWidget);
+
+      final switchFinder = find.byType(Switch);
+      expect(switchFinder, findsOneWidget);
+
+      final initialVal = tester.widget<Switch>(switchFinder).value;
+
+      // Tap the row to toggle
+      await tester.tap(quickConfirmFinder);
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<Switch>(switchFinder).value, equals(!initialVal));
+    });
   });
 }

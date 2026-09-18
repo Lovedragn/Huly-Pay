@@ -112,5 +112,36 @@ void main() {
       expect(await prefService.getAnalysisPeriod(), equals('1 Year'));
       expect(await dbService.getMetadata(UserPreferencesService.keyAnalysisPeriod), equals('1 Year'));
     });
+
+    test('setQuickConfirm and getQuickConfirm persist and restore Quick Confirm preference in local SQLite', () async {
+      // Default is false
+      expect(prefService.cachedQuickConfirm, isFalse);
+
+      // Enable Quick Confirm
+      await prefService.setQuickConfirm(true);
+      expect(prefService.cachedQuickConfirm, isTrue);
+
+      // Verify SQLite metadata
+      final stored = await dbService.getMetadata(UserPreferencesService.keyQuickConfirm);
+      expect(stored, equals('true'));
+
+      // Verify via getter
+      final restored = await prefService.getQuickConfirm();
+      expect(restored, isTrue);
+
+      // Disable Quick Confirm
+      await prefService.setQuickConfirm(false);
+      expect(prefService.cachedQuickConfirm, isFalse);
+      expect(await dbService.getMetadata(UserPreferencesService.keyQuickConfirm), equals('false'));
+      expect(await prefService.getQuickConfirm(), isFalse);
+    });
+
+    test('loadLocalPreferences restores Quick Confirm from SQLite metadata', () async {
+      await dbService.setMetadata(UserPreferencesService.keyQuickConfirm, 'true');
+
+      await prefService.loadLocalPreferences();
+
+      expect(prefService.cachedQuickConfirm, isTrue);
+    });
   });
 }

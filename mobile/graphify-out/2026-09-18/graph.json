@@ -4288,39 +4288,6 @@
       "source_location": null
     },
     {
-      "id": "lib_screens_home_dashboard_screen_buildheader",
-      "label": "_buildHeader",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "settings_screen.dart",
-      "file_type": "code",
-      "norm_label": "_buildheader",
-      "source_file": "lib/screens/home_dashboard_screen.dart",
-      "source_location": "L409"
-    },
-    {
-      "id": "lib_screens_scan_and_pay_screen_showpaymentconfirmationmodal",
-      "label": "_showPaymentConfirmationModal",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "settings_screen.dart",
-      "file_type": "code",
-      "norm_label": "_showpaymentconfirmationmodal",
-      "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L165"
-    },
-    {
-      "id": "lib_screens_scan_and_pay_screen_startsmsverificationworkflow",
-      "label": "_startSmsVerificationWorkflow",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "settings_screen.dart",
-      "file_type": "code",
-      "norm_label": "_startsmsverificationworkflow",
-      "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L549"
-    },
-    {
       "id": "lib_screens_settings_screen",
       "label": "settings_screen.dart",
       "_origin": "ast",
@@ -4365,17 +4332,6 @@
       "source_location": "L579"
     },
     {
-      "id": "lib_screens_settings_screen_buildaccountsection",
-      "label": "_buildAccountSection",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "settings_screen.dart",
-      "file_type": "code",
-      "norm_label": "_buildaccountsection",
-      "source_file": "lib/screens/settings_screen.dart",
-      "source_location": "L763"
-    },
-    {
       "id": "lib_screens_settings_screen_buildchartpaletteoptioncard",
       "label": "_buildChartPaletteOptionCard",
       "_origin": "ast",
@@ -4409,17 +4365,6 @@
       "source_location": "L877"
     },
     {
-      "id": "lib_screens_settings_screen_buildpreferencessection",
-      "label": "_buildPreferencesSection",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "settings_screen.dart",
-      "file_type": "code",
-      "norm_label": "_buildpreferencessection",
-      "source_file": "lib/screens/settings_screen.dart",
-      "source_location": "L795"
-    },
-    {
       "id": "lib_screens_settings_screen_buildprofilecard",
       "label": "_buildProfileCard",
       "_origin": "ast",
@@ -4440,17 +4385,6 @@
       "norm_label": "_buildsettingrow",
       "source_file": "lib/screens/settings_screen.dart",
       "source_location": "L947"
-    },
-    {
-      "id": "lib_screens_settings_screen_buildsupportsection",
-      "label": "_buildSupportSection",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "settings_screen.dart",
-      "file_type": "code",
-      "norm_label": "_buildsupportsection",
-      "source_file": "lib/screens/settings_screen.dart",
-      "source_location": "L834"
     },
     {
       "id": "lib_screens_settings_screen_buildswitchsettingrow",
@@ -4541,17 +4475,6 @@
       "source_location": "L41"
     },
     {
-      "id": "lib_screens_settings_screen_openscanandpay",
-      "label": "_openScanAndPay",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "settings_screen.dart",
-      "file_type": "code",
-      "norm_label": "_openscanandpay",
-      "source_file": "lib/screens/settings_screen.dart",
-      "source_location": "L117"
-    },
-    {
       "id": "lib_screens_settings_screen_quickconfirm",
       "label": "_quickConfirm",
       "_origin": "ast",
@@ -4572,28 +4495,6 @@
       "norm_label": "_resolveuser",
       "source_file": "lib/screens/settings_screen.dart",
       "source_location": "L51"
-    },
-    {
-      "id": "lib_screens_settings_screen_settingsscreen",
-      "label": "SettingsScreen",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "settings_screen.dart",
-      "file_type": "code",
-      "norm_label": "settingsscreen",
-      "source_file": "lib/screens/settings_screen.dart",
-      "source_location": "L18"
-    },
-    {
-      "id": "lib_screens_settings_screen_settingsscreenstate",
-      "label": "_SettingsScreenState",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "settings_screen.dart",
-      "file_type": "code",
-      "norm_label": "_settingsscreenstate",
-      "source_file": "lib/screens/settings_screen.dart",
-      "source_location": "L34"
     },
     {
       "id": "lib_screens_settings_screen_showcustomizationmodal",
@@ -4638,28 +4539,6 @@
       "norm_label": "username",
       "source_file": "lib/screens/settings_screen.dart",
       "source_location": "L19"
-    },
-    {
-      "id": "lib_widgets_transaction_tile_build",
-      "label": "build",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "settings_screen.dart",
-      "file_type": "code",
-      "norm_label": "build",
-      "source_file": "lib/widgets/transaction_tile.dart",
-      "source_location": "L20"
-    },
-    {
-      "id": "materialpageroute",
-      "label": "MaterialPageRoute",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "settings_screen.dart",
-      "file_type": "code",
-      "norm_label": "materialpageroute",
-      "source_file": null,
-      "source_location": null
     },
     {
       "id": "notifications_screen_dart",
@@ -5199,28 +5078,6 @@
       "norm_label": "shouldrepaint",
       "source_file": "lib/screens/splash_screen.dart",
       "source_location": "L350"
-    },
-    {
-      "id": "lib_screens_splash_screen_splashscreen",
-      "label": "SplashScreen",
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "splash_screen.dart",
-      "file_type": "code",
-      "norm_label": "splashscreen",
-      "source_file": "lib/screens/splash_screen.dart",
-      "source_location": "L17"
-    },
-    {
-      "id": "lib_screens_splash_screen_splashscreenstate",
-      "label": "_SplashScreenState",
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "splash_screen.dart",
-      "file_type": "code",
-      "norm_label": "_splashscreenstate",
-      "source_file": "lib/screens/splash_screen.dart",
-      "source_location": "L35"
     },
     {
       "id": "lib_screens_splash_screen_width",
@@ -8996,28 +8853,6 @@
       "source_location": "L21"
     },
     {
-      "id": "lib_screens_notifications_screen_notificationsscreen",
-      "label": "NotificationsScreen",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "notifications_screen.dart",
-      "file_type": "code",
-      "norm_label": "notificationsscreen",
-      "source_file": "lib/screens/notifications_screen.dart",
-      "source_location": "L4"
-    },
-    {
-      "id": "lib_screens_notifications_screen_notificationsscreenstate",
-      "label": "_NotificationsScreenState",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "notifications_screen.dart",
-      "file_type": "code",
-      "norm_label": "_notificationsscreenstate",
-      "source_file": "lib/screens/notifications_screen.dart",
-      "source_location": "L11"
-    },
-    {
       "id": "lib_screens_notifications_screen_pushnotifications",
       "label": "_pushNotifications",
       "_origin": "ast",
@@ -9060,17 +8895,6 @@
       "norm_label": "_transactionalerts",
       "source_file": "lib/screens/notifications_screen.dart",
       "source_location": "L17"
-    },
-    {
-      "id": "singletickerproviderstatemixin",
-      "label": "SingleTickerProviderStateMixin",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "notifications_screen.dart",
-      "file_type": "code",
-      "norm_label": "singletickerproviderstatemixin",
-      "source_file": null,
-      "source_location": null
     },
     {
       "id": "tabcontroller",
@@ -9566,6 +9390,28 @@
       "norm_label": "analysis_category_pie_chart.dart",
       "source_file": "lib/widgets/analysis_category_pie_chart.dart",
       "source_location": null
+    },
+    {
+      "id": "lib_widgets_analysis_category_pie_chart_analysiscategorypiechart",
+      "label": "AnalysisCategoryPieChart",
+      "_origin": "ast",
+      "community": 33,
+      "community_name": "analysis_category_pie_chart.dart",
+      "file_type": "code",
+      "norm_label": "analysiscategorypiechart",
+      "source_file": "lib/widgets/analysis_category_pie_chart.dart",
+      "source_location": "L10"
+    },
+    {
+      "id": "lib_widgets_analysis_category_pie_chart_analysiscategorypiechartstate",
+      "label": "_AnalysisCategoryPieChartState",
+      "_origin": "ast",
+      "community": 33,
+      "community_name": "analysis_category_pie_chart.dart",
+      "file_type": "code",
+      "norm_label": "_analysiscategorypiechartstate",
+      "source_file": "lib/widgets/analysis_category_pie_chart.dart",
+      "source_location": "L31"
     },
     {
       "id": "lib_widgets_analysis_category_pie_chart_build",
@@ -10816,7 +10662,7 @@
       "label": "privacy_security_screen.dart",
       "_origin": "ast",
       "community": 40,
-      "community_name": "../theme/app_theme.dart",
+      "community_name": "privacy_security_screen.dart",
       "file_type": "code",
       "norm_label": "privacy_security_screen.dart",
       "source_file": "lib/screens/privacy_security_screen.dart",
@@ -10827,7 +10673,7 @@
       "label": "build",
       "_origin": "ast",
       "community": 40,
-      "community_name": "../theme/app_theme.dart",
+      "community_name": "privacy_security_screen.dart",
       "file_type": "code",
       "norm_label": "build",
       "source_file": "lib/screens/privacy_security_screen.dart",
@@ -10838,7 +10684,7 @@
       "label": "_buildAppBar",
       "_origin": "ast",
       "community": 40,
-      "community_name": "../theme/app_theme.dart",
+      "community_name": "privacy_security_screen.dart",
       "file_type": "code",
       "norm_label": "_buildappbar",
       "source_file": "lib/screens/privacy_security_screen.dart",
@@ -10849,7 +10695,7 @@
       "label": "_buildBulletPoint",
       "_origin": "ast",
       "community": 40,
-      "community_name": "../theme/app_theme.dart",
+      "community_name": "privacy_security_screen.dart",
       "file_type": "code",
       "norm_label": "_buildbulletpoint",
       "source_file": "lib/screens/privacy_security_screen.dart",
@@ -10860,7 +10706,7 @@
       "label": "_buildDataCollectionCard",
       "_origin": "ast",
       "community": 40,
-      "community_name": "../theme/app_theme.dart",
+      "community_name": "privacy_security_screen.dart",
       "file_type": "code",
       "norm_label": "_builddatacollectioncard",
       "source_file": "lib/screens/privacy_security_screen.dart",
@@ -10871,7 +10717,7 @@
       "label": "_buildDevelopmentPrivacyNotice",
       "_origin": "ast",
       "community": 40,
-      "community_name": "../theme/app_theme.dart",
+      "community_name": "privacy_security_screen.dart",
       "file_type": "code",
       "norm_label": "_builddevelopmentprivacynotice",
       "source_file": "lib/screens/privacy_security_screen.dart",
@@ -10882,7 +10728,7 @@
       "label": "_buildProtocolItem",
       "_origin": "ast",
       "community": 40,
-      "community_name": "../theme/app_theme.dart",
+      "community_name": "privacy_security_screen.dart",
       "file_type": "code",
       "norm_label": "_buildprotocolitem",
       "source_file": "lib/screens/privacy_security_screen.dart",
@@ -10893,7 +10739,7 @@
       "label": "_buildSecurityBanner",
       "_origin": "ast",
       "community": 40,
-      "community_name": "../theme/app_theme.dart",
+      "community_name": "privacy_security_screen.dart",
       "file_type": "code",
       "norm_label": "_buildsecuritybanner",
       "source_file": "lib/screens/privacy_security_screen.dart",
@@ -10904,22 +10750,22 @@
       "label": "_buildSecurityProtocolsCard",
       "_origin": "ast",
       "community": 40,
-      "community_name": "../theme/app_theme.dart",
+      "community_name": "privacy_security_screen.dart",
       "file_type": "code",
       "norm_label": "_buildsecurityprotocolscard",
       "source_file": "lib/screens/privacy_security_screen.dart",
       "source_location": "L249"
     },
     {
-      "id": "theme_app_theme_dart",
-      "label": "../theme/app_theme.dart",
+      "id": "lib_screens_privacy_security_screen_privacysecurityscreen",
+      "label": "PrivacySecurityScreen",
       "_origin": "ast",
       "community": 40,
-      "community_name": "../theme/app_theme.dart",
+      "community_name": "privacy_security_screen.dart",
       "file_type": "code",
-      "norm_label": "../theme/app_theme.dart",
-      "source_file": null,
-      "source_location": null
+      "norm_label": "privacysecurityscreen",
+      "source_file": "lib/screens/privacy_security_screen.dart",
+      "source_location": "L4"
     },
     {
       "id": "lib_main_hulypayapp",
@@ -10944,17 +10790,6 @@
       "source_location": "L5"
     },
     {
-      "id": "lib_screens_privacy_security_screen_privacysecurityscreen",
-      "label": "PrivacySecurityScreen",
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "StatelessWidget",
-      "file_type": "code",
-      "norm_label": "privacysecurityscreen",
-      "source_file": "lib/screens/privacy_security_screen.dart",
-      "source_location": "L4"
-    },
-    {
       "id": "lib_screens_splash_screen_animatedhulylogo",
       "label": "AnimatedHulyLogo",
       "_origin": "ast",
@@ -10975,6 +10810,17 @@
       "norm_label": "animatedwavebackground",
       "source_file": "lib/screens/splash_screen.dart",
       "source_location": "L261"
+    },
+    {
+      "id": "lib_widgets_action_button_quickactionbutton",
+      "label": "QuickActionButton",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "StatelessWidget",
+      "file_type": "code",
+      "norm_label": "quickactionbutton",
+      "source_file": "lib/widgets/action_button.dart",
+      "source_location": "L5"
     },
     {
       "id": "lib_widgets_spending_heatmap_heatmapgridwidget",
@@ -11201,7 +11047,7 @@
       "label": "IconData?",
       "_origin": "ast",
       "community": 44,
-      "community_name": "action_button.dart",
+      "community_name": "../theme/app_theme.dart",
       "file_type": "code",
       "norm_label": "icondata?",
       "source_file": null,
@@ -11212,7 +11058,7 @@
       "label": "action_button.dart",
       "_origin": "ast",
       "community": 44,
-      "community_name": "action_button.dart",
+      "community_name": "../theme/app_theme.dart",
       "file_type": "code",
       "norm_label": "action_button.dart",
       "source_file": "lib/widgets/action_button.dart",
@@ -11223,7 +11069,7 @@
       "label": "build",
       "_origin": "ast",
       "community": 44,
-      "community_name": "action_button.dart",
+      "community_name": "../theme/app_theme.dart",
       "file_type": "code",
       "norm_label": "build",
       "source_file": "lib/widgets/action_button.dart",
@@ -11234,7 +11080,7 @@
       "label": "icon",
       "_origin": "ast",
       "community": 44,
-      "community_name": "action_button.dart",
+      "community_name": "../theme/app_theme.dart",
       "file_type": "code",
       "norm_label": "icon",
       "source_file": "lib/widgets/action_button.dart",
@@ -11245,7 +11091,7 @@
       "label": "label",
       "_origin": "ast",
       "community": 44,
-      "community_name": "action_button.dart",
+      "community_name": "../theme/app_theme.dart",
       "file_type": "code",
       "norm_label": "label",
       "source_file": "lib/widgets/action_button.dart",
@@ -11256,40 +11102,128 @@
       "label": "onTap",
       "_origin": "ast",
       "community": 44,
-      "community_name": "action_button.dart",
+      "community_name": "../theme/app_theme.dart",
       "file_type": "code",
       "norm_label": "ontap",
       "source_file": "lib/widgets/action_button.dart",
       "source_location": "L9"
     },
     {
-      "id": "lib_widgets_action_button_quickactionbutton",
-      "label": "QuickActionButton",
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "action_button.dart",
-      "file_type": "code",
-      "norm_label": "quickactionbutton",
-      "source_file": "lib/widgets/action_button.dart",
-      "source_location": "L5"
-    },
-    {
       "id": "lib_widgets_action_button_svgasset",
       "label": "svgAsset",
       "_origin": "ast",
       "community": 44,
-      "community_name": "action_button.dart",
+      "community_name": "../theme/app_theme.dart",
       "file_type": "code",
       "norm_label": "svgasset",
       "source_file": "lib/widgets/action_button.dart",
       "source_location": "L7"
     },
     {
+      "id": "lib_widgets_custom_bottom_nav_bar",
+      "label": "custom_bottom_nav_bar.dart",
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "custom_bottom_nav_bar.dart",
+      "source_file": "lib/widgets/custom_bottom_nav_bar.dart",
+      "source_location": null
+    },
+    {
+      "id": "lib_widgets_custom_bottom_nav_bar_build",
+      "label": "build",
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "build",
+      "source_file": "lib/widgets/custom_bottom_nav_bar.dart",
+      "source_location": "L17"
+    },
+    {
+      "id": "lib_widgets_custom_bottom_nav_bar_buildnavitem",
+      "label": "_buildNavItem",
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "_buildnavitem",
+      "source_file": "lib/widgets/custom_bottom_nav_bar.dart",
+      "source_location": "L71"
+    },
+    {
+      "id": "lib_widgets_custom_bottom_nav_bar_custombottomnavbar",
+      "label": "CustomBottomNavBar",
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "custombottomnavbar",
+      "source_file": "lib/widgets/custom_bottom_nav_bar.dart",
+      "source_location": "L6"
+    },
+    {
+      "id": "lib_widgets_custom_bottom_nav_bar_onitemselected",
+      "label": "onItemSelected",
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "onitemselected",
+      "source_file": "lib/widgets/custom_bottom_nav_bar.dart",
+      "source_location": "L8"
+    },
+    {
+      "id": "lib_widgets_custom_bottom_nav_bar_selectedindex",
+      "label": "selectedIndex",
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "selectedindex",
+      "source_file": "lib/widgets/custom_bottom_nav_bar.dart",
+      "source_location": "L7"
+    },
+    {
+      "id": "package_flutter_svg_flutter_svg_dart",
+      "label": "package:flutter_svg/flutter_svg.dart",
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "package:flutter_svg/flutter_svg.dart",
+      "source_file": null,
+      "source_location": null
+    },
+    {
+      "id": "theme_app_theme_dart",
+      "label": "../theme/app_theme.dart",
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "../theme/app_theme.dart",
+      "source_file": null,
+      "source_location": null
+    },
+    {
+      "id": "valuechanged",
+      "label": "ValueChanged",
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "valuechanged",
+      "source_file": null,
+      "source_location": null
+    },
+    {
       "id": "voidcallback",
       "label": "VoidCallback?",
       "_origin": "ast",
       "community": 44,
-      "community_name": "action_button.dart",
+      "community_name": "../theme/app_theme.dart",
       "file_type": "code",
       "norm_label": "voidcallback?",
       "source_file": null,
@@ -11612,7 +11546,7 @@
       "file_type": "code",
       "norm_label": "scannerframepainter",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1530"
+      "source_location": "L1469"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_scanneroverlaypainter",
@@ -11623,7 +11557,7 @@
       "file_type": "code",
       "norm_label": "scanneroverlaypainter",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1598"
+      "source_location": "L1537"
     },
     {
       "id": "lib_screens_single_transaction_screen_mapgridpainter",
@@ -12319,48 +12253,114 @@
       "source_location": "L32"
     },
     {
-      "id": "lib_screens_single_transaction_screen_singletransactionscreen",
-      "label": "SingleTransactionScreen",
+      "id": "lib_screens_home_dashboard_screen_homedashboardscreen",
+      "label": "HomeDashboardScreen",
       "_origin": "ast",
       "community": 50,
       "community_name": "State",
       "file_type": "code",
-      "norm_label": "singletransactionscreen",
-      "source_file": "lib/screens/single_transaction_screen.dart",
-      "source_location": "L14"
+      "norm_label": "homedashboardscreen",
+      "source_file": "lib/screens/home_dashboard_screen.dart",
+      "source_location": "L21"
     },
     {
-      "id": "lib_screens_single_transaction_screen_singletransactionscreenstate",
-      "label": "_SingleTransactionScreenState",
+      "id": "lib_screens_home_dashboard_screen_homedashboardscreenstate",
+      "label": "_HomeDashboardScreenState",
       "_origin": "ast",
       "community": 50,
       "community_name": "State",
       "file_type": "code",
-      "norm_label": "_singletransactionscreenstate",
-      "source_file": "lib/screens/single_transaction_screen.dart",
-      "source_location": "L31"
+      "norm_label": "_homedashboardscreenstate",
+      "source_file": "lib/screens/home_dashboard_screen.dart",
+      "source_location": "L33"
     },
     {
-      "id": "lib_widgets_analysis_category_pie_chart_analysiscategorypiechart",
-      "label": "AnalysisCategoryPieChart",
+      "id": "lib_screens_notifications_screen_notificationsscreen",
+      "label": "NotificationsScreen",
       "_origin": "ast",
       "community": 50,
       "community_name": "State",
       "file_type": "code",
-      "norm_label": "analysiscategorypiechart",
-      "source_file": "lib/widgets/analysis_category_pie_chart.dart",
-      "source_location": "L10"
+      "norm_label": "notificationsscreen",
+      "source_file": "lib/screens/notifications_screen.dart",
+      "source_location": "L4"
     },
     {
-      "id": "lib_widgets_analysis_category_pie_chart_analysiscategorypiechartstate",
-      "label": "_AnalysisCategoryPieChartState",
+      "id": "lib_screens_notifications_screen_notificationsscreenstate",
+      "label": "_NotificationsScreenState",
       "_origin": "ast",
       "community": 50,
       "community_name": "State",
       "file_type": "code",
-      "norm_label": "_analysiscategorypiechartstate",
-      "source_file": "lib/widgets/analysis_category_pie_chart.dart",
-      "source_location": "L31"
+      "norm_label": "_notificationsscreenstate",
+      "source_file": "lib/screens/notifications_screen.dart",
+      "source_location": "L11"
+    },
+    {
+      "id": "lib_screens_settings_screen_settingsscreen",
+      "label": "SettingsScreen",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "settingsscreen",
+      "source_file": "lib/screens/settings_screen.dart",
+      "source_location": "L18"
+    },
+    {
+      "id": "lib_screens_settings_screen_settingsscreenstate",
+      "label": "_SettingsScreenState",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "_settingsscreenstate",
+      "source_file": "lib/screens/settings_screen.dart",
+      "source_location": "L34"
+    },
+    {
+      "id": "lib_screens_sign_in_screen_signinscreen",
+      "label": "SignInScreen",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "signinscreen",
+      "source_file": "lib/screens/sign_in_screen.dart",
+      "source_location": "L11"
+    },
+    {
+      "id": "lib_screens_sign_in_screen_signinscreenstate",
+      "label": "_SignInScreenState",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "_signinscreenstate",
+      "source_file": "lib/screens/sign_in_screen.dart",
+      "source_location": "L27"
+    },
+    {
+      "id": "lib_screens_splash_screen_splashscreen",
+      "label": "SplashScreen",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "splashscreen",
+      "source_file": "lib/screens/splash_screen.dart",
+      "source_location": "L17"
+    },
+    {
+      "id": "lib_screens_splash_screen_splashscreenstate",
+      "label": "_SplashScreenState",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "_splashscreenstate",
+      "source_file": "lib/screens/splash_screen.dart",
+      "source_location": "L35"
     },
     {
       "id": "lib_widgets_home_spend_trend_line_chart_homespendtrendlinechart",
@@ -12385,26 +12385,15 @@
       "source_location": "L28"
     },
     {
-      "id": "lib_widgets_home_weekly_bar_chart_homeweeklybarchart",
-      "label": "HomeWeeklyBarChart",
+      "id": "singletickerproviderstatemixin",
+      "label": "SingleTickerProviderStateMixin",
       "_origin": "ast",
       "community": 50,
       "community_name": "State",
       "file_type": "code",
-      "norm_label": "homeweeklybarchart",
-      "source_file": "lib/widgets/home_weekly_bar_chart.dart",
-      "source_location": "L11"
-    },
-    {
-      "id": "lib_widgets_home_weekly_bar_chart_homeweeklybarchartstate",
-      "label": "_HomeWeeklyBarChartState",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "_homeweeklybarchartstate",
-      "source_file": "lib/widgets/home_weekly_bar_chart.dart",
-      "source_location": "L21"
+      "norm_label": "singletickerproviderstatemixin",
+      "source_file": null,
+      "source_location": null
     },
     {
       "id": "state",
@@ -12425,6 +12414,28 @@
       "community_name": "State",
       "file_type": "code",
       "norm_label": "statefulwidget",
+      "source_file": null,
+      "source_location": null
+    },
+    {
+      "id": "tickerproviderstatemixin",
+      "label": "TickerProviderStateMixin",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "tickerproviderstatemixin",
+      "source_file": null,
+      "source_location": null
+    },
+    {
+      "id": "widgetsbindingobserver",
+      "label": "WidgetsBindingObserver",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "widgetsbindingobserver",
       "source_file": null,
       "source_location": null
     },
@@ -12654,6 +12665,28 @@
       "source_location": "L288"
     },
     {
+      "id": "lib_widgets_home_weekly_bar_chart_homeweeklybarchart",
+      "label": "HomeWeeklyBarChart",
+      "_origin": "ast",
+      "community": 56,
+      "community_name": "home_weekly_bar_chart.dart",
+      "file_type": "code",
+      "norm_label": "homeweeklybarchart",
+      "source_file": "lib/widgets/home_weekly_bar_chart.dart",
+      "source_location": "L11"
+    },
+    {
+      "id": "lib_widgets_home_weekly_bar_chart_homeweeklybarchartstate",
+      "label": "_HomeWeeklyBarChartState",
+      "_origin": "ast",
+      "community": 56,
+      "community_name": "home_weekly_bar_chart.dart",
+      "file_type": "code",
+      "norm_label": "_homeweeklybarchartstate",
+      "source_file": "lib/widgets/home_weekly_bar_chart.dart",
+      "source_location": "L21"
+    },
+    {
       "id": "lib_widgets_home_weekly_bar_chart_ontap",
       "label": "onTap",
       "_origin": "ast",
@@ -12816,7 +12849,7 @@
       "file_type": "code",
       "norm_label": "build",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1261"
+      "source_location": "L1200"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_cornercolor",
@@ -12827,7 +12860,7 @@
       "file_type": "code",
       "norm_label": "cornercolor",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1531"
+      "source_location": "L1470"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_cornerlength",
@@ -12838,7 +12871,7 @@
       "file_type": "code",
       "norm_label": "cornerlength",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1532"
+      "source_location": "L1471"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_cornerradius",
@@ -12849,7 +12882,7 @@
       "file_type": "code",
       "norm_label": "cornerradius",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1534"
+      "source_location": "L1473"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_createstate",
@@ -12860,7 +12893,7 @@
       "file_type": "code",
       "norm_label": "createstate",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L22"
+      "source_location": "L21"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_cutoutrect",
@@ -12871,7 +12904,7 @@
       "file_type": "code",
       "norm_label": "cutoutrect",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1599"
+      "source_location": "L1538"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_dispose",
@@ -12882,7 +12915,7 @@
       "file_type": "code",
       "norm_label": "dispose",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L44"
+      "source_location": "L43"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_handleback",
@@ -12893,7 +12926,7 @@
       "file_type": "code",
       "norm_label": "_handleback",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L49"
+      "source_location": "L48"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_handlebarcodedetected",
@@ -12904,7 +12937,7 @@
       "file_type": "code",
       "norm_label": "_handlebarcodedetected",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L102"
+      "source_location": "L101"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_handleinvalidbarcodedetected",
@@ -12915,7 +12948,7 @@
       "file_type": "code",
       "norm_label": "_handleinvalidbarcodedetected",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L117"
+      "source_location": "L116"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_initstate",
@@ -12926,7 +12959,7 @@
       "file_type": "code",
       "norm_label": "initstate",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L33"
+      "source_location": "L32"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_isflashon",
@@ -12937,7 +12970,7 @@
       "file_type": "code",
       "norm_label": "_isflashon",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L27"
+      "source_location": "L26"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_isfrontcamera",
@@ -12948,7 +12981,7 @@
       "file_type": "code",
       "norm_label": "_isfrontcamera",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L28"
+      "source_location": "L27"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_isprocessing",
@@ -12959,7 +12992,7 @@
       "file_type": "code",
       "norm_label": "_isprocessing",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L29"
+      "source_location": "L28"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_lastinvalidqrtoasttime",
@@ -12970,7 +13003,7 @@
       "file_type": "code",
       "norm_label": "_lastinvalidqrtoasttime",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L30"
+      "source_location": "L29"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_launchupiandstartverification",
@@ -12981,7 +13014,7 @@
       "file_type": "code",
       "norm_label": "_launchupiandstartverification",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L710"
+      "source_location": "L649"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_overlaycolor",
@@ -12992,7 +13025,7 @@
       "file_type": "code",
       "norm_label": "overlaycolor",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1601"
+      "source_location": "L1540"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_paint",
@@ -13003,7 +13036,7 @@
       "file_type": "code",
       "norm_label": "paint",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1544"
+      "source_location": "L1483"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_paymentverificationtimeout",
@@ -13014,7 +13047,7 @@
       "file_type": "code",
       "norm_label": "paymentverificationtimeout",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L547"
+      "source_location": "L486"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_processpaymentflow",
@@ -13025,7 +13058,7 @@
       "file_type": "code",
       "norm_label": "_processpaymentflow",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L148"
+      "source_location": "L147"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_scannercontroller",
@@ -13036,7 +13069,7 @@
       "file_type": "code",
       "norm_label": "_scannercontroller",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L26"
+      "source_location": "L25"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_shouldrepaint",
@@ -13047,7 +13080,18 @@
       "file_type": "code",
       "norm_label": "shouldrepaint",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1591"
+      "source_location": "L1530"
+    },
+    {
+      "id": "lib_screens_scan_and_pay_screen_showpaymentconfirmationmodal",
+      "label": "_showPaymentConfirmationModal",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "scan_and_pay_screen.dart",
+      "file_type": "code",
+      "norm_label": "_showpaymentconfirmationmodal",
+      "source_file": "lib/screens/scan_and_pay_screen.dart",
+      "source_location": "L164"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_showquickconfirmsuccessdialog",
@@ -13058,7 +13102,7 @@
       "file_type": "code",
       "norm_label": "_showquickconfirmsuccessdialog",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L816"
+      "source_location": "L755"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_showsmsverificationdialog",
@@ -13069,7 +13113,7 @@
       "file_type": "code",
       "norm_label": "_showsmsverificationdialog",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L941"
+      "source_location": "L880"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_strokewidth",
@@ -13080,7 +13124,7 @@
       "file_type": "code",
       "norm_label": "strokewidth",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1533"
+      "source_location": "L1472"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_togglecamera",
@@ -13091,7 +13135,7 @@
       "file_type": "code",
       "norm_label": "_togglecamera",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L68"
+      "source_location": "L67"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_toggleflash",
@@ -13102,7 +13146,7 @@
       "file_type": "code",
       "norm_label": "_toggleflash",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L55"
+      "source_location": "L54"
     },
     {
       "id": "mobilescannercontroller",
@@ -13245,7 +13289,7 @@
       "file_type": "code",
       "norm_label": "scanandpayscreen",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L18"
+      "source_location": "L17"
     },
     {
       "id": "lib_screens_scan_and_pay_screen_scanandpayscreenstate",
@@ -13256,161 +13300,117 @@
       "file_type": "code",
       "norm_label": "_scanandpayscreenstate",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L25"
+      "source_location": "L24"
     },
     {
-      "id": "lib_widgets_custom_bottom_nav_bar",
-      "label": "custom_bottom_nav_bar.dart",
+      "id": "lib_screens_home_dashboard_screen_buildheader",
+      "label": "_buildHeader",
       "_origin": "ast",
       "community": 66,
-      "community_name": "custom_bottom_nav_bar.dart",
+      "community_name": "MaterialPageRoute",
       "file_type": "code",
-      "norm_label": "custom_bottom_nav_bar.dart",
-      "source_file": "lib/widgets/custom_bottom_nav_bar.dart",
-      "source_location": null
+      "norm_label": "_buildheader",
+      "source_file": "lib/screens/home_dashboard_screen.dart",
+      "source_location": "L409"
     },
     {
-      "id": "lib_widgets_custom_bottom_nav_bar_build",
+      "id": "lib_screens_scan_and_pay_screen_startsmsverificationworkflow",
+      "label": "_startSmsVerificationWorkflow",
+      "_origin": "ast",
+      "community": 66,
+      "community_name": "MaterialPageRoute",
+      "file_type": "code",
+      "norm_label": "_startsmsverificationworkflow",
+      "source_file": "lib/screens/scan_and_pay_screen.dart",
+      "source_location": "L488"
+    },
+    {
+      "id": "lib_screens_settings_screen_buildaccountsection",
+      "label": "_buildAccountSection",
+      "_origin": "ast",
+      "community": 66,
+      "community_name": "MaterialPageRoute",
+      "file_type": "code",
+      "norm_label": "_buildaccountsection",
+      "source_file": "lib/screens/settings_screen.dart",
+      "source_location": "L763"
+    },
+    {
+      "id": "lib_screens_settings_screen_buildpreferencessection",
+      "label": "_buildPreferencesSection",
+      "_origin": "ast",
+      "community": 66,
+      "community_name": "MaterialPageRoute",
+      "file_type": "code",
+      "norm_label": "_buildpreferencessection",
+      "source_file": "lib/screens/settings_screen.dart",
+      "source_location": "L795"
+    },
+    {
+      "id": "lib_screens_settings_screen_buildsupportsection",
+      "label": "_buildSupportSection",
+      "_origin": "ast",
+      "community": 66,
+      "community_name": "MaterialPageRoute",
+      "file_type": "code",
+      "norm_label": "_buildsupportsection",
+      "source_file": "lib/screens/settings_screen.dart",
+      "source_location": "L834"
+    },
+    {
+      "id": "lib_screens_settings_screen_openscanandpay",
+      "label": "_openScanAndPay",
+      "_origin": "ast",
+      "community": 66,
+      "community_name": "MaterialPageRoute",
+      "file_type": "code",
+      "norm_label": "_openscanandpay",
+      "source_file": "lib/screens/settings_screen.dart",
+      "source_location": "L117"
+    },
+    {
+      "id": "lib_widgets_transaction_tile_build",
       "label": "build",
       "_origin": "ast",
       "community": 66,
-      "community_name": "custom_bottom_nav_bar.dart",
+      "community_name": "MaterialPageRoute",
       "file_type": "code",
       "norm_label": "build",
-      "source_file": "lib/widgets/custom_bottom_nav_bar.dart",
-      "source_location": "L17"
+      "source_file": "lib/widgets/transaction_tile.dart",
+      "source_location": "L20"
     },
     {
-      "id": "lib_widgets_custom_bottom_nav_bar_buildnavitem",
-      "label": "_buildNavItem",
+      "id": "materialpageroute",
+      "label": "MaterialPageRoute",
       "_origin": "ast",
       "community": 66,
-      "community_name": "custom_bottom_nav_bar.dart",
+      "community_name": "MaterialPageRoute",
       "file_type": "code",
-      "norm_label": "_buildnavitem",
-      "source_file": "lib/widgets/custom_bottom_nav_bar.dart",
-      "source_location": "L71"
-    },
-    {
-      "id": "lib_widgets_custom_bottom_nav_bar_custombottomnavbar",
-      "label": "CustomBottomNavBar",
-      "_origin": "ast",
-      "community": 66,
-      "community_name": "custom_bottom_nav_bar.dart",
-      "file_type": "code",
-      "norm_label": "custombottomnavbar",
-      "source_file": "lib/widgets/custom_bottom_nav_bar.dart",
-      "source_location": "L6"
-    },
-    {
-      "id": "lib_widgets_custom_bottom_nav_bar_onitemselected",
-      "label": "onItemSelected",
-      "_origin": "ast",
-      "community": 66,
-      "community_name": "custom_bottom_nav_bar.dart",
-      "file_type": "code",
-      "norm_label": "onitemselected",
-      "source_file": "lib/widgets/custom_bottom_nav_bar.dart",
-      "source_location": "L8"
-    },
-    {
-      "id": "lib_widgets_custom_bottom_nav_bar_selectedindex",
-      "label": "selectedIndex",
-      "_origin": "ast",
-      "community": 66,
-      "community_name": "custom_bottom_nav_bar.dart",
-      "file_type": "code",
-      "norm_label": "selectedindex",
-      "source_file": "lib/widgets/custom_bottom_nav_bar.dart",
-      "source_location": "L7"
-    },
-    {
-      "id": "package_flutter_svg_flutter_svg_dart",
-      "label": "package:flutter_svg/flutter_svg.dart",
-      "_origin": "ast",
-      "community": 66,
-      "community_name": "custom_bottom_nav_bar.dart",
-      "file_type": "code",
-      "norm_label": "package:flutter_svg/flutter_svg.dart",
+      "norm_label": "materialpageroute",
       "source_file": null,
       "source_location": null
     },
     {
-      "id": "valuechanged",
-      "label": "ValueChanged",
-      "_origin": "ast",
-      "community": 66,
-      "community_name": "custom_bottom_nav_bar.dart",
-      "file_type": "code",
-      "norm_label": "valuechanged",
-      "source_file": null,
-      "source_location": null
-    },
-    {
-      "id": "lib_screens_home_dashboard_screen_homedashboardscreen",
-      "label": "HomeDashboardScreen",
+      "id": "lib_screens_single_transaction_screen_singletransactionscreen",
+      "label": "SingleTransactionScreen",
       "_origin": "ast",
       "community": 67,
-      "community_name": "_HomeDashboardScreenState",
+      "community_name": "SingleTransactionScreen",
       "file_type": "code",
-      "norm_label": "homedashboardscreen",
-      "source_file": "lib/screens/home_dashboard_screen.dart",
-      "source_location": "L21"
+      "norm_label": "singletransactionscreen",
+      "source_file": "lib/screens/single_transaction_screen.dart",
+      "source_location": "L14"
     },
     {
-      "id": "lib_screens_home_dashboard_screen_homedashboardscreenstate",
-      "label": "_HomeDashboardScreenState",
+      "id": "lib_screens_single_transaction_screen_singletransactionscreenstate",
+      "label": "_SingleTransactionScreenState",
       "_origin": "ast",
       "community": 67,
-      "community_name": "_HomeDashboardScreenState",
+      "community_name": "SingleTransactionScreen",
       "file_type": "code",
-      "norm_label": "_homedashboardscreenstate",
-      "source_file": "lib/screens/home_dashboard_screen.dart",
-      "source_location": "L33"
-    },
-    {
-      "id": "lib_screens_sign_in_screen_signinscreen",
-      "label": "SignInScreen",
-      "_origin": "ast",
-      "community": 67,
-      "community_name": "_HomeDashboardScreenState",
-      "file_type": "code",
-      "norm_label": "signinscreen",
-      "source_file": "lib/screens/sign_in_screen.dart",
-      "source_location": "L11"
-    },
-    {
-      "id": "lib_screens_sign_in_screen_signinscreenstate",
-      "label": "_SignInScreenState",
-      "_origin": "ast",
-      "community": 67,
-      "community_name": "_HomeDashboardScreenState",
-      "file_type": "code",
-      "norm_label": "_signinscreenstate",
-      "source_file": "lib/screens/sign_in_screen.dart",
-      "source_location": "L27"
-    },
-    {
-      "id": "tickerproviderstatemixin",
-      "label": "TickerProviderStateMixin",
-      "_origin": "ast",
-      "community": 67,
-      "community_name": "_HomeDashboardScreenState",
-      "file_type": "code",
-      "norm_label": "tickerproviderstatemixin",
-      "source_file": null,
-      "source_location": null
-    },
-    {
-      "id": "widgetsbindingobserver",
-      "label": "WidgetsBindingObserver",
-      "_origin": "ast",
-      "community": 67,
-      "community_name": "_HomeDashboardScreenState",
-      "file_type": "code",
-      "norm_label": "widgetsbindingobserver",
-      "source_file": null,
-      "source_location": null
+      "norm_label": "_singletransactionscreenstate",
+      "source_file": "lib/screens/single_transaction_screen.dart",
+      "source_location": "L31"
     },
     {
       "id": "lib_widgets_home_spend_trend_line_chart",
@@ -16546,18 +16546,6 @@
       "weight": 1.0
     },
     {
-      "source": "lib_screens_scan_and_pay_screen_showpaymentconfirmationmodal",
-      "target": "materialpageroute",
-      "relation": "navigates",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "route_object",
-      "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L191",
-      "weight": 1.0
-    },
-    {
       "source": "lib_screens_scan_and_pay_screen_startsmsverificationworkflow",
       "target": "materialpageroute",
       "relation": "navigates",
@@ -16566,7 +16554,7 @@
       "confidence_score": 1.0,
       "context": "route_object",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L673",
+      "source_location": "L612",
       "weight": 1.0
     },
     {
@@ -17022,7 +17010,7 @@
       "confidence_score": 1.0,
       "context": "variable_type",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1531",
+      "source_location": "L1470",
       "weight": 1.0
     },
     {
@@ -17034,7 +17022,7 @@
       "confidence_score": 1.0,
       "context": "variable_type",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L26",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -17046,7 +17034,7 @@
       "confidence_score": 1.0,
       "context": "variable_type",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L30",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -17058,7 +17046,7 @@
       "confidence_score": 1.0,
       "context": "variable_type",
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L547",
+      "source_location": "L486",
       "weight": 1.0
     },
     {
@@ -21793,7 +21781,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L102",
+      "source_location": "L101",
       "weight": 1.0
     },
     {
@@ -21804,7 +21792,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L117",
+      "source_location": "L116",
       "weight": 1.0
     },
     {
@@ -21815,18 +21803,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1261",
-      "weight": 1.0
-    },
-    {
-      "source": "lib_screens_scan_and_pay_screen",
-      "target": "lib_screens_scan_and_pay_screen_processpaymentflow",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L148",
+      "source_location": "L1200",
       "weight": 1.0
     },
     {
@@ -21837,7 +21814,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1530",
+      "source_location": "L1469",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_screens_scan_and_pay_screen",
+      "target": "lib_screens_scan_and_pay_screen_processpaymentflow",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/scan_and_pay_screen.dart",
+      "source_location": "L147",
       "weight": 1.0
     },
     {
@@ -21848,7 +21836,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1531",
+      "source_location": "L1470",
       "weight": 1.0
     },
     {
@@ -21859,7 +21847,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1532",
+      "source_location": "L1471",
       "weight": 1.0
     },
     {
@@ -21870,7 +21858,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1533",
+      "source_location": "L1472",
       "weight": 1.0
     },
     {
@@ -21881,7 +21869,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1534",
+      "source_location": "L1473",
       "weight": 1.0
     },
     {
@@ -21892,7 +21880,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1544",
+      "source_location": "L1483",
       "weight": 1.0
     },
     {
@@ -21903,7 +21891,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1591",
+      "source_location": "L1530",
       "weight": 1.0
     },
     {
@@ -21914,7 +21902,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1598",
+      "source_location": "L1537",
       "weight": 1.0
     },
     {
@@ -21925,7 +21913,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1599",
+      "source_location": "L1538",
       "weight": 1.0
     },
     {
@@ -21936,7 +21924,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1601",
+      "source_location": "L1540",
       "weight": 1.0
     },
     {
@@ -21947,7 +21935,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L165",
+      "source_location": "L164",
       "weight": 1.0
     },
     {
@@ -21958,7 +21946,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L18",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -21969,7 +21957,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L22",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -21980,7 +21968,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L25",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -21991,7 +21979,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L26",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -22002,7 +21990,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L27",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -22013,7 +22001,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L28",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -22024,7 +22012,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L29",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
@@ -22035,7 +22023,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L30",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -22046,7 +22034,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L33",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -22057,7 +22045,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L44",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -22068,7 +22056,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L49",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -22079,7 +22067,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L547",
+      "source_location": "L486",
       "weight": 1.0
     },
     {
@@ -22090,7 +22078,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L549",
+      "source_location": "L488",
       "weight": 1.0
     },
     {
@@ -22101,18 +22089,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L55",
-      "weight": 1.0
-    },
-    {
-      "source": "lib_screens_scan_and_pay_screen",
-      "target": "lib_screens_scan_and_pay_screen_togglecamera",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L68",
+      "source_location": "L54",
       "weight": 1.0
     },
     {
@@ -22123,7 +22100,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L710",
+      "source_location": "L649",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_screens_scan_and_pay_screen",
+      "target": "lib_screens_scan_and_pay_screen_togglecamera",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/scan_and_pay_screen.dart",
+      "source_location": "L67",
       "weight": 1.0
     },
     {
@@ -22134,7 +22122,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L816",
+      "source_location": "L755",
       "weight": 1.0
     },
     {
@@ -22145,7 +22133,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L941",
+      "source_location": "L880",
       "weight": 1.0
     },
     {
@@ -29399,7 +29387,7 @@
     },
     {
       "source": "lib_screens_scan_and_pay_screen",
-      "target": "theme_app_theme_dart",
+      "target": "payment_methods_screen_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -29410,24 +29398,13 @@
     },
     {
       "source": "lib_screens_scan_and_pay_screen",
-      "target": "payment_methods_screen_dart",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L15",
-      "weight": 1.0
-    },
-    {
-      "source": "lib_screens_scan_and_pay_screen",
       "target": "widgets_custom_bottom_nav_bar_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L16",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -32430,7 +32407,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L18",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -32441,7 +32418,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L25",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -32452,7 +32429,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1530",
+      "source_location": "L1469",
       "weight": 1.0
     },
     {
@@ -32463,7 +32440,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L1598",
+      "source_location": "L1537",
       "weight": 1.0
     },
     {
@@ -33189,7 +33166,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L25",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
