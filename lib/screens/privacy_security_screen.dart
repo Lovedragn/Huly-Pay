@@ -87,7 +87,7 @@ class PrivacySecurityScreen extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             colors.surface,
-            colors.surfaceSecondary.withOpacity(0.5),
+            colors.surfaceSecondary.withValues(alpha: 0.5),
           ],
         ),
       ),
@@ -96,10 +96,10 @@ class PrivacySecurityScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFF34C759).withOpacity(0.12),
+              color: const Color(0xFF34C759).withValues(alpha: 0.12),
               shape: BoxShape.circle,
               border: Border.all(
-                color: const Color(0xFF34C759).withOpacity(0.25),
+                color: const Color(0xFF34C759).withValues(alpha: 0.25),
               ),
             ),
             child: const Icon(
@@ -145,10 +145,10 @@ class PrivacySecurityScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFFFF9500).withOpacity(0.08),
+        color: const Color(0xFFFF9500).withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFFFF9500).withOpacity(0.3),
+          color: const Color(0xFFFF9500).withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -305,7 +305,7 @@ class PrivacySecurityScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: colors.accent.withOpacity(0.12),
+            color: colors.accent.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, color: colors.accent, size: 20),

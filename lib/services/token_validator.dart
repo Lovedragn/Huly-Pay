@@ -35,13 +35,13 @@ class TokenValidator {
 
       final isPastExpiry = nowWithBuffer.isAfter(expiryDate);
       if (isPastExpiry && kDebugMode) {
-        print('TokenValidator: Token expired locally at $expiryDate (buffer: ${bufferSeconds}s).');
+        debugPrint('TokenValidator: Token expired locally at $expiryDate (buffer: ${bufferSeconds}s).');
       }
 
       return isPastExpiry;
     } catch (e) {
       if (kDebugMode) {
-        print('TokenValidator error: $e');
+        debugPrint('TokenValidator error: $e');
       }
       return true; // Malformed tokens are treated as expired
     }

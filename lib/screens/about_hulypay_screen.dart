@@ -119,7 +119,7 @@ class AboutHulyPayScreen extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             colors.surface,
-            colors.surfaceSecondary.withOpacity(0.5),
+            colors.surfaceSecondary.withValues(alpha: 0.5),
           ],
         ),
       ),
@@ -132,12 +132,12 @@ class AboutHulyPayScreen extends StatelessWidget {
               color: colors.surfaceSecondary,
               shape: BoxShape.circle,
               border: Border.all(
-                color: colors.accent.withOpacity(0.35),
+                color: colors.accent.withValues(alpha: 0.35),
                 width: 2,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: colors.accent.withOpacity(0.12),
+                  color: colors.accent.withValues(alpha: 0.12),
                   blurRadius: 20,
                   spreadRadius: 2,
                 ),
@@ -171,9 +171,9 @@ class AboutHulyPayScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: colors.accent.withOpacity(0.12),
+              color: colors.accent.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: colors.accent.withOpacity(0.3)),
+              border: Border.all(color: colors.accent.withValues(alpha: 0.3)),
             ),
             child: Text(
               appVersion,
@@ -206,10 +206,10 @@ class AboutHulyPayScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFFFF9500).withOpacity(0.08),
+        color: const Color(0xFFFF9500).withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFFFF9500).withOpacity(0.3),
+          color: const Color(0xFFFF9500).withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -218,7 +218,7 @@ class AboutHulyPayScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFFFF9500).withOpacity(0.15),
+              color: const Color(0xFFFF9500).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Icon(
@@ -318,7 +318,7 @@ class AboutHulyPayScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: colors.accent.withOpacity(0.12),
+            color: colors.accent.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, color: colors.accent, size: 20),
@@ -407,7 +407,7 @@ class AboutHulyPayScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: colors.accent.withOpacity(0.12),
+                      color: colors.accent.withValues(alpha: 0.12),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(Icons.language_rounded, color: colors.accent, size: 20),
