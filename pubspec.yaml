@@ -32,6 +32,7 @@ dependencies:
   fl_heatmap: ^0.4.6
   flutter_native_splash: ^2.4.4
   path_drawing: ^1.0.1
+  xml: ^7.0.1
 
 dev_dependencies:
   flutter_test:
