@@ -416,11 +416,10 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SvgPicture.asset(
-              'asserts/logo/logo.svg',
+              colors.isDark
+                  ? 'asserts/logo/Logo-Dark.svg'
+                  : 'asserts/logo/logo-Light.svg',
               height: 24,
-              colorFilter: colors.isDark
-                  ? null
-                  : ColorFilter.mode(colors.textPrimary, BlendMode.srcIn),
             ),
             Row(
               mainAxisSize: MainAxisSize.min,

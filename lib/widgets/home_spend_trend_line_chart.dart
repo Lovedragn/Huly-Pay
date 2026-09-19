@@ -73,99 +73,55 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.title.toUpperCase(),
-              style: const TextStyle(
-                fontFamily: 'Google Sans',
-                color: Color(0xFF8E8E93),
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 1.2,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              _currentStyle == SpendChartStyle.curvedGradient
-                  ? 'Daily Spend'
-                  : 'Range Threshold',
-              style: TextStyle(
-                fontFamily: 'Google Sans',
-                color: AppThemeManager.colors.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
+        Text(
+          widget.title.toUpperCase(),
+          style: const TextStyle(
+            fontFamily: 'Google Sans',
+            color: Color(0xFF8E8E93),
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 1.2,
+          ),
         ),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Style Switcher Button (Toggles between Sample 2 and Sample 4)
-            Container(
-              height: 32,
+        // Style Switcher Button (Single circular button styled after back button)
+        GestureDetector(
+          key: const Key('chart_style_switch_button'),
+          onTap: () {
+            setState(() {
+              _currentStyle = _currentStyle == SpendChartStyle.curvedGradient
+                  ? SpendChartStyle.dualZoneCutoff
+                  : SpendChartStyle.curvedGradient;
+            });
+          },
+          behavior: HitTestBehavior.opaque,
+          child: Tooltip(
+            message: _currentStyle == SpendChartStyle.curvedGradient
+                ? 'Switch to Range Threshold'
+                : 'Switch to Daily Spend',
+            child: Container(
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
-                color: const Color(0xFF1E1E24),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFF2E2E34)),
+                color: const Color(0xFF161619).withValues(alpha: 0.8),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: const Color(0xFF24242A),
+                  width: 1,
+                ),
               ),
-              child: Row(
-                children: [
-                  _buildStyleTab(
-                    icon: Icons.show_chart,
-                    tooltip: 'Curved Gradient (Sample 2)',
-                    isSelected: _currentStyle == SpendChartStyle.curvedGradient,
-                    onTap: () {
-                      setState(() {
-                        _currentStyle = SpendChartStyle.curvedGradient;
-                      });
-                    },
-                  ),
-                  _buildStyleTab(
-                    icon: Icons.stacked_line_chart,
-                    tooltip: 'Dual Threshold (Sample 4)',
-                    isSelected: _currentStyle == SpendChartStyle.dualZoneCutoff,
-                    onTap: () {
-                      setState(() {
-                        _currentStyle = SpendChartStyle.dualZoneCutoff;
-                      });
-                    },
-                  ),
-                ],
+              child: Center(
+                child: Icon(
+                  _currentStyle == SpendChartStyle.curvedGradient
+                      ? Icons.stacked_line_chart
+                      : Icons.show_chart,
+                  color: Colors.white,
+                  size: 18,
+                ),
               ),
             ),
-          ],
+          ),
         ),
       ],
-    );
-  }
-
-  Widget _buildStyleTab({
-    required IconData icon,
-    required String tooltip,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return Tooltip(
-      message: tooltip,
-      child: GestureDetector(
-        onTap: onTap,
-        behavior: HitTestBehavior.opaque,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF2A2A32) : Colors.transparent,
-            borderRadius: BorderRadius.circular(9),
-          ),
-          child: Icon(
-            icon,
-            size: 16,
-            color: isSelected ? Colors.white : const Color(0xFF8E8E93),
-          ),
-        ),
-      ),
     );
   }
 
