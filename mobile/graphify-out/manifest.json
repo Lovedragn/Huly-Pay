@@ -180,9 +180,9 @@
     "semantic_hash": ""
   },
   "lib/screens/splash_screen.dart": {
-    "mtime": 1789801981.4546657,
-    "seen": 1789802046.824528,
-    "ast_hash": "87fe4666095cf5c7536bfe8b4c25e127",
+    "mtime": 1789803536.5189972,
+    "seen": 1789803643.7422535,
+    "ast_hash": "14fe480657c8ee745beed456323df98c",
     "semantic_hash": ""
   },
   "lib/screens/transactions_screen.dart": {
@@ -576,9 +576,9 @@
     "semantic_hash": ""
   },
   "pubspec.yaml": {
-    "mtime": 1789801780.731957,
-    "seen": 1789802046.824627,
-    "ast_hash": "cfa171ce83e0a1363d595cec585a69ba",
+    "mtime": 1789803263.4107313,
+    "seen": 1789803643.7423773,
+    "ast_hash": "8332b0b6dcbb28a9b2581d4c83463241",
     "semantic_hash": ""
   },
   "web/index.html": {
@@ -1101,6 +1101,18 @@
     "mtime": 1789801741.8162737,
     "seen": 1789802046.8246417,
     "ast_hash": "bdb799c8d48683d37964dc331acf2cd5",
+    "semantic_hash": ""
+  },
+  "test/logo_svg_fidelity_test.dart": {
+    "mtime": 1789803575.485565,
+    "seen": 1789803643.7423213,
+    "ast_hash": "539b142e60797e48634c72a9cdfbbf38",
+    "semantic_hash": ""
+  },
+  "fix_path_animation.md": {
+    "mtime": 1789803161.9555223,
+    "seen": 1789803643.7423685,
+    "ast_hash": "c48e6e5835821ddffef96d3bf565ae6f",
     "semantic_hash": ""
   }
 }
