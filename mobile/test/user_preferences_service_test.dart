@@ -143,5 +143,36 @@ void main() {
 
       expect(prefService.cachedQuickConfirm, isTrue);
     });
+
+    test('setQuickScan and getQuickScan persist and restore Quick Scan preference in local SQLite', () async {
+      // Default is false
+      expect(prefService.cachedQuickScan, isFalse);
+
+      // Enable Quick Scan
+      await prefService.setQuickScan(true);
+      expect(prefService.cachedQuickScan, isTrue);
+
+      // Verify SQLite metadata
+      final stored = await dbService.getMetadata(UserPreferencesService.keyQuickScan);
+      expect(stored, equals('true'));
+
+      // Verify via getter
+      final restored = await prefService.getQuickScan();
+      expect(restored, isTrue);
+
+      // Disable Quick Scan
+      await prefService.setQuickScan(false);
+      expect(prefService.cachedQuickScan, isFalse);
+      expect(await dbService.getMetadata(UserPreferencesService.keyQuickScan), equals('false'));
+      expect(await prefService.getQuickScan(), isFalse);
+    });
+
+    test('loadLocalPreferences restores Quick Scan from SQLite metadata', () async {
+      await dbService.setMetadata(UserPreferencesService.keyQuickScan, 'true');
+
+      await prefService.loadLocalPreferences();
+
+      expect(prefService.cachedQuickScan, isTrue);
+    });
   });
 }

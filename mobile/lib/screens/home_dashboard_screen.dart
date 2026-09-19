@@ -20,10 +20,12 @@ import '../theme/app_theme.dart';
 
 class HomeDashboardScreen extends StatefulWidget {
   final DashboardData? initialData;
+  final bool? quickScan;
 
   const HomeDashboardScreen({
     super.key,
     this.initialData,
+    this.quickScan,
   });
 
   @override
@@ -79,6 +81,15 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
         recentTransactions: const [],
       );
       _loadRealData();
+    }
+
+    final shouldQuickScan = widget.quickScan ?? UserPreferencesService().cachedQuickScan;
+    if (shouldQuickScan) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _openScanAndPay();
+        }
+      });
     }
   }
 

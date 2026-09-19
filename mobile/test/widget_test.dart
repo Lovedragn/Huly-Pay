@@ -176,12 +176,13 @@ void main() {
     expect(find.text('User'), findsOneWidget);
 
     // 3. Verify Account section
-    expect(find.text('Personal Information'), findsOneWidget);
     expect(find.text('Linked Accounts'), findsNothing);
     expect(find.text('Payment Methods'), findsOneWidget);
 
     // 4. Verify Preferences section
     expect(find.text('Expense Categories'), findsNothing);
+    expect(find.text('Quick Confirm'), findsOneWidget);
+    expect(find.text('Quick Scan'), findsOneWidget);
     expect(find.text('Notifications'), findsOneWidget);
     expect(find.text('Customization'), findsOneWidget);
     expect(find.text('Themes & Skins'), findsNothing);
@@ -490,5 +491,37 @@ void main() {
       find.text('By accessing or using Huly Pay, you agree to comply with our user agreement and transaction terms.'),
       findsNothing,
     );
+    expect(backClicked, isFalse);
+  });
+
+  testWidgets(
+      'HomeDashboardScreen with quickScan: true automatically opens ScanAndPayScreen',
+      (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(800, 1200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(const HulyPayApp(
+      home: HomeDashboardScreen(
+        initialData: emptyDashboard,
+        quickScan: true,
+      ),
+    ));
+
+    // Allow post-frame callback and route transition
+    await tester.pumpAndSettle();
+
+    // Verify ScanAndPayScreen is pushed and visible immediately
+    expect(find.byType(ScanAndPayScreen), findsOneWidget);
+    expect(find.text('Scan any UPI QR code'), findsOneWidget);
+
+    // Tap Back to Home returns to Dashboard
+    await tester.tap(find.text('Back to Home'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(HomeDashboardScreen), findsOneWidget);
   });
 }

@@ -141,10 +141,11 @@ class _SplashScreenState extends State<SplashScreen>
     final bool hasValidActiveToken = AuthService().hasValidActiveToken;
     final bool hasValidSessionOrCache =
         widget.isAuthenticated ?? (hasValidActiveToken || _hasLocalUser);
+    final bool isQuickScan = UserPreferencesService().cachedQuickScan;
     final Widget targetScreen =
         widget.nextScreen ??
         (hasValidSessionOrCache
-            ? const HomeDashboardScreen()
+            ? HomeDashboardScreen(quickScan: isQuickScan)
             : const SignInScreen());
 
     Navigator.of(context).pushReplacement(
