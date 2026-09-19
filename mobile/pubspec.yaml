@@ -28,6 +28,7 @@ dependencies:
   flutter_native_splash: ^2.4.4
   path_drawing: ^1.0.1
   xml: ^7.0.1
+  sqflite_common_ffi_web: ^1.2.0
 
 dev_dependencies:
   flutter_test:
