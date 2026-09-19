@@ -1,16 +1,16 @@
 # Graph Report - mobile  (2026-09-19)
 
 ## Corpus Check
-- 96 files · ~126,402 words
+- 96 files · ~126,809 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1356 nodes · 1753 edges · 72 communities (56 shown, 11 thin omitted)
+- 1361 nodes · 1756 edges · 69 communities (53 shown, 11 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 18 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `b9fad6c4`
+- Built from commit: `ba2564e2`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -20,7 +20,7 @@
 - single_transaction_screen.dart
 - notifications_screen.dart
 - GeneratedPluginRegistrant.swift
-- help_support_screen.dart
+- upi_service.dart
 - scan_and_pay_screen.dart
 - home_spend_trend_line_chart.dart
 - local_database_service.dart
@@ -61,10 +61,10 @@
 - ../theme/app_theme.dart
 - transaction_tile.dart
 - payment_methods_screen.dart
-- CustomPainter
+- SingleTransactionScreen
 - package:flutter/foundation.dart
 - api_service.dart
-- State
+- _HomeDashboardScreenState
 - mobile
 - setCustomClient
 - AppThemeContextExtension
@@ -75,13 +75,10 @@
 - bool?
 - Rect
 - String?
-- ScanAndPayScreen
-- custom_bottom_nav_bar.dart
 - user_repository.dart
 - package:flutter/material.dart
 - ApiException
-- about_hulypay_screen.dart
-- _NotificationsScreenState
+- State
 
 ## God Nodes (most connected - your core abstractions)
 1. `Win32Window` - 24 edges
@@ -110,7 +107,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (72 total, 11 thin omitted)
+## Communities (69 total, 11 thin omitted)
 
 ### Community 0 - "Win32Window"
 Cohesion: 0.05
@@ -132,13 +129,13 @@ Nodes (19): _budgetExceededWarnings, build, _buildAppBar, _buildDevNoticeBanner,
 Cohesion: 0.05
 Nodes (32): Any, app_links, Cocoa, Flutter, FlutterAppDelegate, FlutterImplicitEngineBridge, FlutterImplicitEngineDelegate, FlutterMacOS (+24 more)
 
-### Community 5 - "help_support_screen.dart"
-Cohesion: 0.14
-Nodes (13): build, _buildAppBar, _buildDeveloperWebsiteCard, _buildEmailContactCard, _buildFaqItem, _buildFaqSection, _copyToClipboard, createState (+5 more)
+### Community 5 - "upi_service.dart"
+Cohesion: 0.04
+Nodes (45): double?, appVersion, build, _buildAppBar, _buildCreatorSection, _buildEnvironmentNoticeCard, _buildFeatureHighlights, _buildFeatureItem (+37 more)
 
 ### Community 6 - "scan_and_pay_screen.dart"
-Cohesion: 0.06
-Nodes (35): DateTime?, build, cornerColor, cornerLength, cornerRadius, createState, cutoutRect, dispose (+27 more)
+Cohesion: 0.05
+Nodes (44): CustomPainter, DateTime?, build, cornerColor, cornerLength, cornerRadius, createState, cutoutRect (+36 more)
 
 ### Community 7 - "home_spend_trend_line_chart.dart"
 Cohesion: 0.05
@@ -162,7 +159,7 @@ Nodes (33): app_theme.dart, financialKeywords, isFinancialTransactionSms, SmsFil
 
 ### Community 12 - "home_dashboard_screen.dart"
 Cohesion: 0.06
-Nodes (33): AnimationController, _applyData, build, _buildAvatarFallback, _buildBody, _buildDashboardContent, _buildQuickActions, _buildTotalSpentCard (+25 more)
+Nodes (35): AnimationController, _applyData, build, _buildAvatarFallback, _buildBody, _buildDashboardContent, _buildQuickActions, _buildTotalSpentCard (+27 more)
 
 ### Community 13 - "expense_model.dart"
 Cohesion: 0.06
@@ -178,7 +175,7 @@ Nodes (30): amount, avatarUrl, category, CategorySpendingItem, changePercent, ch
 
 ### Community 16 - "settings_screen.dart"
 Cohesion: 0.05
-Nodes (40): about_hulypay_screen.dart, help_support_screen.dart, _buildHeader, _showPaymentConfirmationModal, _startSmsVerificationWorkflow, appVersion, _avatarUrl, build (+32 more)
+Nodes (39): about_hulypay_screen.dart, help_support_screen.dart, _buildHeader, _showPaymentConfirmationModal, _startSmsVerificationWorkflow, appVersion, _avatarUrl, build (+31 more)
 
 ### Community 17 - "MainActivity"
 Cohesion: 0.11
@@ -190,15 +187,15 @@ Nodes (51): , dart:ui, Duration, animation, build, _controller, createState, dis
 
 ### Community 19 - "user_preferences_service.dart"
 Cohesion: 0.06
-Nodes (30): double? get, _cachedAnalysisPeriod, _cachedDailyLimit, _cachedDefaultPaymentApp, _cachedQuickConfirm, _client, _customClient, getAnalysisPeriod (+22 more)
+Nodes (34): double? get, _cachedAnalysisPeriod, _cachedDailyLimit, _cachedDefaultPaymentApp, _cachedQuickConfirm, _cachedQuickScan, _client, _customClient (+26 more)
 
 ### Community 20 - "payment_model.dart"
-Cohesion: 0.04
-Nodes (45): dashboard_data.dart, double?, amount, copyWith, createdAt, CreatePaymentPayload, currency, expenseId (+37 more)
+Cohesion: 0.07
+Nodes (27): dashboard_data.dart, amount, copyWith, createdAt, CreatePaymentPayload, currency, expenseId, fromJson (+19 more)
 
 ### Community 21 - "analysis_screen.dart"
-Cohesion: 0.07
-Nodes (27): _allPayments, AnalysisScreen, _AnalysisScreenState, build, _buildCategoryList, _buildHeader, _categories, createState (+19 more)
+Cohesion: 0.08
+Nodes (25): _allPayments, build, _buildCategoryList, _buildHeader, _categories, createState, didUpdateWidget, _filterAndRecalculate (+17 more)
 
 ### Community 22 - "spending_heatmap.dart"
 Cohesion: 0.07
@@ -206,7 +203,7 @@ Nodes (27): build, _buildFooter, _buildGrid, _buildHeader, cells, columns, _comp
 
 ### Community 23 - "transactions_screen.dart"
 Cohesion: 0.08
-Nodes (24): analysis_screen.dart, _allGroups, build, _buildFilterChips, _buildGroupedTransactions, _buildHeader, _buildSearchBar, createState (+16 more)
+Nodes (24): analysis_screen.dart, home_dashboard_screen.dart, _allGroups, build, _buildFilterChips, _buildGroupedTransactions, _buildHeader, _buildSearchBar (+16 more)
 
 ### Community 24 - "auth_service.dart"
 Cohesion: 0.07
@@ -222,7 +219,7 @@ Nodes (13): _apiClient, cleanupStalePayments, createPayment, getCachedPayments, 
 
 ### Community 27 - "sign_in_screen.dart"
 Cohesion: 0.09
-Nodes (22): home_dashboard_screen.dart, _authSubscription, _authTimeoutTimer, build, createState, didChangeAppLifecycleState, dispose, _finishSignIn (+14 more)
+Nodes (22): _authSubscription, _authTimeoutTimer, build, createState, didChangeAppLifecycleState, dispose, _finishSignIn, _handleGitHubSignIn (+14 more)
 
 ### Community 28 - "location_service.dart"
 Cohesion: 0.09
@@ -245,8 +242,8 @@ Cohesion: 0.14
 Nodes (13): active, authProvider, avatarUrl, copyWith, email, firstName, fromJson, fullName (+5 more)
 
 ### Community 33 - "analysis_category_pie_chart.dart"
-Cohesion: 0.17
-Nodes (11): build, centerLabel, createState, items, showCardBackground, _showingSections, showLegend, totalAmount (+3 more)
+Cohesion: 0.15
+Nodes (13): AnalysisCategoryPieChart, _AnalysisCategoryPieChartState, build, centerLabel, createState, items, showCardBackground, _showingSections (+5 more)
 
 ### Community 34 - "package:flutter_test/flutter_test.dart"
 Cohesion: 0.15
@@ -269,32 +266,28 @@ Cohesion: 0.18
 Nodes (9): dart:convert, getEmail, getExpirationDate, getPayload, getSubject, isExpired, TokenValidator, package:mobile/services/token_validator.dart (+1 more)
 
 ### Community 40 - "privacy_security_screen.dart"
-Cohesion: 0.20
-Nodes (9): build, _buildAppBar, _buildBulletPoint, _buildDataCollectionCard, _buildDevelopmentPrivacyNotice, _buildProtocolItem, _buildSecurityBanner, _buildSecurityProtocolsCard (+1 more)
+Cohesion: 0.22
+Nodes (8): build, _buildAppBar, _buildBulletPoint, _buildDataCollectionCard, _buildDevelopmentPrivacyNotice, _buildProtocolItem, _buildSecurityBanner, _buildSecurityProtocolsCard
 
 ### Community 41 - "StatelessWidget"
-Cohesion: 0.25
-Nodes (8): HulyPayApp, AboutHulyPayScreen, AnimatedHulyLogo, AnimatedWaveBackground, QuickActionButton, _HeatmapGridWidget, TransactionTile, StatelessWidget
+Cohesion: 0.22
+Nodes (9): HulyPayApp, AboutHulyPayScreen, PrivacySecurityScreen, AnimatedHulyLogo, AnimatedWaveBackground, QuickActionButton, _HeatmapGridWidget, TransactionTile (+1 more)
 
 ### Community 43 - "auth_and_api_test.dart"
 Cohesion: 0.29
 Nodes (6): AuthException, package:mobile/screens/sign_in_screen.dart, package:mobile/services/api_client.dart, package:mobile/services/auth_service.dart, package:supabase_flutter/supabase_flutter.dart, main
 
 ### Community 44 - "../theme/app_theme.dart"
-Cohesion: 0.22
-Nodes (8): IconData?, build, icon, label, onTap, svgAsset, ../theme/app_theme.dart, VoidCallback?
+Cohesion: 0.13
+Nodes (14): IconData?, build, icon, label, onTap, svgAsset, build, _buildNavItem (+6 more)
 
 ### Community 45 - "transaction_tile.dart"
-Cohesion: 0.25
-Nodes (7): TransactionItem, PaymentModel, onTap, payment, transaction, ../models/payment_model.dart, ../screens/single_transaction_screen.dart
+Cohesion: 0.22
+Nodes (8): TransactionItem, PaymentModel, onTap, payment, transaction, ../models/payment_model.dart, ../screens/single_transaction_screen.dart, VoidCallback?
 
 ### Community 46 - "payment_methods_screen.dart"
 Cohesion: 0.12
 Nodes (17): build, _buildAppBar, _buildInstalledAppsList, _buildPaymentAppCard, _buildSectionTitle, createState, initState, _installedStatus (+9 more)
-
-### Community 47 - "CustomPainter"
-Cohesion: 0.29
-Nodes (7): CustomPainter, ScannerFramePainter, ScannerOverlayPainter, _MapGridPainter, LogoStrokePainter, WaveSilkPainter, _SpeedometerGaugePainter
 
 ### Community 48 - "package:flutter/foundation.dart"
 Cohesion: 0.40
@@ -304,9 +297,9 @@ Nodes (4): package:flutter/foundation.dart, package:flutter/services.dart, packa
 Cohesion: 0.18
 Nodes (10): api_client.dart, ApiService, baseUrl, client, fetchUserProfile, getCurrentUser, ../models/user_profile.dart, package:http/http.dart (+2 more)
 
-### Community 50 - "State"
-Cohesion: 0.17
-Nodes (16): HelpSupportScreen, _HelpSupportScreenState, HomeDashboardScreen, _HomeDashboardScreenState, SignInScreen, _SignInScreenState, SingleTransactionScreen, _SingleTransactionScreenState (+8 more)
+### Community 50 - "_HomeDashboardScreenState"
+Cohesion: 0.33
+Nodes (6): HomeDashboardScreen, _HomeDashboardScreenState, SignInScreen, _SignInScreenState, TickerProviderStateMixin, WidgetsBindingObserver
 
 ### Community 54 - "REQUIRED APPROACH"
 Cohesion: 0.12
@@ -316,10 +309,6 @@ Nodes (16): 1. Use the ORIGINAL SVG geometry, 2. Preserve exact aspect ratio, 3.
 Cohesion: 0.22
 Nodes (8): package:mobile/main.dart, package:mobile/models/dashboard_data.dart, package:mobile/screens/single_transaction_screen.dart, package:mobile/widgets/action_button.dart, package:mobile/widgets/custom_bottom_nav_bar.dart, main, emptyDashboard, main
 
-### Community 66 - "custom_bottom_nav_bar.dart"
-Cohesion: 0.25
-Nodes (7): build, _buildNavItem, CustomBottomNavBar, onItemSelected, selectedIndex, package:flutter_svg/flutter_svg.dart, ValueChanged
-
 ### Community 67 - "user_repository.dart"
 Cohesion: 0.15
 Nodes (12): _apiClient, getCachedUserProfile, getUserProfile, _instance, _localDb, saveUserProfile, UserRepository, ApiClient (+4 more)
@@ -328,26 +317,24 @@ Nodes (12): _apiClient, getCachedUserProfile, getUserProfile, _instance, _localD
 Cohesion: 0.33
 Nodes (5): dart:io, package:flutter/material.dart, package:mobile/screens/splash_screen.dart, main, main
 
-### Community 70 - "about_hulypay_screen.dart"
-Cohesion: 0.15
-Nodes (12): appVersion, build, _buildAppBar, _buildCreatorSection, _buildEnvironmentNoticeCard, _buildFeatureHighlights, _buildFeatureItem, _buildHeroBrandCard (+4 more)
-
-### Community 71 - "_NotificationsScreenState"
-Cohesion: 0.40
-Nodes (5): NotificationsScreen, _NotificationsScreenState, SplashScreen, _SplashScreenState, SingleTickerProviderStateMixin
+### Community 71 - "State"
+Cohesion: 0.25
+Nodes (11): AnalysisScreen, _AnalysisScreenState, NotificationsScreen, _NotificationsScreenState, SplashScreen, _SplashScreenState, TransactionsScreen, _TransactionsScreenState (+3 more)
 
 ## Knowledge Gaps
-- **870 isolated node(s):** `widgetsBinding`, `showSplash`, `home`, `initializeAuth`, `nextScreen` (+865 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1027 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **876 isolated node(s):** `widgetsBinding`, `showSplash`, `home`, `initializeAuth`, `nextScreen` (+871 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1034 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **11 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `LocalDatabaseService` connect `daily_limit_chart_test.dart` to `local_database_service.dart`, `payment_repository.dart`, `user_repository.dart`, `real_data_and_sqlite_sync_test.dart`?**
-  _High betweenness centrality (0.012) - this node is a cross-community bridge._
+  _High betweenness centrality (0.011) - this node is a cross-community bridge._
+- **Why does `_SplashScreenState` connect `State` to `splash_screen.dart`?**
+  _High betweenness centrality (0.006) - this node is a cross-community bridge._
 - **What connects `widgetsBinding`, `showSplash`, `home` to the rest of the system?**
-  _870 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _876 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Win32Window` be split into smaller, more focused modules?**
   _Cohesion score 0.05311676909569798 - nodes in this community are weakly interconnected._
 - **Should `app_theme.dart` be split into smaller, more focused modules?**
@@ -356,5 +343,3 @@ _Questions this graph is uniquely positioned to answer:_
   _Cohesion score 0.04081632653061224 - nodes in this community are weakly interconnected._
 - **Should `notifications_screen.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.1 - nodes in this community are weakly interconnected._
-- **Should `GeneratedPluginRegistrant.swift` be split into smaller, more focused modules?**
-  _Cohesion score 0.05217391304347826 - nodes in this community are weakly interconnected._

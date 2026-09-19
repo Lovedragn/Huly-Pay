@@ -7,7 +7,6 @@ import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
 import '../theme/chart_colors.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
-import 'scan_and_pay_screen.dart';
 import 'sign_in_screen.dart';
 import 'about_hulypay_screen.dart';
 import 'help_support_screen.dart';
@@ -36,6 +35,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   late String _displayEmail;
   String _avatarUrl = '';
   bool _quickConfirm = false;
+  bool _quickScan = false;
 
   @override
   void initState() {
@@ -45,6 +45,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _displayEmail = widget.userEmail ?? authProfile?.email ?? '';
     _avatarUrl = authProfile?.avatarUrl ?? '';
     _quickConfirm = UserPreferencesService().cachedQuickConfirm;
+    _quickScan = UserPreferencesService().cachedQuickScan;
     _resolveUser();
   }
 
@@ -112,14 +113,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (Navigator.canPop(context)) {
       Navigator.pop(context, targetIndex);
     }
-  }
-
-  void _openScanAndPay() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const ScanAndPayScreen(),
-      ),
-    );
   }
 
   /// Transferred Customization modal presenting both App Themes and Chart Colors presets
@@ -805,6 +798,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _quickConfirm = value;
           });
           await UserPreferencesService().setQuickConfirm(value);
+        },
+      ),
+      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
+      _buildSwitchSettingRow(
+        icon: Icons.qr_code_scanner_rounded,
+        iconColor: const Color(0xFF00C076),
+        title: 'Quick Scan',
+        subtitle: 'Automatically open scanner when launching the app',
+        value: _quickScan,
+        onChanged: (bool value) async {
+          setState(() {
+            _quickScan = value;
+          });
+          await UserPreferencesService().setQuickScan(value);
         },
       ),
       Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),

@@ -23,17 +23,22 @@ class UserPreferencesService {
   static const String keyDailyLimit = 'user_pref_daily_limit';
   static const String keyDefaultPaymentApp = 'user_pref_default_payment_app';
   static const String keyQuickConfirm = 'user_pref_quick_confirm';
+  static const String keyQuickScan = 'user_pref_quick_scan';
 
   String? _cachedAnalysisPeriod;
   double? _cachedDailyLimit;
   String _cachedDefaultPaymentApp = 'ask_every_time';
   bool _cachedQuickConfirm = false;
+  bool _cachedQuickScan = false;
 
   /// Synchronously returns preferred default payment app identifier
   String get cachedDefaultPaymentApp => _cachedDefaultPaymentApp;
 
   /// Synchronously returns whether Quick Confirm is enabled
   bool get cachedQuickConfirm => _cachedQuickConfirm;
+
+  /// Synchronously returns whether Quick Scan on app launch is enabled
+  bool get cachedQuickScan => _cachedQuickScan;
 
   /// Synchronously returns any cached period in memory (e.g. from loadLocalPreferences)
   String? get cachedAnalysisPeriod => _cachedAnalysisPeriod;
@@ -85,6 +90,11 @@ class UserPreferencesService {
       final savedQuickConfirm = await LocalDatabaseService().getMetadata(keyQuickConfirm);
       if (savedQuickConfirm != null) {
         _cachedQuickConfirm = savedQuickConfirm.toLowerCase() == 'true';
+      }
+
+      final savedQuickScan = await LocalDatabaseService().getMetadata(keyQuickScan);
+      if (savedQuickScan != null) {
+        _cachedQuickScan = savedQuickScan.toLowerCase() == 'true';
       }
     } catch (e) {
       if (kDebugMode) {
@@ -171,6 +181,13 @@ class UserPreferencesService {
               response['quick_confirm'].toString().toLowerCase() == 'true';
           _cachedQuickConfirm = remoteQuickConfirm;
           await LocalDatabaseService().setMetadata(keyQuickConfirm, remoteQuickConfirm.toString());
+        }
+
+        if (response['quick_scan'] != null) {
+          final bool remoteQuickScan = response['quick_scan'] == true ||
+              response['quick_scan'].toString().toLowerCase() == 'true';
+          _cachedQuickScan = remoteQuickScan;
+          await LocalDatabaseService().setMetadata(keyQuickScan, remoteQuickScan.toString());
         }
       }
     } catch (e) {
@@ -423,5 +440,45 @@ class UserPreferencesService {
       }
     } catch (_) {}
     return _cachedQuickConfirm;
+  }
+
+  /// Sets whether Quick Scan is enabled (auto-opening scanner upon app launch)
+  Future<void> setQuickScan(bool enabled) async {
+    _cachedQuickScan = enabled;
+    try {
+      await LocalDatabaseService().setMetadata(keyQuickScan, enabled.toString());
+    } catch (e) {
+      if (kDebugMode) {
+        print('UserPreferencesService: setQuickScan error: $e');
+      }
+    }
+
+    final client = _client;
+    final user = AuthService().currentUser;
+    if (client != null && user != null) {
+      try {
+        await client.from(tableUsersPreference).upsert({
+          'user_id': user.id,
+          'quick_scan': enabled,
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
+        }, onConflict: 'user_id');
+      } catch (e) {
+        if (kDebugMode) {
+          print('UserPreferencesService: setQuickScan remote error: $e');
+        }
+      }
+    }
+  }
+
+  /// Gets whether Quick Scan is enabled from local storage or cached state
+  Future<bool> getQuickScan() async {
+    try {
+      final saved = await LocalDatabaseService().getMetadata(keyQuickScan);
+      if (saved != null && saved.isNotEmpty) {
+        _cachedQuickScan = saved.toLowerCase() == 'true';
+        return _cachedQuickScan;
+      }
+    } catch (_) {}
+    return _cachedQuickScan;
   }
 }
