@@ -21,8 +21,8 @@
 
 ### Android APK Direct Download
 You can immediately test and install the production build APK:
-* **Download APK directly from repository:** [**Download Hulypay.apk**](./Hulypay.apk)
-* **Local path:** `mobile/Hulypay.apk`
+* **Download APK directly from repository:** [**Download Hulypay.apk**](./Release/Hulypay.apk)
+* **Local path:** `mobile/Release/Hulypay.apk`
 
 > **Note for Android users:** When installing from your device file manager or browser, make sure to allow **"Install from unknown sources"** in your device security settings.
 
@@ -203,7 +203,8 @@ mobile/
 │   ├── services/         # Services (Auth, SQLite DB, Preferences, Sync)
 │   ├── theme/            # Design tokens, color palettes, typography
 │   └── widgets/          # Reusable UI widgets and custom buttons
-├── Hulypay.apk           # Direct installable test APK
+├── Release/
+│   └── Hulypay.apk       # Direct installable test APK
 ├── pubspec.yaml          # Project dependencies and asset definitions
 └── README.md             # Project documentation
 ```
