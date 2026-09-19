@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:path_drawing/path_drawing.dart';
 
 import '../repositories/payment_repository.dart';
 import '../repositories/user_repository.dart';
@@ -24,7 +26,7 @@ class SplashScreen extends StatefulWidget {
 
   const SplashScreen({
     super.key,
-    this.duration = const Duration(milliseconds: 1320),
+    this.duration = const Duration(milliseconds: 1750),
     this.nextScreen,
     this.initializeAuth = true,
     this.isAuthenticated,
@@ -37,7 +39,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
   Timer? _navigationTimer;
   bool _navigated = false;
   bool _hasLocalUser = false;
@@ -49,12 +50,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    );
-
-    _fadeAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: const Interval(0.0, 0.4, curve: Curves.easeOutCubic),
+      duration: const Duration(milliseconds: 1700),
     );
 
     _controller.forward();
@@ -174,7 +170,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    const double logoSize = 120.0;
+    const double logoSize = 140.0;
 
     return Scaffold(
       backgroundColor: const Color(0xFF000000),
@@ -207,8 +203,29 @@ class _SplashScreenState extends State<SplashScreen>
               left: 0,
               right: 0,
               top: (size.height / 2) + (logoSize / 2) + 24,
-              child: FadeTransition(
-                opacity: _fadeAnimation,
+              child: AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  final double t = _controller.value;
+                  double textOpacity = 0.0;
+                  if (t >= 0.30 && t < 0.60) {
+                    textOpacity = Curves.easeOutCubic.transform(
+                      (t - 0.30) / 0.30,
+                    );
+                  } else if (t >= 0.60 && t <= 0.80) {
+                    textOpacity = 1.0;
+                  } else if (t > 0.80 && t <= 1.0) {
+                    textOpacity =
+                        1.0 -
+                        Curves.easeInOutCubic.transform(
+                          ((t - 0.80) / 0.20).clamp(0.0, 1.0),
+                        );
+                  }
+                  return Opacity(
+                    opacity: textOpacity.clamp(0.0, 1.0),
+                    child: child,
+                  );
+                },
                 child: const Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -383,19 +400,13 @@ class WaveSilkPainter extends CustomPainter {
       oldDelegate.progress != progress;
 }
 
-/// Staggered SVG Vector Animator based on animation.md
-///
-/// Combines the start and end animation states of the new circular HulyPay emblem:
-/// - Fades and expands the outer circular guide ring
-/// - Sequentially blossoms each symmetrical pair of vector blades (Top, Upper-Diagonal,
-///   Mid-Wings, Bottom-Anchor) with their 0.41 opacity depth shadow layers
-/// - Eases into the crisp, complete final logo mark matching animation.md
 /// Animated Huly Logo for Splash Screen
 ///
-/// Implements a stationary circular loading animation without any rotational spin.
-/// The 8 radial vector blades fade in sequentially in a clockwise circle (1 cycle),
-/// followed by a brief full presentation, then fade out sequentially in the same
-/// clockwise circle (1 cycle).
+/// Implements a luminous SVG stroke path drawing animation:
+/// - Phase 1 (0.00 - 0.58): The vector contours trace and draw themselves onto the screen
+/// - Phase 2 (0.38 - 0.68): Solid white fills & 0.41 depth shadows bloom in, merging with the strokes
+/// - Phase 3 (0.68 - 0.80): Full crisp emblem hold in pristine clarity
+/// - Phase 4 (0.80 - 1.00): Disappear / dissolve into OLED black before transitioning
 class AnimatedHulyLogo extends StatelessWidget {
   final AnimationController controller;
   final double width;
@@ -404,201 +415,313 @@ class AnimatedHulyLogo extends StatelessWidget {
   const AnimatedHulyLogo({
     super.key,
     required this.controller,
-    this.width = 120,
-    this.height = 120,
+    this.width = 140,
+    this.height = 140,
   });
 
-  static const String _vb = 'viewBox="0 0 658 649"';
+  // Precomputed parsed SVG paths and metrics from Logo-Dark.svg
+  static final List<_LogoPathData> _paths = _initPaths();
 
-  // Outer circular ring
-  static const String _ring =
-      '<svg $_vb xmlns="http://www.w3.org/2000/svg">'
-      '<ellipse cx="328.608" cy="324.184" rx="324" ry="324" fill="none" stroke="white" stroke-width="2.5" stroke-opacity="0.22" stroke-dasharray="10 8"/>'
-      '</svg>';
+  // Outer circular guide ring
+  static final _LogoPathData _ringPath = () {
+    final p = Path()
+      ..addOval(
+        Rect.fromCircle(
+          center: const Offset(328.608, 324.184),
+          radius: 324.0,
+        ),
+      );
+    return _LogoPathData(
+      path: p,
+      metrics: p.computeMetrics().toList(),
+      targetOpacity: 0.22,
+      drawStart: 0.00,
+      drawEnd: 0.48,
+    );
+  }();
 
-  // 8 Symmetrical vector blades arranged in precise clockwise order
-  static const List<_BladeDefinition> _blades = [
-    // 0. Top-Right blade (~12:30)
-    _BladeDefinition(
-      svg:
-          '<svg $_vb xmlns="http://www.w3.org/2000/svg">'
-          '<path d="M329.378,115.601c-0.389,0.057 -0.783,54.803 0,54.57c88.734,0 135.861,-151.058 135.861,-151.058l-60.338,-21.211c0,0 -36.562,112.931 -75.523,117.699Z" style="fill-opacity: 0.41;" fill="white"/>'
-          '<path d="M329.378,170.171l0,-54.57c38.961,-4.768 75.523,-117.699 75.523,-117.699l60.338,21.211c0,0 -61.09,175.314 -135.861,151.058Z" fill="white"/>'
-          '</svg>',
-      inStart: 0.000,
-      inEnd: 0.140,
-      outStart: 0.540,
-      outEnd: 0.680,
-    ),
-    // 1. Upper-Right blade (~2:00)
-    _BladeDefinition(
-      svg:
-          '<svg $_vb xmlns="http://www.w3.org/2000/svg">'
-          '<path d="M329.378,300.156c141.414,14.637 205.73,-118.806 271.723,-176.504c-0.605,-0.62 -44.55,-46.756 -43.937,-46.967c-52.862,44.296 -104.979,162.169 -227.786,164.508c-0.5,31.234 0.46,58.027 0,58.963Z" style="fill-opacity: 0.41;" fill="white"/>'
-          '<path d="M329.378,300.156c0.22,-0.448 0.115,-6.825 0,-16.779l-0,-42.184c122.807,-2.338 174.924,-120.212 227.786,-164.508c-0.613,0.211 43.332,46.346 43.937,46.967c-65.993,57.698 -130.309,191.141 -271.723,176.504Z" fill="white"/>'
-          '</svg>',
-      inStart: 0.045,
-      inEnd: 0.185,
-      outStart: 0.585,
-      outEnd: 0.725,
-    ),
-    // 2. Mid-Right wing blade (~3:30)
-    _BladeDefinition(
-      svg:
-          '<svg $_vb xmlns="http://www.w3.org/2000/svg">'
-          '<path d="M650.701,234.89c0.598,0.04 12.816,60.951 13.038,61.36c-151.729,65.88 -202.305,136.556 -334.361,139.865c-0.182,-0.221 -1.637,-72.012 0,-72.445c91.699,2.425 160.148,-63.607 321.323,-128.78Z" fill="white"/>'
-          '</svg>',
-      inStart: 0.090,
-      inEnd: 0.230,
-      outStart: 0.630,
-      outEnd: 0.770,
-    ),
-    // 3. Bottom-Right anchor blade (~5:00)
-    _BladeDefinition(
-      svg:
-          '<svg $_vb xmlns="http://www.w3.org/2000/svg">'
-          '<path d="M373.829,650.465c-49.876,-304.129 217.133,-186.981 275.196,-238.207c8.808,-7.771 -19.792,54.255 -23.738,65.105c-0.007,0.02 11.377,-0.851 0.065,-0.005c-217.828,16.301 -202.726,38.486 -190.862,161.271l-60.661,11.836Z" style="fill-opacity: 0.41;" fill="white"/>'
-          '<path d="M625.288,477.363c-217.76,16.301 -202.66,38.493 -190.797,161.266l-60.661,11.836c-49.876,-304.129 217.133,-186.981 275.196,-238.207c8.808,-7.771 -19.792,54.255 -23.738,65.105Z" fill="white"/>'
-          '</svg>',
-      inStart: 0.135,
-      inEnd: 0.275,
-      outStart: 0.675,
-      outEnd: 0.815,
-    ),
-    // 4. Bottom-Left anchor blade (~7:00)
-    _BladeDefinition(
-      svg:
-          '<svg $_vb xmlns="http://www.w3.org/2000/svg">'
-          '<path d="M285.341,650.465c49.876,-304.129 -217.133,-186.981 -275.196,-238.207c-8.808,-7.771 19.792,54.255 23.738,65.105c0.007,0.02 -11.377,-0.851 -0.065,-0.005c217.828,16.301 202.726,38.486 190.862,161.271l60.661,11.836Z" style="fill-opacity: 0.41;" fill="white"/>'
-          '<path d="M33.882,477.363c217.76,16.301 202.66,38.493 190.797,161.266l60.661,11.836c49.876,-304.129 -217.133,-186.981 -275.196,-238.207c-8.808,-7.771 19.792,54.255 23.738,65.105Z" fill="white"/>'
-          '</svg>',
-      inStart: 0.180,
-      inEnd: 0.320,
-      outStart: 0.720,
-      outEnd: 0.860,
-    ),
-    // 5. Mid-Left wing blade (~8:30)
-    _BladeDefinition(
-      svg:
-          '<svg $_vb xmlns="http://www.w3.org/2000/svg">'
-          '<path d="M8.469,234.89c-0.598,0.04 -12.816,60.951 -13.038,61.36c151.729,65.88 202.305,136.556 334.361,139.865c0.182,-0.221 1.637,-72.012 0,-72.445c-91.699,2.425 -160.148,-63.607 -321.323,-128.78Z" fill="white"/>'
-          '</svg>',
-      inStart: 0.225,
-      inEnd: 0.365,
-      outStart: 0.765,
-      outEnd: 0.905,
-    ),
-    // 6. Upper-Left blade (~10:00)
-    _BladeDefinition(
-      svg:
-          '<svg $_vb xmlns="http://www.w3.org/2000/svg">'
-          '<path d="M329.792,300.156c-141.414,14.637 -205.73,-118.806 -271.723,-176.504c0.605,-0.62 44.55,-46.756 43.937,-46.967c52.862,44.296 104.979,162.169 227.786,164.508c0.5,31.234 -0.46,58.027 0,58.963Z" style="fill-opacity: 0.41;" fill="white"/>'
-          '<path d="M329.792,300.156c-0.22,-0.448 -0.115,-6.825 -0,-16.779l0,-42.184c-122.807,-2.338 -174.924,-120.212 -227.786,-164.508c0.613,0.211 -43.332,46.346 -43.937,46.967c65.993,57.698 130.309,191.141 271.723,176.504Z" fill="white"/>'
-          '</svg>',
-      inStart: 0.270,
-      inEnd: 0.410,
-      outStart: 0.810,
-      outEnd: 0.950,
-    ),
-    // 7. Top-Left blade (~11:30)
-    _BladeDefinition(
-      svg:
-          '<svg $_vb xmlns="http://www.w3.org/2000/svg">'
-          '<path d="M329.792,115.601c0.389,0.057 0.783,54.803 0,54.57c-88.734,0 -135.861,-151.058 -135.861,-151.058l60.338,-21.211c0,0 36.562,112.931 75.523,117.699Z" style="fill-opacity: 0.41;" fill="white"/>'
-          '<path d="M329.792,170.171l0,-54.57c-38.961,-4.768 -75.523,-117.699 -75.523,-117.699l-60.338,21.211c0,0 61.09,175.314 135.861,151.058Z" fill="white"/>'
-          '</svg>',
-      inStart: 0.315,
-      inEnd: 0.455,
-      outStart: 0.855,
-      outEnd: 0.995,
-    ),
-  ];
+  static List<_LogoPathData> _initPaths() {
+    final List<({String d, double opacity, double start, double end})> raw = [
+      // --- Top blades (Canopy / Crown) ---
+      (
+        d:
+            'M329.792,115.601c0.389,0.057 0.783,54.803 0,54.57c-88.734,0 -135.861,-151.058 -135.861,-151.058l60.338,-21.211c0,0 36.562,112.931 75.523,117.699Z',
+        opacity: 0.41,
+        start: 0.00,
+        end: 0.44,
+      ),
+      (
+        d:
+            'M329.792,170.171l0,-54.57c-38.961,-4.768 -75.523,-117.699 -75.523,-117.699l-60.338,21.211c0,0 61.09,175.314 135.861,151.058Z',
+        opacity: 1.0,
+        start: 0.00,
+        end: 0.44,
+      ),
+      (
+        d:
+            'M329.378,115.601c-0.389,0.057 -0.783,54.803 0,54.57c88.734,0 135.861,-151.058 135.861,-151.058l-60.338,-21.211c0,0 -36.562,112.931 -75.523,117.699Z',
+        opacity: 0.41,
+        start: 0.00,
+        end: 0.44,
+      ),
+      (
+        d:
+            'M329.378,170.171l0,-54.57c38.961,-4.768 75.523,-117.699 75.523,-117.699l60.338,21.211c0,0 -61.09,175.314 -135.861,151.058Z',
+        opacity: 1.0,
+        start: 0.00,
+        end: 0.44,
+      ),
+
+      // --- Upper diagonal blades ---
+      (
+        d:
+            'M329.792,300.156c-141.414,14.637 -205.73,-118.806 -271.723,-176.504c0.605,-0.62 44.55,-46.756 43.937,-46.967c52.862,44.296 104.979,162.169 227.786,164.508c0.5,31.234 -0.46,58.027 0,58.963Z',
+        opacity: 0.41,
+        start: 0.06,
+        end: 0.50,
+      ),
+      (
+        d:
+            'M329.792,300.156c-0.22,-0.448 -0.115,-6.825 -0,-16.779l0,-42.184c-122.807,-2.338 -174.924,-120.212 -227.786,-164.508c0.613,0.211 -43.332,46.346 -43.937,46.967c65.993,57.698 130.309,191.141 271.723,176.504Z',
+        opacity: 1.0,
+        start: 0.06,
+        end: 0.50,
+      ),
+      (
+        d:
+            'M329.378,300.156c141.414,14.637 205.73,-118.806 271.723,-176.504c-0.605,-0.62 -44.55,-46.756 -43.937,-46.967c-52.862,44.296 -104.979,162.169 -227.786,164.508c-0.5,31.234 0.46,58.027 0,58.963Z',
+        opacity: 0.41,
+        start: 0.06,
+        end: 0.50,
+      ),
+      (
+        d:
+            'M329.378,300.156c0.22,-0.448 0.115,-6.825 0,-16.779l-0,-42.184c122.807,-2.338 174.924,-120.212 227.786,-164.508c-0.613,0.211 43.332,46.346 43.937,46.967c-65.993,57.698 -130.309,191.141 271.723,176.504Z',
+        opacity: 1.0,
+        start: 0.06,
+        end: 0.50,
+      ),
+
+      // --- Mid-Wings ---
+      (
+        d:
+            'M8.469,234.89c-0.598,0.04 -12.816,60.951 -13.038,61.36c151.729,65.88 202.305,136.556 334.361,139.865c0.182,-0.221 1.637,-72.012 0,-72.445c-91.699,2.425 -160.148,-63.607 -321.323,-128.78Z',
+        opacity: 1.0,
+        start: 0.12,
+        end: 0.54,
+      ),
+      (
+        d:
+            'M650.701,234.89c0.598,0.04 12.816,60.951 13.038,61.36c-151.729,65.88 -202.305,136.556 -334.361,139.865c-0.182,-0.221 -1.637,-72.012 0,-72.445c91.699,2.425 160.148,-63.607 321.323,-128.78Z',
+        opacity: 1.0,
+        start: 0.12,
+        end: 0.54,
+      ),
+
+      // --- Bottom anchor blades ---
+      (
+        d:
+            'M285.341,650.465c49.876,-304.129 -217.133,-186.981 -275.196,-238.207c-8.808,-7.771 19.792,54.255 23.738,65.105c0.007,0.02 -11.377,-0.851 -0.065,-0.005c217.828,16.301 202.726,38.486 190.862,161.271l60.661,11.836Z',
+        opacity: 0.41,
+        start: 0.16,
+        end: 0.58,
+      ),
+      (
+        d:
+            'M33.882,477.363c217.76,16.301 202.66,38.493 190.797,161.266l60.661,11.836c49.876,-304.129 -217.133,-186.981 -275.196,-238.207c-8.808,-7.771 19.792,54.255 23.738,65.105Z',
+        opacity: 1.0,
+        start: 0.16,
+        end: 0.58,
+      ),
+      (
+        d:
+            'M373.829,650.465c-49.876,-304.129 217.133,-186.981 275.196,-238.207c8.808,-7.771 -19.792,54.255 -23.738,65.105c-0.007,0.02 11.377,-0.851 0.065,-0.005c-217.828,16.301 -202.726,38.486 -190.862,161.271l-60.661,11.836Z',
+        opacity: 0.41,
+        start: 0.16,
+        end: 0.58,
+      ),
+      (
+        d:
+            'M625.288,477.363c-217.76,16.301 -202.66,38.493 -190.797,161.266l-60.661,11.836c-49.876,-304.129 217.133,-186.981 275.196,-238.207c8.808,-7.771 -19.792,54.255 -23.738,65.105Z',
+        opacity: 1.0,
+        start: 0.16,
+        end: 0.58,
+      ),
+    ];
+
+    return raw.map((item) {
+      final p = parseSvgPathData(item.d);
+      return _LogoPathData(
+        path: p,
+        metrics: p.computeMetrics().toList(),
+        targetOpacity: item.opacity,
+        drawStart: item.start,
+        drawEnd: item.end,
+      );
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, child) {
-        final double t = controller.value;
-
-        // Outer halo ring opacity: rises gently in the beginning and fades at the end
-        double ringOpacity = 0.0;
-        if (t < 0.25) {
-          ringOpacity = Curves.easeOut.transform((t / 0.25).clamp(0.0, 1.0));
-        } else if (t <= 0.75) {
-          ringOpacity = 1.0;
-        } else if (t < 1.0) {
-          ringOpacity =
-              1.0 - Curves.easeIn.transform(((t - 0.75) / 0.25).clamp(0.0, 1.0));
-        }
-
-        return SizedBox(
-          width: width,
-          height: height,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              // 1. Outer subtle halo ring (stationary, no spin)
-              if (ringOpacity > 0.001)
-                Opacity(
-                  opacity: ringOpacity,
-                  child: SvgPicture.string(
-                    _ring,
-                    width: width,
-                    height: height,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-
-              // 2. The 8 stationary vector blades with circular loading fade in and fade out
-              ..._blades.map((blade) {
-                final double opacity = blade.calculateOpacity(t);
-                if (opacity <= 0.001) return const SizedBox.shrink();
-
-                return Opacity(
-                  opacity: opacity,
-                  child: SvgPicture.string(
-                    blade.svg,
-                    width: width,
-                    height: height,
-                    fit: BoxFit.contain,
-                  ),
-                );
-              }),
-            ],
-          ),
+        return CustomPaint(
+          size: Size(width, height),
+          painter: LogoStrokePainter(progress: controller.value),
         );
       },
     );
   }
 }
 
-class _BladeDefinition {
-  final String svg;
-  final double inStart;
-  final double inEnd;
-  final double outStart;
-  final double outEnd;
+class _LogoPathData {
+  final Path path;
+  final List<PathMetric> metrics;
+  final double targetOpacity;
+  final double drawStart;
+  final double drawEnd;
 
-  const _BladeDefinition({
-    required this.svg,
-    required this.inStart,
-    required this.inEnd,
-    required this.outStart,
-    required this.outEnd,
+  _LogoPathData({
+    required this.path,
+    required this.metrics,
+    required this.targetOpacity,
+    required this.drawStart,
+    required this.drawEnd,
   });
+}
 
-  double calculateOpacity(double t) {
-    if (t < inStart) return 0.0;
-    if (t < inEnd) {
-      final p = (t - inStart) / (inEnd - inStart);
-      return Curves.easeOutCubic.transform(p.clamp(0.0, 1.0));
+class LogoStrokePainter extends CustomPainter {
+  final double progress;
+
+  LogoStrokePainter({required this.progress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (progress <= 0.001) return;
+
+    // ViewBox dimensions from original SVG: 658 x 649
+    const double vbWidth = 658.0;
+    const double vbHeight = 649.0;
+
+    // Disappear phase at the end: progress in [0.80, 1.0]
+    double globalFade = 1.0;
+    double scale = 1.0;
+    if (progress > 0.80) {
+      final p = ((progress - 0.80) / 0.20).clamp(0.0, 1.0);
+      globalFade = 1.0 - Curves.easeInOutCubic.transform(p);
+      scale = 1.0 + 0.04 * Curves.easeInOutCubic.transform(p);
     }
-    if (t <= outStart) return 1.0;
-    if (t < outEnd) {
-      final p = (t - outStart) / (outEnd - outStart);
-      return 1.0 - Curves.easeInCubic.transform(p.clamp(0.0, 1.0));
-    }
-    return 0.0;
+
+    if (globalFade <= 0.001) return;
+
+    canvas.save();
+
+    // Scale and center from viewBox to target widget size
+    canvas.translate(size.width / 2, size.height / 2);
+    canvas.scale(scale);
+    canvas.translate(-size.width / 2, -size.height / 2);
+    canvas.scale(size.width / vbWidth, size.height / vbHeight);
+
+    // 1. Draw outer guide ring stroke
+    _drawRing(canvas, globalFade);
+
+    // 2. Draw stroke outlines and solid fills for blades
+    _drawBlades(canvas, globalFade);
+
+    canvas.restore();
   }
+
+  void _drawRing(Canvas canvas, double globalFade) {
+    final ring = AnimatedHulyLogo._ringPath;
+    if (progress < ring.drawStart) return;
+
+    final double p =
+        ((progress - ring.drawStart) / (ring.drawEnd - ring.drawStart)).clamp(
+          0.0,
+          1.0,
+        );
+    final double curvedP = Curves.easeOutCubic.transform(p);
+
+    final strokePaint =
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3.0
+          ..strokeCap = StrokeCap.round
+          ..color = Colors.white.withValues(
+            alpha: ring.targetOpacity * globalFade,
+          );
+
+    for (final metric in ring.metrics) {
+      final extracted = metric.extractPath(0.0, metric.length * curvedP);
+      canvas.drawPath(extracted, strokePaint);
+    }
+  }
+
+  void _drawBlades(Canvas canvas, double globalFade) {
+    // Fill blossom begins at t = 0.38 and completes by t = 0.68
+    double fillT = 0.0;
+    if (progress >= 0.38) {
+      fillT = Curves.easeOutCubic.transform(
+        ((progress - 0.38) / 0.30).clamp(0.0, 1.0),
+      );
+    }
+
+    // Stroke outline gracefully merges into fill once solid
+    double strokeAlpha = 1.0;
+    if (progress >= 0.56) {
+      strokeAlpha =
+          1.0 -
+          Curves.easeInOut.transform(
+            ((progress - 0.56) / 0.12).clamp(0.0, 1.0),
+          );
+    }
+
+    final strokePaint =
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3.6
+          ..strokeCap = StrokeCap.round
+          ..strokeJoin = StrokeJoin.round;
+
+    final fillPaint = Paint()..style = PaintingStyle.fill;
+
+    // A. Draw solid fills and depth shadows
+    if (fillT > 0.001) {
+      for (final item in AnimatedHulyLogo._paths) {
+        final double alpha = item.targetOpacity * fillT * globalFade;
+        if (alpha > 0.001) {
+          fillPaint.color = Colors.white.withValues(alpha: alpha);
+          canvas.drawPath(item.path, fillPaint);
+        }
+      }
+    }
+
+    // B. Draw stroke path drawing animation
+    if (strokeAlpha > 0.001) {
+      for (final item in AnimatedHulyLogo._paths) {
+        if (progress < item.drawStart) continue;
+
+        final double p =
+            ((progress - item.drawStart) / (item.drawEnd - item.drawStart))
+                .clamp(0.0, 1.0);
+        final double curvedP = Curves.easeInOutCubic.transform(p);
+
+        final double alpha =
+            (item.targetOpacity == 1.0 ? 1.0 : 0.6) *
+            strokeAlpha *
+            globalFade;
+        strokePaint.color = Colors.white.withValues(alpha: alpha);
+
+        for (final metric in item.metrics) {
+          final extracted = metric.extractPath(0.0, metric.length * curvedP);
+          canvas.drawPath(extracted, strokePaint);
+        }
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant LogoStrokePainter oldDelegate) =>
+      oldDelegate.progress != progress;
 }
