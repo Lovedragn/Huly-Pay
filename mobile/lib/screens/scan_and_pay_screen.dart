@@ -231,6 +231,30 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                   fontWeight: FontWeight.w700,
                 ),
               ),
+              actions: [
+                if (UserPreferencesService().cachedQuickConfirm)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Container(
+                      key: const Key('quick_confirm_appbar_indicator'),
+                      margin: const EdgeInsets.all(8),
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: colors.surfaceSecondary,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: colors.border, width: 0.5),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.bolt_rounded,
+                          color: Color(0xFFFFB300),
+                          size: 22,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
             body: SafeArea(
               child: Center(
@@ -1342,7 +1366,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                   ),
                   child: Column(
                     children: [
-                      // Top Bar (Back Button)
+                      // Top Bar (Back Button & Quick Confirm Thunder Indicator)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -1370,6 +1394,53 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                               ),
                             ),
                           ),
+                          if (UserPreferencesService().cachedQuickConfirm)
+                            GestureDetector(
+                              key: const Key('quick_confirm_indicator'),
+                              onTap: () {
+                                ScaffoldMessenger.of(context).clearSnackBars();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Row(
+                                      children: [
+                                        Icon(Icons.bolt_rounded, color: Color(0xFFFFB300), size: 18),
+                                        SizedBox(width: 8),
+                                        Text('Quick Confirm is active'),
+                                      ],
+                                    ),
+                                    duration: const Duration(seconds: 2),
+                                    backgroundColor: const Color(0xFF1F1F24),
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                );
+                              },
+                              behavior: HitTestBehavior.opaque,
+                              child: Tooltip(
+                                message: 'Quick Confirm active',
+                                child: Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF161619).withValues(alpha: 0.8),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: const Color(0xFF24242A),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.bolt_rounded,
+                                      color: Color(0xFFFFB300),
+                                      size: 24,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                         ],
                       ),
 

@@ -56,23 +56,26 @@ void main() {
       // Verify LineChart is rendered
       expect(find.byType(LineChart), findsOneWidget);
       expect(find.text('SPEND TREND'), findsOneWidget);
-      expect(find.text('Daily Spend'), findsOneWidget);
+      expect(find.text('Daily Spend'), findsNothing);
+      expect(find.text('Range Threshold'), findsNothing);
 
-      // Toggle to Sample 4 (Dual Threshold / Range style)
-      final sample4Button = find.byIcon(Icons.stacked_line_chart);
-      expect(sample4Button, findsOneWidget);
-      await tester.tap(sample4Button);
+      // Verify single circular toggle button styled after back button
+      final switchButton = find.byKey(const Key('chart_style_switch_button'));
+      expect(switchButton, findsOneWidget);
+      expect(find.byIcon(Icons.stacked_line_chart), findsOneWidget);
+
+      // Toggle to Range Threshold style
+      await tester.tap(switchButton);
       await tester.pumpAndSettle();
 
-      expect(find.text('Range Threshold'), findsOneWidget);
+      expect(find.byIcon(Icons.show_chart), findsOneWidget);
       expect(find.byType(LineChart), findsOneWidget);
 
-      // Toggle back to Sample 2 (Curved Gradient)
-      final sample2Button = find.byIcon(Icons.show_chart);
-      await tester.tap(sample2Button);
+      // Toggle back to Curved Gradient style
+      await tester.tap(switchButton);
       await tester.pumpAndSettle();
 
-      expect(find.text('Daily Spend'), findsOneWidget);
+      expect(find.byIcon(Icons.stacked_line_chart), findsOneWidget);
     });
 
     testWidgets('HomeWeeklyBarChart renders 7 weekday groups and calculates weekly total', (tester) async {

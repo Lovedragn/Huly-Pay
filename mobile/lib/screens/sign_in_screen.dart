@@ -233,13 +233,9 @@ class _SignInScreenState extends State<SignInScreen> with WidgetsBindingObserver
                 Hero(
                   tag: 'huly_pay_brand_logo',
                   child: SvgPicture.asset(
-                    'asserts/logo/logo.svg',
-                    width: 155,
-                    height: 98,
-                    colorFilter: const ColorFilter.mode(
-                      Colors.white,
-                      BlendMode.srcIn,
-                    ),
+                    'asserts/logo/Logo-Dark.svg',
+                    width: 120,
+                    height: 120,
                   ),
                 ),
                 const SizedBox(height: 18),

@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
 import '../repositories/payment_repository.dart';
 import '../repositories/user_repository.dart';
 import '../services/api_client.dart';
@@ -36,7 +38,6 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
   Timer? _navigationTimer;
   bool _navigated = false;
   bool _hasLocalUser = false;
@@ -48,19 +49,12 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 840),
+      duration: const Duration(milliseconds: 1200),
     );
 
     _fadeAnimation = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.0, 0.7, curve: Curves.easeOutCubic),
-    );
-
-    _scaleAnimation = Tween<double>(begin: 0.88, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.8, curve: Curves.easeOutCubic),
-      ),
+      curve: const Interval(0.0, 0.4, curve: Curves.easeOutCubic),
     );
 
     _controller.forward();
@@ -99,14 +93,14 @@ class _SplashScreenState extends State<SplashScreen>
 
     // 3. Initialize Supabase / AuthService in background if not yet initialized
     if (!AuthService.isInitialized) {
-      final supabaseUrl = dotenv.env['SUPABASE_URL'] ?? 'https://aszhhxnbzstzemyhcjvi.supabase.co';
-      final supabaseAnonKey = dotenv.env['SUPABASE_PUBLISHABLE_KEY'] ??
+      final supabaseUrl =
+          dotenv.env['SUPABASE_URL'] ??
+          'https://aszhhxnbzstzemyhcjvi.supabase.co';
+      final supabaseAnonKey =
+          dotenv.env['SUPABASE_PUBLISHABLE_KEY'] ??
           dotenv.env['SUPABASE_ANON_KEY'] ??
           '';
-      await AuthService.initialize(
-        url: supabaseUrl,
-        anonKey: supabaseAnonKey,
-      );
+      await AuthService.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
     }
 
     // --- STEP 1: Fast Client-Side Check (Zero-Network) ---
@@ -115,7 +109,9 @@ class _SplashScreenState extends State<SplashScreen>
     final token = AuthService().currentAccessToken;
     if (token != null && TokenValidator.isExpired(token)) {
       if (kDebugMode) {
-        print('SplashScreen [Step 1]: Token expired locally. Wiping stale session (0 KB network overhead).');
+        print(
+          'SplashScreen [Step 1]: Token expired locally. Wiping stale session (0 KB network overhead).',
+        );
       }
       try {
         await AuthService().signOut();
@@ -146,8 +142,10 @@ class _SplashScreenState extends State<SplashScreen>
 
     // Two-step validation result: Time-valid session or cached profile -> HomeDashboardScreen; else -> SignInScreen
     final bool hasValidActiveToken = AuthService().hasValidActiveToken;
-    final bool hasValidSessionOrCache = widget.isAuthenticated ?? (hasValidActiveToken || _hasLocalUser);
-    final Widget targetScreen = widget.nextScreen ??
+    final bool hasValidSessionOrCache =
+        widget.isAuthenticated ?? (hasValidActiveToken || _hasLocalUser);
+    final Widget targetScreen =
+        widget.nextScreen ??
         (hasValidSessionOrCache
             ? const HomeDashboardScreen()
             : const SignInScreen());
@@ -157,10 +155,7 @@ class _SplashScreenState extends State<SplashScreen>
         pageBuilder: (_, animation, secondaryAnimation) => targetScreen,
         transitionsBuilder: (_, animation, secondaryAnimation, child) {
           return FadeTransition(
-            opacity: CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOut,
-            ),
+            opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
             child: child,
           );
         },
@@ -178,6 +173,9 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    const double logoSize = 120.0;
+
     return Scaffold(
       backgroundColor: const Color(0xFF000000),
       body: GestureDetector(
@@ -187,41 +185,35 @@ class _SplashScreenState extends State<SplashScreen>
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // 1. Dynamic SVG Vector Animated White Wave Lines Background (Replaces static PNG)
+            // 1. Dynamic SVG Vector Animated White Wave Lines Background
             Positioned.fill(
-              child: AnimatedWaveBackground(
-                animation: _controller,
+              child: AnimatedWaveBackground(animation: _controller),
+            ),
+
+            // 2. Center: Animated Logo placed at exact screen center matching the native splash position & size
+            Center(
+              child: Hero(
+                tag: 'huly_pay_brand_logo',
+                child: AnimatedHulyLogo(
+                  controller: _controller,
+                  width: logoSize,
+                  height: logoSize,
+                ),
               ),
             ),
 
-            // 2. Center: Animated Logo from svg-animation.md, "Hulypay", and "Track. Pay. Grow."
-            Center(
-              child: AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) {
-                  return FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: Transform.scale(
-                      scale: _scaleAnimation.value,
-                      child: child,
-                    ),
-                  );
-                },
-                child: Column(
+            // 3. Branding Text: Positioned below the center logo without shifting the logo
+            Positioned(
+              left: 0,
+              right: 0,
+              top: (size.height / 2) + (logoSize / 2) + 24,
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: const Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Staggered animated SVG paths matching svg-animation.md
-                    Hero(
-                      tag: 'huly_pay_brand_logo',
-                      child: AnimatedHulyLogo(
-                        controller: _controller,
-                        width: 155,
-                        height: 98,
-                      ),
-                    ),
-                    const SizedBox(height: 18),
                     // "Hulypay" text in bold matching hypay-splash.png
-                    const Text(
+                    Text(
                       'Hulypay',
                       style: TextStyle(
                         fontFamily: 'Google Sans',
@@ -231,9 +223,9 @@ class _SplashScreenState extends State<SplashScreen>
                         letterSpacing: -0.8,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     // Tagline: "Track. Pay. Grow."
-                    const Text(
+                    Text(
                       'Track. Pay. Grow.',
                       style: TextStyle(
                         fontFamily: 'Google Sans',
@@ -261,10 +253,7 @@ class _SplashScreenState extends State<SplashScreen>
 class AnimatedWaveBackground extends StatelessWidget {
   final Animation<double> animation;
 
-  const AnimatedWaveBackground({
-    super.key,
-    required this.animation,
-  });
+  const AnimatedWaveBackground({super.key, required this.animation});
 
   @override
   Widget build(BuildContext context) {
@@ -302,12 +291,54 @@ class WaveSilkPainter extends CustomPainter {
 
     // 6 Layered silk wave curves flowing across the screen with gentle harmonics
     final List<Map<String, dynamic>> waveConfigs = [
-      {'yFactor': 0.30, 'amp': 36.0, 'freq': 1.1, 'opacity': 0.08, 'stroke': 1.6, 'shift': 0.0},
-      {'yFactor': 0.38, 'amp': 52.0, 'freq': 1.3, 'opacity': 0.16, 'stroke': 2.0, 'shift': 0.8},
-      {'yFactor': 0.46, 'amp': 64.0, 'freq': 1.0, 'opacity': 0.22, 'stroke': 2.4, 'shift': 1.5},
-      {'yFactor': 0.54, 'amp': 48.0, 'freq': 1.4, 'opacity': 0.16, 'stroke': 1.9, 'shift': 2.2},
-      {'yFactor': 0.62, 'amp': 40.0, 'freq': 1.2, 'opacity': 0.11, 'stroke': 1.5, 'shift': 2.9},
-      {'yFactor': 0.70, 'amp': 32.0, 'freq': 1.5, 'opacity': 0.06, 'stroke': 1.2, 'shift': 3.6},
+      {
+        'yFactor': 0.30,
+        'amp': 36.0,
+        'freq': 1.1,
+        'opacity': 0.08,
+        'stroke': 1.6,
+        'shift': 0.0,
+      },
+      {
+        'yFactor': 0.38,
+        'amp': 52.0,
+        'freq': 1.3,
+        'opacity': 0.16,
+        'stroke': 2.0,
+        'shift': 0.8,
+      },
+      {
+        'yFactor': 0.46,
+        'amp': 64.0,
+        'freq': 1.0,
+        'opacity': 0.22,
+        'stroke': 2.4,
+        'shift': 1.5,
+      },
+      {
+        'yFactor': 0.54,
+        'amp': 48.0,
+        'freq': 1.4,
+        'opacity': 0.16,
+        'stroke': 1.9,
+        'shift': 2.2,
+      },
+      {
+        'yFactor': 0.62,
+        'amp': 40.0,
+        'freq': 1.2,
+        'opacity': 0.11,
+        'stroke': 1.5,
+        'shift': 2.9,
+      },
+      {
+        'yFactor': 0.70,
+        'amp': 32.0,
+        'freq': 1.5,
+        'opacity': 0.06,
+        'stroke': 1.2,
+        'shift': 3.6,
+      },
     ];
 
     for (final cfg in waveConfigs) {
@@ -323,7 +354,8 @@ class WaveSilkPainter extends CustomPainter {
 
       for (double x = 0; x <= w; x += 6) {
         final double normX = x / w;
-        final double y = yBase +
+        final double y =
+            yBase +
             sin(normX * freq * 2 * pi + phase + shift) * amp +
             cos(normX * 1.5 * pi + phase * 0.5) * (amp * 0.35);
         path.lineTo(x, y);
@@ -351,10 +383,19 @@ class WaveSilkPainter extends CustomPainter {
       oldDelegate.progress != progress;
 }
 
-/// Staggered SVG Path Animator based on svg-animation.md
+/// Staggered SVG Vector Animator based on animation.md
 ///
-/// Animates each of the 9 vector paths of the HulyPay logo mark sequentially
-/// using keyframe timings (0.1s to 0.9s delays with 0.5s ease-in transitions).
+/// Combines the start and end animation states of the new circular HulyPay emblem:
+/// - Fades and expands the outer circular guide ring
+/// - Sequentially blossoms each symmetrical pair of vector blades (Top, Upper-Diagonal,
+///   Mid-Wings, Bottom-Anchor) with their 0.41 opacity depth shadow layers
+/// - Eases into the crisp, complete final logo mark matching animation.md
+/// Animated Huly Logo for Splash Screen
+///
+/// Implements a stationary circular loading animation without any rotational spin.
+/// The 8 radial vector blades fade in sequentially in a clockwise circle (1 cycle),
+/// followed by a brief full presentation, then fade out sequentially in the same
+/// clockwise circle (1 cycle).
 class AnimatedHulyLogo extends StatelessWidget {
   final AnimationController controller;
   final double width;
@@ -363,51 +404,201 @@ class AnimatedHulyLogo extends StatelessWidget {
   const AnimatedHulyLogo({
     super.key,
     required this.controller,
-    this.width = 155,
-    this.height = 98,
+    this.width = 120,
+    this.height = 120,
   });
 
-  static const List<String> _paths = [
-    "M29.3284 0.164185V2.15333C33.1522 2.93787 36.1638 5.95872 36.9348 9.7875H38.9227C38.1088 4.86707 34.2439 0.992464 29.3284 0.164185Z",
-    "M11.7242 1.95404H25.4426V0H11.7242C5.89641 0 1.07779 4.22609 0.158203 9.78846H2.14605C3.04503 5.32152 6.99376 1.95404 11.7242 1.95404Z",
-    "M2.14605 13.66L0.158203 13.66C1.07779 19.2224 5.89641 23.4485 11.7242 23.4485C11.7242 23.4485 13.7382 23.5204 14.636 23.4485C15.6361 23.3684 16.7791 21.6327 16.8637 21.5022C16.8659 21.4978 16.8687 21.4945 16.8687 21.4945H14.3822H11.7242C6.99376 21.4945 3.04503 18.127 2.14605 13.66Z",
-    "M16.8687 21.4945C16.8687 21.4945 16.8659 21.4978 16.8637 21.5022C16.867 21.4971 16.8687 21.4945 16.8687 21.4945Z",
-    "M27.4345 3.90808H19.3401V5.86212H27.3566C30.5612 5.86212 33.2187 8.51962 33.2187 11.7242C33.2187 13.9274 31.9996 15.835 30.2218 16.8375V19.0378C33.1466 17.9065 35.2506 15.0408 35.2506 11.7242C35.2506 7.42538 31.7333 3.90812 27.4345 3.90808Z",
-    "M13.9705 17.5864V19.5404H16.4917C17.2732 19.5404 17.9771 19.8528 18.6023 20.3998L20.2443 22.0418C21.1821 22.9795 22.4326 23.4484 23.683 23.4485H27.3565C33.1799 23.4485 37.9956 19.2288 38.9204 13.6727H36.9321C36.0283 18.1333 32.0825 21.4944 27.3565 21.4944H23.605C22.8235 21.4944 22.1196 21.1821 21.4944 20.6351L19.8532 18.9931C18.9152 18.0552 17.6643 17.5864 16.4137 17.5864H13.9705Z",
-    "M10.092 19.3678V17.3501C7.66532 16.6323 5.86224 14.3639 5.86224 11.7242C5.86224 8.51962 8.51974 5.86212 11.7244 5.86212H15.4092V3.90808H11.7244C7.42548 3.90808 3.9082 7.42535 3.9082 11.7242C3.9082 15.4638 6.56972 18.6119 10.092 19.3678Z",
-    "M26.1066 19.5404H26.3745V17.5864H26.1066C25.3251 17.5864 24.6212 17.2739 23.9959 16.727L22.354 15.085C21.5724 14.3036 20.6344 13.8346 19.6185 13.6783H18.9153V15.6323C19.6968 15.6324 20.4007 15.9446 21.0259 16.4917L22.6671 18.1337C23.6051 19.0715 24.8561 19.5404 26.1066 19.5404Z",
-    "M15.092 15.6323V13.6783H11.7242C10.63 13.6783 9.7702 12.8185 9.7702 11.7242C9.7702 10.63 10.63 9.7702 11.7242 9.7702H27.3566C28.4508 9.7702 29.3106 10.63 29.3106 11.7242C29.3106 12.8185 28.4508 13.6783 27.3566 13.6783H23.4485L24.8552 15.085C25.2459 15.4757 25.7149 15.6323 26.2619 15.6323H27.3566C29.5451 15.6323 31.2646 13.9128 31.2646 11.7242C31.2646 9.53572 29.5451 7.81616 27.3566 7.81616H11.7242C9.53572 7.81616 7.81616 9.53572 7.81616 11.7242C7.81616 13.9128 9.53572 15.6323 11.7242 15.6323H15.092Z",
+  static const String _vb = 'viewBox="0 0 658 649"';
+
+  // Outer circular ring
+  static const String _ring =
+      '<svg $_vb xmlns="http://www.w3.org/2000/svg">'
+      '<ellipse cx="328.608" cy="324.184" rx="324" ry="324" fill="none" stroke="white" stroke-width="2.5" stroke-opacity="0.22" stroke-dasharray="10 8"/>'
+      '</svg>';
+
+  // 8 Symmetrical vector blades arranged in precise clockwise order
+  static const List<_BladeDefinition> _blades = [
+    // 0. Top-Right blade (~12:30)
+    _BladeDefinition(
+      svg:
+          '<svg $_vb xmlns="http://www.w3.org/2000/svg">'
+          '<path d="M329.378,115.601c-0.389,0.057 -0.783,54.803 0,54.57c88.734,0 135.861,-151.058 135.861,-151.058l-60.338,-21.211c0,0 -36.562,112.931 -75.523,117.699Z" style="fill-opacity: 0.41;" fill="white"/>'
+          '<path d="M329.378,170.171l0,-54.57c38.961,-4.768 75.523,-117.699 75.523,-117.699l60.338,21.211c0,0 -61.09,175.314 -135.861,151.058Z" fill="white"/>'
+          '</svg>',
+      inStart: 0.000,
+      inEnd: 0.140,
+      outStart: 0.540,
+      outEnd: 0.680,
+    ),
+    // 1. Upper-Right blade (~2:00)
+    _BladeDefinition(
+      svg:
+          '<svg $_vb xmlns="http://www.w3.org/2000/svg">'
+          '<path d="M329.378,300.156c141.414,14.637 205.73,-118.806 271.723,-176.504c-0.605,-0.62 -44.55,-46.756 -43.937,-46.967c-52.862,44.296 -104.979,162.169 -227.786,164.508c-0.5,31.234 0.46,58.027 0,58.963Z" style="fill-opacity: 0.41;" fill="white"/>'
+          '<path d="M329.378,300.156c0.22,-0.448 0.115,-6.825 0,-16.779l-0,-42.184c122.807,-2.338 174.924,-120.212 227.786,-164.508c-0.613,0.211 43.332,46.346 43.937,46.967c-65.993,57.698 -130.309,191.141 -271.723,176.504Z" fill="white"/>'
+          '</svg>',
+      inStart: 0.045,
+      inEnd: 0.185,
+      outStart: 0.585,
+      outEnd: 0.725,
+    ),
+    // 2. Mid-Right wing blade (~3:30)
+    _BladeDefinition(
+      svg:
+          '<svg $_vb xmlns="http://www.w3.org/2000/svg">'
+          '<path d="M650.701,234.89c0.598,0.04 12.816,60.951 13.038,61.36c-151.729,65.88 -202.305,136.556 -334.361,139.865c-0.182,-0.221 -1.637,-72.012 0,-72.445c91.699,2.425 160.148,-63.607 321.323,-128.78Z" fill="white"/>'
+          '</svg>',
+      inStart: 0.090,
+      inEnd: 0.230,
+      outStart: 0.630,
+      outEnd: 0.770,
+    ),
+    // 3. Bottom-Right anchor blade (~5:00)
+    _BladeDefinition(
+      svg:
+          '<svg $_vb xmlns="http://www.w3.org/2000/svg">'
+          '<path d="M373.829,650.465c-49.876,-304.129 217.133,-186.981 275.196,-238.207c8.808,-7.771 -19.792,54.255 -23.738,65.105c-0.007,0.02 11.377,-0.851 0.065,-0.005c-217.828,16.301 -202.726,38.486 -190.862,161.271l-60.661,11.836Z" style="fill-opacity: 0.41;" fill="white"/>'
+          '<path d="M625.288,477.363c-217.76,16.301 -202.66,38.493 -190.797,161.266l-60.661,11.836c-49.876,-304.129 217.133,-186.981 275.196,-238.207c8.808,-7.771 -19.792,54.255 -23.738,65.105Z" fill="white"/>'
+          '</svg>',
+      inStart: 0.135,
+      inEnd: 0.275,
+      outStart: 0.675,
+      outEnd: 0.815,
+    ),
+    // 4. Bottom-Left anchor blade (~7:00)
+    _BladeDefinition(
+      svg:
+          '<svg $_vb xmlns="http://www.w3.org/2000/svg">'
+          '<path d="M285.341,650.465c49.876,-304.129 -217.133,-186.981 -275.196,-238.207c-8.808,-7.771 19.792,54.255 23.738,65.105c0.007,0.02 -11.377,-0.851 -0.065,-0.005c217.828,16.301 202.726,38.486 190.862,161.271l60.661,11.836Z" style="fill-opacity: 0.41;" fill="white"/>'
+          '<path d="M33.882,477.363c217.76,16.301 202.66,38.493 190.797,161.266l60.661,11.836c49.876,-304.129 -217.133,-186.981 -275.196,-238.207c-8.808,-7.771 19.792,54.255 23.738,65.105Z" fill="white"/>'
+          '</svg>',
+      inStart: 0.180,
+      inEnd: 0.320,
+      outStart: 0.720,
+      outEnd: 0.860,
+    ),
+    // 5. Mid-Left wing blade (~8:30)
+    _BladeDefinition(
+      svg:
+          '<svg $_vb xmlns="http://www.w3.org/2000/svg">'
+          '<path d="M8.469,234.89c-0.598,0.04 -12.816,60.951 -13.038,61.36c151.729,65.88 202.305,136.556 334.361,139.865c0.182,-0.221 1.637,-72.012 0,-72.445c-91.699,2.425 -160.148,-63.607 -321.323,-128.78Z" fill="white"/>'
+          '</svg>',
+      inStart: 0.225,
+      inEnd: 0.365,
+      outStart: 0.765,
+      outEnd: 0.905,
+    ),
+    // 6. Upper-Left blade (~10:00)
+    _BladeDefinition(
+      svg:
+          '<svg $_vb xmlns="http://www.w3.org/2000/svg">'
+          '<path d="M329.792,300.156c-141.414,14.637 -205.73,-118.806 -271.723,-176.504c0.605,-0.62 44.55,-46.756 43.937,-46.967c52.862,44.296 104.979,162.169 227.786,164.508c0.5,31.234 -0.46,58.027 0,58.963Z" style="fill-opacity: 0.41;" fill="white"/>'
+          '<path d="M329.792,300.156c-0.22,-0.448 -0.115,-6.825 -0,-16.779l0,-42.184c-122.807,-2.338 -174.924,-120.212 -227.786,-164.508c0.613,0.211 -43.332,46.346 -43.937,46.967c65.993,57.698 130.309,191.141 271.723,176.504Z" fill="white"/>'
+          '</svg>',
+      inStart: 0.270,
+      inEnd: 0.410,
+      outStart: 0.810,
+      outEnd: 0.950,
+    ),
+    // 7. Top-Left blade (~11:30)
+    _BladeDefinition(
+      svg:
+          '<svg $_vb xmlns="http://www.w3.org/2000/svg">'
+          '<path d="M329.792,115.601c0.389,0.057 0.783,54.803 0,54.57c-88.734,0 -135.861,-151.058 -135.861,-151.058l60.338,-21.211c0,0 36.562,112.931 75.523,117.699Z" style="fill-opacity: 0.41;" fill="white"/>'
+          '<path d="M329.792,170.171l0,-54.57c-38.961,-4.768 -75.523,-117.699 -75.523,-117.699l-60.338,21.211c0,0 61.09,175.314 135.861,151.058Z" fill="white"/>'
+          '</svg>',
+      inStart: 0.315,
+      inEnd: 0.455,
+      outStart: 0.855,
+      outEnd: 0.995,
+    ),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: Stack(
-        fit: StackFit.expand,
-        children: List.generate(_paths.length, (index) {
-          // Keyframe staggered timing from svg-animation.md (0.1s to 0.9s delay with 0.5s duration)
-          // Over 1.4s controller duration:
-          final double startNorm = ((index + 1) * 0.1 / 1.4).clamp(0.0, 1.0);
-          final double endNorm = (((index + 1) * 0.1 + 0.5) / 1.4).clamp(0.0, 1.0);
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, child) {
+        final double t = controller.value;
 
-          final Animation<double> pathAnimation = CurvedAnimation(
-            parent: controller,
-            curve: Interval(startNorm, endNorm, curve: Curves.easeIn),
-          );
+        // Outer halo ring opacity: rises gently in the beginning and fades at the end
+        double ringOpacity = 0.0;
+        if (t < 0.25) {
+          ringOpacity = Curves.easeOut.transform((t / 0.25).clamp(0.0, 1.0));
+        } else if (t <= 0.75) {
+          ringOpacity = 1.0;
+        } else if (t < 1.0) {
+          ringOpacity =
+              1.0 - Curves.easeIn.transform(((t - 0.75) / 0.25).clamp(0.0, 1.0));
+        }
 
-          return FadeTransition(
-            opacity: pathAnimation,
-            child: SvgPicture.string(
-              '<svg width="40" height="24" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="${_paths[index]}" fill="white"/></svg>',
-              width: width,
-              height: height,
-              fit: BoxFit.contain,
-            ),
-          );
-        }),
-      ),
+        return SizedBox(
+          width: width,
+          height: height,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // 1. Outer subtle halo ring (stationary, no spin)
+              if (ringOpacity > 0.001)
+                Opacity(
+                  opacity: ringOpacity,
+                  child: SvgPicture.string(
+                    _ring,
+                    width: width,
+                    height: height,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+
+              // 2. The 8 stationary vector blades with circular loading fade in and fade out
+              ..._blades.map((blade) {
+                final double opacity = blade.calculateOpacity(t);
+                if (opacity <= 0.001) return const SizedBox.shrink();
+
+                return Opacity(
+                  opacity: opacity,
+                  child: SvgPicture.string(
+                    blade.svg,
+                    width: width,
+                    height: height,
+                    fit: BoxFit.contain,
+                  ),
+                );
+              }),
+            ],
+          ),
+        );
+      },
     );
+  }
+}
+
+class _BladeDefinition {
+  final String svg;
+  final double inStart;
+  final double inEnd;
+  final double outStart;
+  final double outEnd;
+
+  const _BladeDefinition({
+    required this.svg,
+    required this.inStart,
+    required this.inEnd,
+    required this.outStart,
+    required this.outEnd,
+  });
+
+  double calculateOpacity(double t) {
+    if (t < inStart) return 0.0;
+    if (t < inEnd) {
+      final p = (t - inStart) / (inEnd - inStart);
+      return Curves.easeOutCubic.transform(p.clamp(0.0, 1.0));
+    }
+    if (t <= outStart) return 1.0;
+    if (t < outEnd) {
+      final p = (t - outStart) / (outEnd - outStart);
+      return 1.0 - Curves.easeInCubic.transform(p.clamp(0.0, 1.0));
+    }
+    return 0.0;
   }
 }
