@@ -209,8 +209,8 @@ class ApiClient {
         '/api/v1/payments/$paymentId/sms-verification',
         data: {
           'smsBody': smsBody,
-          if (sender != null) 'sender': sender,
-          if (receivedAt != null) 'receivedAt': receivedAt,
+          'sender': ?sender,
+          'receivedAt': ?receivedAt,
         },
       );
       return Map<String, dynamic>.from(response.data as Map);
