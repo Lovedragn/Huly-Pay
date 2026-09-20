@@ -11,6 +11,8 @@ import '../services/sms_filter_service.dart';
 import '../services/upi_payment_service.dart';
 import '../services/upi_service.dart';
 import '../services/user_preferences_service.dart';
+import '../services/local_database_service.dart';
+import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import 'payment_methods_screen.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
@@ -754,6 +756,23 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 ? 'PHONEPE'
                 : (effectiveAppId == 'bhim' ? 'BHIM' : 'UPI')));
 
+    // 3a. Auto-resolve category from previously saved UPI ID / merchant mappings
+    String? autoCategory;
+    try {
+      final cleanUpi = upiData.upiId.toLowerCase().trim();
+      if (cleanUpi.isNotEmpty) {
+        autoCategory = await LocalDatabaseService().getMetadata('upi_category_$cleanUpi');
+      }
+      if ((autoCategory == null || autoCategory.isEmpty) &&
+          upiData.payeeName != null &&
+          upiData.payeeName!.trim().isNotEmpty) {
+        final cleanMerchant = upiData.payeeName!.toLowerCase().trim();
+        autoCategory = await LocalDatabaseService().getMetadata('merchant_category_$cleanMerchant');
+      }
+    } catch (_) {}
+
+    final effectivePaymentMethod = (autoCategory != null && autoCategory.isNotEmpty) ? autoCategory : 'UPI';
+
     PaymentModel pendingPayment;
     try {
       pendingPayment = await PaymentRepository().createPayment(CreatePaymentPayload(
@@ -761,7 +780,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
         currency: upiData.currency,
         merchantName: upiData.payeeName,
         upiId: upiData.upiId,
-        paymentMethod: 'UPI',
+        paymentMethod: effectivePaymentMethod,
         transactionReference: txnRef,
         status: paymentStatus,
         provider: providerName,
@@ -776,7 +795,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
         currency: upiData.currency,
         merchantName: upiData.payeeName ?? upiData.upiId,
         upiId: upiData.upiId,
-        paymentMethod: 'UPI',
+        paymentMethod: effectivePaymentMethod,
         transactionReference: txnRef,
         status: paymentStatus,
         provider: providerName,
@@ -786,6 +805,35 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
         createdAt: nowIso,
         updatedAt: nowIso,
       );
+    }
+
+    // 3b. Persist auto-resolved category to local metadata & Supabase
+    if (autoCategory != null && autoCategory.isNotEmpty) {
+      try {
+        await LocalDatabaseService().setMetadata('category_${pendingPayment.id}', autoCategory);
+      } catch (_) {}
+
+      // Update Supabase if it's a remote payment
+      try {
+        final client = AuthService().client;
+        if (client != null &&
+            !pendingPayment.id.startsWith('local_') &&
+            !pendingPayment.id.startsWith('tx_')) {
+          try {
+            await client.from('payments').update({
+              'category': autoCategory,
+              'updated_at': DateTime.now().toUtc().toIso8601String(),
+            }).eq('id', pendingPayment.id);
+          } catch (_) {
+            try {
+              await client.from('payments').update({
+                'payment_method': autoCategory,
+                'updated_at': DateTime.now().toUtc().toIso8601String(),
+              }).eq('id', pendingPayment.id);
+            } catch (_) {}
+          }
+        }
+      } catch (_) {}
     }
 
     // 4. Launch Standalone External Application Separately (without pre-filled amount)
