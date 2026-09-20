@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/dashboard_data.dart';
 import '../models/payment_model.dart';
 import '../repositories/payment_repository.dart';
+import '../services/local_database_service.dart';
 import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
 import '../theme/chart_colors.dart';
@@ -10,6 +11,11 @@ import '../widgets/custom_bottom_nav_bar.dart';
 import '../widgets/spending_heatmap.dart';
 import 'home_dashboard_screen.dart';
 import 'transactions_screen.dart';
+
+enum SpendingClassificationMode {
+  byMerchant,
+  byCategory,
+}
 
 class AnalysisScreen extends StatefulWidget {
   final List<CategorySpendingItem>? initialCategories;
@@ -33,6 +39,8 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   late List<CategorySpendingItem> _categories;
   late String _totalSpent;
   List<PaymentModel> _allPayments = [];
+  Map<String, String> _categoryOverrides = {};
+  SpendingClassificationMode _classificationMode = SpendingClassificationMode.byMerchant;
   String _selectedPeriod = 'Month';
   final List<String> _periodOptions = const [
     'Day',
@@ -42,6 +50,20 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     'Year',
   ];
 
+  static const Map<String, Color> _kCategoryColors = {
+    'Food & Dining': Color(0xFFFF9500),
+    'Shopping': Color(0xFF007AFF),
+    'Bills & Utilities': Color(0xFFAF52DE),
+    'Transportation': Color(0xFF30D158),
+    'Entertainment': Color(0xFFFF2D55),
+    'Groceries': Color(0xFF34C759),
+    'Health & Fitness': Color(0xFF5AC8FA),
+    'Travel': Color(0xFFFFCC00),
+    'Personal Care': Color(0xFFFF6482),
+    'Education': Color(0xFF5856D6),
+    'Other': Color(0xFF8E8E93),
+  };
+
   @override
   void initState() {
     super.initState();
@@ -50,6 +72,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
       _selectedPeriod = cached;
     }
     _loadSavedPeriod();
+    _loadCategoryOverrides();
     if (widget.initialPayments != null && widget.initialPayments!.isNotEmpty) {
       _allPayments = List.from(widget.initialPayments!);
       _filterAndRecalculate();
@@ -62,6 +85,20 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
       _totalSpent = widget.totalSpent ?? '₹0';
       _loadData();
     }
+  }
+
+  Future<void> _loadCategoryOverrides() async {
+    try {
+      final overrides = await LocalDatabaseService().getAllCategoryMetadata();
+      if (mounted) {
+        setState(() {
+          _categoryOverrides = overrides;
+        });
+        if (_classificationMode == SpendingClassificationMode.byCategory) {
+          _filterAndRecalculate();
+        }
+      }
+    } catch (_) {}
   }
 
   @override
@@ -87,7 +124,15 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   }
 
   Future<void> _loadData() async {
-    // 1. Read SQLite cached payments first
+    // 1. Read category overrides
+    try {
+      final overrides = await LocalDatabaseService().getAllCategoryMetadata();
+      if (mounted) {
+        _categoryOverrides = overrides;
+      }
+    } catch (_) {}
+
+    // 2. Read SQLite cached payments first
     try {
       final cached = await PaymentRepository().getCachedPayments();
       if (mounted && cached.isNotEmpty) {
@@ -95,7 +140,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
       }
     } catch (_) {}
 
-    // 2. Fetch fresh payments from backend and update SQLite
+    // 3. Fetch fresh payments from backend and update SQLite
     try {
       final payments = await PaymentRepository().getPayments(forceRefresh: true);
       if (mounted && payments.isNotEmpty) {
@@ -107,6 +152,121 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   void _setAllPayments(List<PaymentModel> payments) {
     _allPayments = payments.where((p) => p.isSuccessful).toList();
     _filterAndRecalculate();
+  }
+
+  String _resolvePaymentCategory(PaymentModel p) {
+    // 1. Check local metadata override
+    final override = _categoryOverrides[p.id];
+    if (override != null && override.isNotEmpty) {
+      return override;
+    }
+
+    // 2. Fallback to paymentMethod if it's already an explicit category name
+    final pm = p.paymentMethod?.trim();
+    if (pm != null && pm.isNotEmpty && pm.toUpperCase() != 'UPI' && pm.toUpperCase() != 'UNKNOWN') {
+      for (final catName in _kCategoryColors.keys) {
+        if (catName.toLowerCase() == pm.toLowerCase()) {
+          return catName;
+        }
+      }
+    }
+
+    // 3. Infer from merchant name / UPI details
+    final title = (p.merchantName != null && p.merchantName!.trim().isNotEmpty)
+        ? p.merchantName!.trim()
+        : (p.upiId != null && p.upiId!.trim().isNotEmpty ? p.upiId!.trim() : '');
+    final tLower = title.toLowerCase();
+
+    if (tLower.contains('swiggy') ||
+        tLower.contains('zomato') ||
+        tLower.contains('restaurant') ||
+        tLower.contains('cafe') ||
+        tLower.contains('coffee') ||
+        tLower.contains('starbucks') ||
+        tLower.contains('food') ||
+        tLower.contains('dining') ||
+        tLower.contains('kitchen') ||
+        tLower.contains('bistro')) {
+      return 'Food & Dining';
+    } else if (tLower.contains('amazon') ||
+        tLower.contains('flipkart') ||
+        tLower.contains('myntra') ||
+        tLower.contains('store') ||
+        tLower.contains('mall') ||
+        tLower.contains('retail') ||
+        tLower.contains('shop')) {
+      return 'Shopping';
+    } else if (tLower.contains('uber') ||
+        tLower.contains('ola') ||
+        tLower.contains('fuel') ||
+        tLower.contains('petrol') ||
+        tLower.contains('metro') ||
+        tLower.contains('transit') ||
+        tLower.contains('cab')) {
+      return 'Transportation';
+    } else if (tLower.contains('bill') ||
+        tLower.contains('electric') ||
+        tLower.contains('water') ||
+        tLower.contains('recharge') ||
+        tLower.contains('airtel') ||
+        tLower.contains('jio') ||
+        tLower.contains('broadband') ||
+        tLower.contains('utility')) {
+      return 'Bills & Utilities';
+    } else if (tLower.contains('grocer') ||
+        tLower.contains('supermarket') ||
+        tLower.contains('blinkit') ||
+        tLower.contains('zepto') ||
+        tLower.contains('instamart') ||
+        tLower.contains('bigbasket')) {
+      return 'Groceries';
+    } else if (tLower.contains('netflix') ||
+        tLower.contains('spotify') ||
+        tLower.contains('cinema') ||
+        tLower.contains('movie') ||
+        tLower.contains('theatre') ||
+        tLower.contains('prime video') ||
+        tLower.contains('hotstar') ||
+        tLower.contains('game')) {
+      return 'Entertainment';
+    } else if (tLower.contains('pharmacy') ||
+        tLower.contains('apollo') ||
+        tLower.contains('med') ||
+        tLower.contains('clinic') ||
+        tLower.contains('hospital') ||
+        tLower.contains('cult') ||
+        tLower.contains('gym') ||
+        tLower.contains('fitness')) {
+      return 'Health & Fitness';
+    } else if (tLower.contains('flight') ||
+        tLower.contains('airline') ||
+        tLower.contains('hotel') ||
+        tLower.contains('makemytrip') ||
+        tLower.contains('irctc') ||
+        tLower.contains('stay') ||
+        tLower.contains('travel')) {
+      return 'Travel';
+    } else if (tLower.contains('salon') ||
+        tLower.contains('spa') ||
+        tLower.contains('beauty') ||
+        tLower.contains('barber')) {
+      return 'Personal Care';
+    } else if (tLower.contains('school') ||
+        tLower.contains('college') ||
+        tLower.contains('university') ||
+        tLower.contains('course') ||
+        tLower.contains('udemy') ||
+        tLower.contains('coursera') ||
+        tLower.contains('tuition') ||
+        tLower.contains('education')) {
+      return 'Education';
+    }
+
+    if (pm != null && pm.isNotEmpty && pm.toUpperCase() != 'UPI') {
+      return pm;
+    }
+
+    return 'Other';
   }
 
   DateTime _getCutoffForPeriod(String period) {
@@ -180,9 +340,14 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 
     for (final p in filtered) {
       total += p.amount;
-      String cat = p.merchantName?.trim() ?? 'Other';
-      if (cat.isEmpty) cat = 'Other';
-      categorySums[cat] = (categorySums[cat] ?? 0) + p.amount;
+      String groupKey;
+      if (_classificationMode == SpendingClassificationMode.byCategory) {
+        groupKey = _resolvePaymentCategory(p);
+      } else {
+        groupKey = p.merchantName?.trim() ?? 'Other';
+        if (groupKey.isEmpty) groupKey = 'Other';
+      }
+      categorySums[groupKey] = (categorySums[groupKey] ?? 0) + p.amount;
     }
 
     final colors = AppChartColors.globalPalette;
@@ -196,12 +361,18 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     for (final entry in sortedEntries) {
       final pct = total > 0 ? ((entry.value / total) * 100).round() : 0;
       final amt = '₹${entry.value.toStringAsFixed(entry.value.truncateToDouble() == entry.value ? 0 : 2)}';
+      final Color itemColor;
+      if (_classificationMode == SpendingClassificationMode.byCategory) {
+        itemColor = _kCategoryColors[entry.key] ?? colors[colorIdx % colors.length];
+      } else {
+        itemColor = colors[colorIdx % colors.length];
+      }
       computed.add(
         CategorySpendingItem(
           title: entry.key,
           percentage: pct,
           amount: amt,
-          color: colors[colorIdx % colors.length],
+          color: itemColor,
         ),
       );
       colorIdx++;
@@ -259,6 +430,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
               items: _categories,
               totalAmount: _totalSpent,
               centerLabel: _getCenterLabel(_selectedPeriod),
+              bottomRightAction: _buildClassificationToggleButton(),
             ),
             const SizedBox(height: 24),
             SpendingHeatmap(
@@ -390,6 +562,63 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     );
   }
 
+  Widget _buildClassificationToggleButton() {
+    final colors = AppThemeManager.colors;
+    final isCategory = _classificationMode == SpendingClassificationMode.byCategory;
+
+    return GestureDetector(
+      key: const Key('analysis_classification_toggle_button'),
+      onTap: () {
+        setState(() {
+          _classificationMode = isCategory
+              ? SpendingClassificationMode.byMerchant
+              : SpendingClassificationMode.byCategory;
+        });
+        _filterAndRecalculate();
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Tooltip(
+        message: isCategory
+            ? 'Switch to Payment Breakdown'
+            : 'Switch to Category Breakdown',
+        child: Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: isCategory
+                ? colors.accent.withValues(alpha: 0.2)
+                : colors.surfaceSecondary,
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: isCategory
+                  ? colors.accent.withValues(alpha: 0.8)
+                  : colors.border,
+              width: 1.2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.3),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Center(
+            child: Icon(
+              isCategory
+                  ? Icons.category_rounded
+                  : Icons.receipt_long_rounded,
+              color: isCategory
+                  ? colors.accent
+                  : colors.textPrimary,
+              size: 20,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildCategoryList() {
     final colors = AppThemeManager.colors;
 
@@ -460,6 +689,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                   shape: BoxShape.circle,
                 ),
               ),
+              const SizedBox(width: 14),
               Expanded(
                 child: Text(
                   cat.title,

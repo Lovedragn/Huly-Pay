@@ -13,6 +13,7 @@ class AnalysisCategoryPieChart extends StatefulWidget {
   final String centerLabel;
   final bool showLegend;
   final bool showCardBackground;
+  final Widget? bottomRightAction;
 
   const AnalysisCategoryPieChart({
     super.key,
@@ -21,6 +22,7 @@ class AnalysisCategoryPieChart extends StatefulWidget {
     this.centerLabel = 'Spent this month',
     this.showLegend = false,
     this.showCardBackground = false,
+    this.bottomRightAction,
   });
 
   @override
@@ -118,6 +120,12 @@ class _AnalysisCategoryPieChartState extends State<AnalysisCategoryPieChart> {
                         ),
                       ],
                     ),
+                    if (widget.bottomRightAction != null)
+                      Positioned(
+                        right: 8,
+                        bottom: 8,
+                        child: widget.bottomRightAction!,
+                      ),
                   ],
                 ),
               ),
