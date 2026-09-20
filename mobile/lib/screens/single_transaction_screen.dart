@@ -532,6 +532,28 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
       await LocalDatabaseService().setMetadata('category_$paymentId', newCategory);
     } catch (_) {}
 
+    // 1b. Persist UPI ID → category mapping for auto-categorization on future scans
+    try {
+      final upiId = _currentPayment?.upiId ?? widget.payment?.upiId;
+      if (upiId != null && upiId.trim().isNotEmpty) {
+        await LocalDatabaseService().setMetadata(
+          'upi_category_${upiId.toLowerCase().trim()}',
+          newCategory,
+        );
+      }
+    } catch (_) {}
+
+    // 1c. Persist merchant name → category mapping for auto-categorization on future scans
+    try {
+      final merchant = _merchantTitle;
+      if (merchant.trim().isNotEmpty) {
+        await LocalDatabaseService().setMetadata(
+          'merchant_category_${merchant.toLowerCase().trim()}',
+          newCategory,
+        );
+      }
+    } catch (_) {}
+
     // 2. If a cached payment exists locally, update its paymentMethod / fields
     try {
       final cachedPayment = await LocalDatabaseService().getPaymentById(paymentId);
