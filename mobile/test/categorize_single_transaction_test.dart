@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/models/dashboard_data.dart';
 import 'package:mobile/models/payment_model.dart';
+import 'package:mobile/screens/analysis_screen.dart';
 import 'package:mobile/screens/single_transaction_screen.dart';
 import 'package:mobile/screens/transactions_screen.dart';
 import 'package:mobile/services/local_database_service.dart';
@@ -152,5 +153,67 @@ void main() {
 
     expect(find.byType(TransactionsScreen), findsOneWidget);
     expect(find.text('Food & Dining'), findsOneWidget);
+  });
+
+  testWidgets('AnalysisScreen circular toggle button switches between payments and category classification',
+      (WidgetTester tester) async {
+    final now = DateTime.now().toIso8601String();
+    final p1 = PaymentModel(
+      id: 'p1',
+      amount: 350.0,
+      currency: 'INR',
+      merchantName: 'Swiggy',
+      paymentMethod: 'UPI',
+      status: 'CONFIRMED',
+      createdAt: now,
+    );
+    final p2 = PaymentModel(
+      id: 'p2',
+      amount: 1200.0,
+      currency: 'INR',
+      merchantName: 'Amazon',
+      paymentMethod: 'UPI',
+      status: 'CONFIRMED',
+      createdAt: now,
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: AnalysisScreen(
+            initialPayments: [p1, p2],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Default mode: byMerchant -> displays 'Swiggy' and 'Amazon'
+    expect(find.text('Swiggy'), findsOneWidget);
+    expect(find.text('Amazon'), findsOneWidget);
+    expect(find.text('Food & Dining'), findsNothing);
+    expect(find.text('Shopping'), findsNothing);
+
+    // Find circular toggle button
+    final toggleBtn = find.byKey(const Key('analysis_classification_toggle_button'));
+    expect(toggleBtn, findsOneWidget);
+
+    // Tap circular toggle button to switch to Category mode
+    await tester.tap(toggleBtn);
+    await tester.pumpAndSettle();
+
+    // Now in byCategory mode -> displays 'Food & Dining' and 'Shopping'
+    expect(find.text('Food & Dining'), findsOneWidget);
+    expect(find.text('Shopping'), findsOneWidget);
+
+    // Tap circular toggle button again to switch back to Merchant mode
+    await tester.tap(toggleBtn);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Swiggy'), findsOneWidget);
+    expect(find.text('Amazon'), findsOneWidget);
+
+    // Flush any pending sqflite transaction lock warning timers
+    await tester.pump(const Duration(seconds: 11));
   });
 }
