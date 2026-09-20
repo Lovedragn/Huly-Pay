@@ -6,7 +6,7 @@ import 'package:mobile/screens/splash_screen.dart';
 void main() {
   test('SvgLogoGeometry matches original Logo-Dark.svg with 100% fidelity', () {
     // 1. Check raw file matches
-    final file = File('asserts/logo/Logo-Dark.svg');
+    final file = File('assets/logo/Logo-Dark.svg');
     expect(file.existsSync(), true);
 
     // 2. Check geometry viewBox

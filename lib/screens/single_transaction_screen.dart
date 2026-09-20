@@ -1216,7 +1216,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
                 ? Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: SvgPicture.asset(
-                      'asserts/icon/google-pay-icon.svg',
+                      'assets/icon/google-pay-icon.svg',
                       width: 18,
                       height: 18,
                     ),
@@ -1225,7 +1225,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
                     ? Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: SvgPicture.asset(
-                          'asserts/icon/amazon-icon.svg',
+                          'assets/icon/amazon-icon.svg',
                           width: 18,
                           height: 18,
                         ),

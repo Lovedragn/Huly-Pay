@@ -524,7 +524,7 @@ class SvgLogoGeometry {
     return SvgLogoGeometry(viewBox: viewBox, paths: items);
   }
 
-  // Exact contents of asserts/logo/Logo-Dark.svg (Single Source of Truth)
+  // Exact contents of assets/logo/Logo-Dark.svg (Single Source of Truth)
   static const String _rawSvg = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg width="100%" height="100%" viewBox="0 0 669 653" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:affinity="https://www.affinity.studio/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;" fill="#ffffff">

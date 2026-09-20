@@ -316,7 +316,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
                         ),
                         child: Center(
                           child: SvgPicture.asset(
-                            'asserts/icon/qr.svg',
+                            'assets/icon/qr.svg',
                             width: 24,
                             height: 24,
                             colorFilter: const ColorFilter.mode(
@@ -428,8 +428,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
           children: [
             SvgPicture.asset(
               colors.isDark
-                  ? 'asserts/logo/Logo-Dark.svg'
-                  : 'asserts/logo/logo-Light.svg',
+                  ? 'assets/logo/Logo-Dark.svg'
+                  : 'assets/logo/logo-Light.svg',
               height: 24,
             ),
             Row(
@@ -508,7 +508,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
                                   errorBuilder: (context, error, stackTrace) => _buildAvatarFallback(),
                                 )
                               : Image.asset(
-                                  'asserts/pictures/profile.png',
+                                  'assets/pictures/profile.png',
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) => _buildAvatarFallback(),
                                 ),
@@ -577,21 +577,21 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
       children: [
         Expanded(
           child: QuickActionButton(
-            svgAsset: 'asserts/icon/upload.svg',
+            svgAsset: 'assets/icon/upload.svg',
             label: 'upload',
             onTap: () {},
           ),
         ),
         Expanded(
           child: QuickActionButton(
-            svgAsset: 'asserts/icon/qr.svg',
+            svgAsset: 'assets/icon/qr.svg',
             label: 'Scan',
             onTap: _openScanAndPay,
           ),
         ),
         Expanded(
           child: QuickActionButton(
-            svgAsset: 'asserts/icon/more.svg',
+            svgAsset: 'assets/icon/more.svg',
             label: 'More',
             onTap: _openSettings,
           ),

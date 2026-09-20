@@ -145,7 +145,7 @@ class AboutHulyPayScreen extends StatelessWidget {
             ),
             child: Center(
               child: Image.asset(
-                'asserts/logo/Logo-Dark.png',
+                'assets/logo/Logo-Dark.png',
                 width: 44,
                 height: 44,
                 errorBuilder: (context, error, stackTrace) => Icon(

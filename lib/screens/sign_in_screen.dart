@@ -233,7 +233,7 @@ class _SignInScreenState extends State<SignInScreen> with WidgetsBindingObserver
                 Hero(
                   tag: 'huly_pay_brand_logo',
                   child: SvgPicture.asset(
-                    'asserts/logo/Logo-Dark.svg',
+                    'assets/logo/Logo-Dark.svg',
                     width: 120,
                     height: 120,
                   ),
@@ -383,7 +383,7 @@ class _SignInScreenState extends State<SignInScreen> with WidgetsBindingObserver
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   SvgPicture.asset(
-                                    'asserts/icon/google.svg',
+                                    'assets/icon/google.svg',
                                     width: 22,
                                     height: 22,
                                   ),
@@ -439,7 +439,7 @@ class _SignInScreenState extends State<SignInScreen> with WidgetsBindingObserver
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   SvgPicture.asset(
-                                    'asserts/icon/github.svg',
+                                    'assets/icon/github.svg',
                                     width: 22,
                                     height: 22,
                                     colorFilter: const ColorFilter.mode(
