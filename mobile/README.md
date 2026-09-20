@@ -1,7 +1,7 @@
 # 💳 HulyPay — Next-Gen Intelligent Fintech App
 
 <p align="center">
-  <img src="asserts/logo/Logo-Dark.png" alt="HulyPay Logo" width="100" height="100" />
+  <img src="assets/logo/Logo-Dark.png" alt="HulyPay Logo" width="100" height="100" />
 </p>
 
 <p align="center">
@@ -192,7 +192,7 @@ sequenceDiagram
 
 ```text
 mobile/
-├── asserts/              # Image assets, brand logos, custom icons
+├── assets/              # Image assets, brand logos, custom icons
 ├── android/              # Native Android configuration & Gradle files
 ├── ios/                  # Native iOS Xcode workspace & Podfiles
 ├── lib/

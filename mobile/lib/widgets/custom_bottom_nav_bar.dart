@@ -33,7 +33,7 @@ class CustomBottomNavBar extends StatelessWidget {
               _buildNavItem(
                 index: 0,
                 iconBuilder: (color) => SvgPicture.asset(
-                  'asserts/icon/home.svg',
+                  'assets/icon/home.svg',
                   width: 24,
                   height: 24,
                   colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
@@ -44,7 +44,7 @@ class CustomBottomNavBar extends StatelessWidget {
               _buildNavItem(
                 index: 1,
                 iconBuilder: (color) => SvgPicture.asset(
-                  'asserts/icon/analysis.svg',
+                  'assets/icon/analysis.svg',
                   width: 24,
                   height: 24,
                   colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
@@ -55,7 +55,7 @@ class CustomBottomNavBar extends StatelessWidget {
               _buildNavItem(
                 index: 2,
                 iconBuilder: (color) => SvgPicture.asset(
-                  'asserts/icon/transaction.svg',
+                  'assets/icon/transaction.svg',
                   width: 24,
                   height: 24,
                   colorFilter: ColorFilter.mode(color, BlendMode.srcIn),

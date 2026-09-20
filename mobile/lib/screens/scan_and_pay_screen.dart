@@ -1563,7 +1563,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                       ),
                       child: Center(
                         child: SvgPicture.asset(
-                          'asserts/icon/switch.svg',
+                          'assets/icon/switch.svg',
                           width: 20,
                           height: 20,
                           colorFilter: const ColorFilter.mode(

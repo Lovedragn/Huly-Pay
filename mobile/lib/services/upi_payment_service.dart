@@ -32,14 +32,14 @@ class UpiApps {
     id: googlePay,
     name: 'Google Pay',
     packageName: 'com.google.android.apps.nbu.paisa.user',
-    iconPath: 'asserts/icon/google-pay.svg',
+    iconPath: 'assets/icon/google-pay.svg',
   );
 
   static const SupportedUpiApp phonepeApp = SupportedUpiApp(
     id: phonePe,
     name: 'PhonePe',
     packageName: 'com.phonepe.app',
-    iconPath: 'asserts/icon/phonepe.svg',
+    iconPath: 'assets/icon/phonepe.svg',
   );
 
   static const SupportedUpiApp paytmApp = SupportedUpiApp(
@@ -53,14 +53,14 @@ class UpiApps {
     id: amazonPay,
     name: 'Amazon Pay',
     packageName: 'in.amazon.mShop.android.shopping',
-    iconPath: 'asserts/icon/amazon-icon.svg',
+    iconPath: 'assets/icon/amazon-icon.svg',
   );
 
   static const SupportedUpiApp bhimApp = SupportedUpiApp(
     id: bhim,
     name: 'BHIM',
     packageName: 'in.org.npci.upiapp',
-    iconPath: 'asserts/icon/bhim.svg',
+    iconPath: 'assets/icon/bhim.svg',
   );
 
   static const SupportedUpiApp whatsappApp = SupportedUpiApp(
