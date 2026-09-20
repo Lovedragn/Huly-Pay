@@ -9,6 +9,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/dashboard_data.dart';
 import '../models/payment_model.dart';
 import '../repositories/payment_repository.dart';
+import '../services/auth_service.dart';
+import '../services/local_database_service.dart';
 import '../theme/app_theme.dart';
 
 class SingleTransactionScreen extends StatefulWidget {
@@ -36,6 +38,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
   bool _isCancelling = false;
   GoogleMapController? _mapController;
   final MapType _currentMapType = MapType.normal;
+  String? _customCategory;
   final ValueNotifier<double> _sheetExtentNotifier = ValueNotifier<double>(
     0.54,
   );
@@ -62,9 +65,20 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
   void initState() {
     super.initState();
     _currentPayment = widget.payment;
+    _loadCustomCategory();
     if (widget.payment == null) {
       _fetchPaymentDetails();
     }
+  }
+
+  Future<void> _loadCustomCategory() async {
+    final paymentId = widget.payment?.id ?? widget.transaction.id;
+    try {
+      final saved = await LocalDatabaseService().getMetadata('category_$paymentId');
+      if (saved != null && saved.isNotEmpty && mounted) {
+        setState(() => _customCategory = saved);
+      }
+    } catch (_) {}
   }
 
   @override
@@ -137,6 +151,13 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
       return 'GPay';
     }
     return widget.transaction.id.hashCode.isEven ? 'GPay' : 'Amazon Pay';
+  }
+
+  String get _category {
+    if (_customCategory != null && _customCategory!.isNotEmpty) {
+      return _customCategory!;
+    }
+    return widget.transaction.category;
   }
 
   String get _status {
@@ -431,48 +452,394 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
     );
   }
 
+  static const List<Map<String, dynamic>> _kDefaultCategories = [
+    {
+      'name': 'Food & Dining',
+      'icon': Icons.restaurant_rounded,
+      'color': Color(0xFFFF9500),
+      'description': 'Restaurants, cafes, food delivery & groceries',
+    },
+    {
+      'name': 'Shopping',
+      'icon': Icons.shopping_bag_rounded,
+      'color': Color(0xFF007AFF),
+      'description': 'E-commerce, apparel, electronics & retail',
+    },
+    {
+      'name': 'Bills & Utilities',
+      'icon': Icons.receipt_long_rounded,
+      'color': Color(0xFFAF52DE),
+      'description': 'Electricity, water, mobile recharge & broadband',
+    },
+    {
+      'name': 'Transportation',
+      'icon': Icons.directions_car_rounded,
+      'color': Color(0xFF30D158),
+      'description': 'Cabs, fuel, tolls, train & metro tickets',
+    },
+    {
+      'name': 'Entertainment',
+      'icon': Icons.movie_outlined,
+      'color': Color(0xFFFF2D55),
+      'description': 'Movies, streaming subscriptions & events',
+    },
+    {
+      'name': 'Groceries',
+      'icon': Icons.local_grocery_store_rounded,
+      'color': Color(0xFF34C759),
+      'description': 'Supermarkets, daily essentials & produce',
+    },
+    {
+      'name': 'Health & Fitness',
+      'icon': Icons.favorite_rounded,
+      'color': Color(0xFF5AC8FA),
+      'description': 'Pharmacies, clinics, doctors & gym',
+    },
+    {
+      'name': 'Travel',
+      'icon': Icons.flight_takeoff_rounded,
+      'color': Color(0xFFFFCC00),
+      'description': 'Hotels, flights & vacations',
+    },
+    {
+      'name': 'Personal Care',
+      'icon': Icons.spa_rounded,
+      'color': Color(0xFFFF6482),
+      'description': 'Salons, grooming & self-care',
+    },
+    {
+      'name': 'Education',
+      'icon': Icons.school_rounded,
+      'color': Color(0xFF5856D6),
+      'description': 'Courses, books & tuition fees',
+    },
+    {
+      'name': 'Other',
+      'icon': Icons.category_rounded,
+      'color': Color(0xFF8E8E93),
+      'description': 'General transactions & miscellaneous',
+    },
+  ];
+
+  Future<void> _updateCategory(String newCategory, [BuildContext? targetContext]) async {
+    final paymentId = widget.payment?.id ?? widget.transaction.id;
+    setState(() {
+      _customCategory = newCategory;
+    });
+
+    // 1. Persist category locally in metadata cache
+    try {
+      await LocalDatabaseService().setMetadata('category_$paymentId', newCategory);
+    } catch (_) {}
+
+    // 2. If a cached payment exists locally, update its paymentMethod / fields
+    try {
+      final cachedPayment = await LocalDatabaseService().getPaymentById(paymentId);
+      if (cachedPayment != null) {
+        final updatedPayment = cachedPayment.copyWith(
+          paymentMethod: newCategory,
+          updatedAt: DateTime.now().toUtc().toIso8601String(),
+        );
+        await LocalDatabaseService().upsertPayment(updatedPayment);
+      }
+    } catch (_) {}
+
+    // 3. Update Supabase payments table
+    try {
+      final client = AuthService().client;
+      if (client != null && !paymentId.startsWith('tx_') && !paymentId.startsWith('local_')) {
+        // Attempt updating category_name / category if column exists, fallback to payment_method
+        try {
+          await client.from('payments').update({
+            'category': newCategory,
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
+          }).eq('id', paymentId);
+        } catch (_) {
+          // If 'category' column does not exist in payments table, update 'payment_method'
+          try {
+            await client.from('payments').update({
+              'payment_method': newCategory,
+              'updated_at': DateTime.now().toUtc().toIso8601String(),
+            }).eq('id', paymentId);
+          } catch (_) {}
+        }
+      }
+    } catch (_) {}
+
+    final messengerContext = targetContext ?? (mounted ? context : null);
+    if (messengerContext != null) {
+      try {
+        ScaffoldMessenger.of(messengerContext).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle_rounded, color: Color(0xFF30D158), size: 18),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Categorized as $newCategory',
+                    style: const TextStyle(
+                      fontFamily: 'Google Sans',
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: const Color(0xFF1E1E24),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      } catch (_) {}
+    }
+  }
+
+  void _showCategoryPickerSheet(BuildContext parentContext) {
+    final messenger = ScaffoldMessenger.of(parentContext);
+    showModalBottomSheet(
+      context: parentContext,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF141416),
+      barrierColor: Colors.black.withValues(alpha: 0.65),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (BuildContext sheetCtx) {
+        return StatefulBuilder(
+          builder: (sheetInnerCtx, setSheetState) {
+            final activeCategory = _category;
+
+            return SafeArea(
+              child: Container(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(sheetCtx).size.height * 0.75,
+                ),
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Sheet Drag Handle
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4.5,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF383842),
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+
+                    // Header with title and close button
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Categorize Payment',
+                                style: TextStyle(
+                                  fontFamily: 'Google Sans',
+                                  color: Colors.white,
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Assign a category for budgeting and analytics',
+                                style: TextStyle(
+                                  fontFamily: 'Google Sans',
+                                  color: Color(0xFF8E8E93),
+                                  fontSize: 12.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close_rounded, color: Color(0xFF8E8E93), size: 22),
+                          splashRadius: 20,
+                          onPressed: () => Navigator.of(sheetCtx).pop(),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+
+                    // Category Toggle List
+                    Flexible(
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: _kDefaultCategories.length,
+                        separatorBuilder: (ctx, idx) => const SizedBox(height: 8),
+                        itemBuilder: (ctx, idx) {
+                          final item = _kDefaultCategories[idx];
+                          final String catName = item['name'] as String;
+                          final IconData catIcon = item['icon'] as IconData;
+                          final Color catColor = item['color'] as Color;
+                          final String catDesc = item['description'] as String;
+                          final bool isSelected = activeCategory.toLowerCase() == catName.toLowerCase();
+
+                          return Material(
+                            color: isSelected
+                                ? catColor.withValues(alpha: 0.14)
+                                : const Color(0xFF1B1B1F),
+                            borderRadius: BorderRadius.circular(16),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(16),
+                              onTap: () {
+                                Navigator.of(sheetCtx).pop();
+                                _updateCategory(catName, parentContext);
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? catColor
+                                        : const Color(0xFF282830),
+                                    width: isSelected ? 1.5 : 1.0,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: catColor.withValues(alpha: 0.16),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Icon(catIcon, color: catColor, size: 20),
+                                    ),
+                                    const SizedBox(width: 14),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            catName,
+                                            style: TextStyle(
+                                              fontFamily: 'Google Sans',
+                                              color: isSelected ? Colors.white : const Color(0xFFE4E4E6),
+                                              fontSize: 15,
+                                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            catDesc,
+                                            style: const TextStyle(
+                                              fontFamily: 'Google Sans',
+                                              color: Color(0xFF8E8E93),
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    if (isSelected)
+                                      Container(
+                                        width: 22,
+                                        height: 22,
+                                        decoration: BoxDecoration(
+                                          color: catColor,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.check_rounded,
+                                          color: Colors.black,
+                                          size: 15,
+                                        ),
+                                      )
+                                    else
+                                      Container(
+                                        width: 20,
+                                        height: 20,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: const Color(0xFF484852),
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final topPadding = mediaQuery.padding.top;
 
-    return Scaffold(
-      backgroundColor: AppThemeManager.colors.background,
-      body: Stack(
-        children: [
-          // 1. FULL WIDTH & FULL HEIGHT GOOGLE MAP / STREET VIEW IN BACKGROUND (With Parallax Offset)
-          Positioned.fill(
-            child: ValueListenableBuilder<double>(
-              valueListenable: _sheetExtentNotifier,
-              builder: (context, extent, child) {
-                final progress = ((extent - 0.54) / (0.94 - 0.54)).clamp(
-                  0.0,
-                  1.0,
-                );
-                final mapOffset = progress * mediaQuery.size.height * 0.30;
-                return Transform.translate(
-                  offset: Offset(0, -mapOffset),
-                  child: child,
-                );
-              },
-              child: _buildGoogleMapOrStreetView(),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if (!didPop) {
+          Navigator.of(context).pop(_customCategory);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppThemeManager.colors.background,
+        body: Stack(
+          children: [
+            // 1. FULL WIDTH & FULL HEIGHT GOOGLE MAP / STREET VIEW IN BACKGROUND (With Parallax Offset)
+            Positioned.fill(
+              child: ValueListenableBuilder<double>(
+                valueListenable: _sheetExtentNotifier,
+                builder: (context, extent, child) {
+                  final progress = ((extent - 0.54) / (0.94 - 0.54)).clamp(
+                    0.0,
+                    1.0,
+                  );
+                  final mapOffset = progress * mediaQuery.size.height * 0.30;
+                  return Transform.translate(
+                    offset: Offset(0, -mapOffset),
+                    child: child,
+                  );
+                },
+                child: _buildGoogleMapOrStreetView(),
+              ),
             ),
-          ),
 
-          // 2. FIXED TOP-LEFT BACK BUTTON IN MAP VIEW
-          Positioned(
-            top: topPadding + 10,
-            left: 16,
-            child: GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
-              behavior: HitTestBehavior.opaque,
-              child: Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: const Color(0xDD141416),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppThemeManager.colors.border, width: 1),
+            // 2. FIXED TOP-LEFT BACK BUTTON IN MAP VIEW
+            Positioned(
+              top: topPadding + 10,
+              left: 16,
+              child: GestureDetector(
+                onTap: () => Navigator.of(context).pop(_customCategory),
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: const Color(0xDD141416),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppThemeManager.colors.border, width: 1),
                   boxShadow: const [
                     BoxShadow(
                       color: Colors.black45,
@@ -576,6 +943,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
             ),
         ],
       ),
+    ),
     );
   }
 
@@ -1108,7 +1476,18 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
           ),
           const SizedBox(width: 10),
         ],
+        // Categorize Toggle List Button
+        const SizedBox(width: 10),
+        Expanded(
+          child: _buildActionButton(
+            icon: Icons.label_outline_rounded,
+            label: 'Category',
+            isPrimary: false,
+            onTap: () => _showCategoryPickerSheet(context),
+          ),
+        ),
         // Share
+        const SizedBox(width: 10),
         Expanded(
           child: _buildActionButton(
             icon: Icons.share_outlined,
@@ -1241,7 +1620,16 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
           ),
           _buildDetailRow(
             label: 'Category',
-            value: widget.transaction.category,
+            value: _category,
+            trailingWidget: const Padding(
+              padding: EdgeInsets.only(left: 6),
+              child: Icon(
+                Icons.edit_outlined,
+                color: Color(0xFF007AFF),
+                size: 14,
+              ),
+            ),
+            onTap: () => _showCategoryPickerSheet(context),
           ),
           const Divider(
             color: Color(0xFF202024),
@@ -1311,10 +1699,12 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
     required String label,
     required String value,
     Widget? leadingWidget,
+    Widget? trailingWidget,
     bool canCopy = false,
     VoidCallback? onCopy,
+    VoidCallback? onTap,
   }) {
-    return Padding(
+    final content = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1359,12 +1749,25 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
                     ),
                   ),
                 ],
+                ?trailingWidget,
               ],
             ),
           ),
         ],
       ),
     );
+
+    if (onTap != null) {
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: content,
+        ),
+      );
+    }
+    return content;
   }
 
   Widget _buildSupportCard(BuildContext context) {

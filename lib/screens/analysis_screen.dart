@@ -460,17 +460,20 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                   shape: BoxShape.circle,
                 ),
               ),
-              const SizedBox(width: 14),
-              Text(
-                cat.title,
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: colors.textPrimary,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
+              Expanded(
+                child: Text(
+                  cat.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: 'Google Sans',
+                    color: colors.textPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-              const Spacer(),
+              const SizedBox(width: 8),
               Text(
                 '${cat.percentage}%',
                 style: TextStyle(

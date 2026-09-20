@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import '../models/dashboard_data.dart';
 import '../models/payment_model.dart';
 import '../repositories/payment_repository.dart';
+import '../services/local_database_service.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import '../widgets/transaction_tile.dart';
 import 'analysis_screen.dart';
 import 'home_dashboard_screen.dart';
+import 'single_transaction_screen.dart';
 import '../theme/app_theme.dart';
 
 class TransactionsScreen extends StatefulWidget {
@@ -74,6 +76,12 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       await PaymentRepository().cleanupStalePayments();
     } catch (_) {}
 
+    // Load category metadata overrides
+    Map<String, String> categoryOverrides = {};
+    try {
+      categoryOverrides = await LocalDatabaseService().getAllCategoryMetadata();
+    } catch (_) {}
+
     // 1. Instantly display cached payments from SQLite
     try {
       final cached = await PaymentRepository().getCachedPayments();
@@ -86,7 +94,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             return bDate.compareTo(aDate);
           });
         setState(() {
-          _allGroups = PaymentModel.groupPayments(sorted);
+          _allGroups = PaymentModel.groupPayments(sorted, categoryOverrides);
         });
       }
     } catch (_) {}
@@ -103,7 +111,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           return bDate.compareTo(aDate);
         });
       setState(() {
-        _allGroups = PaymentModel.groupPayments(sorted);
+        _allGroups = PaymentModel.groupPayments(sorted, categoryOverrides);
       });
     } catch (_) {
       // Graceful fallback to cached groups
@@ -485,7 +493,26 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 child: Column(
                   children: [
                     for (int i = 0; i < group.transactions.length; i++) ...[
-                      TransactionTile(transaction: group.transactions[i]),
+                      TransactionTile(
+                        transaction: group.transactions[i],
+                        onTap: () async {
+                          final tx = group.transactions[i];
+                          final activePayment = tx.payment;
+                          final result = await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => SingleTransactionScreen(
+                                transaction: tx,
+                                payment: activePayment,
+                                paymentId: activePayment?.id ??
+                                    (tx.id.startsWith('tx_') ? null : tx.id),
+                              ),
+                            ),
+                          );
+                          if (result != null) {
+                            _loadPayments();
+                          }
+                        },
+                      ),
                       if (i < group.transactions.length - 1)
                         Divider(
                           color: colors.divider,
