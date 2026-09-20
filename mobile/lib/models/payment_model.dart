@@ -144,7 +144,7 @@ class PaymentModel {
     };
   }
 
-  TransactionItem toTransactionItem() {
+  TransactionItem toTransactionItem({String? customCategory}) {
     final title = (merchantName != null && merchantName!.trim().isNotEmpty)
         ? merchantName!.trim()
         : (upiId != null && upiId!.trim().isNotEmpty ? upiId!.trim() : 'UPI Payment');
@@ -152,7 +152,8 @@ class PaymentModel {
     final sUpper = status.toUpperCase();
     final bool isFailedStatus = sUpper == 'FAILED' || sUpper == 'CANCELLED';
     final bool isPendingStatus = sUpper == 'PENDING' || sUpper == 'INITIATED' || sUpper == 'PAYMENT_INITIATED';
-    final categoryText = isFailedStatus ? 'Failed' : (isPendingStatus ? 'Pending' : (paymentMethod ?? 'UPI'));
+    final categoryText = customCategory ??
+        (isFailedStatus ? 'Failed' : (isPendingStatus ? 'Pending' : (paymentMethod ?? 'UPI')));
 
     final amountText =
         '₹${amount.toStringAsFixed(amount.truncateToDouble() == amount ? 0 : 2)}';
@@ -178,6 +179,8 @@ class PaymentModel {
     Color iconBgColor = const Color(0xFF14243B);
 
     final titleLower = title.toLowerCase();
+    final catLower = categoryText.toLowerCase();
+
     if (isFailedStatus) {
       icon = Icons.error_outline_rounded;
       iconColor = const Color(0xFFFF453A);
@@ -186,18 +189,34 @@ class PaymentModel {
       icon = Icons.hourglass_top_rounded;
       iconColor = const Color(0xFFFF9F0A);
       iconBgColor = const Color(0xFF2C2210);
-    } else if (titleLower.contains('swiggy') || titleLower.contains('zomato') || titleLower.contains('food')) {
+    } else if (catLower.contains('food') || catLower.contains('dining') || titleLower.contains('swiggy') || titleLower.contains('zomato')) {
       icon = Icons.restaurant_rounded;
       iconColor = const Color(0xFFFF9500);
       iconBgColor = const Color(0xFF2C2014);
-    } else if (titleLower.contains('amazon') || titleLower.contains('flipkart') || titleLower.contains('store')) {
+    } else if (catLower.contains('shopping') || titleLower.contains('amazon') || titleLower.contains('flipkart') || titleLower.contains('store')) {
       icon = Icons.shopping_bag_rounded;
       iconColor = const Color(0xFF007AFF);
       iconBgColor = const Color(0xFF14243B);
-    } else if (titleLower.contains('uber') || titleLower.contains('ola') || titleLower.contains('fuel')) {
+    } else if (catLower.contains('transport') || catLower.contains('travel') || titleLower.contains('uber') || titleLower.contains('ola') || titleLower.contains('fuel')) {
       icon = Icons.directions_car_rounded;
       iconColor = const Color(0xFF30D158);
       iconBgColor = const Color(0xFF142A1E);
+    } else if (catLower.contains('bill') || catLower.contains('utilit')) {
+      icon = Icons.receipt_long_rounded;
+      iconColor = const Color(0xFFAF52DE);
+      iconBgColor = const Color(0xFF271B33);
+    } else if (catLower.contains('grocer')) {
+      icon = Icons.local_grocery_store_rounded;
+      iconColor = const Color(0xFF34C759);
+      iconBgColor = const Color(0xFF142A1E);
+    } else if (catLower.contains('entertain')) {
+      icon = Icons.movie_outlined;
+      iconColor = const Color(0xFFFF2D55);
+      iconBgColor = const Color(0xFF2C151F);
+    } else if (catLower.contains('health') || catLower.contains('fitness')) {
+      icon = Icons.favorite_rounded;
+      iconColor = const Color(0xFF5AC8FA);
+      iconBgColor = const Color(0xFF142533);
     }
 
     return TransactionItem(
@@ -215,7 +234,10 @@ class PaymentModel {
     );
   }
 
-  static List<TransactionGroup> groupPayments(List<PaymentModel> payments) {
+  static List<TransactionGroup> groupPayments(
+    List<PaymentModel> payments, [
+    Map<String, String>? categoryOverrides,
+  ]) {
     if (payments.isEmpty) return [];
 
     final now = DateTime.now();
@@ -233,7 +255,9 @@ class PaymentModel {
           dt = DateTime.parse(p.createdAt!).toLocal();
         } catch (_) {}
       }
-      final item = p.toTransactionItem();
+      final overrideCat = categoryOverrides?[p.id] ??
+          (categoryOverrides?['category_${p.id}']);
+      final item = p.toTransactionItem(customCategory: overrideCat);
       if (dt == null || dt.isAfter(todayStart)) {
         todayList.add(item);
       } else if (dt.isAfter(yesterdayStart)) {

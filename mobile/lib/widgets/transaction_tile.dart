@@ -68,6 +68,8 @@ class TransactionTile extends StatelessWidget {
               children: [
                 Text(
                   transaction.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontFamily: 'Google Sans',
                     color: AppThemeManager.colors.textPrimary,
@@ -78,6 +80,8 @@ class TransactionTile extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   transaction.category,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontFamily: 'Google Sans',
                     color: AppThemeManager.colors.textSecondary,
@@ -87,6 +91,7 @@ class TransactionTile extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -117,6 +122,8 @@ class TransactionTile extends StatelessWidget {
                     ),
                   Text(
                     transaction.amount,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontFamily: 'Google Sans',
                       color: transaction.isFailed
@@ -135,6 +142,8 @@ class TransactionTile extends StatelessWidget {
               const SizedBox(height: 3),
               Text(
                 transaction.time,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontFamily: 'Google Sans',
                   color: AppThemeManager.colors.textSecondary,

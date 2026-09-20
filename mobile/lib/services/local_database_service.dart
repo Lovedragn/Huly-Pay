@@ -550,6 +550,30 @@ class LocalDatabaseService {
     return rows.first;
   }
 
+  Future<Map<String, String>> getAllCategoryMetadata() async {
+    final db = await database;
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS cache_metadata (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    ''');
+    final rows = await db.query(
+      'cache_metadata',
+      where: "key LIKE 'category_%'",
+    );
+    final result = <String, String>{};
+    for (final row in rows) {
+      final key = row['key'] as String;
+      final val = row['value'] as String;
+      final paymentId = key.replaceFirst('category_', '');
+      result[paymentId] = val;
+      result[key] = val;
+    }
+    return result;
+  }
+
   // ==========================================
   // CLEANUP & RESET
   // ==========================================
