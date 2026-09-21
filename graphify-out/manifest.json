@@ -456,9 +456,9 @@
     "semantic_hash": ""
   },
   "mobile/lib/screens/analysis_screen.dart": {
-    "mtime": 1789901364.6333194,
-    "seen": 1789901398.8853638,
-    "ast_hash": "85b1a1c6dfcbc62fb36054c3d327bb4a",
+    "mtime": 1789902977.4324172,
+    "seen": 1789903002.7748876,
+    "ast_hash": "09b21ffe3fc5aff459a52c27e2120734",
     "semantic_hash": ""
   },
   "mobile/lib/screens/home_dashboard_screen.dart": {
@@ -468,9 +468,9 @@
     "semantic_hash": ""
   },
   "mobile/lib/screens/scan_and_pay_screen.dart": {
-    "mtime": 1789892161.7992857,
-    "seen": 1789900992.7248285,
-    "ast_hash": "a9f4ee6eb0cacdb5611413c3b21cc7c0",
+    "mtime": 1789904151.8674376,
+    "seen": 1789904199.8550348,
+    "ast_hash": "a97cb7949230e3ab68f0757474de410c",
     "semantic_hash": ""
   },
   "mobile/lib/screens/settings_screen.dart": {
@@ -486,9 +486,9 @@
     "semantic_hash": ""
   },
   "mobile/lib/screens/single_transaction_screen.dart": {
-    "mtime": 1789900790.6007192,
-    "seen": 1789900992.7248318,
-    "ast_hash": "c3131e4a05d5753257e30911a5158193",
+    "mtime": 1789904119.3598268,
+    "seen": 1789904199.85504,
+    "ast_hash": "24738280ddfd9d19b04a8c021006bf40",
     "semantic_hash": ""
   },
   "mobile/lib/screens/splash_screen.dart": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "mobile/lib/widgets/analysis_category_pie_chart.dart": {
-    "mtime": 1789891219.208539,
-    "seen": 1789900992.7248535,
-    "ast_hash": "d95b14e8a7a387d095481c16932def72",
+    "mtime": 1789902945.9377718,
+    "seen": 1789903002.774922,
+    "ast_hash": "b8fedf3d59b4aeff8eea041977618cd2",
     "semantic_hash": ""
   },
   "mobile/lib/widgets/home_spend_trend_line_chart.dart": {
@@ -1086,9 +1086,9 @@
     "semantic_hash": ""
   },
   "mobile/test/categorize_single_transaction_test.dart": {
-    "mtime": 1789900962.2671936,
-    "seen": 1789900992.724863,
-    "ast_hash": "3139baa45fb7208c39d6f69a857042f1",
+    "mtime": 1789902641.3897617,
+    "seen": 1789902670.9750612,
+    "ast_hash": "9b0dc75841bba34cc6349773db4d1421",
     "semantic_hash": ""
   },
   "mobile/test/logo_svg_fidelity_test.dart": {
