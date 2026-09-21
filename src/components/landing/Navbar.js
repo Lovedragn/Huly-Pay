@@ -9,14 +9,13 @@ export default function Navbar() {
 
   return (
     <header className="w-full bg-white border-b border-[#D4D4D8] sticky top-0 z-50">
-      {/* Outer wrapper matching the margins from the design */}
-      <div className="max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-16 h-20 md:h-[90px] flex items-center justify-between">
-        
+      {/* Outer wrapper: left has standard margin/padding, right extends flush to the edge (pr-0) */}
+      <div className="w-full pl-4 sm:pl-8 lg:pl-16 pr-0 h-20 md:h-[80px] flex items-center justify-between">
         {/* Left Section: Logo, Blogs, Download */}
         <div className="flex items-center h-full">
           {/* Logo + Brand Name */}
           <Link
-            href="/landing"
+            href="/"
             className="h-full flex items-center gap-3 pr-6 sm:pr-8 md:pr-10 border-r border-[#D4D4D8] hover:opacity-85 transition-opacity"
           >
             <div className="w-7 h-7 relative flex items-center justify-center">
@@ -51,46 +50,13 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Right Section: DashBoard, Open Link Icon */}
+        {/* Right Section: Mobile menu toggle, DashBoard, Open Link Icon */}
         <div className="flex items-center h-full">
-          {/* Dashboard Link */}
-          <Link
-            href="/landing/dashboard"
-            className="h-full flex items-center justify-center px-6 sm:px-8 lg:px-10 border-l border-r border-[#D4D4D8] font-pixel text-sm sm:text-base text-black hover:bg-neutral-50 transition-colors select-none"
-          >
-            DashBoard
-          </Link>
-
-          {/* Open Link Box (Solid Black Square) */}
-          <Link
-            href="/landing/dashboard"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Open Dashboard in new tab"
-            className="h-full w-16 sm:w-20 md:w-[90px] bg-black flex items-center justify-center hover:bg-neutral-800 active:bg-neutral-900 transition-colors group cursor-pointer"
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 17 17"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="transition-transform duration-200 group-hover:scale-110 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-            >
-              <path
-                d="M16 12V16H1V1H5M6 11L16 1M16 8V1H9"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </Link>
-
           {/* Mobile Menu Button (Visible only on small screens) */}
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden ml-3 p-2 text-black hover:bg-neutral-100 rounded focus:outline-none"
+            className="md:hidden mr-3 p-2 text-black hover:bg-neutral-100 rounded focus:outline-none"
             aria-label="Toggle navigation menu"
           >
             <svg
@@ -116,6 +82,38 @@ export default function Navbar() {
               )}
             </svg>
           </button>
+
+          {/* Dashboard Link */}
+          <Link
+            href="/dashboard"
+            className="h-full flex items-center justify-center px-6 sm:px-8 lg:px-10 border-l border-r border-[#D4D4D8] font-pixel text-sm sm:text-base text-black hover:bg-neutral-50 transition-colors select-none"
+          >
+            DashBoard
+          </Link>
+
+          {/* Open Link Box (Solid Black Square extending flush to the right edge) */}
+          <Link
+            href="/dashboard"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open Dashboard in new tab"
+            className="h-full w-16 sm:w-20 md:w-[80px] bg-black flex items-center justify-center cursor-pointer"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 17 17"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M16 12V16H1V1H5M6 11L16 1M16 8V1H9"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </Link>
         </div>
       </div>
 
@@ -137,7 +135,7 @@ export default function Navbar() {
             Download
           </Link>
           <Link
-            href="/landing/dashboard"
+            href="/dashboard"
             onClick={() => setMobileMenuOpen(false)}
             className="py-2 hover:text-neutral-600 transition-colors"
           >
