@@ -18,6 +18,12 @@ const pixelifySans = localFont({
   display: "swap",
 });
 
+const dotoFont = localFont({
+  src: "./fonts/Doto.ttf",
+  variable: "--font-doto",
+  display: "swap",
+});
+
 export const metadata = {
   title: "Hulypay",
   description: "Huly Pay - Pay, Track, Grow",
@@ -27,7 +33,7 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${pixelifySans.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${pixelifySans.variable} ${dotoFont.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

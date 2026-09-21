@@ -2,10 +2,15 @@
 
 @theme {
   --font-pixel: var(--font-pixelify), sans-serif;
+  --font-doto: var(--font-doto), monospace, sans-serif;
 }
 
 .font-pixel {
   font-family: var(--font-pixelify), monospace, sans-serif;
+}
+
+.font-doto {
+  font-family: var(--font-doto), monospace, sans-serif;
 }
 
 @keyframes float {

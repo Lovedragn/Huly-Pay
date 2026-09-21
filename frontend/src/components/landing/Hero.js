@@ -34,7 +34,7 @@ export default function Hero() {
 
       {/* Title */}
       <div className="w-full flex justify-center px-4">
-        <h1 className="font-pixel text-4xl sm:text-6xl md:text-7xl lg:text-[88px] xl:text-[96px] font-bold tracking-[0.14em] sm:tracking-[0.2em] text-black text-center select-none uppercase">
+        <h1 className="font-pixel text-4xl sm:text-6xl md:text-7xl lg:text-[88px] xl:text-[96px] tracking-[0.14em] sm:tracking-[0.2em] text-black text-center select-none uppercase">
           PAY<span className="text-[#E53E3E]">.</span>TRACK<span className="text-[#E53E3E]">.</span>GROW
         </h1>
       </div>
