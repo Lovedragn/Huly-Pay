@@ -26,8 +26,9 @@ workflows:
           pod install --repo-update
       - name: Build unsigned iOS IPA
         script: |
-          # Build unsigned IPA for testing/sideloading (TrollStore, AltStore, Sideloadly)
-          flutter build ipa --release --no-codesign
+          # Build unsigned iOS .app without development team code signing
+          flutter build ios --release --no-codesign --config-only || true
+          flutter build ios --release --no-codesign
           
           # Bundle Runner.app into an IPA file
           cd build/ios/iphoneos
