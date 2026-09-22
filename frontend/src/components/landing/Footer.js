@@ -21,14 +21,15 @@ export default function Footer() {
         {/* Bottom Section: Links & Social Icons */}
         <div className="w-full mt-10 sm:mt-14 lg:mt-[94px] flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-4 border-t border-neutral-900/60 sm:border-t-0 pt-6 sm:pt-0">
           {/* Left: @HulyPay, Privacy, Terms */}
-          <div className="flex items-center gap-6 sm:gap-10 md:gap-14 lg:gap-[120px] font-sans text-sm sm:text-base md:text-[17px] text-white">
+          <div className="flex items-center gap-6 sm:gap-10 md:gap-14 lg:gap-[120px] font-pixel text-[14px] text-white">
             <Link
               href="https://twitter.com/HulyPay"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-neutral-400 transition-colors select-none"
             >
-              @HulyPay
+              <span className="text-[17px] inline-block align-baseline">@</span>
+              HulyPay
             </Link>
             <Link
               href="/privacy"
@@ -45,7 +46,7 @@ export default function Footer() {
           </div>
 
           {/* Right: GitHub, LinkedIn, External Link */}
-          <div className="flex items-center gap-6 sm:gap-8 lg:gap-[40px]">
+          <div className="flex items-center gap-5 sm:gap-7 lg:gap-[36px]">
             {/* GitHub */}
             <a
               href="https://github.com/Lovedragn/Huly-Pay"
@@ -55,7 +56,7 @@ export default function Footer() {
               className="text-white hover:text-neutral-400 hover:scale-110 transition-all select-none"
             >
               <svg
-                className="w-5 h-5 sm:w-6 sm:h-6"
+                className="w-4 h-4 sm:w-[18px] sm:h-[18px]"
                 viewBox="0 0 24 24"
                 fill="currentColor"
               >
@@ -76,7 +77,7 @@ export default function Footer() {
               className="text-white hover:text-neutral-400 hover:scale-110 transition-all select-none"
             >
               <svg
-                className="w-5 h-5 sm:w-[22px] sm:h-[22px]"
+                className="w-4 h-4 sm:w-[17px] sm:h-[17px]"
                 viewBox="0 0 24 24"
                 fill="currentColor"
               >
@@ -93,8 +94,8 @@ export default function Footer() {
               className="text-white hover:text-neutral-400 hover:scale-110 transition-all select-none"
             >
               <svg
-                className="w-4 h-4 sm:w-[18px] sm:h-[18px]"
-                viewBox="0 0 17 17"
+                className="w-3.5 h-3.5 sm:w-[15px] sm:h-[15px] overflow-visible"
+                viewBox="-1 -1 19 19"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
@@ -102,6 +103,7 @@ export default function Footer() {
                   d="M16 12V16H1V1H5M6 11L16 1M16 8V1H9"
                   stroke="currentColor"
                   strokeWidth="2"
+                  strokeLinecap="round"
                   strokeLinejoin="round"
                 />
               </svg>

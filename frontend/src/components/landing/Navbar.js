@@ -80,13 +80,13 @@ export default function Navbar() {
             <div className="hidden md:flex items-center h-full">
               <Link
                 href="#blogs"
-                className="h-full flex items-center justify-center px-8 lg:px-10 border-r border-[#D4D4D8] font-pixel text-sm sm:text-base text-black hover:bg-neutral-50 transition-colors select-none"
+                className="h-full flex items-center justify-center px-8 lg:px-10 border-r border-[#D4D4D8] font-pixel text-[14px] text-black hover:bg-neutral-50 transition-colors select-none"
               >
                 Blogs
               </Link>
               <Link
                 href="#download"
-                className="h-full flex items-center justify-center px-8 lg:px-10 border-r border-[#D4D4D8] font-pixel text-sm sm:text-base text-black hover:bg-neutral-50 transition-colors select-none"
+                className="h-full flex items-center justify-center px-8 lg:px-10 border-r border-[#D4D4D8] font-pixel text-[14px] text-black hover:bg-neutral-50 transition-colors select-none"
               >
                 Download
               </Link>
@@ -129,7 +129,7 @@ export default function Navbar() {
             {/* Dashboard Link */}
             <Link
               href="/dashboard"
-              className="h-full flex items-center justify-center px-6 sm:px-8 lg:px-10 border-l border-r border-[#D4D4D8] font-pixel text-sm sm:text-base text-black hover:bg-neutral-50 transition-colors select-none"
+              className="h-full flex items-center justify-center px-6 sm:px-8 lg:px-10 border-l border-r border-[#D4D4D8] font-pixel text-[14px] text-black hover:bg-neutral-50 transition-colors select-none"
             >
               DashBoard
             </Link>
@@ -143,16 +143,18 @@ export default function Navbar() {
               className="h-full w-16 sm:w-20 md:w-[80px] bg-black flex items-center justify-center cursor-pointer"
             >
               <svg
-                width="18"
-                height="18"
-                viewBox="0 0 17 17"
+                width="14"
+                height="14"
+                viewBox="-1 -1 19 19"
                 fill="none"
+                className="overflow-visible"
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
                   d="M16 12V16H1V1H5M6 11L16 1M16 8V1H9"
                   stroke="white"
                   strokeWidth="2"
+                  strokeLinecap="round"
                   strokeLinejoin="round"
                 />
               </svg>
@@ -162,7 +164,7 @@ export default function Navbar() {
 
         {/* Mobile Drawer Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-[#D4D4D8] bg-white px-6 py-4 flex flex-col gap-4 font-pixel text-base">
+          <div className="md:hidden border-t border-[#D4D4D8] bg-white px-6 py-4 flex flex-col gap-4 font-pixel text-[14px]">
             <Link
               href="#blogs"
               onClick={() => setMobileMenuOpen(false)}
