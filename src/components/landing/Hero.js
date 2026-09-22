@@ -103,14 +103,14 @@ const SVG_DIM_OPACITY = 0.07;
 // =========================================================================
 const PARALLAX_CONFIG = {
   desktop: {
-    middle: -320, // Fastest
-    left: -190,   // Medium
-    right: -90,   // Slowest
+    middle: -380, // Fastest
+    left: -220,   // Medium
+    right: -110,  // Slowest
   },
   mobile: {
-    middle: -160,
-    left: -95,
-    right: -45,
+    middle: -190,
+    left: -110,
+    right: -55,
   },
 };
 
@@ -253,7 +253,7 @@ export default function Hero() {
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative w-full bg-white pt-6 sm:pt-10 md:pt-12 pb-10 sm:pb-16 min-h-screen overflow-x-clip"
+      className="relative w-full bg-white pt-8 sm:pt-12 md:pt-14 pb-16 sm:pb-24 lg:pb-28 min-h-[110vh] sm:min-h-[118vh] overflow-x-clip"
     >
       {/* 
         Hover Spotlight Reveal Background:
@@ -300,9 +300,9 @@ export default function Hero() {
       </div>
 
       {/* Main Showcase Container (Parallax 3-phone stage) */}
-      <div className="relative z-10 max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-16 mt-4 sm:mt-6 md:mt-8">
-        {/* 3 iPhone Mockups Staggered Display */}
-        <div className="flex items-start justify-center gap-3 sm:gap-6 md:gap-8 lg:gap-12 w-full translate-y-[4%] sm:translate-y-[6%]">
+      <div className="relative z-10 max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-16 mt-8 sm:mt-10 md:mt-14">
+        {/* 3 iPhone Mockups Staggered Display (Pulled further down) */}
+        <div className="flex items-start justify-center gap-3 sm:gap-6 md:gap-8 lg:gap-12 w-full translate-y-[18%] sm:translate-y-[22%]">
           {/* Left iPhone (Moves at medium speed upward) */}
           <div
             ref={leftPhoneRef}
@@ -318,10 +318,10 @@ export default function Hero() {
             />
           </div>
 
-          {/* Middle iPhone (Moves FASTEST towards upper direction) */}
+          {/* Middle iPhone (Moves FASTEST towards upper direction, positioned higher) */}
           <div
             ref={middlePhoneRef}
-            className="w-[140px] sm:w-[182px] md:w-[220px] lg:w-[235px] mt-0 z-10 flex-shrink-0 will-change-transform"
+            className="w-[140px] sm:w-[182px] md:w-[220px] lg:w-[235px] -mt-5 sm:-mt-8 md:-mt-10 z-10 flex-shrink-0 will-change-transform"
           >
             <Image
               src="/assets/hero_mock_iphone_middle.svg"
