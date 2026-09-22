@@ -1,12 +1,18 @@
 "use client";
 
+import VeinTextFlow from "@/components/landing/VeinTextFlow";
+
 export default function CardDownload() {
   return (
     <section
       id="download"
-      className="w-full bg-[#FFFFEB] relative overflow-hidden py-12 sm:py-16 lg:py-20"
+      className="w-full bg-[#FFFFEB] relative overflow-x-clip pt-4 pb-12 sm:pb-16 lg:pb-20"
     >
-      <div className="relative w-full max-w-[1550px] mx-auto flex flex-col px-6 sm:px-12 md:px-16 xl:px-[105px]">
+      {/* Full-width SVG path spanning from window corner to corner */}
+      <VeinTextFlow />
+
+      <div className="relative w-full max-w-[1550px] mx-auto flex flex-col px-6 sm:px-12 md:px-16 xl:px-[105px] mt-2 sm:mt-4">
+
         {/* Top-Left Heading */}
         <div className="select-none mb-8 sm:mb-10 lg:mb-14">
           <h2 className="font-pixel text-3xl sm:text-5xl md:text-6xl lg:text-[64px] text-black leading-[1.12] tracking-wide">
