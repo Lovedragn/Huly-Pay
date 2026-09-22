@@ -13,6 +13,10 @@
   font-family: var(--font-doto), monospace, sans-serif;
 }
 
+.font-bolder {
+  font-weight: 900;
+}
+
 @keyframes float {
   0%, 100% {
     transform: translateY(0px);

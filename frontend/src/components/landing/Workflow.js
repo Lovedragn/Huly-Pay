@@ -128,7 +128,7 @@ export default function Workflow() {
             {/* Vertical YOUR */}
             <div className="flex items-center justify-center self-stretch">
               <span
-                className="font-pixel text-2xl sm:text-4xl lg:text-[44px] font-semibold text-[#FF0000] tracking-[0.14em] sm:tracking-[0.18em] uppercase select-none leading-none inline-block"
+                className="font-pixel text-3xl sm:text-5xl lg:text-[64px] font-semibold text-[#FF0000] tracking-[0.12em] sm:tracking-[0.16em] uppercase select-none leading-none inline-block"
                 style={{
                   writingMode: "vertical-rl",
                   transform: "rotate(180deg)",
@@ -140,10 +140,10 @@ export default function Workflow() {
 
             {/* Money Control (tightly stacked so both words fit within YOUR) */}
             <div className="flex flex-col justify-center leading-none">
-              <h2 className="font-pixel text-5xl sm:text-7xl lg:text-8xl text-white tracking-tight leading-[0.85] select-none">
+              <h2 className="font-pixel text-5xl sm:text-7xl lg:text-[96px] text-white tracking-tight leading-[0.85] select-none">
                 Money
               </h2>
-              <h2 className="font-pixel text-5xl sm:text-7xl lg:text-8xl text-white tracking-tight leading-[0.85] select-none mt-1 sm:mt-1.5">
+              <h2 className="font-pixel text-5xl sm:text-7xl lg:text-[96px] text-white tracking-tight leading-[0.85] select-none mt-1 sm:mt-2">
                 Control
               </h2>
             </div>
@@ -186,7 +186,7 @@ export default function Workflow() {
             <div className="lg:col-span-5 flex justify-start lg:pl-6">
               <div
                 ref={badge1Ref}
-                className="w-[180px] sm:w-[220px] lg:w-[250px] relative"
+                className="w-[108px] sm:w-[132px] lg:w-[150px] relative"
               >
                 <Image
                   src="/assets/Frame 145.svg"
@@ -235,7 +235,7 @@ export default function Workflow() {
             <div className="order-1 lg:order-2 lg:col-span-5 flex justify-start lg:justify-end lg:pr-6">
               <div
                 ref={badge2Ref}
-                className="w-[180px] sm:w-[220px] lg:w-[250px] relative"
+                className="w-[108px] sm:w-[132px] lg:w-[150px] relative"
               >
                 <Image
                   src="/assets/Frame 143.svg"
@@ -254,7 +254,7 @@ export default function Workflow() {
             <div className="lg:col-span-5 flex justify-start lg:pl-6">
               <div
                 ref={badge3Ref}
-                className="w-[180px] sm:w-[220px] lg:w-[250px] relative"
+                className="w-[108px] sm:w-[132px] lg:w-[150px] relative"
               >
                 <Image
                   src="/assets/Frame 144.svg"
@@ -269,7 +269,7 @@ export default function Workflow() {
             {/* Right Text: Turn your spending into useful Visual Data. */}
             <div className="lg:col-span-7 flex justify-start lg:pl-8">
               <p className="font-pixel text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#D4D4D8] tracking-wide leading-snug select-none">
-                Turn your spending into useful{" "}<></>
+                Turn your spending into useful{" "}
                 <span className="text-[#FF00F5] font-bold">Visual</span> Data.
               </p>
             </div>
