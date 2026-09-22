@@ -37,7 +37,7 @@
       "file_type": "code",
       "norm_label": "features()",
       "source_file": "src/components/landing/Features.js",
-      "source_location": "L7"
+      "source_location": "L12"
     },
     {
       "id": "src_components_landing_footer_footer",
@@ -124,6 +124,42 @@
       "source_location": "L12"
     },
     {
+      "id": "src_components_landing_workflowbadges_frame143badge",
+      "label": "Frame143Badge()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "app/page.js",
+      "file_type": "code",
+      "norm_label": "frame143badge()",
+      "source_file": "src/components/landing/WorkflowBadges.js",
+      "source_location": "L57"
+    },
+    {
+      "id": "src_components_landing_workflowbadges_frame144badge",
+      "label": "Frame144Badge()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "app/page.js",
+      "file_type": "code",
+      "norm_label": "frame144badge()",
+      "source_file": "src/components/landing/WorkflowBadges.js",
+      "source_location": "L106"
+    },
+    {
+      "id": "src_components_landing_workflowbadges_frame145badge",
+      "label": "Frame145Badge()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "app/page.js",
+      "file_type": "code",
+      "norm_label": "frame145badge()",
+      "source_file": "src/components/landing/WorkflowBadges.js",
+      "source_location": "L4"
+    },
+    {
       "id": "src_app_dashboard_page_dashboardpage",
       "label": "DashboardPage()",
       "_callable": true,
@@ -136,42 +172,6 @@
       "source_location": "L6"
     },
     {
-      "id": "src_components_landing_workflowbadges_frame143badge",
-      "label": "Frame143Badge()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "Workflow.js",
-      "file_type": "code",
-      "norm_label": "frame143badge()",
-      "source_file": "src/components/landing/WorkflowBadges.js",
-      "source_location": "L57"
-    },
-    {
-      "id": "src_components_landing_workflowbadges_frame144badge",
-      "label": "Frame144Badge()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "Workflow.js",
-      "file_type": "code",
-      "norm_label": "frame144badge()",
-      "source_file": "src/components/landing/WorkflowBadges.js",
-      "source_location": "L106"
-    },
-    {
-      "id": "src_components_landing_workflowbadges_frame145badge",
-      "label": "Frame145Badge()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "Workflow.js",
-      "file_type": "code",
-      "norm_label": "frame145badge()",
-      "source_file": "src/components/landing/WorkflowBadges.js",
-      "source_location": "L4"
-    },
-    {
       "id": "src_components_transitions_animatedsignature_animatedsignature",
       "label": "AnimatedSignature()",
       "_callable": true,
@@ -182,18 +182,6 @@
       "norm_label": "animatedsignature()",
       "source_file": "src/components/transitions/AnimatedSignature.js",
       "source_location": "L20"
-    },
-    {
-      "id": "src_components_transitions_transitionprovider_transitionprovider",
-      "label": "TransitionProvider()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "AnimatedSignature.js",
-      "file_type": "code",
-      "norm_label": "transitionprovider()",
-      "source_file": "src/components/transitions/TransitionProvider.js",
-      "source_location": "L33"
     },
     {
       "id": "src_components_transitions_transitionprovider_usepagetransition",
@@ -244,6 +232,78 @@
       "source_location": "L20"
     },
     {
+      "id": "src_components_transitions_transitionprovider_transitionprovider",
+      "label": "TransitionProvider()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "layout.js",
+      "file_type": "code",
+      "norm_label": "transitionprovider()",
+      "source_file": "src/components/transitions/TransitionProvider.js",
+      "source_location": "L33"
+    },
+    {
+      "id": "src_components_landing_bellnotificationanimation_bellnotificationanimation",
+      "label": "BellNotificationAnimation()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Features.js",
+      "file_type": "code",
+      "norm_label": "bellnotificationanimation()",
+      "source_file": "src/components/landing/BellNotificationAnimation.js",
+      "source_location": "L3"
+    },
+    {
+      "id": "src_components_landing_lockjwtanimation_lockjwtanimation",
+      "label": "LockJwtAnimation()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Features.js",
+      "file_type": "code",
+      "norm_label": "lockjwtanimation()",
+      "source_file": "src/components/landing/LockJwtAnimation.js",
+      "source_location": "L3"
+    },
+    {
+      "id": "src_components_landing_piechartanimation_piechartanimation",
+      "label": "PieChartAnimation()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Features.js",
+      "file_type": "code",
+      "norm_label": "piechartanimation()",
+      "source_file": "src/components/landing/PieChartAnimation.js",
+      "source_location": "L3"
+    },
+    {
+      "id": "src_components_landing_qrtotickanimation_qrtotickanimation",
+      "label": "QrToTickAnimation()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Features.js",
+      "file_type": "code",
+      "norm_label": "qrtotickanimation()",
+      "source_file": "src/components/landing/QrToTickAnimation.js",
+      "source_location": "L52"
+    },
+    {
+      "id": "src_components_landing_wifiofflineanimation_wifiofflineanimation",
+      "label": "WifiOfflineAnimation()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Features.js",
+      "file_type": "code",
+      "norm_label": "wifiofflineanimation()",
+      "source_file": "src/components/landing/WifiOfflineAnimation.js",
+      "source_location": "L3"
+    },
+    {
       "id": "src_app_page",
       "label": "app/page.js",
       "_origin": "ast",
@@ -263,17 +323,6 @@
       "file_type": "code",
       "norm_label": "carddownload.js",
       "source_file": "src/components/landing/CardDownload.js",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_landing_features",
-      "label": "Features.js",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "app/page.js",
-      "file_type": "code",
-      "norm_label": "features.js",
-      "source_file": "src/components/landing/Features.js",
       "source_location": "L1"
     },
     {
@@ -321,6 +370,28 @@
       "source_location": "L1"
     },
     {
+      "id": "src_components_landing_workflow",
+      "label": "Workflow.js",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "app/page.js",
+      "file_type": "code",
+      "norm_label": "workflow.js",
+      "source_file": "src/components/landing/Workflow.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_landing_workflowbadges",
+      "label": "WorkflowBadges.js",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "app/page.js",
+      "file_type": "code",
+      "norm_label": "workflowbadges.js",
+      "source_file": "src/components/landing/WorkflowBadges.js",
+      "source_location": "L1"
+    },
+    {
       "id": "ref_gsap",
       "label": "gsap",
       "_origin": "ast",
@@ -330,17 +401,6 @@
       "norm_label": "gsap",
       "source_file": "package.json",
       "source_location": "L13"
-    },
-    {
-      "id": "ref_react",
-      "label": "react",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "app/page.js",
-      "file_type": "concept",
-      "norm_label": "react",
-      "source_file": "package.json",
-      "source_location": "L17"
     },
     {
       "id": "package",
@@ -374,6 +434,61 @@
       "norm_label": "private",
       "source_file": "package.json",
       "source_location": "L4"
+    },
+    {
+      "id": "package_scripts",
+      "label": "scripts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "scripts",
+      "source_file": "package.json",
+      "source_location": "L5"
+    },
+    {
+      "id": "package_scripts_build",
+      "label": "build",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "build",
+      "source_file": "package.json",
+      "source_location": "L7"
+    },
+    {
+      "id": "package_scripts_dev",
+      "label": "dev",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "dev",
+      "source_file": "package.json",
+      "source_location": "L6"
+    },
+    {
+      "id": "package_scripts_lint",
+      "label": "lint",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "lint",
+      "source_file": "package.json",
+      "source_location": "L9"
+    },
+    {
+      "id": "package_scripts_start",
+      "label": "start",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "start",
+      "source_file": "package.json",
+      "source_location": "L8"
     },
     {
       "id": "package_version",
@@ -588,28 +703,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_components_landing_workflow",
-      "label": "Workflow.js",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "Workflow.js",
-      "file_type": "code",
-      "norm_label": "workflow.js",
-      "source_file": "src/components/landing/Workflow.js",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_landing_workflowbadges",
-      "label": "WorkflowBadges.js",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "Workflow.js",
-      "file_type": "code",
-      "norm_label": "workflowbadges.js",
-      "source_file": "src/components/landing/WorkflowBadges.js",
-      "source_location": "L1"
-    },
-    {
       "id": "src_components_transitions_animatedsignature",
       "label": "AnimatedSignature.js",
       "_origin": "ast",
@@ -729,6 +822,17 @@
       "norm_label": "transitioncontext",
       "source_file": "src/components/transitions/TransitionProvider.js",
       "source_location": "L16"
+    },
+    {
+      "id": "ref_react",
+      "label": "react",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "AnimatedSignature.js",
+      "file_type": "concept",
+      "norm_label": "react",
+      "source_file": "package.json",
+      "source_location": "L17"
     },
     {
       "id": "src_app_layout",
@@ -962,59 +1066,92 @@
       "source_location": "L21"
     },
     {
-      "id": "package_scripts",
-      "label": "scripts",
+      "id": "src_components_landing_bellnotificationanimation",
+      "label": "BellNotificationAnimation.js",
       "_origin": "ast",
       "community": 6,
-      "community_name": "scripts",
+      "community_name": "Features.js",
       "file_type": "code",
-      "norm_label": "scripts",
-      "source_file": "package.json",
-      "source_location": "L5"
+      "norm_label": "bellnotificationanimation.js",
+      "source_file": "src/components/landing/BellNotificationAnimation.js",
+      "source_location": "L1"
     },
     {
-      "id": "package_scripts_build",
-      "label": "build",
+      "id": "src_components_landing_features",
+      "label": "Features.js",
       "_origin": "ast",
       "community": 6,
-      "community_name": "scripts",
+      "community_name": "Features.js",
       "file_type": "code",
-      "norm_label": "build",
-      "source_file": "package.json",
-      "source_location": "L7"
+      "norm_label": "features.js",
+      "source_file": "src/components/landing/Features.js",
+      "source_location": "L1"
     },
     {
-      "id": "package_scripts_dev",
-      "label": "dev",
+      "id": "src_components_landing_lockjwtanimation",
+      "label": "LockJwtAnimation.js",
       "_origin": "ast",
       "community": 6,
-      "community_name": "scripts",
+      "community_name": "Features.js",
       "file_type": "code",
-      "norm_label": "dev",
-      "source_file": "package.json",
-      "source_location": "L6"
+      "norm_label": "lockjwtanimation.js",
+      "source_file": "src/components/landing/LockJwtAnimation.js",
+      "source_location": "L1"
     },
     {
-      "id": "package_scripts_lint",
-      "label": "lint",
+      "id": "src_components_landing_piechartanimation",
+      "label": "PieChartAnimation.js",
       "_origin": "ast",
       "community": 6,
-      "community_name": "scripts",
+      "community_name": "Features.js",
       "file_type": "code",
-      "norm_label": "lint",
-      "source_file": "package.json",
-      "source_location": "L9"
+      "norm_label": "piechartanimation.js",
+      "source_file": "src/components/landing/PieChartAnimation.js",
+      "source_location": "L1"
     },
     {
-      "id": "package_scripts_start",
-      "label": "start",
+      "id": "src_components_landing_qrtotickanimation",
+      "label": "QrToTickAnimation.js",
       "_origin": "ast",
       "community": 6,
-      "community_name": "scripts",
+      "community_name": "Features.js",
       "file_type": "code",
-      "norm_label": "start",
-      "source_file": "package.json",
-      "source_location": "L8"
+      "norm_label": "qrtotickanimation.js",
+      "source_file": "src/components/landing/QrToTickAnimation.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_landing_qrtotickanimation_extra_pixels",
+      "label": "EXTRA_PIXELS",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Features.js",
+      "file_type": "code",
+      "norm_label": "extra_pixels",
+      "source_file": "src/components/landing/QrToTickAnimation.js",
+      "source_location": "L37"
+    },
+    {
+      "id": "src_components_landing_qrtotickanimation_morph_pixels",
+      "label": "MORPH_PIXELS",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Features.js",
+      "file_type": "code",
+      "norm_label": "morph_pixels",
+      "source_file": "src/components/landing/QrToTickAnimation.js",
+      "source_location": "L3"
+    },
+    {
+      "id": "src_components_landing_wifiofflineanimation",
+      "label": "WifiOfflineAnimation.js",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Features.js",
+      "file_type": "code",
+      "norm_label": "wifiofflineanimation.js",
+      "source_file": "src/components/landing/WifiOfflineAnimation.js",
+      "source_location": "L1"
     },
     {
       "id": "readme",
@@ -1385,6 +1522,78 @@
       "weight": 1.0
     },
     {
+      "source": "src_components_landing_features",
+      "target": "src_components_landing_piechartanimation_piechartanimation",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/landing/Features.js",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landing_features",
+      "target": "src_components_landing_qrtotickanimation_morph_pixels",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/landing/Features.js",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landing_features",
+      "target": "src_components_landing_qrtotickanimation_qrtotickanimation",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/landing/Features.js",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landing_features",
+      "target": "src_components_landing_bellnotificationanimation_bellnotificationanimation",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/landing/Features.js",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landing_features",
+      "target": "src_components_landing_wifiofflineanimation_wifiofflineanimation",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/landing/Features.js",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landing_features",
+      "target": "src_components_landing_lockjwtanimation_lockjwtanimation",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/landing/Features.js",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
       "source": "src_components_landing_workflow",
       "target": "src_components_landing_workflowbadges_frame143badge",
       "relation": "imports",
@@ -1650,6 +1859,18 @@
     },
     {
       "source": "src_components_landing_features",
+      "target": "src_components_landing_piechartanimation",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/landing/Features.js",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landing_features",
       "target": "ref_react",
       "relation": "imports_from",
       "_origin": "ast",
@@ -1670,6 +1891,54 @@
       "context": "import",
       "source_file": "src/components/landing/Features.js",
       "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landing_features",
+      "target": "src_components_landing_qrtotickanimation",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/landing/Features.js",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landing_features",
+      "target": "src_components_landing_bellnotificationanimation",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/landing/Features.js",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landing_features",
+      "target": "src_components_landing_wifiofflineanimation",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/landing/Features.js",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landing_features",
+      "target": "src_components_landing_lockjwtanimation",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/landing/Features.js",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -2306,6 +2575,17 @@
       "weight": 1.0
     },
     {
+      "source": "src_components_landing_bellnotificationanimation",
+      "target": "src_components_landing_bellnotificationanimation_bellnotificationanimation",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/landing/BellNotificationAnimation.js",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
       "source": "src_components_landing_carddownload",
       "target": "src_components_landing_carddownload_carddownload",
       "relation": "contains",
@@ -2324,7 +2604,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/landing/Features.js",
-      "source_location": "L7",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -2372,6 +2652,17 @@
       "weight": 1.0
     },
     {
+      "source": "src_components_landing_lockjwtanimation",
+      "target": "src_components_landing_lockjwtanimation_lockjwtanimation",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/landing/LockJwtAnimation.js",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
       "source": "src_components_landing_navbar",
       "target": "src_components_landing_navbar_navbar",
       "relation": "contains",
@@ -2402,6 +2693,61 @@
       "confidence_score": 1.0,
       "source_file": "src/components/landing/Navbar.js",
       "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landing_piechartanimation",
+      "target": "src_components_landing_piechartanimation_piechartanimation",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/landing/PieChartAnimation.js",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landing_qrtotickanimation",
+      "target": "src_components_landing_qrtotickanimation_morph_pixels",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/landing/QrToTickAnimation.js",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landing_qrtotickanimation",
+      "target": "src_components_landing_qrtotickanimation_extra_pixels",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/landing/QrToTickAnimation.js",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landing_qrtotickanimation",
+      "target": "src_components_landing_qrtotickanimation_qrtotickanimation",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/landing/QrToTickAnimation.js",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landing_wifiofflineanimation",
+      "target": "src_components_landing_wifiofflineanimation_wifiofflineanimation",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/landing/WifiOfflineAnimation.js",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -2591,5 +2937,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b05342102886c19260bfd28a2d1a34a07b03dd23"
+  "built_at_commit": "1d3ebefdcfc18d710d3bb9d702c77a223a3e2d47"
 }

@@ -5,7 +5,7 @@
   "3": "layout.js",
   "4": "dependencies",
   "5": "devDependencies",
-  "6": "scripts",
+  "6": "Features.js",
   "7": "README.md",
   "8": "compilerOptions",
   "9": "next.config.mjs",
