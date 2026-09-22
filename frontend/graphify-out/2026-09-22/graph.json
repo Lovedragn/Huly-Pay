@@ -145,7 +145,7 @@
       "file_type": "code",
       "norm_label": "frame143badge()",
       "source_file": "src/components/landing/WorkflowBadges.js",
-      "source_location": "L58"
+      "source_location": "L57"
     },
     {
       "id": "src_components_landing_workflowbadges_frame144badge",
@@ -157,7 +157,7 @@
       "file_type": "code",
       "norm_label": "frame144badge()",
       "source_file": "src/components/landing/WorkflowBadges.js",
-      "source_location": "L108"
+      "source_location": "L106"
     },
     {
       "id": "src_components_landing_workflowbadges_frame145badge",
@@ -2399,7 +2399,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/landing/WorkflowBadges.js",
-      "source_location": "L108",
+      "source_location": "L106",
       "weight": 1.0
     },
     {
@@ -2421,7 +2421,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/landing/WorkflowBadges.js",
-      "source_location": "L58",
+      "source_location": "L57",
       "weight": 1.0
     },
     {
