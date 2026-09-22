@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --font-pixel: var(--font-pixelify), sans-serif;
+  --font-sans: var(--font-pixelify), monospace, sans-serif;
+  --font-pixel: var(--font-pixelify), monospace, sans-serif;
   --font-doto: var(--font-doto), monospace, sans-serif;
+}
+
+body {
+  font-family: var(--font-pixelify), monospace, sans-serif;
 }
 
 .font-pixel {
