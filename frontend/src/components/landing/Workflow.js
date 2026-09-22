@@ -4,11 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import {
-  Frame145Badge,
-  Frame143Badge,
-  Frame144Badge,
-} from "./WorkflowBadges";
+import { Frame145Badge, Frame143Badge, Frame144Badge } from "./WorkflowBadges";
 
 // =========================================================================
 // 🎛️ CUSTOMIZATION SETTINGS:
@@ -16,7 +12,7 @@ import {
 // 2. GRID_OPACITY: Controls brightness/opacity of the revealed pixel grid SVG
 // =========================================================================
 const REVEAL_RADIUS = 200;
-const GRID_OPACITY = 0.85;
+const GRID_OPACITY = 0.2;
 
 export default function Workflow() {
   const sectionRef = useRef(null);
@@ -229,7 +225,7 @@ export default function Workflow() {
             duration: 0.08,
             ease: "power1.inOut",
           },
-          0.01
+          0.01,
         );
       }
       if (b1Inner) {
@@ -240,7 +236,7 @@ export default function Workflow() {
             duration: 0.08,
             ease: "power1.inOut",
           },
-          0.01
+          0.01,
         );
       }
       if (b1Core) {
@@ -251,7 +247,7 @@ export default function Workflow() {
             duration: 0.08,
             ease: "power1.inOut",
           },
-          0.01
+          0.01,
         );
       }
       if (badge1SvgRef.current) {
@@ -262,7 +258,7 @@ export default function Workflow() {
             duration: 0.08,
             ease: "power1.inOut",
           },
-          0.01
+          0.01,
         );
       }
 
@@ -274,7 +270,7 @@ export default function Workflow() {
           duration: 0.04,
           ease: "none",
         },
-        0
+        0,
       ).to(
         path1Ref.current,
         {
@@ -282,7 +278,7 @@ export default function Workflow() {
           duration: 0.96,
           ease: "none",
         },
-        0
+        0,
       );
 
       // 2. Badge 2 (Frame 143) turns #D8FF00 (frame) and #97B300 (30% darker inner) when path 1 arrives and touches it
@@ -294,7 +290,7 @@ export default function Workflow() {
             duration: 0.08,
             ease: "power1.inOut",
           },
-          0.92
+          0.92,
         );
       }
       if (b2Inner) {
@@ -305,7 +301,7 @@ export default function Workflow() {
             duration: 0.08,
             ease: "power1.inOut",
           },
-          0.92
+          0.92,
         );
       }
       if (badge2SvgRef.current) {
@@ -316,7 +312,7 @@ export default function Workflow() {
             duration: 0.08,
             ease: "power1.inOut",
           },
-          0.92
+          0.92,
         );
       }
 
@@ -328,7 +324,7 @@ export default function Workflow() {
           duration: 0.04,
           ease: "none",
         },
-        1
+        1,
       ).to(
         path2Ref.current,
         {
@@ -336,7 +332,7 @@ export default function Workflow() {
           duration: 0.96,
           ease: "none",
         },
-        1
+        1,
       );
 
       // 3. Badge 3 (Frame 144) turns #FF00F5 (frame) and #B300AC (30% darker inner) when path 2 arrives and touches it
@@ -348,7 +344,7 @@ export default function Workflow() {
             duration: 0.08,
             ease: "power1.inOut",
           },
-          1.92
+          1.92,
         );
       }
       if (b3Inner) {
@@ -359,7 +355,7 @@ export default function Workflow() {
             duration: 0.08,
             ease: "power1.inOut",
           },
-          1.92
+          1.92,
         );
       }
       if (badge3SvgRef.current) {
@@ -370,7 +366,7 @@ export default function Workflow() {
             duration: 0.08,
             ease: "power1.inOut",
           },
-          1.92
+          1.92,
         );
       }
     }, containerRef);
