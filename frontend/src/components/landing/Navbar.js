@@ -65,6 +65,73 @@ function NavLink({ href, label, icon, isFirst = false }) {
   );
 }
 
+function DashboardButton() {
+  const lineRef = useRef(null);
+
+  useEffect(() => {
+    if (lineRef.current) {
+      gsap.set(lineRef.current, { xPercent: -100, x: 0 });
+    }
+  }, []);
+
+  const handleMouseEnter = () => {
+    if (!lineRef.current) return;
+    gsap.killTweensOf(lineRef.current);
+    gsap.fromTo(
+      lineRef.current,
+      { xPercent: -100, x: 0 },
+      { xPercent: 0, x: 0, duration: 0.32, ease: "power2.out" },
+    );
+  };
+
+  const handleMouseLeave = () => {
+    if (!lineRef.current) return;
+    gsap.killTweensOf(lineRef.current);
+    gsap.to(lineRef.current, {
+      xPercent: 100,
+      x: 0,
+      duration: 0.28,
+      ease: "power2.in",
+      onComplete: () => {
+        if (lineRef.current) {
+          gsap.set(lineRef.current, { xPercent: -100, x: 0 });
+        }
+      },
+    });
+  };
+
+  return (
+    <Link
+      href="/dashboard"
+      aria-label="Open Dashboard"
+      prefetch={false}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className="group h-full w-[180px] sm:w-[200px] md:w-[220px] bg-black flex items-center justify-center gap-2 cursor-pointer hover:bg-neutral-900 transition-colors select-none"
+    >
+      <span className="relative inline-block leading-none">
+        <span className="font-pixel text-[14px] text-white tracking-wider whitespace-nowrap">
+          DashBoard
+        </span>
+        {/* Animated White Underline: starts from left, kept while hovering, ends to right on leave */}
+        <span
+          className="absolute -bottom-[2px] left-0 w-full h-[2px] overflow-hidden pointer-events-none"
+          aria-hidden="true"
+        >
+          <span ref={lineRef} className="block w-full h-full bg-white" />
+        </span>
+      </span>
+      <Image
+        src="/assets/Open_Link.svg"
+        alt="Open Link"
+        width={10}
+        height={10}
+        className="w-[10px] h-[10px] object-contain shrink-0"
+      />
+    </Link>
+  );
+}
+
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -257,23 +324,8 @@ export default function Navbar() {
               </svg>
             </button>
 
-            {/* Open Dashboard Link Box (Solid Black Button matching left section length) */}
-            <Link
-              href="/dashboard"
-              aria-label="Open Dashboard"
-              className="h-full w-[180px] sm:w-[200px] md:w-[220px] bg-black flex items-center justify-center gap-2 cursor-pointer hover:bg-neutral-900 transition-colors select-none"
-            >
-              <span className="font-pixel text-[14px] text-white tracking-wider whitespace-nowrap">
-                DashBoard
-              </span>
-              <Image
-                src="/assets/Open_Link.svg"
-                alt="Open Link"
-                width={10}
-                height={10}
-                className="w-[10px] h-[10px] object-contain shrink-0"
-              />
-            </Link>
+            {/* Open Dashboard Link Box (Solid Black Button matching left section length) with animated white underline */}
+            <DashboardButton />
           </div>
         </div>
 
