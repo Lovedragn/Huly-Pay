@@ -128,7 +128,7 @@ export default function Workflow() {
             {/* Vertical YOUR */}
             <div className="flex items-center justify-center self-stretch">
               <span
-                className="font-pixel text-3xl sm:text-5xl lg:text-[64px] font-semibold text-[#FF0000] tracking-[0.12em] sm:tracking-[0.16em] uppercase select-none leading-none inline-block"
+                className="font-pixel text-3xl sm:text-5xl lg:text-5xl font-semibold text-[#FF0000] tracking-[0.12em] sm:tracking-[0.16em] uppercase select-none leading-none inline-block"
                 style={{
                   writingMode: "vertical-rl",
                   transform: "rotate(180deg)",
@@ -140,10 +140,10 @@ export default function Workflow() {
 
             {/* Money Control (tightly stacked so both words fit within YOUR) */}
             <div className="flex flex-col justify-center leading-none">
-              <h2 className="font-pixel text-5xl sm:text-7xl lg:text-[96px] text-white tracking-tight leading-[0.85] select-none">
+              <h2 className="font-pixel text-5xl sm:text-7xl lg:text-7xl text-white tracking-tight leading-[0.85] select-none">
                 Money
               </h2>
-              <h2 className="font-pixel text-5xl sm:text-7xl lg:text-[96px] text-white tracking-tight leading-[0.85] select-none mt-1 sm:mt-2">
+              <h2 className="font-pixel text-5xl sm:text-7xl lg:text-7xl text-white tracking-tight leading-[0.85] select-none mt-1 sm:mt-2">
                 Control
               </h2>
             </div>
