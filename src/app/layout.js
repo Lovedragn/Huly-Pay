@@ -1,6 +1,8 @@
 import localFont from "next/font/local";
 import { Geist, Geist_Mono } from "next/font/google";
+import "lenis/dist/lenis.css";
 import "./globals.css";
+import SmoothScroll from "@/components/SmoothScroll";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,8 +38,8 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} ${pixelifySans.variable} ${dotoFont.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        {children}
+      <body className="min-h-full flex flex-col font-pixel" suppressHydrationWarning>
+        <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
   );

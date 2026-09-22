@@ -71,7 +71,7 @@ export default function Navbar() {
                   className="w-7 h-7 object-contain"
                 />
               </div>
-              <span className="font-pixel text-lg sm:text-xl font-bold tracking-wider text-black select-none">
+              <span className="font-pixel text-lg sm:text-xl  tracking-wider text-black select-none">
                 HULYPAY
               </span>
             </Link>
