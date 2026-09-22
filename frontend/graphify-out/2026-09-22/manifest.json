@@ -60,9 +60,9 @@
     "semantic_hash": ""
   },
   "src/components/landing/Features.js": {
-    "mtime": 1790085078.6354828,
-    "seen": 1790088924.2488136,
-    "ast_hash": "1b893313a440cb51f82b7736251dc588",
+    "mtime": 1790091258.2533195,
+    "seen": 1790091300.1479144,
+    "ast_hash": "c365afd5dc3837add74ac411adc01853",
     "semantic_hash": ""
   },
   "src/components/landing/Footer.js": {
@@ -423,6 +423,42 @@
     "mtime": 1790089464.4108622,
     "seen": 1790089502.5774908,
     "ast_hash": "40c6d43f6bd2b36994da202b8fd72879",
+    "semantic_hash": ""
+  },
+  "Asserts_external/Features_stack.png": {
+    "mtime": 1790089559.5679808,
+    "seen": 1790090022.7821739,
+    "ast_hash": "c46c0b8ce26c54c7f0237bd29f13e6e2",
+    "semantic_hash": ""
+  },
+  "src/components/landing/QrToTickAnimation.js": {
+    "mtime": 1790090729.9020286,
+    "seen": 1790090798.7226176,
+    "ast_hash": "2ccd430bb58517023db77bda5c62e845",
+    "semantic_hash": ""
+  },
+  "src/components/landing/BellNotificationAnimation.js": {
+    "mtime": 1790091206.4410894,
+    "seen": 1790091300.1479104,
+    "ast_hash": "ed99b6f9ff56c6c2557fea4df954fba9",
+    "semantic_hash": ""
+  },
+  "src/components/landing/WifiOfflineAnimation.js": {
+    "mtime": 1790091229.9941783,
+    "seen": 1790091300.147927,
+    "ast_hash": "38e3bb1e6e53d826fd94f39f88273167",
+    "semantic_hash": ""
+  },
+  "src/components/landing/LockJwtAnimation.js": {
+    "mtime": 1790091164.3976235,
+    "seen": 1790091300.1479201,
+    "ast_hash": "c71c0f2b29edb7eee041d7ca0a1ca6a7",
+    "semantic_hash": ""
+  },
+  "src/components/landing/PieChartAnimation.js": {
+    "mtime": 1790091176.0247445,
+    "seen": 1790091300.1479232,
+    "ast_hash": "63740c7407d79cd11c8c19ca078c9301",
     "semantic_hash": ""
   }
 }
