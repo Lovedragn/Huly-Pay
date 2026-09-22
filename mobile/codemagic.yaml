@@ -1,0 +1,47 @@
+workflows:
+  ios-release:
+    name: iOS IPA Build
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Set up .env file
+        script: |
+          echo "Setting up environment file..."
+          # If Codemagic Environment variable ENV_FILE is provided, decode or copy it
+          if [ -n "$ENV_FILE" ]; then
+            echo "$ENV_FILE" > .env
+          elif [ ! -f .env ]; then
+            touch .env
+          fi
+      - name: Install Flutter dependencies
+        script: |
+          flutter packages pub get
+      - name: Install CocoaPods dependencies
+        script: |
+          find . -maxdepth 2 -name "Podfile" -execdir pod install \; || true
+      - name: Build unsigned iOS IPA
+        script: |
+          # Build unsigned IPA for testing/sideloading (TrollStore, AltStore, Sideloadly)
+          flutter build ipa --release --no-codesign
+          
+          # Bundle Runner.app into an IPA file
+          cd build/ios/iphoneos
+          mkdir -p Payload
+          cp -r Runner.app Payload/
+          zip -r -q HulyPay-unsigned.ipa Payload
+          cd ../../..
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - build/ios/iphoneos/*.ipa
+      - "*.ipa"
+    publishing:
+      email:
+        recipients:
+          - sujitshrestha811@gmail.com
+        notify:
+          success: true
+          failure: true
