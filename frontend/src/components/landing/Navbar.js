@@ -52,15 +52,15 @@ export default function Navbar() {
           isVisible ? "block" : "hidden"
         }`}
       >
-        {/* Outer wrapper: left has standard margin/padding, right extends flush to the edge (pr-0) */}
-        <div className="w-full pl-6 sm:pl-10 lg:pl-16 xl:pl-24 pr-0 h-20 md:h-[80px] flex items-center justify-between relative">
-          {/* Left Section: Logo + Brand Name (no right border, matching navbar.png) */}
-          <div className="flex items-center h-full z-10">
+        {/* Outer wrapper: flush edges with equal left and right sections */}
+        <div className="w-full px-0 h-20 md:h-[80px] flex items-center justify-between relative">
+          {/* Left Section: Logo + Brand Name (equal length to right dashboard button) */}
+          <div className="flex items-center h-full z-10 w-[180px] sm:w-[200px] md:w-[220px]">
             <Link
               href="/"
-              className="h-full flex items-center gap-3 hover:opacity-85 transition-opacity"
+              className="h-full w-full flex items-center justify-center gap-3 hover:opacity-85 transition-opacity px-4 sm:px-6"
             >
-              <div className="w-7 h-7 relative flex items-center justify-center">
+              <div className="w-7 h-7 relative flex items-center justify-center shrink-0">
                 <Image
                   src="/assets/logo-Light.svg"
                   alt="Huly Pay Logo"
@@ -70,19 +70,19 @@ export default function Navbar() {
                   className="w-7 h-7 object-contain"
                 />
               </div>
-              <span className="font-pixel text-lg sm:text-xl tracking-wider text-black select-none">
+              <span className="font-pixel text-lg sm:text-xl tracking-wider text-black select-none whitespace-nowrap">
                 HULYPAY
               </span>
             </Link>
           </div>
 
-          {/* Center Section: Navigation Links (DashBoard | Blogs v | Download v) */}
+          {/* Center Section: Navigation Links (Portfolio | Blogs v | Download v) */}
           <div className="hidden md:flex items-center h-full absolute left-1/2 -translate-x-1/2">
             <Link
-              href="/dashboard"
+              href="#portfolio"
               className="h-full flex items-center justify-center px-6 lg:px-8 xl:px-10 border-l border-r border-[#D4D4D8] font-pixel text-[14px] text-black hover:bg-neutral-50 transition-colors select-none"
             >
-              DashBoard
+              Portfolio
             </Link>
             <Link
               href="#blogs"
@@ -159,30 +159,22 @@ export default function Navbar() {
               </svg>
             </button>
 
-            {/* Open Link Box (Solid Black Square extending flush to the right edge) */}
+            {/* Open Dashboard Link Box (Solid Black Button matching left section length) */}
             <Link
               href="/dashboard"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Open Dashboard in new tab"
-              className="h-full w-16 sm:w-20 md:w-24 lg:w-28 xl:w-36 bg-black flex items-center justify-center cursor-pointer hover:bg-neutral-900 transition-colors"
+              aria-label="Open Dashboard"
+              className="h-full w-[180px] sm:w-[200px] md:w-[220px] bg-black flex items-center justify-center gap-2 cursor-pointer hover:bg-neutral-900 transition-colors select-none"
             >
-              <svg
-                width="15"
-                height="15"
-                viewBox="-1 -1 19 19"
-                fill="none"
-                className="overflow-visible"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M16 12V16H1V1H5M6 11L16 1M16 8V1H9"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <span className="font-pixel text-[14px] text-white tracking-wider whitespace-nowrap">
+                DashBoard
+              </span>
+              <Image
+                src="/assets/Open_Link.svg"
+                alt="Open Link"
+                width={10}
+                height={10}
+                className="w-[10px] h-[10px] object-contain shrink-0"
+              />
             </Link>
           </div>
         </div>
@@ -191,11 +183,11 @@ export default function Navbar() {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-[#D4D4D8] bg-white px-6 py-4 flex flex-col gap-4 font-pixel text-[14px]">
             <Link
-              href="/dashboard"
+              href="#portfolio"
               onClick={() => setMobileMenuOpen(false)}
               className="py-2 border-b border-neutral-100 hover:text-neutral-600 transition-colors"
             >
-              DashBoard
+              Portfolio
             </Link>
             <Link
               href="#blogs"

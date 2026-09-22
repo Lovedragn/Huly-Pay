@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "lenis/dist/lenis.css";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
+import TransitionProvider from "@/components/transitions/TransitionProvider";
+import InitialLoader from "@/components/transitions/InitialLoader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,7 +41,10 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col font-pixel" suppressHydrationWarning>
-        <SmoothScroll>{children}</SmoothScroll>
+        <InitialLoader />
+        <TransitionProvider>
+          <SmoothScroll>{children}</SmoothScroll>
+        </TransitionProvider>
       </body>
     </html>
   );
