@@ -1,62 +1,84 @@
 workflows:
   ios-release:
-    name: iOS IPA Build
+    name: HulyPay iOS Unsigned Build
     instance_type: mac_mini_m2
     max_build_duration: 60
+
     environment:
       flutter: stable
       xcode: latest
       cocoapods: default
+
     scripts:
-      - name: Set up .env file
+
+      - name: Set up .env
         script: |
-          echo "Setting up environment file..."
-          # If Codemagic Environment variable ENV_FILE is provided, decode or copy it
           if [ -n "$ENV_FILE" ]; then
             echo "$ENV_FILE" > .env
           elif [ ! -f .env ]; then
             touch .env
           fi
+
       - name: Install Flutter dependencies
         script: |
-          flutter packages pub get
-      - name: Install CocoaPods dependencies
+          flutter pub get
+
+      - name: Install CocoaPods
         script: |
           cd ios
           pod install --repo-update
-      - name: Build unsigned iOS IPA
+          cd ..
+
+      - name: Generate iOS project
         script: |
-          # Prepare Flutter iOS build files and assets
-          flutter build ios --release --config-only
-          
-          # Build unsigned Release Runner.app directly with xcodebuild
-          cd ios
-          xcodebuild -workspace Runner.xcworkspace \
+          flutter build ios \
+            --release \
+            --config-only \
+            --no-codesign
+
+      - name: Build unsigned iOS app
+        script: |
+          xcodebuild \
+            -workspace ios/Runner.xcworkspace \
             -scheme Runner \
             -configuration Release \
+            -sdk iphoneos \
             -destination 'generic/platform=iOS' \
-            -derivedDataPath ../build/ios_derived \
+            -derivedDataPath build/ios_derived \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
-            EXPANDED_CODE_SIGN_IDENTITY="" \
+            AD_HOC_CODE_SIGNING_ALLOWED=NO \
+            DEVELOPMENT_TEAM="" \
+            PROVISIONING_PROFILE_SPECIFIER="" \
             build
-          cd ..
-          
-          # Bundle Runner.app into an unsigned IPA file
+
+      - name: Create unsigned IPA
+        script: |
           mkdir -p build/ios/iphoneos/Payload
-          cp -r build/ios_derived/Build/Products/Release-iphoneos/Runner.app build/ios/iphoneos/Payload/
+
+          cp -R \
+            build/ios_derived/Build/Products/Release-iphoneos/Runner.app \
+            build/ios/iphoneos/Payload/Runner.app
+
           cd build/ios/iphoneos
+
           zip -r -q HulyPay-unsigned.ipa Payload
+
           cd ../../..
+
+          echo "======================================"
+          echo "Unsigned IPA created:"
+          echo "build/ios/iphoneos/HulyPay-unsigned.ipa"
+          echo "======================================"
+
     artifacts:
-      - build/ios/ipa/*.ipa
-      - build/ios/iphoneos/*.ipa
-      - "*.ipa"
+      - build/ios/iphoneos/HulyPay-unsigned.ipa
+
     publishing:
       email:
         recipients:
-          - sujitshrestha811@gmail.com
+          - sujit.sappani.works@gmail.com
         notify:
           success: true
           failure: true
