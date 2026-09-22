@@ -40,7 +40,10 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} ${pixelifySans.variable} ${dotoFont.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col font-pixel" suppressHydrationWarning>
+      <body
+        className="min-h-full flex flex-col font-pixel overflow-hidden"
+        suppressHydrationWarning
+      >
         <InitialLoader />
         <TransitionProvider>
           <SmoothScroll>{children}</SmoothScroll>
@@ -49,4 +52,3 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
-

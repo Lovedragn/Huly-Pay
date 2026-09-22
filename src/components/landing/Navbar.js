@@ -3,20 +3,86 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+import gsap from "gsap";
+
+function NavLink({ href, label, icon, isFirst = false }) {
+  const lineRef = useRef(null);
+
+  useEffect(() => {
+    if (lineRef.current) {
+      gsap.set(lineRef.current, { xPercent: -100, x: 0 });
+    }
+  }, []);
+
+  const handleMouseEnter = () => {
+    if (!lineRef.current) return;
+    gsap.killTweensOf(lineRef.current);
+    gsap.fromTo(
+      lineRef.current,
+      { xPercent: -100, x: 0 },
+      { xPercent: 0, x: 0, duration: 0.32, ease: "power2.out" },
+    );
+  };
+
+  const handleMouseLeave = () => {
+    if (!lineRef.current) return;
+    gsap.killTweensOf(lineRef.current);
+    gsap.to(lineRef.current, {
+      xPercent: 100,
+      x: 0,
+      duration: 0.28,
+      ease: "power2.in",
+      onComplete: () => {
+        if (lineRef.current) {
+          gsap.set(lineRef.current, { xPercent: -100, x: 0 });
+        }
+      },
+    });
+  };
+
+  return (
+    <Link
+      href={href}
+      prefetch={false}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className={`group h-full flex items-center justify-center gap-2 px-6 lg:px-8 xl:px-10 border-r border-[#D4D4D8] ${
+        isFirst ? "border-l" : ""
+      } font-pixel text-[14px] text-black hover:bg-neutral-50 transition-colors select-none`}
+    >
+      <span className="relative inline-block leading-none">
+        <span>{label}</span>
+        {/* Animated Underline: starts from left, kept while hovering, ends to right on leave */}
+        <span
+          className="absolute -bottom-[2px] left-0 w-full h-[2px] overflow-hidden pointer-events-none"
+          aria-hidden="true"
+        >
+          <span ref={lineRef} className="block w-full h-full bg-[#000000]" />
+        </span>
+      </span>
+      {icon}
+    </Link>
+  );
+}
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
+  const headerRef = useRef(null);
   const lastScrollY = useRef(0);
+  const isFirstRender = useRef(true);
 
+  // Synchronize scroll position and determine hide/show direction
   useEffect(() => {
+    lastScrollY.current = window.scrollY;
+
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
       // Always show navbar at the very top of the page
-      if (currentScrollY <= 10) {
+      if (currentScrollY <= 20) {
         setIsVisible(true);
-        lastScrollY.current = currentScrollY;
+        lastScrollY.current = Math.max(0, currentScrollY);
         return;
       }
 
@@ -26,14 +92,23 @@ export default function Navbar() {
         return;
       }
 
+      // Safeguard against bottom rubber-band overscroll
+      const maxScroll =
+        document.documentElement.scrollHeight - window.innerHeight;
+      if (currentScrollY >= maxScroll - 10) {
+        return;
+      }
+
       const diff = currentScrollY - lastScrollY.current;
 
-      // Scroll Down -> Disappear
-      if (diff > 5) {
+      // Threshold to prevent micro-jitter from small scroll steps
+      if (Math.abs(diff) < 8) return;
+
+      if (diff > 0) {
+        // Scrolling Down -> smoothly slide up and hide
         setIsVisible(false);
-      }
-      // Scroll Up (pull down) -> Reappear immediately
-      else if (diff < -5) {
+      } else {
+        // Scrolling Up -> smoothly slide down and reveal
         setIsVisible(true);
       }
 
@@ -44,13 +119,41 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [mobileMenuOpen]);
 
+  // Smooth GSAP slide animation on visibility change
+  useEffect(() => {
+    if (!headerRef.current) return;
+
+    // Avoid animating on first mount
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (isVisible) {
+      gsap.to(headerRef.current, {
+        yPercent: 0,
+        y: 0,
+        duration: 0.9,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+    } else {
+      gsap.to(headerRef.current, {
+        yPercent: -100,
+        y: -4,
+        duration: 0.9,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+    }
+  }, [isVisible]);
+
   return (
     <>
-      {/* Navbar: fixed at top, hides immediately on scroll down and reappears on scroll up without any animation */}
+      {/* Navbar: fixed at top with smooth GSAP slide animation */}
       <header
-        className={`w-full bg-white border-b border-[#D4D4D8] fixed top-0 left-0 z-50 ${
-          isVisible ? "block" : "hidden"
-        }`}
+        ref={headerRef}
+        className="w-full bg-white border-b border-[#D4D4D8] fixed top-0 left-0 z-50 will-change-transform"
       >
         {/* Outer wrapper: flush edges with equal left and right sections */}
         <div className="w-full px-0 h-20 md:h-[80px] flex items-center justify-between relative">
@@ -78,52 +181,47 @@ export default function Navbar() {
 
           {/* Center Section: Navigation Links (Portfolio | Blogs v | Download v) */}
           <div className="hidden md:flex items-center h-full absolute left-1/2 -translate-x-1/2">
-            <Link
-              href="#portfolio"
-              className="h-full flex items-center justify-center px-6 lg:px-8 xl:px-10 border-l border-r border-[#D4D4D8] font-pixel text-[14px] text-black hover:bg-neutral-50 transition-colors select-none"
-            >
-              Portfolio
-            </Link>
-            <Link
+            <NavLink href="#portfolio" label="Portfolio" isFirst />
+            <NavLink
               href="#blogs"
-              className="group h-full flex items-center justify-center gap-2 px-6 lg:px-8 xl:px-10 border-r border-[#D4D4D8] font-pixel text-[14px] text-black hover:bg-neutral-50 transition-colors select-none"
-            >
-              <span>Blogs</span>
-              <svg
-                className="w-2.5 h-1.5 text-black transition-transform duration-200 group-hover:translate-y-0.5"
-                viewBox="0 0 10 6"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M1 1L5 5L9 1"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </Link>
-            <Link
+              label="Blogs"
+              icon={
+                <svg
+                  className="w-2.5 h-1.5 text-black transition-transform duration-200 group-hover:translate-y-0.5"
+                  viewBox="0 0 10 6"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M1 1L5 5L9 1"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              }
+            />
+            <NavLink
               href="#download"
-              className="group h-full flex items-center justify-center gap-2 px-6 lg:px-8 xl:px-10 border-r border-[#D4D4D8] font-pixel text-[14px] text-black hover:bg-neutral-50 transition-colors select-none"
-            >
-              <span>Download</span>
-              <svg
-                className="w-2.5 h-1.5 text-black transition-transform duration-200 group-hover:translate-y-0.5"
-                viewBox="0 0 10 6"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M1 1L5 5L9 1"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </Link>
+              label="Download"
+              icon={
+                <svg
+                  className="w-2.5 h-1.5 text-black transition-transform duration-200 group-hover:translate-y-0.5"
+                  viewBox="0 0 10 6"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M1 1L5 5L9 1"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              }
+            />
           </div>
 
           {/* Right Section: Mobile menu toggle + Open Link Box */}
