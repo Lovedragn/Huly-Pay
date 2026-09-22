@@ -84,9 +84,9 @@
     "semantic_hash": ""
   },
   "src/components/landing/Workflow.js": {
-    "mtime": 1790089486.1633904,
-    "seen": 1790089502.5774875,
-    "ast_hash": "886394cda751d4a954885cacd65b97ee",
+    "mtime": 1790089344.9562309,
+    "seen": 1790089368.3979506,
+    "ast_hash": "3bee71e7e27c20cb5102c4ea7140745a",
     "semantic_hash": ""
   },
   "src/components/transitions/AnimatedSignature.js": {
@@ -420,9 +420,9 @@
     "semantic_hash": ""
   },
   "src/components/landing/WorkflowBadges.js": {
-    "mtime": 1790089464.4108622,
-    "seen": 1790089502.5774908,
-    "ast_hash": "40c6d43f6bd2b36994da202b8fd72879",
+    "mtime": 1790089320.1654587,
+    "seen": 1790089368.3979528,
+    "ast_hash": "a4ebfc58e7c09b4b63729fb049f2f7e9",
     "semantic_hash": ""
   }
 }

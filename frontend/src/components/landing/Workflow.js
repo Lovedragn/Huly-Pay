@@ -1,15 +1,22 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import {
+  Frame145Badge,
+  Frame143Badge,
+  Frame144Badge,
+} from "./WorkflowBadges";
 
 export default function Workflow() {
   const containerRef = useRef(null);
   const badge1Ref = useRef(null);
   const badge2Ref = useRef(null);
   const badge3Ref = useRef(null);
+  const badge1SvgRef = useRef(null);
+  const badge2SvgRef = useRef(null);
+  const badge3SvgRef = useRef(null);
   const path1Ref = useRef(null);
   const path2Ref = useRef(null);
 
@@ -155,6 +162,43 @@ export default function Workflow() {
         opacity: 0,
       });
 
+      // Target frame and inner elements for each badge
+      const b1Frame = badge1SvgRef.current?.querySelector(".badge-frame");
+      const b1Inner = badge1SvgRef.current?.querySelector(".badge-inner");
+      const b1Core = badge1SvgRef.current?.querySelector(".badge-core");
+
+      const b2Frame = badge2SvgRef.current?.querySelector(".badge-frame");
+      const b2Inner = badge2SvgRef.current?.querySelector(".badge-inner");
+
+      const b3Frame = badge3SvgRef.current?.querySelector(".badge-frame");
+      const b3Inner = badge3SvgRef.current?.querySelector(".badge-inner");
+
+      // Initialize all frames in their original color (gray frame + white inner)
+      if (b1Frame) gsap.set(b1Frame, { fill: "#D9D9D9" });
+      if (b1Inner) gsap.set(b1Inner, { fill: "#FFFFFF" });
+      if (b1Core) gsap.set(b1Core, { fill: "#D6D6D6" });
+      if (badge1SvgRef.current) {
+        gsap.set(badge1SvgRef.current, {
+          filter: "drop-shadow(0 0 0px rgba(98, 216, 0, 0))",
+        });
+      }
+
+      if (b2Frame) gsap.set(b2Frame, { fill: "#D9D9D9" });
+      if (b2Inner) gsap.set(b2Inner, { fill: "#FFFFFF" });
+      if (badge2SvgRef.current) {
+        gsap.set(badge2SvgRef.current, {
+          filter: "drop-shadow(0 0 0px rgba(216, 255, 0, 0))",
+        });
+      }
+
+      if (b3Frame) gsap.set(b3Frame, { fill: "#D9D9D9" });
+      if (b3Inner) gsap.set(b3Inner, { fill: "#FFFFFF" });
+      if (badge3SvgRef.current) {
+        gsap.set(badge3SvgRef.current, {
+          filter: "drop-shadow(0 0 0px rgba(255, 0, 245, 0))",
+        });
+      }
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
@@ -164,6 +208,52 @@ export default function Workflow() {
           invalidateOnRefresh: true,
         },
       });
+
+      // 1. Badge 1 (Frame 145) turns #62D800 (frame) and #459700 (30% darker inner) as path initiates
+      if (b1Frame) {
+        tl.to(
+          b1Frame,
+          {
+            fill: "#62D800",
+            duration: 0.08,
+            ease: "power1.inOut",
+          },
+          0.01
+        );
+      }
+      if (b1Inner) {
+        tl.to(
+          b1Inner,
+          {
+            fill: "#459700",
+            duration: 0.08,
+            ease: "power1.inOut",
+          },
+          0.01
+        );
+      }
+      if (b1Core) {
+        tl.to(
+          b1Core,
+          {
+            fill: "#62D800",
+            duration: 0.08,
+            ease: "power1.inOut",
+          },
+          0.01
+        );
+      }
+      if (badge1SvgRef.current) {
+        tl.to(
+          badge1SvgRef.current,
+          {
+            filter: "drop-shadow(0 0 16px rgba(98, 216, 0, 0.45))",
+            duration: 0.08,
+            ease: "power1.inOut",
+          },
+          0.01
+        );
+      }
 
       // 1. First SVG path draws from left to right (from Badge 1 to Badge 2)
       tl.to(
@@ -184,6 +274,41 @@ export default function Workflow() {
         0
       );
 
+      // 2. Badge 2 (Frame 143) turns #D8FF00 (frame) and #97B300 (30% darker inner) when path 1 arrives and touches it
+      if (b2Frame) {
+        tl.to(
+          b2Frame,
+          {
+            fill: "#D8FF00",
+            duration: 0.08,
+            ease: "power1.inOut",
+          },
+          0.92
+        );
+      }
+      if (b2Inner) {
+        tl.to(
+          b2Inner,
+          {
+            fill: "#97B300",
+            duration: 0.08,
+            ease: "power1.inOut",
+          },
+          0.92
+        );
+      }
+      if (badge2SvgRef.current) {
+        tl.to(
+          badge2SvgRef.current,
+          {
+            filter: "drop-shadow(0 0 16px rgba(216, 255, 0, 0.45))",
+            duration: 0.08,
+            ease: "power1.inOut",
+          },
+          0.92
+        );
+      }
+
       // 2. Then Second SVG path draws from right to left (from Badge 2 to Badge 3)
       tl.to(
         path2Ref.current,
@@ -202,6 +327,41 @@ export default function Workflow() {
         },
         1
       );
+
+      // 3. Badge 3 (Frame 144) turns #FF00F5 (frame) and #B300AC (30% darker inner) when path 2 arrives and touches it
+      if (b3Frame) {
+        tl.to(
+          b3Frame,
+          {
+            fill: "#FF00F5",
+            duration: 0.08,
+            ease: "power1.inOut",
+          },
+          1.92
+        );
+      }
+      if (b3Inner) {
+        tl.to(
+          b3Inner,
+          {
+            fill: "#B300AC",
+            duration: 0.08,
+            ease: "power1.inOut",
+          },
+          1.92
+        );
+      }
+      if (badge3SvgRef.current) {
+        tl.to(
+          badge3SvgRef.current,
+          {
+            filter: "drop-shadow(0 0 16px rgba(255, 0, 245, 0.45))",
+            duration: 0.08,
+            ease: "power1.inOut",
+          },
+          1.92
+        );
+      }
     }, containerRef);
 
     return () => ctx.revert();
@@ -281,11 +441,8 @@ export default function Workflow() {
                 ref={badge1Ref}
                 className="w-[108px] sm:w-[132px] lg:w-[150px] relative"
               >
-                <Image
-                  src="/assets/Frame 145.svg"
-                  alt="Scan QR Badge"
-                  width={323}
-                  height={357}
+                <Frame145Badge
+                  svgRef={badge1SvgRef}
                   className="w-full h-auto object-contain select-none"
                 />
               </div>
@@ -330,11 +487,8 @@ export default function Workflow() {
                 ref={badge2Ref}
                 className="w-[108px] sm:w-[132px] lg:w-[150px] relative"
               >
-                <Image
-                  src="/assets/Frame 143.svg"
-                  alt="Secure Transactions Badge"
-                  width={248}
-                  height={299}
+                <Frame143Badge
+                  svgRef={badge2SvgRef}
                   className="w-full h-auto object-contain select-none"
                 />
               </div>
@@ -349,11 +503,8 @@ export default function Workflow() {
                 ref={badge3Ref}
                 className="w-[108px] sm:w-[132px] lg:w-[150px] relative"
               >
-                <Image
-                  src="/assets/Frame 144.svg"
-                  alt="Visual Data Sparkle Shield"
-                  width={309}
-                  height={342}
+                <Frame144Badge
+                  svgRef={badge3SvgRef}
                   className="w-full h-auto object-contain select-none"
                 />
               </div>
