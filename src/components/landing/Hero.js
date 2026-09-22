@@ -42,7 +42,7 @@ export default function Hero() {
       {/* Main Showcase Container (Phones reduced by 30%) */}
       <div className="relative max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-16 mt-6 sm:mt-10 md:mt-12 overflow-hidden">
         {/* 3 iPhone Mockups Staggered Display */}
-        <div className="flex items-start justify-center gap-3 sm:gap-6 md:gap-8 lg:gap-12 w-full">
+        <div className="flex items-start justify-center gap-3 sm:gap-6 md:gap-8 lg:gap-12 w-full translate-y-[30%]">
           
           {/* Left iPhone (30% reduced size) */}
           <div className="w-[126px] sm:w-[160px] md:w-[190px] lg:w-[205px] mt-8 sm:mt-12 md:mt-16 flex-shrink-0">
