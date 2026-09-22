@@ -3,66 +3,56 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 function ScrollDownButton({ onClick }) {
-  const leftStickRef = useRef(null);
-  const rightStickRef = useRef(null);
-  const tlRef = useRef(null);
+  const arrowRef = useRef(null);
+  const floatTweenRef = useRef(null);
 
   useEffect(() => {
-    if (!leftStickRef.current || !rightStickRef.current) return;
-
-    // Initial setup: sticks offset left and right
-    gsap.set(leftStickRef.current, { x: -25, opacity: 0 });
-    gsap.set(rightStickRef.current, { x: 25, opacity: 0 });
-
-    const tl = gsap.timeline({
+    // Gentle rhythmic idle float bounce (organic micro-motion)
+    floatTweenRef.current = gsap.to(arrowRef.current, {
+      y: 4,
+      duration: 1.2,
       repeat: -1,
-      repeatDelay: 3.0, // 3 seconds gap between cycles
+      yoyo: true,
+      ease: "power1.inOut",
     });
-
-    // 1. Sticks come from left and right side and merge to make original down arrow
-    tl.to([leftStickRef.current, rightStickRef.current], {
-      x: 0,
-      opacity: 1,
-      duration: 0.45,
-      ease: "power2.out",
-    });
-
-    // 2. Hold merged state as original down arrow for 1.0 second
-    tl.to({}, { duration: 1.0 });
-
-    // 3. Smoothly fade out merged arrow
-    tl.to([leftStickRef.current, rightStickRef.current], {
-      opacity: 0,
-      duration: 0.25,
-      ease: "power2.in",
-    });
-
-    // 4. Reset stick positions off-center for next cycle
-    tl.set(leftStickRef.current, { x: -25 });
-    tl.set(rightStickRef.current, { x: 25 });
-
-    tlRef.current = tl;
 
     return () => {
-      tl.kill();
+      if (floatTweenRef.current) floatTweenRef.current.kill();
     };
   }, []);
 
   const handleMouseEnter = () => {
-    if (tlRef.current) tlRef.current.pause();
-    gsap.killTweensOf([leftStickRef.current, rightStickRef.current]);
-    gsap.to([leftStickRef.current, rightStickRef.current], {
-      x: 0,
-      opacity: 1,
-      duration: 0.2,
-      ease: "power2.out",
-    });
+    if (floatTweenRef.current) floatTweenRef.current.pause();
+
+    // Slick drop-and-reenter loop animation on hover
+    const tl = gsap.timeline();
+    tl.to(arrowRef.current, {
+      y: 12,
+      opacity: 0,
+      duration: 0.16,
+      ease: "power2.in",
+    })
+      .set(arrowRef.current, { y: -12, opacity: 0 })
+      .to(arrowRef.current, {
+        y: 0,
+        opacity: 1,
+        duration: 0.28,
+        ease: "back.out(2)",
+      });
   };
 
   const handleMouseLeave = () => {
-    if (tlRef.current) tlRef.current.play();
+    gsap.to(arrowRef.current, {
+      y: 0,
+      opacity: 1,
+      duration: 0.2,
+      onComplete: () => {
+        if (floatTweenRef.current) floatTweenRef.current.play();
+      },
+    });
   };
 
   return (
@@ -72,50 +62,66 @@ function ScrollDownButton({ onClick }) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       aria-label="Scroll down to workflow"
-      className="group w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#111111] flex items-center justify-center cursor-pointer shadow-xl shadow-black/25 overflow-hidden transition-transform duration-200 hover:scale-105 active:scale-95"
+      className="group w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#111111] hover:bg-black flex items-center justify-center cursor-pointer shadow-lg shadow-black/20 hover:shadow-2xl hover:shadow-black/35 ring-1 ring-black/10 hover:ring-white/20 overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95"
     >
-      <svg
-        width="20"
-        height="12"
-        viewBox="0 0 20 12"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="w-4 h-2.5 sm:w-5 sm:h-3 overflow-visible pointer-events-none"
-        aria-hidden="true"
-      >
-        {/* Left stick: comes from left side */}
-        <path
-          ref={leftStickRef}
-          d="M0 1.78125L1.75 0L10.2 8.28137L10.2 11.7812Z"
-          fill="white"
-        />
-        {/* Right stick: comes from right side */}
-        <path
-          ref={rightStickRef}
-          d="M20 1.78125L18.25 0L9.8 8.28137L9.8 11.7812Z"
-          fill="white"
-        />
-      </svg>
+      <div ref={arrowRef} className="flex items-center justify-center pointer-events-none">
+        <svg
+          width="20"
+          height="12"
+          viewBox="0 0 20 12"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-4 h-2.5 sm:w-5 sm:h-3 overflow-visible"
+          aria-hidden="true"
+        >
+          <path
+            d="M0 1.78125L1.75 0L10.2 8.28137L10.2 11.7812Z"
+            fill="white"
+          />
+          <path
+            d="M20 1.78125L18.25 0L9.8 8.28137L9.8 11.7812Z"
+            fill="white"
+          />
+        </svg>
+      </div>
     </button>
   );
 }
 
 // =========================================================================
 // 🎛️ CUSTOMIZATION SETTINGS:
-// 1. REVEAL_RADIUS: Radius of the mouse reveal circle in pixels (default 50px)
+// 1. REVEAL_RADIUS: Radius of the mouse reveal circle in pixels
 // 2. SVG_DIM_OPACITY: Controls how bright/dim the revealed SVG layout appears
-//    Change this between 0.0 (fully invisible) and 1.0 (full solid dark)
-//    - 0.20: Very subtle & soft watermark
-//    - 0.35: Balanced & sleek (Recommended)
-//    - 0.60: Noticeable & punchy
-//    - 1.00: Full dark/black
 // =========================================================================
 const REVEAL_RADIUS = 200;
 const SVG_DIM_OPACITY = 0.07;
 
+// =========================================================================
+// 📱 PARALLAX SPEED CONFIGURATION:
+// Defines upward travel distance (negative y) during scroll.
+// Order of speed: Middle (fastest) > Left (medium) > Right (slowest).
+// =========================================================================
+const PARALLAX_CONFIG = {
+  desktop: {
+    middle: -320, // Fastest
+    left: -190,   // Medium
+    right: -90,   // Slowest
+  },
+  mobile: {
+    middle: -160,
+    left: -95,
+    right: -45,
+  },
+};
+
 export default function Hero() {
   const heroRef = useRef(null);
   const maskRef = useRef(null);
+
+  // Parallax refs for each phone mockup
+  const leftPhoneRef = useRef(null);
+  const middlePhoneRef = useRef(null);
+  const rightPhoneRef = useRef(null);
 
   const scrollToNext = () => {
     const workflowSection = document.getElementById("workflow");
@@ -123,6 +129,93 @@ export default function Hero() {
       workflowSection.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  // ScrollTrigger Parallax Effect Setup
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      const mm = gsap.matchMedia();
+
+      // Desktop & Tablets (>= 768px)
+      mm.add("(min-width: 768px)", () => {
+        // Middle iPhone: moves fastest towards upper direction
+        gsap.to(middlePhoneRef.current, {
+          y: PARALLAX_CONFIG.desktop.middle,
+          ease: "none",
+          scrollTrigger: {
+            trigger: heroRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 0.2,
+          },
+        });
+
+        // Left iPhone: moves a bit slower towards upper direction
+        gsap.to(leftPhoneRef.current, {
+          y: PARALLAX_CONFIG.desktop.left,
+          ease: "none",
+          scrollTrigger: {
+            trigger: heroRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 0.2,
+          },
+        });
+
+        // Right iPhone: moves slowest among them all towards upper direction
+        gsap.to(rightPhoneRef.current, {
+          y: PARALLAX_CONFIG.desktop.right,
+          ease: "none",
+          scrollTrigger: {
+            trigger: heroRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 0.2,
+          },
+        });
+      });
+
+      // Mobile Devices (< 768px)
+      mm.add("(max-width: 767px)", () => {
+        gsap.to(middlePhoneRef.current, {
+          y: PARALLAX_CONFIG.mobile.middle,
+          ease: "none",
+          scrollTrigger: {
+            trigger: heroRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 0.2,
+          },
+        });
+
+        gsap.to(leftPhoneRef.current, {
+          y: PARALLAX_CONFIG.mobile.left,
+          ease: "none",
+          scrollTrigger: {
+            trigger: heroRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 0.2,
+          },
+        });
+
+        gsap.to(rightPhoneRef.current, {
+          y: PARALLAX_CONFIG.mobile.right,
+          ease: "none",
+          scrollTrigger: {
+            trigger: heroRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 0.2,
+          },
+        });
+      });
+    }, heroRef);
+
+    return () => ctx.revert();
+  }, []);
 
   const updateMask = (x, y) => {
     if (!maskRef.current) return;
@@ -160,11 +253,11 @@ export default function Hero() {
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative w-full bg-white pt-10 sm:pt-14 md:pt-16"
+      className="relative w-full bg-white pt-6 sm:pt-10 md:pt-12 pb-10 sm:pb-16 min-h-screen overflow-x-clip"
     >
       {/* 
         Hover Spotlight Reveal Background:
-        Reveals /assets/Bg_hover_layout.svg within a 50px radius around mouse cursor.
+        Reveals /assets/Bg_hover_layout.svg within a circle around mouse cursor.
         Opacity is controlled by SVG_DIM_OPACITY.
       */}
       <div
@@ -187,9 +280,13 @@ export default function Hero() {
         />
       </div>
 
-      {/* Sticky Action Button (Bottom Left, visible on load, sticks until Hero scrolls out) */}
-      <div className="absolute inset-y-0 left-4 sm:left-8 lg:left-14 w-14 pointer-events-none z-30">
-        <div className="sticky top-[calc(100vh-80px)] sm:top-[calc(100vh-90px)] md:top-[calc(100vh-100px)] pointer-events-auto">
+      {/* 
+        Sticky Action Button (Bottom Left):
+        Contained strictly within the Hero section with generous bottom padding (bottom-8 sm:bottom-12 lg:bottom-16)
+        so it stops comfortably before the next section and never touches the next page.
+      */}
+      <div className="absolute top-0 bottom-4 sm:bottom-8 lg:bottom-10 left-4 sm:left-4 lg:left-8 w-14 pointer-events-none z-30">
+        <div className="sticky top-[calc(100vh-5.5rem)] sm:top-[calc(100vh-6.5rem)] pointer-events-auto">
           <ScrollDownButton onClick={scrollToNext} />
         </div>
       </div>
@@ -202,12 +299,15 @@ export default function Hero() {
         </h1>
       </div>
 
-      {/* Main Showcase Container (Phones reduced by 30%) */}
-      <div className="relative z-10 max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-16 mt-6 sm:mt-10 md:mt-12 overflow-hidden">
+      {/* Main Showcase Container (Parallax 3-phone stage) */}
+      <div className="relative z-10 max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-16 mt-4 sm:mt-6 md:mt-8">
         {/* 3 iPhone Mockups Staggered Display */}
-        <div className="flex items-start justify-center gap-3 sm:gap-6 md:gap-8 lg:gap-12 w-full translate-y-[30%]">
-          {/* Left iPhone (30% reduced size) */}
-          <div className="w-[126px] sm:w-[160px] md:w-[190px] lg:w-[205px] mt-8 sm:mt-12 md:mt-16 flex-shrink-0">
+        <div className="flex items-start justify-center gap-3 sm:gap-6 md:gap-8 lg:gap-12 w-full translate-y-[4%] sm:translate-y-[6%]">
+          {/* Left iPhone (Moves at medium speed upward) */}
+          <div
+            ref={leftPhoneRef}
+            className="w-[126px] sm:w-[160px] md:w-[190px] lg:w-[205px] mt-8 sm:mt-12 md:mt-16 flex-shrink-0 will-change-transform"
+          >
             <Image
               src="/assets/hero_mock_iphone_left.svg"
               alt="Huly Pay iPhone Left View"
@@ -218,8 +318,11 @@ export default function Hero() {
             />
           </div>
 
-          {/* Middle iPhone (Highest, Center Stage, 30% reduced size) */}
-          <div className="w-[140px] sm:w-[182px] md:w-[220px] lg:w-[235px] mt-0 z-10 flex-shrink-0">
+          {/* Middle iPhone (Moves FASTEST towards upper direction) */}
+          <div
+            ref={middlePhoneRef}
+            className="w-[140px] sm:w-[182px] md:w-[220px] lg:w-[235px] mt-0 z-10 flex-shrink-0 will-change-transform"
+          >
             <Image
               src="/assets/hero_mock_iphone_middle.svg"
               alt="Huly Pay iPhone Dashboard View"
@@ -230,8 +333,11 @@ export default function Hero() {
             />
           </div>
 
-          {/* Right iPhone (30% reduced size) */}
-          <div className="w-[126px] sm:w-[160px] md:w-[195px] lg:w-[210px] mt-12 sm:mt-16 md:mt-24 flex-shrink-0">
+          {/* Right iPhone (Moves SLOWEST among them all towards upper direction) */}
+          <div
+            ref={rightPhoneRef}
+            className="w-[126px] sm:w-[160px] md:w-[195px] lg:w-[210px] mt-12 sm:mt-16 md:mt-24 flex-shrink-0 will-change-transform"
+          >
             <Image
               src="/assets/hero_mock_iphone_right.svg"
               alt="Huly Pay iPhone Insights View"

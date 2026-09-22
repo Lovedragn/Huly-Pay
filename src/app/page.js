@@ -7,7 +7,7 @@ import Footer from "@/components/landing/Footer";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white w-full overflow-x-hidden">
+    <main className="min-h-screen bg-white w-full overflow-x-clip">
       <Navbar />
       <Hero />
       <Workflow />

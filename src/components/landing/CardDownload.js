@@ -9,9 +9,8 @@ export default function CardDownload() {
       <div className="relative w-full max-w-[1550px] mx-auto flex flex-col px-6 sm:px-12 md:px-16 xl:px-[105px]">
         {/* Top-Left Heading */}
         <div className="select-none mb-8 sm:mb-10 lg:mb-14">
-          <h2 className="font-pixel text-3xl sm:text-5xl md:text-6xl lg:text-[64px] font-bold text-black leading-[1.12] tracking-wide">
-            Ready to take control{" "}
-            <br className="hidden sm:inline" />
+          <h2 className="font-pixel text-3xl sm:text-5xl md:text-6xl lg:text-[64px] text-black leading-[1.12] tracking-wide">
+            Ready to take control <br className="hidden sm:inline" />
             of your money?
           </h2>
         </div>
