@@ -2,12 +2,16 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState, useCallback } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export default function Workflow() {
   const containerRef = useRef(null);
   const badge1Ref = useRef(null);
   const badge2Ref = useRef(null);
   const badge3Ref = useRef(null);
+  const path1Ref = useRef(null);
+  const path2Ref = useRef(null);
 
   const [path1, setPath1] = useState("");
   const [path2, setPath2] = useState("");
@@ -91,6 +95,9 @@ export default function Workflow() {
 
     setPath1(d1);
     setPath2(d2);
+    if (typeof window !== "undefined") {
+      ScrollTrigger.refresh();
+    }
   }, []);
 
   useEffect(() => {
@@ -115,6 +122,90 @@ export default function Workflow() {
       clearTimeout(timer2);
     };
   }, [updatePaths]);
+
+  // ScrollTrigger animation: Path 1 draws left-to-right, then Path 2 draws right-to-left
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    gsap.registerPlugin(ScrollTrigger);
+
+    if (
+      !path1 ||
+      !path2 ||
+      !path1Ref.current ||
+      !path2Ref.current ||
+      !containerRef.current
+    ) {
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      const len1 = path1Ref.current.getTotalLength() || 1000;
+      const len2 = path2Ref.current.getTotalLength() || 1000;
+
+      // Initialize both paths: hidden with full dashoffset and opacity 0
+      gsap.set(path1Ref.current, {
+        strokeDasharray: len1,
+        strokeDashoffset: len1,
+        opacity: 0,
+      });
+
+      gsap.set(path2Ref.current, {
+        strokeDasharray: len2,
+        strokeDashoffset: len2,
+        opacity: 0,
+      });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 65%",
+          end: "bottom 75%",
+          scrub: 0.8,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      // 1. First SVG path draws from left to right (from Badge 1 to Badge 2)
+      tl.to(
+        path1Ref.current,
+        {
+          opacity: 1,
+          duration: 0.04,
+          ease: "none",
+        },
+        0
+      ).to(
+        path1Ref.current,
+        {
+          strokeDashoffset: 0,
+          duration: 0.96,
+          ease: "none",
+        },
+        0
+      );
+
+      // 2. Then Second SVG path draws from right to left (from Badge 2 to Badge 3)
+      tl.to(
+        path2Ref.current,
+        {
+          opacity: 1,
+          duration: 0.04,
+          ease: "none",
+        },
+        1
+      ).to(
+        path2Ref.current,
+        {
+          strokeDashoffset: 0,
+          duration: 0.96,
+          ease: "none",
+        },
+        1
+      );
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, [path1, path2]);
 
   return (
     <section
@@ -162,6 +253,7 @@ export default function Workflow() {
           <svg className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible">
             {path1 && (
               <path
+                ref={path1Ref}
                 d={path1}
                 stroke="white"
                 strokeWidth="4"
@@ -171,6 +263,7 @@ export default function Workflow() {
             )}
             {path2 && (
               <path
+                ref={path2Ref}
                 d={path2}
                 stroke="white"
                 strokeWidth="4"
