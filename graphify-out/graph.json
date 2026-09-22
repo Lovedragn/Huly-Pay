@@ -37,7 +37,7 @@
       "file_type": "code",
       "norm_label": "features()",
       "source_file": "src/components/landing/Features.js",
-      "source_location": "L1"
+      "source_location": "L7"
     },
     {
       "id": "src_components_landing_footer_footer",
@@ -184,6 +184,18 @@
       "source_location": "L20"
     },
     {
+      "id": "src_components_transitions_transitionprovider_transitionprovider",
+      "label": "TransitionProvider()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "AnimatedSignature.js",
+      "file_type": "code",
+      "norm_label": "transitionprovider()",
+      "source_file": "src/components/transitions/TransitionProvider.js",
+      "source_location": "L33"
+    },
+    {
       "id": "src_components_transitions_transitionprovider_usepagetransition",
       "label": "usePageTransition()",
       "_callable": true,
@@ -230,18 +242,6 @@
       "norm_label": "initialloader()",
       "source_file": "src/components/transitions/InitialLoader.js",
       "source_location": "L20"
-    },
-    {
-      "id": "src_components_transitions_transitionprovider_transitionprovider",
-      "label": "TransitionProvider()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "layout.js",
-      "file_type": "code",
-      "norm_label": "transitionprovider()",
-      "source_file": "src/components/transitions/TransitionProvider.js",
-      "source_location": "L33"
     },
     {
       "id": "src_app_page",
@@ -330,6 +330,17 @@
       "norm_label": "gsap",
       "source_file": "package.json",
       "source_location": "L13"
+    },
+    {
+      "id": "ref_react",
+      "label": "react",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "app/page.js",
+      "file_type": "concept",
+      "norm_label": "react",
+      "source_file": "package.json",
+      "source_location": "L17"
     },
     {
       "id": "package",
@@ -718,17 +729,6 @@
       "norm_label": "transitioncontext",
       "source_file": "src/components/transitions/TransitionProvider.js",
       "source_location": "L16"
-    },
-    {
-      "id": "ref_react",
-      "label": "react",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "AnimatedSignature.js",
-      "file_type": "concept",
-      "norm_label": "react",
-      "source_file": "package.json",
-      "source_location": "L17"
     },
     {
       "id": "src_app_layout",
@@ -1649,6 +1649,30 @@
       "weight": 1.0
     },
     {
+      "source": "src_components_landing_features",
+      "target": "ref_react",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/landing/Features.js",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landing_features",
+      "target": "ref_gsap",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/landing/Features.js",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
       "source": "src_components_landing_hero",
       "target": "ref_react",
       "relation": "imports_from",
@@ -2300,7 +2324,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/landing/Features.js",
-      "source_location": "L1",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -2567,5 +2591,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "70b24fced3d57a0d6e746c391334290f4ee96045"
+  "built_at_commit": "b05342102886c19260bfd28a2d1a34a07b03dd23"
 }
