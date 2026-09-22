@@ -84,7 +84,7 @@ export default function Features() {
                 ease: "power2.inOut",
                 duration: 0.85,
               },
-              0
+              0,
             );
           }
         });
@@ -102,14 +102,16 @@ export default function Features() {
             stagger: 0.02,
             ease: "power2.in",
           },
-          0
+          0,
         );
       }
 
       // 2. Bell Notification (Card 1: 0.88 -> 1.45)
       const bellBody = container.querySelectorAll(".bell-body");
       const bellClapper = container.querySelectorAll(".bell-clapper");
-      const bellWaves = container.querySelectorAll(".bell-wave-left, .bell-wave-right");
+      const bellWaves = container.querySelectorAll(
+        ".bell-wave-left, .bell-wave-right",
+      );
 
       if (bellBody.length > 0) {
         gsap.set(bellWaves, {
@@ -127,26 +129,66 @@ export default function Features() {
         });
 
         // Single-play bell shake as card 1 reaches the stack
-        tl.to(bellBody, { rotation: 18, duration: 0.1, ease: "power1.inOut" }, 0.9)
-          .to(bellBody, { rotation: -18, duration: 0.12, ease: "power1.inOut" }, 1.0)
-          .to(bellBody, { rotation: 14, duration: 0.1, ease: "power1.inOut" }, 1.12)
-          .to(bellBody, { rotation: -10, duration: 0.1, ease: "power1.inOut" }, 1.22)
-          .to(bellBody, { rotation: 6, duration: 0.08, ease: "power1.inOut" }, 1.32)
-          .to(bellBody, { rotation: 0, duration: 0.08, ease: "power1.out" }, 1.4);
+        tl.to(
+          bellBody,
+          { rotation: 18, duration: 0.1, ease: "power1.inOut" },
+          0.9,
+        )
+          .to(
+            bellBody,
+            { rotation: -18, duration: 0.12, ease: "power1.inOut" },
+            1.0,
+          )
+          .to(
+            bellBody,
+            { rotation: 14, duration: 0.1, ease: "power1.inOut" },
+            1.12,
+          )
+          .to(
+            bellBody,
+            { rotation: -10, duration: 0.1, ease: "power1.inOut" },
+            1.22,
+          )
+          .to(
+            bellBody,
+            { rotation: 6, duration: 0.08, ease: "power1.inOut" },
+            1.32,
+          )
+          .to(
+            bellBody,
+            { rotation: 0, duration: 0.08, ease: "power1.out" },
+            1.4,
+          );
 
-        tl.to(bellClapper, { rotation: -14, duration: 0.1, ease: "power1.inOut" }, 0.9)
-          .to(bellClapper, { rotation: 14, duration: 0.12, ease: "power1.inOut" }, 1.0)
-          .to(bellClapper, { rotation: -8, duration: 0.1, ease: "power1.inOut" }, 1.12)
-          .to(bellClapper, { rotation: 0, duration: 0.1, ease: "power1.out" }, 1.22);
+        tl.to(
+          bellClapper,
+          { rotation: -14, duration: 0.1, ease: "power1.inOut" },
+          0.9,
+        )
+          .to(
+            bellClapper,
+            { rotation: 14, duration: 0.12, ease: "power1.inOut" },
+            1.0,
+          )
+          .to(
+            bellClapper,
+            { rotation: -8, duration: 0.1, ease: "power1.inOut" },
+            1.12,
+          )
+          .to(
+            bellClapper,
+            { rotation: 0, duration: 0.1, ease: "power1.out" },
+            1.22,
+          );
 
         tl.to(
           bellWaves,
           { opacity: 1, scale: 1.15, duration: 0.15, ease: "back.out(2)" },
-          1.0
+          1.0,
         ).to(
           bellWaves,
           { opacity: 0, scale: 1.35, duration: 0.22, ease: "power2.out" },
-          1.2
+          1.2,
         );
       }
 
@@ -162,13 +204,32 @@ export default function Features() {
         gsap.set([wifiOuter, wifiMid, wifiInner, wifiDot], { opacity: 1 });
 
         // Single-play gentle floating and sequential signal dim/brighten
-        tl.to(wifiFloat, { y: -12, duration: 0.35, ease: "sine.out" }, 1.9)
-          .to(wifiFloat, { y: 0, duration: 0.35, ease: "sine.in" }, 2.25);
+        tl.to(wifiFloat, { y: -12, duration: 0.35, ease: "sine.out" }, 1.9).to(
+          wifiFloat,
+          { y: 0, duration: 0.35, ease: "sine.in" },
+          2.25,
+        );
 
-        tl.to(wifiOuter, { opacity: 0.2, duration: 0.18, ease: "power1.inOut" }, 1.95)
-          .to(wifiMid, { opacity: 0.25, duration: 0.18, ease: "power1.inOut" }, 2.05)
-          .to(wifiInner, { opacity: 0.3, duration: 0.18, ease: "power1.inOut" }, 2.15)
-          .to(wifiDot, { opacity: 0.45, duration: 0.15, ease: "power1.inOut" }, 2.22)
+        tl.to(
+          wifiOuter,
+          { opacity: 0.2, duration: 0.18, ease: "power1.inOut" },
+          1.95,
+        )
+          .to(
+            wifiMid,
+            { opacity: 0.25, duration: 0.18, ease: "power1.inOut" },
+            2.05,
+          )
+          .to(
+            wifiInner,
+            { opacity: 0.3, duration: 0.18, ease: "power1.inOut" },
+            2.15,
+          )
+          .to(
+            wifiDot,
+            { opacity: 0.45, duration: 0.15, ease: "power1.inOut" },
+            2.22,
+          )
           .to(
             [wifiDot, wifiInner, wifiMid, wifiOuter],
             {
@@ -177,7 +238,7 @@ export default function Features() {
               stagger: 0.04,
               ease: "power2.out",
             },
-            2.35
+            2.35,
           );
       }
 
@@ -201,20 +262,28 @@ export default function Features() {
         });
 
         // Single-play snap shut into locked state
-        tl.to(lockShackle, { rotation: 0, duration: 0.18, ease: "power2.in" }, 2.9)
-          .to(lockShackle, { y: 0, duration: 0.22, ease: "back.out(2.2)" }, 3.06)
+        tl.to(
+          lockShackle,
+          { rotation: 0, duration: 0.18, ease: "power2.in" },
+          2.9,
+        )
+          .to(
+            lockShackle,
+            { y: 0, duration: 0.22, ease: "back.out(2.2)" },
+            3.06,
+          )
           .to(lockBody, { y: 3, duration: 0.05, ease: "power1.in" }, 3.26)
           .to(lockBody, { y: 0, duration: 0.07, ease: "power1.out" }, 3.31)
           .fromTo(
             lockSpark,
             { opacity: 0, scale: 0 },
             { opacity: 1, scale: 1.25, duration: 0.12, ease: "back.out(2)" },
-            3.3
+            3.3,
           )
           .to(
             lockSpark,
             { opacity: 0, scale: 0.5, duration: 0.18, ease: "power2.in" },
-            3.42
+            3.42,
           );
       }
 
@@ -266,7 +335,7 @@ export default function Features() {
             duration: 0.22,
             ease: "power2.in",
           },
-          3.88
+          3.88,
         )
           // 2. Barcode box shrinks, tilts slightly, and fades out
           .to(
@@ -278,7 +347,7 @@ export default function Features() {
               duration: 0.25,
               ease: "power2.in",
             },
-            3.92
+            3.92,
           )
           .to(
             barcodeData,
@@ -287,7 +356,7 @@ export default function Features() {
               duration: 0.15,
               ease: "power1.in",
             },
-            3.88
+            3.88,
           )
           // 3. Pie Chart group emerges, scales up with a back.out bounce and rotates straight
           .to(
@@ -299,7 +368,7 @@ export default function Features() {
               duration: 0.28,
               ease: "back.out(1.8)",
             },
-            4.08
+            4.08,
           )
           // 4. Accent pie slice pops outward
           .to(
@@ -310,7 +379,7 @@ export default function Features() {
               duration: 0.28,
               ease: "power2.out",
             },
-            4.26
+            4.26,
           );
       }
     };
@@ -355,7 +424,7 @@ export default function Features() {
               ease: "none",
               duration: 1,
             },
-            i - 1
+            i - 1,
           );
 
           tl.to(
@@ -365,7 +434,7 @@ export default function Features() {
               ease: "none",
               duration: 1,
             },
-            i - 1
+            i - 1,
           );
         }
 
@@ -408,7 +477,7 @@ export default function Features() {
               ease: "none",
               duration: 1,
             },
-            i - 1
+            i - 1,
           );
 
           tl.to(
@@ -418,7 +487,7 @@ export default function Features() {
               ease: "none",
               duration: 1,
             },
-            i - 1
+            i - 1,
           );
         }
 
@@ -461,9 +530,7 @@ export default function Features() {
                 {/* Left Side: Title and Bullets */}
                 <div className="flex-1">
                   <h2
-                    className={`${
-                      card.id === "smart-charts" ? "font-pixel" : "font-doto"
-                    } font-bold text-[26px] sm:text-[32px] md:text-[36px] tracking-wide text-white mb-5 sm:mb-6 select-none`}
+                    className={`font-bold text-[26px] sm:text-[32px] font-doto md:text-[36px] tracking-wide text-white mb-5 sm:mb-6 select-none`}
                   >
                     {card.title}
                   </h2>

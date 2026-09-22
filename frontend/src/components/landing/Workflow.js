@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
@@ -9,7 +10,17 @@ import {
   Frame144Badge,
 } from "./WorkflowBadges";
 
+// =========================================================================
+// 🎛️ CUSTOMIZATION SETTINGS:
+// 1. REVEAL_RADIUS: Radius of the mouse reveal circle in pixels (default: 200)
+// 2. GRID_OPACITY: Controls brightness/opacity of the revealed pixel grid SVG
+// =========================================================================
+const REVEAL_RADIUS = 200;
+const GRID_OPACITY = 0.85;
+
 export default function Workflow() {
+  const sectionRef = useRef(null);
+  const maskRef = useRef(null);
   const containerRef = useRef(null);
   const badge1Ref = useRef(null);
   const badge2Ref = useRef(null);
@@ -367,12 +378,70 @@ export default function Workflow() {
     return () => ctx.revert();
   }, [path1, path2]);
 
+  const updateMask = (x, y) => {
+    if (!maskRef.current) return;
+    const mask = `radial-gradient(circle ${REVEAL_RADIUS}px at ${x}px ${y}px, black 0%, black 40%, transparent 100%)`;
+    maskRef.current.style.webkitMaskImage = mask;
+    maskRef.current.style.maskImage = mask;
+  };
+
+  const handleMouseEnter = (e) => {
+    if (!sectionRef.current || !maskRef.current) return;
+    const rect = sectionRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    updateMask(x, y);
+    maskRef.current.style.opacity = `${GRID_OPACITY}`;
+  };
+
+  const handleMouseMove = (e) => {
+    if (!sectionRef.current || !maskRef.current) return;
+    const rect = sectionRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    updateMask(x, y);
+  };
+
+  const handleMouseLeave = () => {
+    if (!maskRef.current) return;
+    maskRef.current.style.opacity = "0";
+  };
+
   return (
     <section
       id="workflow"
+      ref={sectionRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       className="relative w-full bg-black text-white py-24 sm:py-32 lg:py-40 overflow-hidden"
     >
-      <div className="relative max-w-[1720px] mx-auto px-6 sm:px-12 lg:px-24">
+      {/* 
+        Hover Spotlight Reveal Background:
+        Reveals /assets/workflow_grid_hover.svg within a 200px circle around mouse cursor.
+        Opacity is controlled by GRID_OPACITY.
+      */}
+      <div
+        ref={maskRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0 overflow-hidden transition-opacity duration-300 ease-out"
+        style={{
+          opacity: 0,
+          WebkitMaskRepeat: "no-repeat",
+          maskRepeat: "no-repeat",
+        }}
+      >
+        <Image
+          src="/assets/workflow_grid_hover.svg"
+          alt=""
+          fill
+          priority
+          unoptimized
+          className="object-cover object-top select-none pointer-events-none"
+        />
+      </div>
+
+      <div className="relative z-10 max-w-[1720px] mx-auto px-6 sm:px-12 lg:px-24">
         {/* Header Section */}
         <div className="mb-20 sm:mb-28 lg:mb-36">
           <div className="inline-flex items-center gap-2 sm:gap-3.5">

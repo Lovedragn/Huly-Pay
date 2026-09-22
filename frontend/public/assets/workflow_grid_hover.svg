@@ -1,0 +1,424 @@
+<!-- Huly.pay Workflow Pixel Grid Hover Layout -->
+<svg width="1920" height="2200" viewBox="0 0 1920 2200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Seamless Cybernetic Pixel Grid Pattern (48x48) -->
+    <pattern id="wf-grid-pattern" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(255, 255, 255, 0.08)" stroke-width="1"/>
+      <path d="M 0 -5 L 0 5 M -5 0 L 5 0" stroke="rgba(255, 255, 255, 0.3)" stroke-width="1.5"/>
+      <rect x="23" y="23" width="2" height="2" fill="rgba(255, 255, 255, 0.15)"/>
+    </pattern>
+
+    <!-- Glowing Accent Gradients -->
+    <linearGradient id="neon-lime-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D8FF00" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#62D800" stop-opacity="0.4"/>
+    </linearGradient>
+
+    <linearGradient id="neon-pink-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF00F5" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#B300AC" stop-opacity="0.4"/>
+    </linearGradient>
+
+    <linearGradient id="neon-cyan-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F0FF" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0080FF" stop-opacity="0.3"/>
+    </linearGradient>
+  </defs>
+
+  <!-- BASE LAYER: Repeating Modular Grid -->
+  <rect width="100%" height="100%" fill="url(#wf-grid-pattern)"/>
+
+  <!-- ================================================================= -->
+  <!-- ZONE 0: TOP & HEADER TELEMETRY (Y: 40 - 340)                      -->
+  <!-- ================================================================= -->
+  <g id="zone-header" opacity="0.85">
+    <!-- Top Left Corner Cyber Bracket -->
+    <path d="M 48 120 L 48 48 L 120 48" stroke="#FFFFFF" stroke-width="2" fill="none"/>
+    <rect x="44" y="44" width="8" height="8" fill="#D8FF00"/>
+    <text x="64" y="44" font-family="'Courier New', monospace" font-size="11" font-weight="bold" fill="#D8FF00" letter-spacing="2">SYS.NODE // 01</text>
+    <text x="64" y="60" font-family="'Courier New', monospace" font-size="9" fill="rgba(255,255,255,0.5)" letter-spacing="1">STATUS: ONLINE [LATENCY: 4ms]</text>
+
+    <!-- Top Right Corner Cyber Bracket -->
+    <path d="M 1872 120 L 1872 48 L 1800 48" stroke="#FFFFFF" stroke-width="2" fill="none"/>
+    <rect x="1868" y="44" width="8" height="8" fill="#FF00F5"/>
+    <text x="1680" y="44" font-family="'Courier New', monospace" font-size="11" font-weight="bold" fill="#FF00F5" letter-spacing="2">LEDGER_PROTOCOL_V2</text>
+    <text x="1740" y="60" font-family="'Courier New', monospace" font-size="9" fill="rgba(255,255,255,0.5)" letter-spacing="1">BLOCK_SEQ: #092841</text>
+
+    <!-- Stepped Signal Strength Indicator (Top Left) -->
+    <g transform="translate(64, 80)">
+      <rect x="0" y="24" width="6" height="8" fill="#62D800"/>
+      <rect x="10" y="18" width="6" height="14" fill="#62D800"/>
+      <rect x="20" y="12" width="6" height="20" fill="#62D800"/>
+      <rect x="30" y="6" width="6" height="26" fill="#62D800"/>
+      <rect x="40" y="0" width="6" height="32" fill="#62D800"/>
+      <text x="56" y="20" font-family="'Courier New', monospace" font-size="10" fill="#62D800" font-weight="bold">NET_STRENGTH: 100%</text>
+    </g>
+
+    <!-- Binary Stream / Digital Columns Behind Title (Y: 140 - 280) -->
+    <g opacity="0.35" fill="#FFFFFF" font-family="'Courier New', monospace" font-size="10" letter-spacing="4">
+      <text x="1200" y="120">01001000 01010101 01001100 01011001</text>
+      <text x="1200" y="140">01010000 01000001 01011001 00100000</text>
+      <text x="1200" y="160">11000101 10101100 01101111 11010010</text>
+      <text x="1200" y="180">00101101 00110010 01011000 00101101</text>
+      <text x="1200" y="200">01010011 01000101 01000011 01010101</text>
+    </g>
+
+    <!-- Coordinate Grid Rulers Along Top (X markers every 192px) -->
+    <g opacity="0.4" font-family="'Courier New', monospace" font-size="8" fill="rgba(255,255,255,0.7)">
+      <text x="192" y="24">X:0192</text>
+      <text x="384" y="24">X:0384</text>
+      <text x="576" y="24">X:0576</text>
+      <text x="768" y="24">X:0768</text>
+      <text x="960" y="24">X:0960</text>
+      <text x="1152" y="24">X:1152</text>
+      <text x="1344" y="24">X:1344</text>
+      <text x="1536" y="24">X:1536</text>
+      <text x="1728" y="24">X:1728</text>
+    </g>
+
+    <!-- Decorative Stepped Corner Accent Box -->
+    <g transform="translate(1480, 100)">
+      <rect x="0" y="0" width="160" height="40" fill="none" stroke="rgba(255,255,255,0.2)" stroke-dasharray="4,4"/>
+      <rect x="0" y="0" width="6" height="6" fill="#D8FF00"/>
+      <rect x="154" y="0" width="6" height="6" fill="#D8FF00"/>
+      <rect x="0" y="34" width="6" height="6" fill="#D8FF00"/>
+      <rect x="154" y="34" width="6" height="6" fill="#D8FF00"/>
+      <text x="16" y="24" font-family="'Courier New', monospace" font-size="10" fill="#FFFFFF" letter-spacing="1">GRID_MATRIX_OK</text>
+    </g>
+  </g>
+
+  <!-- ================================================================= -->
+  <!-- ZONE 1: STEP 1 (QR SCAN & 2X FASTER TRACKING) (Y: 380 - 800)      -->
+  <!-- ================================================================= -->
+  <g id="zone-step-1">
+    <!-- Left Area: Pixelated QR Scanner Motif Under Badge 1 -->
+    <g transform="translate(90, 420)">
+      <!-- Large Cyber Bracket Frame around Badge 1 -->
+      <path d="M -24 20 L -24 -24 L 20 -24" stroke="#62D800" stroke-width="2.5" fill="none"/>
+      <path d="M 220 -24 L 264 -24 L 264 20" stroke="#62D800" stroke-width="2.5" fill="none"/>
+      <path d="M -24 200 L -24 244 L 20 244" stroke="#62D800" stroke-width="2.5" fill="none"/>
+      <path d="M 264 200 L 264 244 L 220 244" stroke="#62D800" stroke-width="2.5" fill="none"/>
+
+      <!-- Pixelated QR Finder Pattern Top-Left -->
+      <rect x="0" y="0" width="48" height="48" fill="none" stroke="#FFFFFF" stroke-width="4"/>
+      <rect x="12" y="12" width="24" height="24" fill="#FFFFFF"/>
+
+      <!-- Pixelated QR Finder Pattern Top-Right -->
+      <rect x="192" y="0" width="48" height="48" fill="none" stroke="#FFFFFF" stroke-width="4"/>
+      <rect x="204" y="12" width="24" height="24" fill="#FFFFFF"/>
+
+      <!-- Pixelated QR Finder Pattern Bottom-Left -->
+      <rect x="0" y="172" width="48" height="48" fill="none" stroke="#FFFFFF" stroke-width="4"/>
+      <rect x="12" y="184" width="24" height="24" fill="#FFFFFF"/>
+
+      <!-- Micro Pixel Bit Modules Scattered -->
+      <rect x="64" y="12" width="12" height="12" fill="#62D800"/>
+      <rect x="88" y="24" width="12" height="12" fill="#FFFFFF"/>
+      <rect x="112" y="12" width="12" height="12" fill="#62D800"/>
+      <rect x="136" y="36" width="12" height="12" fill="#FFFFFF"/>
+      <rect x="160" y="12" width="12" height="12" fill="#62D800"/>
+      
+      <rect x="12" y="64" width="12" height="12" fill="#FFFFFF"/>
+      <rect x="24" y="88" width="12" height="12" fill="#62D800"/>
+      <rect x="12" y="112" width="12" height="12" fill="#FFFFFF"/>
+      <rect x="36" y="136" width="12" height="12" fill="#62D800"/>
+
+      <rect x="72" y="72" width="24" height="24" fill="#62D800" opacity="0.8"/>
+      <rect x="120" y="84" width="36" height="12" fill="#FFFFFF" opacity="0.9"/>
+      <rect x="108" y="120" width="24" height="24" fill="#D8FF00"/>
+      <rect x="156" y="144" width="24" height="12" fill="#62D800"/>
+      <rect x="84" y="168" width="12" height="24" fill="#FFFFFF"/>
+      <rect x="120" y="180" width="24" height="24" fill="#62D800"/>
+
+      <!-- Laser Scan Line -->
+      <line x1="-10" y1="110" x2="250" y2="110" stroke="#62D800" stroke-width="2" stroke-dasharray="6,4"/>
+      <polygon points="250,106 258,110 250,114" fill="#62D800"/>
+      <polygon points="-10,106 -18,110 -10,114" fill="#62D800"/>
+
+      <!-- QR Telemetry Readouts -->
+      <text x="-20" y="268" font-family="'Courier New', monospace" font-size="10" fill="#62D800" font-weight="bold" letter-spacing="1">// SCAN_TARGET: ACQUIRED</text>
+      <text x="-20" y="284" font-family="'Courier New', monospace" font-size="9" fill="rgba(255,255,255,0.6)">RES: 1080p | ISO_NORM // OK</text>
+    </g>
+
+    <!-- Center Connecting Circuit Traces from Badge 1 toward Step 2 -->
+    <g opacity="0.4" stroke="#62D800" stroke-width="1.5" fill="none">
+      <path d="M 380 560 H 520 L 560 600 H 700"/>
+      <circle cx="700" cy="600" r="3" fill="#62D800"/>
+      <path d="M 420 590 H 500 L 540 630 H 660"/>
+      <circle cx="660" cy="630" r="2.5" fill="#D8FF00"/>
+    </g>
+
+    <!-- Right Area: 2X Tracking Telemetry (Around 2X Times Text) -->
+    <g transform="translate(1040, 430)">
+      <!-- Pixel Speed Chevrons -->
+      <g fill="#62D800">
+        <polygon points="0,20 12,32 0,44 6,44 18,32 6,20"/>
+        <polygon points="16,20 28,32 16,44 22,44 34,32 22,20"/>
+        <polygon points="32,20 44,32 32,44 38,44 50,32 38,20"/>
+      </g>
+      <text x="64" y="36" font-family="'Courier New', monospace" font-size="12" font-weight="bold" fill="#62D800" letter-spacing="2">VELOCITY_BURST: 2.0x</text>
+
+      <!-- Stepped Performance Bar Visualizer -->
+      <g transform="translate(0, 60)">
+        <text x="0" y="12" font-family="'Courier New', monospace" font-size="9" fill="rgba(255,255,255,0.6)">SYNC_ACCELERATION</text>
+        <rect x="0" y="20" width="280" height="8" fill="rgba(255,255,255,0.1)"/>
+        <rect x="0" y="20" width="224" height="8" fill="url(#neon-lime-grad)"/>
+        <!-- Pixel Segment Dividers -->
+        <line x1="56" y1="20" x2="56" y2="28" stroke="#000" stroke-width="2"/>
+        <line x1="112" y1="20" x2="112" y2="28" stroke="#000" stroke-width="2"/>
+        <line x1="168" y1="20" x2="168" y2="28" stroke="#000" stroke-width="2"/>
+        <line x1="224" y1="20" x2="224" y2="28" stroke="#000" stroke-width="2"/>
+        <text x="290" y="28" font-family="'Courier New', monospace" font-size="10" font-weight="bold" fill="#D8FF00">80%</text>
+      </g>
+
+      <!-- Pixel Stepped Frequency Wave -->
+      <g transform="translate(0, 110)" stroke="#62D800" stroke-width="2" fill="none">
+        <path d="M 0 16 H 30 V 0 H 60 V 32 H 90 V 8 H 120 V 24 H 150 V 0 H 180 V 32 H 210 V 16 H 260"/>
+        <circle cx="260" cy="16" r="3" fill="#62D800"/>
+      </g>
+      <text x="0" y="160" font-family="'Courier New', monospace" font-size="9" fill="rgba(255,255,255,0.4)" letter-spacing="1">REALTIME_TELEMETRY // INSTANT_PAYMENT</text>
+
+      <!-- Digital RAM Block (Matrix) -->
+      <g transform="translate(360, 20)" fill="none" stroke="rgba(255,255,255,0.15)">
+        <rect x="0" y="0" width="80" height="80"/>
+        <!-- Filled Pixel Nodes -->
+        <rect x="8" y="8" width="16" height="16" fill="#62D800" stroke="none"/>
+        <rect x="32" y="8" width="16" height="16" fill="#FFFFFF" stroke="none"/>
+        <rect x="56" y="32" width="16" height="16" fill="#D8FF00" stroke="none"/>
+        <rect x="8" y="56" width="16" height="16" fill="#62D800" stroke="none"/>
+        <rect x="32" y="32" width="16" height="16" fill="rgba(255,255,255,0.2)" stroke="none"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- ================================================================= -->
+  <!-- ZONE 2: STEP 2 (SECURE & ORGANIZED EXPENSES) (Y: 880 - 1350)      -->
+  <!-- ================================================================= -->
+  <g id="zone-step-2">
+    <!-- Left Area: Security Padlock & Cryptography (Around Secure Text) -->
+    <g transform="translate(140, 940)">
+      <!-- Cyber Shield Frame -->
+      <path d="M 60 0 L 120 20 V 90 C 120 150 60 190 60 190 C 60 190 0 150 0 90 V 20 Z" 
+            fill="rgba(216, 255, 0, 0.04)" stroke="#D8FF00" stroke-width="2.5" stroke-dasharray="8,4"/>
+      
+      <!-- Retro Pixel Padlock Inside Shield -->
+      <g transform="translate(36, 45)" fill="#D8FF00">
+        <!-- Padlock Shackle (Arch) -->
+        <path d="M 8 20 V 8 C 8 3.5 11.5 0 16 0 H 32 C 36.5 0 40 3.5 40 8 V 20 H 34 V 8 C 34 6 32 4 30 4 H 18 C 16 4 14 6 14 8 V 20 Z"/>
+        <!-- Padlock Body -->
+        <rect x="4" y="18" width="40" height="34" rx="3" fill="#FFFFFF"/>
+        <!-- Keyhole -->
+        <circle cx="24" cy="30" r="4" fill="#000000"/>
+        <polygon points="22,30 26,30 27,44 21,44" fill="#000000"/>
+      </g>
+
+      <!-- Security Telemetry Labels -->
+      <g transform="translate(140, 20)">
+        <text x="0" y="0" font-family="'Courier New', monospace" font-size="12" font-weight="bold" fill="#D8FF00" letter-spacing="2">SECURITY_LEVEL: MIL_GRADE</text>
+        <text x="0" y="18" font-family="'Courier New', monospace" font-size="10" fill="#FFFFFF" letter-spacing="1">ENCRYPTION: AES-256-GCM</text>
+        <text x="0" y="34" font-family="'Courier New', monospace" font-size="9" fill="rgba(255,255,255,0.6)">ZERO-KNOWLEDGE PROOF ACTIVE</text>
+
+        <!-- Cryptographic Hash Lines -->
+        <g transform="translate(0, 50)" opacity="0.75" font-family="'Courier New', monospace" font-size="8" fill="rgba(216,255,0,0.85)">
+          <text x="0" y="0">SHA-256 HASH VERIFICATION:</text>
+          <text x="0" y="14" fill="#FFFFFF">e3b0c44298fc1c149afbf4c8996fb924</text>
+          <text x="0" y="26" fill="#FFFFFF">27ae41e4649b934ca495991b7852b855</text>
+        </g>
+
+        <!-- Status Pill -->
+        <rect x="0" y="90" width="130" height="20" rx="4" fill="rgba(216,255,0,0.15)" stroke="#D8FF00"/>
+        <text x="12" y="104" font-family="'Courier New', monospace" font-size="9" font-weight="bold" fill="#D8FF00">SECURE_TUNNEL: PASS</text>
+      </g>
+    </g>
+
+    <!-- Right Area: Downward Chevrons Blueprint Behind Badge 2 (Chevrons) -->
+    <g transform="translate(1380, 920)">
+      <!-- Large Stepped Target Box Framing Badge 2 -->
+      <path d="M -30 20 L -30 -30 L 20 -30" stroke="#D8FF00" stroke-width="2.5" fill="none"/>
+      <path d="M 230 -30 L 280 -30 L 280 20" stroke="#D8FF00" stroke-width="2.5" fill="none"/>
+      <path d="M -30 220 L -30 270 L 20 270" stroke="#D8FF00" stroke-width="2.5" fill="none"/>
+      <path d="M 280 220 L 280 270 L 230 270" stroke="#D8FF00" stroke-width="2.5" fill="none"/>
+
+      <!-- Cascading Down Chevrons Wireframe -->
+      <g stroke="#D8FF00" stroke-width="3" fill="none" opacity="0.6">
+        <path d="M 50 180 L 125 240 L 200 180"/>
+        <path d="M 50 205 L 125 265 L 200 205"/>
+        <path d="M 50 230 L 125 290 L 200 230"/>
+      </g>
+
+      <!-- Ledger Breakdown Table -->
+      <g transform="translate(40, -10)" font-family="'Courier New', monospace" font-size="9" fill="#FFFFFF">
+        <rect x="0" y="0" width="180" height="64" fill="rgba(0,0,0,0.7)" stroke="rgba(255,255,255,0.2)"/>
+        <text x="10" y="16" fill="#D8FF00" font-weight="bold">EXPENSE_CLASSIFIER:</text>
+        <text x="10" y="32">01 // FOOD &amp; DRINK [62%]</text>
+        <text x="10" y="44">02 // CLOUD INFR   [24%]</text>
+        <text x="10" y="56">03 // HARDWARE     [14%]</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ================================================================= -->
+  <!-- ZONE 3: STEP 3 (VISUAL DATA & SHIELD STAR) (Y: 1420 - 1950)       -->
+  <!-- ================================================================= -->
+  <g id="zone-step-3">
+    <!-- Left Area: Star Shield Wireframe Behind Badge 3 -->
+    <g transform="translate(100, 1480)">
+      <!-- Corner Crosshair Framing -->
+      <path d="M -20 20 L -20 -20 L 20 -20" stroke="#FF00F5" stroke-width="2.5" fill="none"/>
+      <path d="M 220 -20 L 260 -20 L 260 20" stroke="#FF00F5" stroke-width="2.5" fill="none"/>
+      <path d="M -20 220 L -20 260 L 20 260" stroke="#FF00F5" stroke-width="2.5" fill="none"/>
+      <path d="M 260 220 L 260 260 L 220 260" stroke="#FF00F5" stroke-width="2.5" fill="none"/>
+
+      <!-- Giant 8-Point Pixel Star Background Glow -->
+      <g transform="translate(120, 120)" fill="#FF00F5" opacity="0.3">
+        <!-- Vertical & Horizontal Beams -->
+        <rect x="-8" y="-90" width="16" height="180"/>
+        <rect x="-90" y="-8" width="180" height="16"/>
+        <!-- Diagonal Beams -->
+        <rect x="-6" y="-60" width="12" height="120" transform="rotate(45)"/>
+        <rect x="-6" y="-60" width="12" height="120" transform="rotate(-45)"/>
+        <!-- Central Diamond -->
+        <rect x="-24" y="-24" width="48" height="48" transform="rotate(45)" fill="#FFFFFF" opacity="0.6"/>
+      </g>
+
+      <!-- Radar Coordinate Ticks -->
+      <circle cx="120" cy="120" r="140" fill="none" stroke="rgba(255,0,245,0.25)" stroke-width="1.5" stroke-dasharray="6,6"/>
+      <circle cx="120" cy="120" r="90" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+      <text x="20" y="280" font-family="'Courier New', monospace" font-size="10" font-weight="bold" fill="#FF00F5">VISUAL_CORE_03 // ACTIVE</text>
+      <text x="20" y="296" font-family="'Courier New', monospace" font-size="9" fill="rgba(255,255,255,0.5)">SHIELD_DEFENSE: RATED A+</text>
+    </g>
+
+    <!-- Right Area: Visual Data Analytics Charts (Around Visual Data Text) -->
+    <g transform="translate(920, 1460)">
+      <!-- Telemetry Title -->
+      <text x="0" y="20" font-family="'Courier New', monospace" font-size="12" font-weight="bold" fill="#FF00F5" letter-spacing="2">DATA_ANALYTICS_DASHBOARD</text>
+      <text x="0" y="38" font-family="'Courier New', monospace" font-size="9" fill="rgba(255,255,255,0.6)">AGGREGATE SPENDING ENGINE // REALTIME VECTOR</text>
+
+      <!-- 1. Pixel Bar Histogram -->
+      <g transform="translate(0, 60)">
+        <!-- Chart Axes -->
+        <line x1="0" y1="140" x2="340" y2="140" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <line x1="0" y1="0" x2="0" y2="140" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+
+        <!-- Grid Lines (Horizontal) -->
+        <line x1="0" y1="35" x2="340" y2="35" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4,4"/>
+        <line x1="0" y1="70" x2="340" y2="70" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4,4"/>
+        <line x1="0" y1="105" x2="340" y2="105" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4,4"/>
+
+        <!-- Stepped Histogram Bars (Pixel Blocks) -->
+        <!-- Bar 1 (Lime) -->
+        <rect x="24" y="80" width="30" height="60" fill="#62D800"/>
+        <rect x="24" y="74" width="30" height="4" fill="#FFFFFF"/>
+        <text x="26" y="156" font-family="'Courier New', monospace" font-size="8" fill="rgba(255,255,255,0.6)">MON</text>
+
+        <!-- Bar 2 (Yellow) -->
+        <rect x="74" y="45" width="30" height="95" fill="#D8FF00"/>
+        <rect x="74" y="39" width="30" height="4" fill="#FFFFFF"/>
+        <text x="76" y="156" font-family="'Courier New', monospace" font-size="8" fill="rgba(255,255,255,0.6)">TUE</text>
+
+        <!-- Bar 3 (Pink/Magenta) -->
+        <rect x="124" y="20" width="30" height="120" fill="#FF00F5"/>
+        <rect x="124" y="14" width="30" height="4" fill="#FFFFFF"/>
+        <text x="126" y="156" font-family="'Courier New', monospace" font-size="8" fill="rgba(255,255,255,0.6)">WED</text>
+
+        <!-- Bar 4 (Cyan) -->
+        <rect x="174" y="60" width="30" height="80" fill="#00F0FF"/>
+        <rect x="174" y="54" width="30" height="4" fill="#FFFFFF"/>
+        <text x="176" y="156" font-family="'Courier New', monospace" font-size="8" fill="rgba(255,255,255,0.6)">THU</text>
+
+        <!-- Bar 5 (White) -->
+        <rect x="224" y="30" width="30" height="110" fill="#FFFFFF"/>
+        <rect x="224" y="24" width="30" height="4" fill="#D8FF00"/>
+        <text x="226" y="156" font-family="'Courier New', monospace" font-size="8" fill="rgba(255,255,255,0.6)">FRI</text>
+
+        <!-- Bar 6 (Pink) -->
+        <rect x="274" y="10" width="30" height="130" fill="#FF00F5"/>
+        <rect x="274" y="4" width="30" height="4" fill="#FFFFFF"/>
+        <text x="276" y="156" font-family="'Courier New', monospace" font-size="8" fill="rgba(255,255,255,0.6)">SAT</text>
+
+        <!-- Trend Line Overlay with Data Nodes -->
+        <path d="M 39 74 L 89 39 L 139 14 L 189 54 L 239 24 L 289 4" 
+              fill="none" stroke="#FFFFFF" stroke-width="2.5"/>
+        <circle cx="39" cy="74" r="4" fill="#62D800" stroke="#FFFFFF" stroke-width="1.5"/>
+        <circle cx="89" cy="39" r="4" fill="#D8FF00" stroke="#FFFFFF" stroke-width="1.5"/>
+        <circle cx="139" cy="14" r="4" fill="#FF00F5" stroke="#FFFFFF" stroke-width="1.5"/>
+        <circle cx="189" cy="54" r="4" fill="#00F0FF" stroke="#FFFFFF" stroke-width="1.5"/>
+        <circle cx="239" cy="24" r="4" fill="#FFFFFF" stroke="#D8FF00" stroke-width="1.5"/>
+        <circle cx="289" cy="4" r="4" fill="#FF00F5" stroke="#FFFFFF" stroke-width="1.5"/>
+      </g>
+
+      <!-- 2. Circular Pie / Donut Chart Blueprint Beside Histogram -->
+      <g transform="translate(420, 70)">
+        <circle cx="70" cy="70" r="56" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="16"/>
+        <!-- Segment 1: Pink (40%) -->
+        <circle cx="70" cy="70" r="56" fill="none" stroke="#FF00F5" stroke-width="16" 
+                stroke-dasharray="140 351" stroke-dashoffset="0"/>
+        <!-- Segment 2: Lime (35%) -->
+        <circle cx="70" cy="70" r="56" fill="none" stroke="#D8FF00" stroke-width="16" 
+                stroke-dasharray="120 351" stroke-dashoffset="-145"/>
+        <!-- Segment 3: Cyan (25%) -->
+        <circle cx="70" cy="70" r="56" fill="none" stroke="#00F0FF" stroke-width="16" 
+                stroke-dasharray="80 351" stroke-dashoffset="-270"/>
+
+        <!-- Center Readout -->
+        <text x="70" y="68" font-family="'Courier New', monospace" font-size="12" font-weight="bold" fill="#FFFFFF" text-anchor="middle">100%</text>
+        <text x="70" y="82" font-family="'Courier New', monospace" font-size="8" fill="rgba(255,255,255,0.6)" text-anchor="middle">TRACKED</text>
+
+        <!-- Legend Below -->
+        <g transform="translate(0, 150)" font-family="'Courier New', monospace" font-size="9" fill="#FFFFFF">
+          <rect x="0" y="0" width="8" height="8" fill="#FF00F5"/>
+          <text x="14" y="8">INFLOW</text>
+          <rect x="60" y="0" width="8" height="8" fill="#D8FF00"/>
+          <text x="74" y="8">SAVINGS</text>
+          <rect x="130" y="0" width="8" height="8" fill="#00F0FF"/>
+          <text x="144" y="8">EXPENSE</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- ================================================================= -->
+  <!-- ZONE 4: BOTTOM HUD FOOTER & EDGE COORDINATE SYSTEM (Y: 2000-2200) -->
+  <!-- ================================================================= -->
+  <g id="zone-footer" opacity="0.6">
+    <!-- Bottom Left Coordinate Block -->
+    <path d="M 48 2080 L 48 2152 L 120 2152" stroke="#FFFFFF" stroke-width="2" fill="none"/>
+    <rect x="44" y="2148" width="8" height="8" fill="#62D800"/>
+    <text x="64" y="2140" font-family="'Courier New', monospace" font-size="10" font-weight="bold" fill="#62D800">PIPELINE_COMPLETE</text>
+    <text x="64" y="2154" font-family="'Courier New', monospace" font-size="9" fill="rgba(255,255,255,0.5)">ALL_SYSTEMS_FUNCTIONAL // 2026</text>
+
+    <!-- Bottom Right Coordinate Block -->
+    <path d="M 1872 2080 L 1872 2152 L 1800 2152" stroke="#FFFFFF" stroke-width="2" fill="none"/>
+    <rect x="1868" y="2148" width="8" height="8" fill="#D8FF00"/>
+    <text x="1660" y="2140" font-family="'Courier New', monospace" font-size="10" font-weight="bold" fill="#D8FF00">HULY_PAY_WORKSPACE</text>
+    <text x="1710" y="2154" font-family="'Courier New', monospace" font-size="9" fill="rgba(255,255,255,0.5)">END_OF_WORKFLOW_SECTION</text>
+
+    <!-- Vertical Coordinate Ruler on Left Edge (Y: 200 to 2000) -->
+    <g font-family="'Courier New', monospace" font-size="8" fill="rgba(255,255,255,0.4)">
+      <text x="16" y="200">Y:0200</text>
+      <text x="16" y="400">Y:0400</text>
+      <text x="16" y="600">Y:0600</text>
+      <text x="16" y="800">Y:0800</text>
+      <text x="16" y="1000">Y:1000</text>
+      <text x="16" y="1200">Y:1200</text>
+      <text x="16" y="1400">Y:1400</text>
+      <text x="16" y="1600">Y:1600</text>
+      <text x="16" y="1800">Y:1800</text>
+      <text x="16" y="2000">Y:2000</text>
+    </g>
+
+    <!-- Vertical Coordinate Ruler on Right Edge -->
+    <g font-family="'Courier New', monospace" font-size="8" fill="rgba(255,255,255,0.4)">
+      <text x="1880" y="200">Y:0200</text>
+      <text x="1880" y="400">Y:0400</text>
+      <text x="1880" y="600">Y:0600</text>
+      <text x="1880" y="800">Y:0800</text>
+      <text x="1880" y="1000">Y:1000</text>
+      <text x="1880" y="1200">Y:1200</text>
+      <text x="1880" y="1400">Y:1400</text>
+      <text x="1880" y="1600">Y:1600</text>
+      <text x="1880" y="1800">Y:1800</text>
+      <text x="1880" y="2000">Y:2000</text>
+    </g>
+  </g>
+</svg>
