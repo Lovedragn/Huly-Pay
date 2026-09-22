@@ -1344,9 +1344,9 @@
     "semantic_hash": ""
   },
   "frontend/src/components/landing/Hero.js": {
-    "mtime": 1790069024.6850295,
-    "seen": 1790069049.0566988,
-    "ast_hash": "00fb387232e30d0561751871f3b61aa4",
+    "mtime": 1790068152.3277013,
+    "seen": 1790068179.3407693,
+    "ast_hash": "4c8695a0c5036ceb73e41130cb7ea8ba",
     "semantic_hash": ""
   },
   "frontend/src/components/landing/Navbar.js": {

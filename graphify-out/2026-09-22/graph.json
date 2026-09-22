@@ -2997,7 +2997,7 @@
       "file_type": "code",
       "norm_label": "hero()",
       "source_file": "frontend/src/components/landing/Hero.js",
-      "source_location": "L117"
+      "source_location": "L130"
     },
     {
       "id": "frontend_src_components_landing_hero_scrolldownbutton",
@@ -16706,7 +16706,7 @@
       "file_type": "code",
       "norm_label": "parallax_config",
       "source_file": "frontend/src/components/landing/Hero.js",
-      "source_location": "L104"
+      "source_location": "L117"
     },
     {
       "id": "frontend_src_components_landing_navbar",
@@ -34059,7 +34059,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/src/components/landing/Hero.js",
-      "source_location": "L104",
+      "source_location": "L117",
       "weight": 1.0
     },
     {
@@ -34070,7 +34070,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/src/components/landing/Hero.js",
-      "source_location": "L117",
+      "source_location": "L130",
       "weight": 1.0
     },
     {
