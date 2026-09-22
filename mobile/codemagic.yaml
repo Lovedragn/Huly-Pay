@@ -22,7 +22,8 @@ workflows:
           flutter packages pub get
       - name: Install CocoaPods dependencies
         script: |
-          find . -maxdepth 2 -name "Podfile" -execdir pod install \; || true
+          cd ios
+          pod install --repo-update
       - name: Build unsigned iOS IPA
         script: |
           # Build unsigned IPA for testing/sideloading (TrollStore, AltStore, Sideloadly)
