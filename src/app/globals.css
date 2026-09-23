@@ -35,3 +35,18 @@ body {
   animation: float 2.8s ease-in-out infinite;
 }
 
+@keyframes navCardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-nav-card {
+  animation: navCardFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+

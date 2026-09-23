@@ -31,8 +31,8 @@ export const EXTERNAL_LINKS = {
 
   // Blogs dropdown menu items matching navbar_Blogs_open_.png
   blogsDropdown: [
-    { label: "FEATURES", href: "#features" },
-    { label: "DESIGN", href: "#workflow" },
+    { label: "Features", href: "#features" },
+    { label: "Design", href: "#workflow" },
     { label: "Q&A", href: "#qna" },
     { label: "Tools", href: "#tools" },
   ],
