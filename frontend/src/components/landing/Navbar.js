@@ -443,11 +443,11 @@ export default function Navbar() {
                     rel={isExt ? "noopener noreferrer" : undefined}
                     onClick={closeDropdownImmediately}
                     style={{ animationDelay: `${index * 100}ms` }}
-                    className="group/card animate-nav-card h-[250px] w-full bg-[#E6E6E6] hover:bg-[#DCDCDC] active:scale-[0.99] rounded-[6px] flex flex-col items-center justify-center gap-4 transition-colors duration-200 cursor-pointer select-none"
+                    className="group/card animate-nav-card h-[250px] w-full bg-[#E6E6E6] active:scale-[0.99] rounded-[6px] flex flex-col items-center justify-center gap-4 cursor-pointer select-none"
                   >
-                    {/* SVG on top, full opacity black -> red on hover */}
+                    {/* SVG on top, full opacity black */}
                     {SvgComponent && (
-                      <SvgComponent className="w-28 h-28 md:w-36 md:h-36 text-black group-hover/card:text-[#EF4444] transition-colors duration-200 shrink-0" />
+                      <SvgComponent className="w-28 h-28 md:w-36 md:h-36 text-black shrink-0" />
                     )}
 
                     {/* Text below */}
@@ -477,11 +477,11 @@ export default function Navbar() {
                     rel={isExt ? "noopener noreferrer" : undefined}
                     onClick={closeDropdownImmediately}
                     style={{ animationDelay: `${index * 100}ms` }}
-                    className="group/card animate-nav-card h-[250px] w-full bg-[#E6E6E6] hover:bg-[#DCDCDC] active:scale-[0.99] rounded-[6px] flex flex-col items-center justify-center gap-4 transition-colors duration-200 cursor-pointer select-none"
+                    className="group/card animate-nav-card h-[250px] w-full bg-[#E6E6E6] active:scale-[0.99] rounded-[6px] flex flex-col items-center justify-center gap-4 cursor-pointer select-none"
                   >
-                    {/* SVG on top, full opacity black -> red on hover */}
+                    {/* SVG on top, full opacity black */}
                     {SvgComponent && (
-                      <SvgComponent className="w-28 h-28 md:w-36 md:h-36 text-black group-hover/card:text-[#EF4444] transition-colors duration-200 shrink-0" />
+                      <SvgComponent className="w-28 h-28 md:w-36 md:h-36 text-black shrink-0" />
                     )}
 
                     {/* Text below */}
@@ -495,21 +495,11 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* 50% Dimmed backdrop below the navbar when hovering Blogs or Download */}
-        <div
-          onClick={closeDropdownImmediately}
-          onMouseEnter={closeDropdownImmediately}
-          className={`hidden md:block fixed inset-x-0 top-20 md:top-[80px] bottom-0 bg-black/50 backdrop-blur-[1px] -z-10 transition-opacity duration-300 ease-out ${
-            activeDropdown
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
-          }`}
-          aria-hidden="true"
-        />
+
 
         {/* Mobile Drawer Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-[#D4D4D8] bg-white px-6 py-4 flex flex-col gap-4 font-pixel text-[14px]">
+          <div className="md:hidden border-t border-[#D4D4D8] bg-white px-6 py-4 flex flex-col gap-4 font-pixel text-[14px] max-h-[calc(100vh-80px)] overflow-y-auto">
             <Link
               href={EXTERNAL_LINKS.nav.portfolio}
               onClick={() => setMobileMenuOpen(false)}
@@ -560,10 +550,10 @@ export default function Navbar() {
                           setMobileBlogsExpanded(false);
                         }}
                         style={{ animationDelay: `${index * 100}ms` }}
-                        className="group/mob animate-nav-card bg-[#E6E6E6] hover:bg-[#DCDCDC] p-3 rounded-[6px] flex flex-col items-center justify-center gap-2 text-[12px] text-black transition-colors"
+                        className="group/mob animate-nav-card bg-[#E6E6E6] p-3 rounded-[6px] flex flex-col items-center justify-center gap-2 text-[12px] text-black"
                       >
                         {SvgComponent && (
-                          <SvgComponent className="w-14 h-14 text-black group-hover/mob:text-[#EF4444] transition-colors duration-200 shrink-0" />
+                          <SvgComponent className="w-14 h-14 text-black shrink-0" />
                         )}
                         <span>{item.label}</span>
                       </Link>
@@ -617,10 +607,10 @@ export default function Navbar() {
                           setMobileDownloadExpanded(false);
                         }}
                         style={{ animationDelay: `${index * 100}ms` }}
-                        className="group/mob animate-nav-card bg-[#E6E6E6] hover:bg-[#DCDCDC] p-3 rounded-[6px] flex flex-col items-center justify-center gap-2 text-[12px] text-black transition-colors"
+                        className="group/mob animate-nav-card bg-[#E6E6E6] p-3 rounded-[6px] flex flex-col items-center justify-center gap-2 text-[12px] text-black"
                       >
                         {SvgComponent && (
-                          <SvgComponent className="w-14 h-14 text-black group-hover/mob:text-[#EF4444] transition-colors duration-200 shrink-0" />
+                          <SvgComponent className="w-14 h-14 text-black shrink-0" />
                         )}
                         <span>{item.label}</span>
                       </Link>

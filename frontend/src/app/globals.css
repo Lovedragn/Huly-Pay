@@ -6,6 +6,27 @@
   --font-doto: var(--font-doto), monospace, sans-serif;
 }
 
+/* Hide scrollbar across all browsers while allowing natural scrolling */
+html,
+body {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+  width: 0px;
+  height: 0px;
+  background: transparent;
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
 body {
   font-family: var(--font-pixelify), monospace, sans-serif;
 }

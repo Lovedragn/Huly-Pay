@@ -29,7 +29,7 @@ export default function AnimatedSignature({
         alt={alt}
         width={SIGNATURE_WIDTH}
         height={SIGNATURE_HEIGHT}
-        className="w-full h-auto drop-shadow-sm select-none pointer-events-none"
+        className="w-full h-auto select-none pointer-events-none"
         loading="eager"
         decoding="sync"
       />
