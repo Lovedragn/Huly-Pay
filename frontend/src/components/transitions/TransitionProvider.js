@@ -133,9 +133,6 @@ export default function TransitionProvider({ children }) {
       // Lock pointer events and reset initial positions
       gsap.set(overlayRef.current, { yPercent: 100, pointerEvents: "auto" });
       gsap.set(sigWrapperRef.current, { opacity: 1, y: 0, scale: 1 });
-      gsap.set(maskPathRef.current, {
-        strokeDashoffset: SIGNATURE_STROKE_LENGTH,
-      });
 
       const tl = gsap.timeline({
         onComplete: () => {
@@ -170,19 +167,8 @@ export default function TransitionProvider({ children }) {
         ease: "power3.inOut",
       });
 
-      // 2. Play normal given SVG animation (~1.1s stroke draw)
-      tl.to(
-        maskPathRef.current,
-        {
-          strokeDashoffset: 0,
-          duration: 1.1,
-          ease: "power1.inOut",
-        },
-        "-=0.1",
-      );
-
-      // 3. Brief elegant pause before router swap
-      tl.to({}, { duration: 0.15 });
+      // 2. Signature SVG auto-plays its 1100ms animation
+      tl.to({}, { duration: 1.1 });
     },
     [isTransitioning, router],
   );
@@ -250,11 +236,7 @@ export default function TransitionProvider({ children }) {
           {/* Normal Mode Signature Animation (1.1s) — Pure Signature Only */}
           <AnimatedSignature
             key={sigKey}
-            maskPathRef={maskPathRef}
-            fillPathRef={fillPathRef}
-            mode="initial" // Controlled via GSAP for synchronous perfection
-            color="#0a0a0a"
-            className="w-[100px] sm:w-[140px] md:w-[180px] max-w-[85vw]"
+            className="w-[110px] sm:w-[150px] md:w-[190px] max-w-[85vw]"
           />
         </div>
       </div>

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { EXTERNAL_LINKS } from "./external_data";
+import { EXTERNAL_LINKS } from "../../assets/external_data";
 
 export default function Footer() {
   return (

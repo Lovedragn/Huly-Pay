@@ -1,7 +1,7 @@
 "use client";
 
-import VeinTextFlow from "@/components/landing/VeinTextFlow";
-import { EXTERNAL_LINKS } from "./external_data";
+import VeinTextFlow from "../../../public/assets/download/VeinTextFlow";
+import { EXTERNAL_LINKS } from "../../assets/external_data";
 
 export default function CardDownload() {
   return (

@@ -3,11 +3,13 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import QrToTickAnimation, { MORPH_PIXELS } from "./QrToTickAnimation";
-import BellNotificationAnimation from "./BellNotificationAnimation";
-import WifiOfflineAnimation from "./WifiOfflineAnimation";
-import LockJwtAnimation from "./LockJwtAnimation";
-import PieChartAnimation from "./PieChartAnimation";
+import QrToTickAnimation, {
+  MORPH_PIXELS,
+} from "../../../public/assets/feature/QrToTickAnimation";
+import BellNotificationAnimation from "../../../public/assets/feature/BellNotificationAnimation";
+import WifiOfflineAnimation from "../../../public/assets/feature/WifiOfflineAnimation";
+import LockJwtAnimation from "../../../public/assets/feature/LockJwtAnimation";
+import PieChartAnimation from "../../../public/assets/feature/PieChartAnimation";
 
 export default function Features() {
   const sectionRef = useRef(null);
