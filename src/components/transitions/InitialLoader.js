@@ -35,55 +35,33 @@ export default function InitialLoader({ onComplete }) {
         },
       });
 
-      // Initial state setup
+      // Initial state setup: rendered cleanly at 100% scale
       gsap.set(containerRef.current, { yPercent: 0, opacity: 1 });
-      gsap.set(signatureRef.current, { scale: 0.95, opacity: 1 });
+      gsap.set(signatureRef.current, { scale: 1, opacity: 1 });
 
-      // 1. Focus scale
-      tl.to(
-        signatureRef.current,
-        {
-          scale: 1,
-          duration: 0.4,
-          ease: "power2.out",
-        },
-        0,
-      );
+      // 1. Signature finishes its natural 1100ms draw animation cleanly without any bumping/scaling
+      tl.to({}, { duration: 1.25 });
 
-      // 2. Allow signature SVG to complete its natural 1100ms draw, plus subtle breath
-      tl.to(
-        signatureRef.current,
-        {
-          scale: 1.03,
-          duration: 0.6,
-          yoyo: true,
-          repeat: 1,
-          ease: "sine.inOut",
-        },
-        1.2,
-      );
-
-      // 3. Elegant curtain lift (reveals website)
+      // 2. Clean fade out before curtain lift
       tl.to(
         signatureRef.current,
         {
           opacity: 0,
-          y: -15,
-          scale: 1.02,
-          duration: 0.35,
+          duration: 0.25,
           ease: "power2.in",
         },
-        2.2,
+        1.25,
       );
 
+      // 3. Clean curtain lift revealing the website
       tl.to(
         containerRef.current,
         {
           yPercent: -100,
-          duration: 0.75,
+          duration: 0.7,
           ease: "power4.inOut",
         },
-        2.3,
+        1.35,
       );
     }, containerRef);
 

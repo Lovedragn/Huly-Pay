@@ -25,7 +25,7 @@ export default function AnimatedSignature({
     <div className={`relative flex items-center justify-center select-none ${className}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={`/assets/animated_signature.svg?t=${Date.now()}`}
+        src="/assets/animated_signature.svg"
         alt={alt}
         width={SIGNATURE_WIDTH}
         height={SIGNATURE_HEIGHT}
