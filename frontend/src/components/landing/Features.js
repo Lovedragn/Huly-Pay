@@ -507,12 +507,12 @@ export default function Features() {
       {/* 100% Full Screen Centered Viewport Wrapper */}
       <div
         ref={containerRef}
-        className="w-full h-screen flex items-center justify-center px-4 sm:px-6 md:px-8"
+        className="w-full h-screen flex items-center justify-center px-4 sm:px-6 md:px-8 pt-8 sm:pt-12 md:pt-16"
       >
         {/* Animated Stack Deck Container */}
         <div
           ref={stackRef}
-          className="relative w-full max-w-[1060px] mx-auto flex items-start justify-center"
+          className="relative w-full max-w-[1060px] mx-auto flex items-start justify-center translate-y-3 sm:translate-y-6"
           style={{ minHeight: "560px" }}
         >
           {featureCards.map((card, index) => (

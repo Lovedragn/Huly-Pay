@@ -1,6 +1,7 @@
 "use client";
 
 import VeinTextFlow from "@/components/landing/VeinTextFlow";
+import { EXTERNAL_LINKS } from "./external_data";
 
 export default function CardDownload() {
   return (
@@ -12,7 +13,6 @@ export default function CardDownload() {
       <VeinTextFlow />
 
       <div className="relative w-full max-w-[1550px] mx-auto flex flex-col px-6 sm:px-12 md:px-16 xl:px-[105px] mt-2 sm:mt-4">
-
         {/* Top-Left Heading */}
         <div className="select-none mb-8 sm:mb-10 lg:mb-14">
           <h2 className="font-pixel text-3xl sm:text-5xl md:text-6xl lg:text-[64px] text-black leading-[1.12] tracking-wide">
@@ -44,7 +44,10 @@ export default function CardDownload() {
             {/* Action Pill Button */}
             <div className="w-full flex justify-center">
               <a
-                href="#download-android"
+                href={EXTERNAL_LINKS.downloads.androidApk}
+                target=""
+                rel="noopener noreferrer"
+                download={EXTERNAL_LINKS.downloads.apkFilename}
                 className="w-full max-w-[290px] h-[42px] sm:h-[46px] bg-white rounded-full flex items-center justify-center font-pixel font-bolder font-black text-sm sm:text-base text-[#FF0000] tracking-wider shadow-md hover:bg-neutral-100 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none"
               >
                 DOWNLOAD
@@ -70,12 +73,13 @@ export default function CardDownload() {
 
             {/* Action Pill Button */}
             <div className="w-full flex justify-center">
-              <a
-                href="#download-ios"
-                className="w-full max-w-[290px] h-[42px] sm:h-[46px] bg-white rounded-full flex items-center justify-center font-pixel font-bolder font-black text-sm sm:text-base text-black tracking-wider shadow-md hover:bg-neutral-100 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none"
+              <button
+                type="button"
+                disabled
+                className="w-full max-w-[290px] h-[42px] sm:h-[46px] bg-white/90 rounded-full flex items-center justify-center font-pixel font-bolder font-black text-xs sm:text-sm text-black tracking-wider shadow-md opacity-80 cursor-not-allowed select-none"
               >
-                DOWNLOAD
-              </a>
+                COMING SOON
+              </button>
             </div>
           </div>
         </div>
