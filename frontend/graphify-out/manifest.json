@@ -36,9 +36,9 @@
     "semantic_hash": ""
   },
   "src/app/layout.js": {
-    "mtime": 1790092167.7391567,
-    "seen": 1790141724.1970918,
-    "ast_hash": "6b62cb6005d14d1881c98f8c3df776df",
+    "mtime": 1790175366.937739,
+    "seen": 1790177575.8629568,
+    "ast_hash": "184223de0a7533c6e704b9c6d100cedb",
     "semantic_hash": ""
   },
   "src/app/page.js": {
@@ -54,57 +54,57 @@
     "semantic_hash": ""
   },
   "src/components/landing/CardDownload.js": {
-    "mtime": 1790095892.832623,
-    "seen": 1790141724.197105,
-    "ast_hash": "f8098c220350fe086528687aa25cd040",
+    "mtime": 1790152644.5694075,
+    "seen": 1790177575.8629723,
+    "ast_hash": "642d1769f18b950b705942c350cce2f0",
     "semantic_hash": ""
   },
   "src/components/landing/Features.js": {
-    "mtime": 1790098731.9766362,
-    "seen": 1790141724.1971068,
-    "ast_hash": "585134df88ce036edfee6e5a159bfda0",
+    "mtime": 1790152446.0264304,
+    "seen": 1790177575.8629737,
+    "ast_hash": "68185c4dc9ce63486430624d3ec621a5",
     "semantic_hash": ""
   },
   "src/components/landing/Footer.js": {
-    "mtime": 1790096146.7281528,
-    "seen": 1790141724.1971085,
-    "ast_hash": "efe64e47c2aa74428d03944e268b1c99",
+    "mtime": 1790176010.1875787,
+    "seen": 1790177575.8629751,
+    "ast_hash": "80a6101303d8cda6a7c3e02bf71de05f",
     "semantic_hash": ""
   },
   "src/components/landing/Hero.js": {
-    "mtime": 1790085078.6377313,
-    "seen": 1790088924.248816,
-    "ast_hash": "9a84ff5e03e7b7629f736ea5cdba1bb0",
+    "mtime": 1790173998.812307,
+    "seen": 1790177575.8629763,
+    "ast_hash": "0c838350424ea5da1207d2a336887110",
     "semantic_hash": ""
   },
   "src/components/landing/Navbar.js": {
-    "mtime": 1790151769.754099,
-    "seen": 1790151884.743892,
-    "ast_hash": "48711ada3c72a3fde7774763bb192821",
+    "mtime": 1790175386.2161539,
+    "seen": 1790177575.8629773,
+    "ast_hash": "7a20242b47f35ef3cdc06026de9efba6",
     "semantic_hash": ""
   },
   "src/components/landing/Workflow.js": {
-    "mtime": 1790094501.8946073,
-    "seen": 1790141724.1971207,
-    "ast_hash": "dd2d25b24cce5e4446a59fcd0e2afd64",
+    "mtime": 1790153087.4719658,
+    "seen": 1790177575.8629785,
+    "ast_hash": "da52bd15868d5ba5c1f8f9ee4b75eefb",
     "semantic_hash": ""
   },
   "src/components/transitions/AnimatedSignature.js": {
-    "mtime": 1790085078.6398776,
-    "seen": 1790088924.2488198,
-    "ast_hash": "4bcf9e952b532a67403fed2e718ee195",
+    "mtime": 1790174625.3045363,
+    "seen": 1790177575.8629818,
+    "ast_hash": "8b9dab55185871d6a4495c17d7e9c684",
     "semantic_hash": ""
   },
   "src/components/transitions/InitialLoader.js": {
-    "mtime": 1790085078.640879,
-    "seen": 1790088924.2488208,
-    "ast_hash": "320185d531bc697576b76f4e1f2e4fce",
+    "mtime": 1790155690.4851892,
+    "seen": 1790177575.8629835,
+    "ast_hash": "4a6751a01615164069268f02e52f2b60",
     "semantic_hash": ""
   },
   "src/components/transitions/TransitionProvider.js": {
-    "mtime": 1790085078.640879,
-    "seen": 1790088924.248822,
-    "ast_hash": "1670694a823a09bcf8fef0ffb0463ab3",
+    "mtime": 1790153177.2842793,
+    "seen": 1790177575.8629847,
+    "ast_hash": "d58dc9bed02e40c40b1b94523353ff21",
     "semantic_hash": ""
   },
   "src/components/transitions/signaturePaths.js": {
@@ -131,150 +131,6 @@
     "ast_hash": "6980ade5a05de492e50cc4e14a0ebd1d",
     "semantic_hash": ""
   },
-  "Asserts_external/Bg_hover_layout.svg": {
-    "mtime": 1790151533.5342646,
-    "seen": 1790151884.7439203,
-    "ast_hash": "bc59e542c017e6398d2a961f5d80d0e4",
-    "semantic_hash": ""
-  },
-  "Asserts_external/Frame 143.svg": {
-    "mtime": 1790151533.5352745,
-    "seen": 1790151884.7439265,
-    "ast_hash": "673fa7ed9e59aa26d7c0723e24f82356",
-    "semantic_hash": ""
-  },
-  "Asserts_external/Frame 144.svg": {
-    "mtime": 1790151533.538668,
-    "seen": 1790151884.7439287,
-    "ast_hash": "b27edcc7ceed317d87fc25efa8a9072f",
-    "semantic_hash": ""
-  },
-  "Asserts_external/Frame 145.svg": {
-    "mtime": 1790151533.538668,
-    "seen": 1790151884.74393,
-    "ast_hash": "69778fe9a36f8e284fab5d5e426a99d3",
-    "semantic_hash": ""
-  },
-  "Asserts_external/Group.svg": {
-    "mtime": 1790151533.538668,
-    "seen": 1790151884.7439315,
-    "ast_hash": "04ba8ab8141f2f7724971f1abe82e6e7",
-    "semantic_hash": ""
-  },
-  "Asserts_external/Loading_signature_animated.svg": {
-    "mtime": 1790151533.541379,
-    "seen": 1790151884.7439344,
-    "ast_hash": "726ce0e0ce4b1a49e5bae37621b88e85",
-    "semantic_hash": ""
-  },
-  "Asserts_external/Logo-Dark.svg": {
-    "mtime": 1790151533.541379,
-    "seen": 1790151884.743936,
-    "ast_hash": "95333274dcd0e9e497548fa45b8ec697",
-    "semantic_hash": ""
-  },
-  "Asserts_external/Open_Link.svg": {
-    "mtime": 1790151533.541379,
-    "seen": 1790151884.743938,
-    "ast_hash": "f74b04d2ccab9727e043ed97bdfe5cf4",
-    "semantic_hash": ""
-  },
-  "Asserts_external/Vector 6.svg": {
-    "mtime": 1790151533.544638,
-    "seen": 1790151884.7439396,
-    "ast_hash": "08bad59f8c51e386fab2663191d54ba4",
-    "semantic_hash": ""
-  },
-  "Asserts_external/Vector 7.svg": {
-    "mtime": 1790151533.544638,
-    "seen": 1790151884.7439413,
-    "ast_hash": "3369c98370a20555bec861258127fd86",
-    "semantic_hash": ""
-  },
-  "Asserts_external/Vector.svg": {
-    "mtime": 1790151533.544638,
-    "seen": 1790151884.7439432,
-    "ast_hash": "bea603bcf1b835d9e381326bc5b6b788",
-    "semantic_hash": ""
-  },
-  "Asserts_external/Workflow.png": {
-    "mtime": 1790151533.544638,
-    "seen": 1790151884.7439446,
-    "ast_hash": "7ebc17dc3fdbada746b2bd6da6b117f3",
-    "semantic_hash": ""
-  },
-  "Asserts_external/arrow_back.svg": {
-    "mtime": 1790151533.5485618,
-    "seen": 1790151884.7439475,
-    "ast_hash": "e83cd90bf84e654c9f4e1a20a683836d",
-    "semantic_hash": ""
-  },
-  "Asserts_external/hero_mock_iphone_left.svg": {
-    "mtime": 1790151533.5749648,
-    "seen": 1790151884.7439537,
-    "ast_hash": "4c5dfda09a6ccacd4bfe86b2d19aee48",
-    "semantic_hash": ""
-  },
-  "Asserts_external/hero_mock_iphone_middle.svg": {
-    "mtime": 1790151533.5808558,
-    "seen": 1790151884.7439551,
-    "ast_hash": "bceee0b1c4bbbe9875e630e04f627526",
-    "semantic_hash": ""
-  },
-  "Asserts_external/hero_mock_iphone_right.svg": {
-    "mtime": 1790151533.5838947,
-    "seen": 1790151884.7439568,
-    "ast_hash": "e998ef59aa42eebbd56b6e4b27471d1b",
-    "semantic_hash": ""
-  },
-  "Asserts_external/logo-Light.svg": {
-    "mtime": 1790151533.5838947,
-    "seen": 1790151884.7439604,
-    "ast_hash": "b1c662a4aaf51f7265a4d412b49b3b86",
-    "semantic_hash": ""
-  },
-  "Asserts_external/text_path_line.svg": {
-    "mtime": 1790151533.5884142,
-    "seen": 1790151884.7439697,
-    "ast_hash": "5b2c740310afdf33559f92cc19b4340b",
-    "semantic_hash": ""
-  },
-  "public/assets/Bg_hover_layout.svg": {
-    "mtime": 1790085078.5725646,
-    "seen": 1790088924.2488546,
-    "ast_hash": "bc59e542c017e6398d2a961f5d80d0e4",
-    "semantic_hash": ""
-  },
-  "public/assets/Frame 143.svg": {
-    "mtime": 1790085078.574819,
-    "seen": 1790088924.2488556,
-    "ast_hash": "673fa7ed9e59aa26d7c0723e24f82356",
-    "semantic_hash": ""
-  },
-  "public/assets/Frame 144.svg": {
-    "mtime": 1790085078.5758207,
-    "seen": 1790088924.2488565,
-    "ast_hash": "b27edcc7ceed317d87fc25efa8a9072f",
-    "semantic_hash": ""
-  },
-  "public/assets/Frame 145.svg": {
-    "mtime": 1790085078.5758207,
-    "seen": 1790088924.248858,
-    "ast_hash": "69778fe9a36f8e284fab5d5e426a99d3",
-    "semantic_hash": ""
-  },
-  "public/assets/Group.svg": {
-    "mtime": 1790085078.5768192,
-    "seen": 1790088924.248859,
-    "ast_hash": "04ba8ab8141f2f7724971f1abe82e6e7",
-    "semantic_hash": ""
-  },
-  "public/assets/Loading_signature_animated.svg": {
-    "mtime": 1790085078.5798173,
-    "seen": 1790088924.248861,
-    "ast_hash": "726ce0e0ce4b1a49e5bae37621b88e85",
-    "semantic_hash": ""
-  },
   "public/assets/Logo-Dark.svg": {
     "mtime": 1790085078.580861,
     "seen": 1790088924.2488623,
@@ -287,28 +143,10 @@
     "ast_hash": "4d5ec6c1c062cd85eb7f42f78c7ca0d8",
     "semantic_hash": ""
   },
-  "public/assets/Vector 6.svg": {
-    "mtime": 1790085078.5823658,
-    "seen": 1790088924.2488642,
-    "ast_hash": "08bad59f8c51e386fab2663191d54ba4",
-    "semantic_hash": ""
-  },
-  "public/assets/Vector 7.svg": {
-    "mtime": 1790085078.5823658,
-    "seen": 1790088924.2488654,
-    "ast_hash": "3369c98370a20555bec861258127fd86",
-    "semantic_hash": ""
-  },
-  "public/assets/Vector.svg": {
-    "mtime": 1790085078.583783,
-    "seen": 1790088924.2488666,
-    "ast_hash": "bea603bcf1b835d9e381326bc5b6b788",
-    "semantic_hash": ""
-  },
   "public/assets/animated_signature.svg": {
-    "mtime": 1790085078.5847812,
-    "seen": 1790088924.2488692,
-    "ast_hash": "726ce0e0ce4b1a49e5bae37621b88e85",
+    "mtime": 1790155533.063701,
+    "seen": 1790177575.8629951,
+    "ast_hash": "3694629e1b466526068af2e134d400bf",
     "semantic_hash": ""
   },
   "public/assets/arrow_back.svg": {
@@ -318,27 +156,9 @@
     "semantic_hash": ""
   },
   "public/assets/footer_brand_lockup.png": {
-    "mtime": 1790085078.5869386,
-    "seen": 1790088924.2488713,
+    "mtime": 1790152963.160403,
+    "seen": 1790177575.8629992,
     "ast_hash": "71d24847c775b85e42e0cf2ca8abb589",
-    "semantic_hash": ""
-  },
-  "public/assets/hero_mock_iphone_left.svg": {
-    "mtime": 1790085078.6108966,
-    "seen": 1790088924.2488725,
-    "ast_hash": "4c5dfda09a6ccacd4bfe86b2d19aee48",
-    "semantic_hash": ""
-  },
-  "public/assets/hero_mock_iphone_middle.svg": {
-    "mtime": 1790085078.6181262,
-    "seen": 1790088924.2488737,
-    "ast_hash": "bceee0b1c4bbbe9875e630e04f627526",
-    "semantic_hash": ""
-  },
-  "public/assets/hero_mock_iphone_right.svg": {
-    "mtime": 1790085078.6226282,
-    "seen": 1790088924.2488747,
-    "ast_hash": "e998ef59aa42eebbd56b6e4b27471d1b",
     "semantic_hash": ""
   },
   "public/assets/logo-Light.svg": {
@@ -347,52 +167,10 @@
     "ast_hash": "b1c662a4aaf51f7265a4d412b49b3b86",
     "semantic_hash": ""
   },
-  "public/assets/text_path_line.svg": {
-    "mtime": 1790085078.6236336,
-    "seen": 1790088924.2488773,
-    "ast_hash": "5b2c740310afdf33559f92cc19b4340b",
-    "semantic_hash": ""
-  },
-  "public/globe.svg": {
-    "mtime": 1790085078.6250727,
-    "seen": 1790088924.2488797,
-    "ast_hash": "2aaafa6a49b6563925fe440891e32717",
-    "semantic_hash": ""
-  },
   "src/components/landing/WorkflowBadges.js": {
     "mtime": 1790089464.4108622,
     "seen": 1790089502.5774908,
     "ast_hash": "40c6d43f6bd2b36994da202b8fd72879",
-    "semantic_hash": ""
-  },
-  "src/components/landing/QrToTickAnimation.js": {
-    "mtime": 1790090729.9020286,
-    "seen": 1790090798.7226176,
-    "ast_hash": "2ccd430bb58517023db77bda5c62e845",
-    "semantic_hash": ""
-  },
-  "src/components/landing/BellNotificationAnimation.js": {
-    "mtime": 1790091376.5539849,
-    "seen": 1790091491.1469276,
-    "ast_hash": "0a501cbef5a6ff3e72461ca60b460827",
-    "semantic_hash": ""
-  },
-  "src/components/landing/WifiOfflineAnimation.js": {
-    "mtime": 1790091428.6345985,
-    "seen": 1790091491.146947,
-    "ast_hash": "1efd128f60af05e6954e3aafb86f30dc",
-    "semantic_hash": ""
-  },
-  "src/components/landing/LockJwtAnimation.js": {
-    "mtime": 1790091439.595007,
-    "seen": 1790091491.146939,
-    "ast_hash": "5222fa1b7f5d9a7bc4a373c5b1443b0f",
-    "semantic_hash": ""
-  },
-  "src/components/landing/PieChartAnimation.js": {
-    "mtime": 1790091587.8380086,
-    "seen": 1790091631.527008,
-    "ast_hash": "251859ff40a08cf4ef41394ff72de6f4",
     "semantic_hash": ""
   },
   "src/assets/index.js": {
@@ -401,148 +179,202 @@
     "ast_hash": "0ec649349e39e29f4d8266e7abccc513",
     "semantic_hash": ""
   },
-  "src/components/landing/VeinTextFlow.js": {
-    "mtime": 1790094075.9883227,
-    "seen": 1790141724.1971173,
-    "ast_hash": "0819ea9d4b33365196b331996728efc1",
-    "semantic_hash": ""
-  },
-  "src/components/landing/external_data.js": {
-    "mtime": 1790140461.722391,
-    "seen": 1790141724.197123,
-    "ast_hash": "5085803563878529a1e3bc811f1fae57",
-    "semantic_hash": ""
-  },
-  "public/assets/workflow_grid_hover.svg": {
-    "mtime": 1790094339.3708737,
-    "seen": 1790141724.197216,
-    "ast_hash": "b6981f42f012a08f17f9e8a4f81b04af",
-    "semantic_hash": ""
-  },
   "src/assets/navBgIcons.js": {
-    "mtime": 1790151738.1188896,
-    "seen": 1790151884.7438748,
-    "ast_hash": "127d8d9c82dd5217fc85aa6396e8e6cc",
+    "mtime": 1790153048.7136738,
+    "seen": 1790177575.8629682,
+    "ast_hash": "f82469cca82bd6611c914b8d9ab8fede",
     "semantic_hash": ""
   },
-  "Asserts_external/design_navbar_bg.svg": {
-    "mtime": 1790151546.6338923,
-    "seen": 1790151884.7439492,
-    "ast_hash": "ed10b227274ff89327b350b5e0a43429",
+  "public/assets/download/VeinTextFlow.js": {
+    "mtime": 1790179001.3451984,
+    "seen": 1790179019.0115008,
+    "ast_hash": "8a982d473145c750380de269cf139534",
     "semantic_hash": ""
   },
-  "Asserts_external/feature_navbar_bg.svg": {
-    "mtime": 1790151546.6355407,
-    "seen": 1790151884.743952,
-    "ast_hash": "0f4a4d585605080d72cf13b223402046",
+  "public/assets/feature/BellNotificationAnimation.js": {
+    "mtime": 1790091376.5539849,
+    "seen": 1790177575.8629453,
+    "ast_hash": "0a501cbef5a6ff3e72461ca60b460827",
     "semantic_hash": ""
   },
-  "Asserts_external/q&a_navbar_bg.svg": {
-    "mtime": 1790151546.6355407,
-    "seen": 1790151884.7439682,
-    "ast_hash": "7630a7c2bd8afdc44799c3613da30100",
+  "public/assets/feature/LockJwtAnimation.js": {
+    "mtime": 1790091439.595007,
+    "seen": 1790177575.8629467,
+    "ast_hash": "5222fa1b7f5d9a7bc4a373c5b1443b0f",
     "semantic_hash": ""
   },
-  "Asserts_external/tools_navbar_bg.svg": {
-    "mtime": 1790151546.6389205,
-    "seen": 1790151884.7439713,
-    "ast_hash": "35d93a822af6e629b8964b2b386389d6",
+  "public/assets/feature/PieChartAnimation.js": {
+    "mtime": 1790091587.8380086,
+    "seen": 1790177575.8629477,
+    "ast_hash": "251859ff40a08cf4ef41394ff72de6f4",
     "semantic_hash": ""
   },
-  "public/assets/design_navbar_bg.svg": {
-    "mtime": 1790151546.6350331,
-    "seen": 1790151884.7439992,
-    "ast_hash": "ed10b227274ff89327b350b5e0a43429",
+  "public/assets/feature/QrToTickAnimation.js": {
+    "mtime": 1790090729.9020286,
+    "seen": 1790177575.862949,
+    "ast_hash": "2ccd430bb58517023db77bda5c62e845",
     "semantic_hash": ""
   },
-  "public/assets/feature_navbar_bg.svg": {
-    "mtime": 1790151546.6355407,
-    "seen": 1790151884.744001,
-    "ast_hash": "0f4a4d585605080d72cf13b223402046",
+  "public/assets/feature/WifiOfflineAnimation.js": {
+    "mtime": 1790091428.6345985,
+    "seen": 1790177575.86295,
+    "ast_hash": "1efd128f60af05e6954e3aafb86f30dc",
     "semantic_hash": ""
   },
-  "public/assets/q&a_navbar_bg.svg": {
-    "mtime": 1790151546.6355407,
-    "seen": 1790151884.7440128,
-    "ast_hash": "7630a7c2bd8afdc44799c3613da30100",
+  "src/app/design/page.js": {
+    "mtime": 1790175151.5357347,
+    "seen": 1790177575.8629537,
+    "ast_hash": "c69ef7b5a989416a43021fbd62db19b6",
     "semantic_hash": ""
   },
-  "public/assets/tools_navbar_bg.svg": {
-    "mtime": 1790151546.6389205,
-    "seen": 1790151884.7440171,
-    "ast_hash": "35d93a822af6e629b8964b2b386389d6",
+  "src/app/features/page.js": {
+    "mtime": 1790174261.0603428,
+    "seen": 1790177575.8629549,
+    "ast_hash": "d3d9bbb617213b186e2d44d756f36ef7",
     "semantic_hash": ""
   },
-  "Asserts_external/Features_stack.png": {
-    "mtime": 1790151533.5352745,
-    "seen": 1790151884.7439225,
-    "ast_hash": "c46c0b8ce26c54c7f0237bd29f13e6e2",
+  "src/app/privacy-terms/page.js": {
+    "mtime": 1790175985.2419374,
+    "seen": 1790177575.86296,
+    "ast_hash": "c11136284f7036c16b551ce0dfd8b333",
     "semantic_hash": ""
   },
-  "Asserts_external/Footer.png": {
-    "mtime": 1790151533.5352745,
-    "seen": 1790151884.7439244,
-    "ast_hash": "2f893d1b183d0d2b04485757e5f82faa",
+  "src/app/qna/page.js": {
+    "mtime": 1790174285.7924144,
+    "seen": 1790177575.8629618,
+    "ast_hash": "21d28ad4e93ea4183208edb9ca27e4ae",
     "semantic_hash": ""
   },
-  "Asserts_external/Hero.png": {
-    "mtime": 1790151533.541379,
-    "seen": 1790151884.743933,
-    "ast_hash": "91b9a5a64fb8f43108570138baa9ffc1",
+  "src/app/tools/page.js": {
+    "mtime": 1790176917.2917042,
+    "seen": 1790177575.8629627,
+    "ast_hash": "ab8cd04bba15c3e5fab07ee3ffebfe46",
     "semantic_hash": ""
   },
-  "Asserts_external/android_navbar_bg.svg": {
-    "mtime": 1790151546.6389205,
-    "seen": 1790151884.743946,
-    "ast_hash": "ba8b7e1803640ad596d621dada0ab312",
+  "src/assets/external_data.js": {
+    "mtime": 1790176101.210753,
+    "seen": 1790177575.8629637,
+    "ast_hash": "890e7427eeae8ebe824b093505a230ba",
     "semantic_hash": ""
   },
-  "Asserts_external/download.png": {
-    "mtime": 1790151533.549122,
-    "seen": 1790151884.7439504,
-    "ast_hash": "573c747ea80c349a4bf107a0c0459cc4",
+  "src/components/common/PageBanner.js": {
+    "mtime": 1790174248.0620127,
+    "seen": 1790177575.8629708,
+    "ast_hash": "996a518221a52828ffd19d4a2a04fe51",
     "semantic_hash": ""
   },
-  "Asserts_external/ios_navbar_bg.svg": {
-    "mtime": 1790151546.6389205,
-    "seen": 1790151884.7439582,
-    "ast_hash": "58663d38a52d9d750cd9e8c82ee532be",
+  "public/assets/download/text_path_line.svg": {
+    "mtime": 1790085078.6236336,
+    "seen": 1790177575.862998,
+    "ast_hash": "5b2c740310afdf33559f92cc19b4340b",
     "semantic_hash": ""
   },
-  "Asserts_external/navbar.png": {
-    "mtime": 1790151533.5838947,
-    "seen": 1790151884.7439616,
-    "ast_hash": "b1e0512d22c5312eb1d1466aafe30d10",
+  "public/assets/github.svg": {
+    "mtime": 1790085078.5768192,
+    "seen": 1790177575.8630004,
+    "ast_hash": "04ba8ab8141f2f7724971f1abe82e6e7",
     "semantic_hash": ""
   },
-  "Asserts_external/navbar_Blogs_open_.png": {
-    "mtime": 1790151533.5884142,
-    "seen": 1790151884.743965,
-    "ast_hash": "430b62a3457cec6d2e4bffdfb1d23dfd",
+  "public/assets/hero/Bg_hover_layout.svg": {
+    "mtime": 1790085078.5725646,
+    "seen": 1790177575.8630016,
+    "ast_hash": "bc59e542c017e6398d2a961f5d80d0e4",
     "semantic_hash": ""
   },
-  "Asserts_external/navbar_downloads_open.png": {
-    "mtime": 1790151533.5884142,
-    "seen": 1790151884.7439666,
-    "ast_hash": "72b36abc8f216176213ac2290bd52eb2",
+  "public/assets/hero/hero_mock_iphone_left.svg": {
+    "mtime": 1790085078.6108966,
+    "seen": 1790177575.8630025,
+    "ast_hash": "4c5dfda09a6ccacd4bfe86b2d19aee48",
     "semantic_hash": ""
   },
-  "public/assets/android_navbar_bg.svg": {
+  "public/assets/hero/hero_mock_iphone_middle.svg": {
+    "mtime": 1790085078.6181262,
+    "seen": 1790177575.8630037,
+    "ast_hash": "bceee0b1c4bbbe9875e630e04f627526",
+    "semantic_hash": ""
+  },
+  "public/assets/hero/hero_mock_iphone_right.svg": {
+    "mtime": 1790085078.6226282,
+    "seen": 1790177575.8630047,
+    "ast_hash": "e998ef59aa42eebbd56b6e4b27471d1b",
+    "semantic_hash": ""
+  },
+  "public/assets/linkedin.svg": {
+    "mtime": 1790085078.583783,
+    "seen": 1790177575.8630056,
+    "ast_hash": "bea603bcf1b835d9e381326bc5b6b788",
+    "semantic_hash": ""
+  },
+  "public/assets/navbar/android_navbar_bg.svg": {
     "mtime": 1790151472.7765012,
-    "seen": 1790151884.743994,
+    "seen": 1790177575.8630085,
     "ast_hash": "ba8b7e1803640ad596d621dada0ab312",
     "semantic_hash": ""
   },
-  "public/assets/ios_navbar_bg.svg": {
+  "public/assets/navbar/design_navbar_bg.svg": {
+    "mtime": 1790151546.6350331,
+    "seen": 1790177575.8630095,
+    "ast_hash": "ed10b227274ff89327b350b5e0a43429",
+    "semantic_hash": ""
+  },
+  "public/assets/navbar/feature_navbar_bg.svg": {
+    "mtime": 1790151546.6355407,
+    "seen": 1790177575.8630106,
+    "ast_hash": "0f4a4d585605080d72cf13b223402046",
+    "semantic_hash": ""
+  },
+  "public/assets/navbar/ios_navbar_bg.svg": {
     "mtime": 1790151481.4430926,
-    "seen": 1790151884.7440095,
+    "seen": 1790177575.8630116,
     "ast_hash": "58663d38a52d9d750cd9e8c82ee532be",
     "semantic_hash": ""
   },
-  "public/assets/qna_navbar_bg.svg": {
+  "public/assets/navbar/qna_navbar_bg.svg": {
     "mtime": 1790151514.4516034,
-    "seen": 1790151884.744014,
+    "seen": 1790177575.8630123,
     "ast_hash": "7630a7c2bd8afdc44799c3613da30100",
+    "semantic_hash": ""
+  },
+  "public/assets/navbar/tools_navbar_bg.svg": {
+    "mtime": 1790151546.6389205,
+    "seen": 1790177575.8630133,
+    "ast_hash": "35d93a822af6e629b8964b2b386389d6",
+    "semantic_hash": ""
+  },
+  "public/assets/workflow/path1.svg": {
+    "mtime": 1790085078.5823658,
+    "seen": 1790177575.8630145,
+    "ast_hash": "08bad59f8c51e386fab2663191d54ba4",
+    "semantic_hash": ""
+  },
+  "public/assets/workflow/path2.svg": {
+    "mtime": 1790085078.5823658,
+    "seen": 1790177575.8630154,
+    "ast_hash": "3369c98370a20555bec861258127fd86",
+    "semantic_hash": ""
+  },
+  "public/assets/workflow/scan.svg": {
+    "mtime": 1790085078.5758207,
+    "seen": 1790177575.8630164,
+    "ast_hash": "69778fe9a36f8e284fab5d5e426a99d3",
+    "semantic_hash": ""
+  },
+  "public/assets/workflow/sheld.svg": {
+    "mtime": 1790085078.574819,
+    "seen": 1790177575.8630173,
+    "ast_hash": "673fa7ed9e59aa26d7c0723e24f82356",
+    "semantic_hash": ""
+  },
+  "public/assets/workflow/visuval.svg": {
+    "mtime": 1790085078.5758207,
+    "seen": 1790177575.8630183,
+    "ast_hash": "b27edcc7ceed317d87fc25efa8a9072f",
+    "semantic_hash": ""
+  },
+  "public/assets/workflow/workflow_grid_hover.svg": {
+    "mtime": 1790094339.3708737,
+    "seen": 1790177575.8630192,
+    "ast_hash": "b6981f42f012a08f17f9e8a4f81b04af",
     "semantic_hash": ""
   }
 }

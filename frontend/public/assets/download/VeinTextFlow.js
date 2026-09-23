@@ -3,34 +3,35 @@
 import { useEffect, useRef, useId } from "react";
 import gsap from "gsap";
 
-const REPEAT_COUNT = 6;
-const CURRENCY_ITEMS = ["$3,400", "₹23,000", "€1,250", "$9,820", "£4,500", "¥50,000", "CHF 1,600", "$78,500"];
-const CIPHER_ITEMS   = ["#$^#$^", "*#&@!$%", "#^&&@#", "*$#@%!", "#%^&*@", "$#^&&@!", "#$%@*!&#^", "*#&^@$!"];
+// Streamlined text data without arrays or runtime .join() allocations
+const CURRENCY_TEXT =
+  "$3,400 ✦ ₹23,000 ✦ €1,250 ✦ $9,820 ✦ £4,500 ✦ ¥50,000 ✦ CHF 1,600 ✦ $78,500 ✦ ";
 
-const SEPARATOR = "   ✦   ";
-const PLAIN_BLOCK  = CURRENCY_ITEMS.join(SEPARATOR) + SEPARATOR;
-const CIPHER_BLOCK = CIPHER_ITEMS.join(SEPARATOR) + SEPARATOR;
+const CIPHER_TEXT =
+  "#$^#$^ ✦ #&@!$% ✦ #^&&@# ✦ $#@%! ✦ #%^&@ ✦ $#^&&@! ✦ #$%@!&#^ ✦ *#&^@$! ✦ ";
 
-const PLAIN_TEXT  = PLAIN_BLOCK.repeat(REPEAT_COUNT);
-const CIPHER_TEXT = CIPHER_BLOCK.repeat(REPEAT_COUNT);
+// Calibrated cycle distance matching 1 unit of text (~750 user units)
+const CYCLE_LENGTH = 750;
+
+// Path arc length where the middle separator is located (~1640 user units)
+const SEPARATOR_OFFSET = 1640;
+
+const PLAIN_FLOW = CURRENCY_TEXT.repeat(4);
+const CIPHER_FLOW = CIPHER_TEXT.repeat(3);
 
 export default function VeinTextFlow() {
-  const plainPathRef = useRef(null);
-  const cipherPathRef = useRef(null);
-  const plainTextRef = useRef(null);
-  const cipherTextRef = useRef(null);
-
-  // Refs for the fat lock repeated animation
+  // Dedicated refs for the physical lock animation timeline
   const shackleRef = useRef(null);
   const lockBodyRef = useRef(null);
   const sparkRef = useRef(null);
 
+  // Colon-free unique IDs for safe SSR SVG references
   const uid = useId().replace(/:/g, "");
   const pathId = `vein-${uid}`;
   const leftClipId = `left-clip-${uid}`;
   const rightClipId = `right-clip-${uid}`;
 
-  // Corner-to-corner path with a large, spacious 360-degree loop on the left side
+  // Corner-to-corner path with a spacious 360-degree loop on the left side
   const veinPath =
     "M 0,0 " +
     "C 70,30 140,150 210,190 " +
@@ -46,121 +47,97 @@ export default function VeinTextFlow() {
     "C 1390,330 1420,350 1440,360";
 
   useEffect(() => {
-    if (!plainPathRef.current || !cipherPathRef.current || !plainTextRef.current) return;
-
-    let plainTotalLength = 0;
-    let cipherTotalLength = 0;
-    try {
-      plainTotalLength = plainTextRef.current.getComputedTextLength();
-    } catch {}
-    try {
-      if (cipherTextRef.current) {
-        cipherTotalLength = cipherTextRef.current.getComputedTextLength();
-      }
-    } catch {}
-
-    const cycleLengthPlain = plainTotalLength > 0 ? plainTotalLength / REPEAT_COUNT : 950;
-    const cycleLengthCipher = cipherTotalLength > 0 ? cipherTotalLength / REPEAT_COUNT : 950;
-
+    // GSAP context cleanly scoped for discrete, physical transform animation of the lock
     const ctx = gsap.context(() => {
-      // 1. LEFT SIDE (Faster flow)
-      gsap.set(plainPathRef.current, {
-        attr: { startOffset: `${-cycleLengthPlain}px` },
+      if (!shackleRef.current || !lockBodyRef.current || !sparkRef.current)
+        return;
+
+      // Initial state: unlocked and ready
+      gsap.set(shackleRef.current, {
+        y: -12,
+        x: 2,
+        rotation: -16,
+        transformOrigin: "48px 34px",
+        force3D: true,
       });
-      gsap.to(plainPathRef.current, {
-        attr: { startOffset: "0px" },
-        duration: 14,
-        ease: "none",
-        repeat: -1,
+      gsap.set(lockBodyRef.current, { y: 0, force3D: true });
+      gsap.set(sparkRef.current, {
+        opacity: 0,
+        scale: 0.2,
+        transformOrigin: "70px 76px",
+        force3D: true,
       });
 
-      // 2. RIGHT SIDE (Slower flow)
-      gsap.set(cipherPathRef.current, {
-        attr: { startOffset: `${-cycleLengthCipher}px` },
-      });
-      gsap.to(cipherPathRef.current, {
-        attr: { startOffset: "0px" },
-        duration: 32,
-        ease: "none",
-        repeat: -1,
-      });
-
-      // 3. FAT LOCK REPEATING ANIMATION
-      if (shackleRef.current && lockBodyRef.current && sparkRef.current) {
-        gsap.set(shackleRef.current, {
+      const lockTl = gsap.timeline({ repeat: -1, repeatDelay: 10 });
+      lockTl
+        // 1. Stays open
+        .to({}, { duration: 0.8 })
+        // 2. Snaps shut
+        .to(shackleRef.current, {
+          y: 0,
+          x: 0,
+          rotation: 0,
+          duration: 0.16,
+          ease: "power3.in",
+        })
+        // 3. Physical body thump / bounce
+        .to(
+          lockBodyRef.current,
+          { y: 3, duration: 0.05, ease: "power1.in" },
+          "-=0.03",
+        )
+        .to(lockBodyRef.current, { y: 0, duration: 0.08, ease: "power1.out" })
+        // 4. Security spark burst on keyhole
+        .fromTo(
+          sparkRef.current,
+          { opacity: 1, scale: 0.2 },
+          { opacity: 1, scale: 1.3, duration: 0.12, ease: "power2.out" },
+          "-=0.05",
+        )
+        .to(sparkRef.current, {
+          opacity: 0,
+          scale: 1.8,
+          duration: 0.2,
+          ease: "power1.in",
+        })
+        // 5. Stays locked securely
+        .to({}, { duration: 1.8 })
+        // 6. Opens again with organic mechanical recoil
+        .to(shackleRef.current, {
           y: -12,
           x: 2,
           rotation: -16,
-          transformOrigin: "48px 34px",
+          duration: 0.3,
+          ease: "back.out(1.6)",
         });
-        gsap.set(lockBodyRef.current, { y: 0 });
-        gsap.set(sparkRef.current, {
-          opacity: 0,
-          scale: 0.2,
-          transformOrigin: "70px 76px",
-        });
-
-        const lockTl = gsap.timeline({ repeat: -1, repeatDelay: 10 });
-        lockTl
-          // Hold open briefly
-          .to({}, { duration: 0.8 })
-          // Snap shut
-          .to(shackleRef.current, {
-            y: 0,
-            x: 0,
-            rotation: 0,
-            duration: 0.16,
-            ease: "power3.in",
-          })
-          // Lock body subtle physical thump
-          .to(lockBodyRef.current, { y: 3, duration: 0.05, ease: "power1.in" }, "-=0.03")
-          .to(lockBodyRef.current, { y: 0, duration: 0.08, ease: "power1.out" })
-          // Spark flash on keyhole
-          .fromTo(
-            sparkRef.current,
-            { opacity: 1, scale: 0.2 },
-            { opacity: 1, scale: 1.3, duration: 0.12, ease: "power2.out" },
-            "-=0.05"
-          )
-          .to(sparkRef.current, { opacity: 0, scale: 1.8, duration: 0.2, ease: "power1.in" })
-          // Stay securely locked
-          .to({}, { duration: 1.8 })
-          // Re-open
-          .to(shackleRef.current, {
-            y: -12,
-            x: 2,
-            rotation: -16,
-            duration: 0.3,
-            ease: "back.out(1.6)",
-          });
-      }
     });
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <div className="w-full relative select-none overflow-visible">
+    <div className="w-full relative select-none overflow-visible pointer-events-none touch-pan-y">
       <svg
         viewBox="-30 -30 1500 420"
         className="w-full h-auto overflow-visible pointer-events-none"
         style={{ display: "block" }}
       >
         <defs>
+          {/* Static geometric path: rendered once, never modified or recalculated */}
           <path id={pathId} d={veinPath} fill="none" />
 
-          {/* Left clip: covers up to the separator entrance */}
+          {/* Left clip: covers entrance up to separator */}
           <clipPath id={leftClipId}>
             <rect x="-100" y="-100" width="785" height="600" />
           </clipPath>
 
-          {/* Right clip: covers from separator exit onwards */}
+          {/* Right clip: covers separator exit through the right edge */}
           <clipPath id={rightClipId}>
             <rect x="755" y="-100" width="850" height="600" />
           </clipPath>
         </defs>
 
-        {/* RIGHT SIDE VEIN: Solid black background path with white text */}
+        {/* RIGHT SIDE VEIN: Solid black background path */}
         <path
           d={veinPath}
           fill="none"
@@ -171,41 +148,66 @@ export default function VeinTextFlow() {
           clipPath={`url(#${rightClipId})`}
         />
 
-        {/* Left-side Plaintext flow (Transparent background with gray text) */}
-        <g clipPath={`url(#${leftClipId})`}>
+        {/* 
+          LEFT-SIDE CURRENCY CONVEYOR FLOW:
+          Isolated GPU layer using translate3d. Coordinates flow along the static curve
+          via native browser x-positioning without 60fps JavaScript execution loops.
+        */}
+        <g
+          clipPath={`url(#${leftClipId})`}
+          style={{ willChange: "transform", transform: "translate3d(0, 0, 0)" }}
+        >
           <text
-            ref={plainTextRef}
+            x={`-${CYCLE_LENGTH}`}
             className="font-pixel font-bold"
             fill="#555555"
             fontSize="14.5"
             letterSpacing="0.05em"
             dominantBaseline="central"
           >
-            <textPath ref={plainPathRef} href={`#${pathId}`}>
-              {PLAIN_TEXT}
-            </textPath>
+            <textPath href={`#${pathId}`}>{PLAIN_FLOW}</textPath>
+            <animate
+              attributeName="x"
+              from={`-${CYCLE_LENGTH}`}
+              to="0"
+              dur="14s"
+              repeatCount="indefinite"
+            />
           </text>
         </g>
 
-        {/* Right-side Encrypted flow (Black background with white text) */}
-        <g clipPath={`url(#${rightClipId})`}>
+        {/* 
+          RIGHT-SIDE ENCRYPTED CONVEYOR FLOW:
+          White cipher text on top of the black vein.
+          Starts at the middle separator (SEPARATOR_OFFSET ~1640px) and flows
+          outwards to the right at a faster speed (8s) than the left side (14s).
+        */}
+        <g
+          clipPath={`url(#${rightClipId})`}
+          style={{ willChange: "transform", transform: "translate3d(0, 0, 0)" }}
+        >
           <text
-            ref={cipherTextRef}
+            x={`${SEPARATOR_OFFSET - CYCLE_LENGTH}`}
             className="font-pixel font-bold"
             fill="#FFFFFF"
             fontSize="14.5"
             letterSpacing="0.05em"
             dominantBaseline="central"
           >
-            <textPath ref={cipherPathRef} href={`#${pathId}`}>
-              {CIPHER_TEXT}
-            </textPath>
+            <textPath href={`#${pathId}`}>{CIPHER_FLOW}</textPath>
+            <animate
+              attributeName="x"
+              from={`${SEPARATOR_OFFSET - CYCLE_LENGTH}`}
+              to={`${SEPARATOR_OFFSET}`}
+              dur="8s"
+              repeatCount="indefinite"
+            />
           </text>
         </g>
 
         {/* MIDDLE SEPARATOR: Rounded Red Rectangle with Animated White Fat Lock */}
         <g>
-          {/* Background color (#FFFFEB) padding gap cutting the vein */}
+          {/* Background color (#FFFFEB) cutout gap cleanly slicing the vein */}
           <rect
             x="675"
             y="122"
@@ -228,9 +230,9 @@ export default function VeinTextFlow() {
             style={{ filter: "drop-shadow(0 4px 10px rgba(179,0,3,0.35))" }}
           />
 
-          {/* Fat Lock SVG (White with repeating snap animation) */}
+          {/* Chunky White Pixel Lock */}
           <g transform="translate(720, 180) scale(0.52) translate(-70, -65)">
-            {/* Shackle (Snaps from unlocked to locked repeatedly) */}
+            {/* Shackle: snaps between unlocked and locked positions */}
             <g ref={shackleRef} fill="white">
               {/* Top Arch */}
               <rect x="42" y="22" width="56" height="12" />
@@ -243,9 +245,9 @@ export default function VeinTextFlow() {
               <rect x="86" y="34" width="12" height="24" />
             </g>
 
-            {/* Chunky Fat Lock Body */}
+            {/* Chunky Lock Body */}
             <g ref={lockBodyRef}>
-              {/* Main Fat White Body */}
+              {/* Main White Body */}
               <rect x="30" y="58" width="80" height="52" fill="white" />
               <rect x="34" y="54" width="72" height="4" fill="white" />
               <rect x="34" y="110" width="72" height="4" fill="white" />
@@ -254,12 +256,12 @@ export default function VeinTextFlow() {
               <rect x="42" y="54" width="12" height="6" fill="#CC0000" />
               <rect x="86" y="54" width="12" height="6" fill="#CC0000" />
 
-              {/* Center Pixel Keyhole (Contrasting Red cutout in white body) */}
+              {/* Center Pixel Keyhole */}
               <rect x="66" y="74" width="8" height="8" fill="#CC0000" />
               <rect x="68" y="82" width="4" height="12" fill="#CC0000" />
               <rect x="66" y="92" width="8" height="4" fill="#CC0000" />
 
-              {/* Security Spark on Lock Keyhole */}
+              {/* Security Spark on Keyhole */}
               <g ref={sparkRef} fill="white">
                 <rect x="68" y="66" width="4" height="4" />
                 <rect x="76" y="76" width="4" height="4" />
