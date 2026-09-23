@@ -64,25 +64,17 @@ function ScrollDownButton({ onClick }) {
       aria-label="Scroll down to workflow"
       className="group w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#111111] hover:bg-black flex items-center justify-center cursor-pointer shadow-lg shadow-black/20 hover:shadow-2xl hover:shadow-black/35 ring-1 ring-black/10 hover:ring-white/20 overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95"
     >
-      <div ref={arrowRef} className="flex items-center justify-center pointer-events-none">
-        <svg
-          width="20"
-          height="12"
-          viewBox="0 0 20 12"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-4 h-2.5 sm:w-5 sm:h-3 overflow-visible"
-          aria-hidden="true"
-        >
-          <path
-            d="M0 1.78125L1.75 0L10.2 8.28137L10.2 11.7812Z"
-            fill="white"
-          />
-          <path
-            d="M20 1.78125L18.25 0L9.8 8.28137L9.8 11.7812Z"
-            fill="white"
-          />
-        </svg>
+      <div
+        ref={arrowRef}
+        className="flex items-center justify-center pointer-events-none"
+      >
+        <Image
+          src="/assets/arrow_back.svg"
+          alt="Scroll down"
+          width={20}
+          height={12}
+          className="w-4 h-2.5 sm:w-5 sm:h-3 object-contain"
+        />
       </div>
     </button>
   );
@@ -104,8 +96,8 @@ const SVG_DIM_OPACITY = 0.07;
 const PARALLAX_CONFIG = {
   desktop: {
     middle: -380, // Fastest
-    left: -220,   // Medium
-    right: -110,  // Slowest
+    left: -220, // Medium
+    right: -110, // Slowest
   },
   mobile: {
     middle: -190,
@@ -253,7 +245,7 @@ export default function Hero() {
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative w-full bg-white pt-8 sm:pt-12 md:pt-14 pb-16 sm:pb-24 lg:pb-28 min-h-[110vh] sm:min-h-[118vh] overflow-x-clip"
+      className="relative w-full bg-white pt-8 sm:pt-12 md:pt-14 pb-28 sm:pb-40 md:pb-48 lg:pb-60 min-h-[120vh] sm:min-h-[145vh] overflow-x-clip"
     >
       {/* 
         Hover Spotlight Reveal Background:
@@ -294,8 +286,8 @@ export default function Hero() {
       {/* Title */}
       <div className="relative z-10 w-full flex justify-center px-4">
         <h1 className="font-pixel text-4xl sm:text-6xl md:text-7xl lg:text-[88px] xl:text-[96px] tracking-[0.14em] sm:tracking-[0.2em] text-black text-center select-none uppercase">
-          PAY<span className="text-[#E53E3E]">.</span>TRACK
-          <span className="text-[#E53E3E]">.</span>GROW
+          PAY<span className="text-[#ff0000] font-extrabold">.</span>TRACK
+          <span className="text-[#ff0000] font-extrabold">.</span>GROW
         </h1>
       </div>
 
