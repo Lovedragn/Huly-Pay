@@ -18,49 +18,46 @@ function NavLink({
   onClick,
 }) {
   const lineRef = useRef(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // The underline should be displayed when either the item is hovered or its dropdown is active
+  const isHighlighted = isHovered || isActive;
 
   useEffect(() => {
     if (!lineRef.current) return;
-    if (isActive) {
-      gsap.killTweensOf(lineRef.current);
-      gsap.to(lineRef.current, {
-        xPercent: 0,
-        x: 0,
-        duration: 0.32,
-        ease: "power2.out",
-      });
+    gsap.killTweensOf(lineRef.current);
+
+    if (isHighlighted) {
+      // Animate in from the left
+      gsap.fromTo(
+        lineRef.current,
+        { xPercent: -100, x: 0 },
+        { xPercent: 0, x: 0, duration: 0.28, ease: "power2.out" }
+      );
     } else {
-      gsap.killTweensOf(lineRef.current);
-      gsap.set(lineRef.current, { xPercent: -100, x: 0 });
+      // Slide out smoothly to the right, then reset position to left
+      gsap.to(lineRef.current, {
+        xPercent: 100,
+        x: 0,
+        duration: 0.2,
+        ease: "power2.in",
+        onComplete: () => {
+          if (lineRef.current) {
+            gsap.set(lineRef.current, { xPercent: -100, x: 0 });
+          }
+        },
+      });
     }
-  }, [isActive]);
+  }, [isHighlighted]);
 
   const handleMouseEnter = (e) => {
+    setIsHovered(true);
     onMouseEnter?.(e);
-    if (!lineRef.current || isActive) return;
-    gsap.killTweensOf(lineRef.current);
-    gsap.fromTo(
-      lineRef.current,
-      { xPercent: -100, x: 0 },
-      { xPercent: 0, x: 0, duration: 0.32, ease: "power2.out" },
-    );
   };
 
   const handleMouseLeave = (e) => {
+    setIsHovered(false);
     onMouseLeave?.(e);
-    if (!lineRef.current || isActive) return;
-    gsap.killTweensOf(lineRef.current);
-    gsap.to(lineRef.current, {
-      xPercent: 100,
-      x: 0,
-      duration: 0.18,
-      ease: "power2.in",
-      onComplete: () => {
-        if (lineRef.current && !isActive) {
-          gsap.set(lineRef.current, { xPercent: -100, x: 0 });
-        }
-      },
-    });
   };
 
   const isExternal = href.startsWith("http");
@@ -497,6 +494,18 @@ export default function Navbar() {
             </div>
           </div>
         </div>
+
+        {/* 50% Dimmed backdrop below the navbar when hovering Blogs or Download */}
+        <div
+          onClick={closeDropdownImmediately}
+          onMouseEnter={closeDropdownImmediately}
+          className={`hidden md:block fixed inset-x-0 top-20 md:top-[80px] bottom-0 bg-black/50 backdrop-blur-[1px] -z-10 transition-opacity duration-300 ease-out ${
+            activeDropdown
+              ? "opacity-100 pointer-events-auto"
+              : "opacity-0 pointer-events-none"
+          }`}
+          aria-hidden="true"
+        />
 
         {/* Mobile Drawer Menu */}
         {mobileMenuOpen && (
