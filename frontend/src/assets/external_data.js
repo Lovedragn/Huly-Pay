@@ -25,8 +25,7 @@ export const EXTERNAL_LINKS = {
     blogs: "#blogs",
     download: "#download",
     dashboard: "/dashboard",
-    privacy: "/privacy",
-    terms: "/terms",
+    privacyTerms: "/privacy-terms",
   },
 
   // Blogs dropdown menu items matching navbar_Blogs_open_.png
