@@ -41,16 +41,10 @@ export default function Footer() {
               Portfolio
             </a>
             <Link
-              href={EXTERNAL_LINKS.nav.privacy}
-              className="hover:text-neutral-400 transition-colors select-none"
+              href={EXTERNAL_LINKS.nav.privacyTerms}
+              className="hover:text-neutral-400 transition-colors select-none whitespace-nowrap"
             >
-              Privacy
-            </Link>
-            <Link
-              href={EXTERNAL_LINKS.nav.terms}
-              className="hover:text-neutral-400 transition-colors select-none"
-            >
-              Terms
+              Privacy &amp; Terms
             </Link>
           </div>
 
