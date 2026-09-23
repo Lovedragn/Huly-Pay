@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { EXTERNAL_LINKS } from "./external_data";
 
 export default function Footer() {
   return (
@@ -20,10 +21,10 @@ export default function Footer() {
 
         {/* Bottom Section: Links & Social Icons */}
         <div className="w-full mt-10 sm:mt-14 lg:mt-[94px] flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-4 border-t border-neutral-900/60 sm:border-t-0 pt-6 sm:pt-0">
-          {/* Left: @HulyPay, Privacy, Terms */}
-          <div className="flex items-center gap-6 sm:gap-10 md:gap-14 lg:gap-[120px] font-pixel text-[14px] text-white">
+          {/* Left: @HulyPay, Portfolio, Privacy, Terms */}
+          <div className="flex items-center gap-6 sm:gap-8 md:gap-10 lg:gap-14 font-pixel text-[14px] text-white">
             <Link
-              href="https://twitter.com/HulyPay"
+              href={EXTERNAL_LINKS.social.twitter}
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-neutral-400 transition-colors select-none"
@@ -31,28 +32,36 @@ export default function Footer() {
               <span className="text-[17px] inline-block align-baseline">@</span>
               HulyPay
             </Link>
+            <a
+              href={EXTERNAL_LINKS.social.personal_portfolio}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-neutral-400 transition-colors select-none"
+            >
+              Portfolio
+            </a>
             <Link
-              href="/privacy"
+              href={EXTERNAL_LINKS.nav.privacy}
               className="hover:text-neutral-400 transition-colors select-none"
             >
               Privacy
             </Link>
             <Link
-              href="/terms"
+              href={EXTERNAL_LINKS.nav.terms}
               className="hover:text-neutral-400 transition-colors select-none"
             >
               Terms
             </Link>
           </div>
 
-          {/* Right: GitHub, LinkedIn, External Link */}
+          {/* Right: GitHub, LinkedIn, External Link to Personal Portfolio */}
           <div className="flex items-center gap-5 sm:gap-7 lg:gap-[36px]">
             {/* GitHub */}
             <a
-              href="https://github.com/Lovedragn/Huly-Pay"
+              href={EXTERNAL_LINKS.social.github}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="GitHub Repository"
+              aria-label="GitHub Profile"
               className="text-white hover:text-neutral-400 hover:scale-110 transition-all select-none"
             >
               <svg
@@ -70,7 +79,7 @@ export default function Footer() {
 
             {/* LinkedIn */}
             <a
-              href="https://linkedin.com"
+              href={EXTERNAL_LINKS.social.linkedin}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn Profile"
@@ -85,12 +94,12 @@ export default function Footer() {
               </svg>
             </a>
 
-            {/* Open External Link */}
+            {/* Open Personal Portfolio Link */}
             <a
-              href="/dashboard"
+              href={EXTERNAL_LINKS.social.personal_portfolio}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Open App"
+              aria-label="Personal Portfolio"
               className="text-white hover:text-neutral-400 hover:scale-110 transition-all select-none"
             >
               <svg
