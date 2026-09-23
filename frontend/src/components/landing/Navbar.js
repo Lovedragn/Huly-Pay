@@ -52,7 +52,7 @@ function NavLink({
     gsap.to(lineRef.current, {
       xPercent: 100,
       x: 0,
-      duration: 0.28,
+      duration: 0.18,
       ease: "power2.in",
       onComplete: () => {
         if (lineRef.current && !isActive) {
@@ -117,7 +117,7 @@ function DashboardButton() {
     gsap.to(lineRef.current, {
       xPercent: 100,
       x: 0,
-      duration: 0.28,
+      duration: 0.18,
       ease: "power2.in",
       onComplete: () => {
         if (lineRef.current) {
@@ -285,10 +285,10 @@ export default function Navbar() {
       {/* Navbar: fixed at top with smooth GSAP slide animation */}
       <header
         ref={headerRef}
-        className="w-full bg-white border-b border-[#D4D4D8] fixed top-0 left-0 z-50 will-change-transform"
+        className="w-full bg-white fixed top-0 left-0 z-50 will-change-transform"
       >
-        {/* Outer wrapper: flush edges with equal left and right sections */}
-        <div className="w-full px-0 h-20 md:h-[80px] flex items-center justify-between relative">
+        {/* Outer wrapper: flush edges with equal left and right sections - layered on top of dropdown */}
+        <div className="w-full px-0 h-20 md:h-[80px] flex items-center justify-between relative z-20 bg-white border-b border-[#D4D4D8]">
           {/* Left Section: Logo + Brand Name (equal length to right dashboard button) */}
           <div className="flex items-center h-full z-10 w-[180px] sm:w-[200px] md:w-[220px]">
             <Link
@@ -328,10 +328,10 @@ export default function Navbar() {
               onMouseLeave={handleDropdownLeave}
               icon={
                 <svg
-                  className={`w-2.5 h-1.5 text-black transition-transform duration-200 ${
+                  className={`w-2.5 h-1.5 text-black transition-transform duration-300 ease-in-out ${
                     activeDropdown === "blogs"
-                      ? "translate-y-0.5"
-                      : "group-hover:translate-y-0.5"
+                      ? "rotate-180"
+                      : "group-hover:rotate-180"
                   }`}
                   viewBox="0 0 10 6"
                   fill="none"
@@ -355,10 +355,10 @@ export default function Navbar() {
               onMouseLeave={handleDropdownLeave}
               icon={
                 <svg
-                  className={`w-2.5 h-1.5 text-black transition-transform duration-200 ${
+                  className={`w-2.5 h-1.5 text-black transition-transform duration-300 ease-in-out ${
                     activeDropdown === "download"
-                      ? "translate-y-0.5"
-                      : "group-hover:translate-y-0.5"
+                      ? "rotate-180"
+                      : "group-hover:rotate-180"
                   }`}
                   viewBox="0 0 10 6"
                   fill="none"
@@ -420,10 +420,10 @@ export default function Navbar() {
             if (activeDropdown) handleDropdownEnter(activeDropdown);
           }}
           onMouseLeave={handleDropdownLeave}
-          className={`hidden md:block absolute top-full left-0 w-full bg-white border-b border-[#D4D4D8] transition-all duration-250 ease-out origin-top ${
+          className={`hidden md:block absolute top-full left-0 w-full bg-white border-b border-[#D4D4D8] z-10 transition-all duration-300 ease-out origin-top ${
             activeDropdown
-              ? "opacity-100 translate-y-0 pointer-events-auto visible shadow-xl"
-              : "opacity-0 -translate-y-2 pointer-events-none invisible"
+              ? "opacity-100 translate-y-0 pointer-events-auto visible"
+              : "opacity-0 -translate-y-4 pointer-events-none invisible"
           }`}
         >
           <div className="w-full p-2">
@@ -433,7 +433,7 @@ export default function Navbar() {
                 activeDropdown === "blogs" ? "" : "hidden"
               }`}
             >
-              {EXTERNAL_LINKS.blogsDropdown.map((item) => {
+              {EXTERNAL_LINKS.blogsDropdown.map((item, index) => {
                 const isExt = item.href.startsWith("http");
                 return (
                   <Link
@@ -443,25 +443,19 @@ export default function Navbar() {
                     target={isExt ? "_blank" : undefined}
                     rel={isExt ? "noopener noreferrer" : undefined}
                     onClick={closeDropdownImmediately}
-                    className="group/card h-[250px] w-full bg-[#E6E6E6] hover:bg-[#DCDCDC] active:scale-[0.99] rounded-[6px] flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer select-none"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                    className="group/card animate-nav-card h-[250px] w-full bg-[#E6E6E6] hover:bg-[#DCDCDC] active:scale-[0.99] rounded-[6px] flex items-center justify-center gap-2 transition-colors duration-200 cursor-pointer select-none"
                   >
                     <span className="font-pixel text-[16px] text-black tracking-wider leading-none">
                       {item.label}
                     </span>
-                    <svg
-                      className="w-[10px] h-[10px] shrink-0 text-black transition-transform duration-200 group-hover/card:translate-x-0.5 group-hover/card:-translate-y-0.5 overflow-visible"
-                      viewBox="-1 -1 19 19"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M16 12V16H1V1H5M6 11L16 1M16 8V1H9"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
+                    <Image
+                      src="/assets/Open_Link.svg"
+                      alt="Open Link"
+                      width={14}
+                      height={14}
+                      className="scale-90 object-contain shrink-0 invert transition-transform duration-200 group-hover/card:translate-x-0.5 group-hover/card:-translate-y-0.5"
+                    />
                   </Link>
                 );
               })}
@@ -473,7 +467,7 @@ export default function Navbar() {
                 activeDropdown === "download" ? "" : "hidden"
               }`}
             >
-              {EXTERNAL_LINKS.downloadsDropdown.map((item) => {
+              {EXTERNAL_LINKS.downloadsDropdown.map((item, index) => {
                 const isExt = item.href.startsWith("http");
                 return (
                   <Link
@@ -483,25 +477,19 @@ export default function Navbar() {
                     target={isExt ? "_blank" : undefined}
                     rel={isExt ? "noopener noreferrer" : undefined}
                     onClick={closeDropdownImmediately}
-                    className="group/card h-[250px] w-full bg-[#E6E6E6] hover:bg-[#DCDCDC] active:scale-[0.99] rounded-[6px] flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer select-none"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                    className="group/card animate-nav-card h-[250px] w-full bg-[#E6E6E6] hover:bg-[#DCDCDC] active:scale-[0.99] rounded-[6px] flex items-center justify-center gap-2 transition-colors duration-200 cursor-pointer select-none"
                   >
                     <span className="font-pixel text-[16px] text-black tracking-wider leading-none">
                       {item.label}
                     </span>
-                    <svg
-                      className="w-[10px] h-[10px] shrink-0 text-black transition-transform duration-200 group-hover/card:translate-x-0.5 group-hover/card:-translate-y-0.5 overflow-visible"
-                      viewBox="-1 -1 19 19"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M16 12V16H1V1H5M6 11L16 1M16 8V1H9"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
+                    <Image
+                      src="/assets/Open_Link.svg"
+                      alt="Open Link"
+                      width={14}
+                      height={14}
+                      className=" scale-90 object-contain shrink-0 invert transition-transform duration-200 group-hover/card:translate-x-0.5 group-hover/card:-translate-y-0.5"
+                    />
                   </Link>
                 );
               })}
@@ -548,7 +536,7 @@ export default function Navbar() {
 
               {mobileBlogsExpanded && (
                 <div className="grid grid-cols-2 gap-2 mt-2 pt-1 pb-1">
-                  {EXTERNAL_LINKS.blogsDropdown.map((item) => {
+                  {EXTERNAL_LINKS.blogsDropdown.map((item, index) => {
                     const isExt = item.href.startsWith("http");
                     return (
                       <Link
@@ -560,23 +548,17 @@ export default function Navbar() {
                           setMobileMenuOpen(false);
                           setMobileBlogsExpanded(false);
                         }}
-                        className="bg-[#E6E6E6] hover:bg-[#DCDCDC] p-3 rounded-[6px] flex items-center justify-center gap-1.5 text-[12px] text-black transition-colors"
+                        style={{ animationDelay: `${index * 100}ms` }}
+                        className="animate-nav-card bg-[#E6E6E6] hover:bg-[#DCDCDC] p-3 rounded-[6px] flex items-center justify-center gap-1.5 text-[12px] text-black transition-colors"
                       >
                         <span>{item.label}</span>
-                        <svg
-                          className="w-2.5 h-2.5 text-black shrink-0 overflow-visible"
-                          viewBox="-1 -1 19 19"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M16 12V16H1V1H5M6 11L16 1M16 8V1H9"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+                        <Image
+                          src="/assets/Open_Link.svg"
+                          alt="Open Link"
+                          width={11}
+                          height={11}
+                          className="w-[11px] h-[11px] object-contain shrink-0 invert"
+                        />
                       </Link>
                     );
                   })}
@@ -614,7 +596,7 @@ export default function Navbar() {
 
               {mobileDownloadExpanded && (
                 <div className="grid grid-cols-2 gap-2 mt-2 pt-1 pb-1">
-                  {EXTERNAL_LINKS.downloadsDropdown.map((item) => {
+                  {EXTERNAL_LINKS.downloadsDropdown.map((item, index) => {
                     const isExt = item.href.startsWith("http");
                     return (
                       <Link
@@ -626,23 +608,17 @@ export default function Navbar() {
                           setMobileMenuOpen(false);
                           setMobileDownloadExpanded(false);
                         }}
-                        className="bg-[#E6E6E6] hover:bg-[#DCDCDC] p-3 rounded-[6px] flex items-center justify-center gap-1.5 text-[12px] text-black transition-colors"
+                        style={{ animationDelay: `${index * 100}ms` }}
+                        className="animate-nav-card bg-[#E6E6E6] hover:bg-[#DCDCDC] p-3 rounded-[6px] flex items-center justify-center gap-1.5 text-[12px] text-black transition-colors"
                       >
                         <span>{item.label}</span>
-                        <svg
-                          className="w-2.5 h-2.5 text-black shrink-0 overflow-visible"
-                          viewBox="-1 -1 19 19"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M16 12V16H1V1H5M6 11L16 1M16 8V1H9"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+                        <Image
+                          src="/assets/Open_Link.svg"
+                          alt="Open Link"
+                          width={11}
+                          height={11}
+                          className="w-[11px] h-[11px] object-contain shrink-0 invert"
+                        />
                       </Link>
                     );
                   })}
