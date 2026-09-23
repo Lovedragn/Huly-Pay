@@ -31,10 +31,10 @@ export const EXTERNAL_LINKS = {
 
   // Blogs dropdown menu items matching navbar_Blogs_open_.png
   blogsDropdown: [
-    { label: "Features", href: "#features" },
-    { label: "Design", href: "#workflow" },
-    { label: "Q&A", href: "#qna" },
-    { label: "Tools", href: "#tools" },
+    { label: "Features", href: "/features" },
+    { label: "Design", href: "/design" },
+    { label: "Q&A", href: "/qna" },
+    { label: "Tools", href: "/tools" },
   ],
 
   // Downloads dropdown menu items matching navbar_downloads_open.png
