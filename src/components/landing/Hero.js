@@ -245,7 +245,7 @@ export default function Hero() {
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative w-full bg-white pt-8 sm:pt-12 md:pt-14 pb-28 sm:pb-40 md:pb-48 lg:pb-60 min-h-[120vh] sm:min-h-[145vh] overflow-x-clip"
+      className="relative w-full bg-white pt-6 sm:pt-12 md:pt-14 pb-20 sm:pb-40 md:pb-48 lg:pb-60 min-h-[105vh] sm:min-h-[145vh] overflow-x-clip"
     >
       {/* 
         Hover Spotlight Reveal Background:
@@ -277,28 +277,32 @@ export default function Hero() {
         Contained strictly within the Hero section with generous bottom padding (bottom-8 sm:bottom-12 lg:bottom-16)
         so it stops comfortably before the next section and never touches the next page.
       */}
-      <div className="absolute top-0 bottom-4 sm:bottom-8 lg:bottom-10 left-4 sm:left-4 lg:left-8 w-14 pointer-events-none z-30">
+      <div className="absolute top-0 bottom-4 sm:bottom-8 lg:bottom-10 left-4 sm:left-4 lg:left-8 w-12 sm:w-14 pointer-events-none z-30">
         <div className="sticky top-[calc(100vh-5.5rem)] sm:top-[calc(100vh-6.5rem)] pointer-events-auto">
           <ScrollDownButton onClick={scrollToNext} />
         </div>
       </div>
 
       {/* Title */}
-      <div className="relative z-10 w-full flex justify-center px-4">
-        <h1 className="font-pixel text-4xl sm:text-6xl md:text-7xl lg:text-[88px] xl:text-[96px] tracking-[0.14em] sm:tracking-[0.2em] text-black text-center select-none uppercase">
-          PAY<span className="text-[#ff0000] font-extrabold">.</span>TRACK
-          <span className="text-[#ff0000] font-extrabold">.</span>GROW
+      <div className="relative z-10 w-full flex justify-start sm:justify-center px-5 xs:px-6 sm:px-4">
+        <h1 className="font-pixel text-[72px] xs:text-[78px] sm:text-6xl md:text-7xl lg:text-[88px] xl:text-[96px] leading-[0.84] sm:leading-tight tracking-[0.03em] sm:tracking-[0.2em] text-black text-left sm:text-center select-none uppercase">
+          <span className="block sm:inline">
+            PAY<span className="text-[#ff0000] font-extrabold">.</span>
+          </span>
+          <span className="block sm:inline">
+            TRACK<span className="text-[#ff0000] font-extrabold">.</span>
+          </span>
+          <span className="block sm:inline">GROW</span>
         </h1>
       </div>
 
       {/* Main Showcase Container (Parallax 3-phone stage) */}
-      <div className="relative z-10 max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-16 mt-8 sm:mt-10 md:mt-14">
-        {/* 3 iPhone Mockups Staggered Display (Pulled further down) */}
-        <div className="flex items-start justify-center gap-3 sm:gap-6 md:gap-8 lg:gap-12 w-full translate-y-[18%] sm:translate-y-[22%]">
+      <div className="relative z-10 max-w-[1720px] mx-auto px-2 xs:px-3 sm:px-8 lg:px-16 mt-6 sm:mt-10 md:mt-14">
+        <div className="flex items-start justify-between sm:justify-center gap-1.5 xs:gap-3 sm:gap-6 md:gap-8 lg:gap-12 w-full translate-y-[30%] sm:translate-y-[22%]">
           {/* Left iPhone (Moves at medium speed upward) */}
           <div
             ref={leftPhoneRef}
-            className="w-[126px] sm:w-[160px] md:w-[190px] lg:w-[205px] mt-8 sm:mt-12 md:mt-16 flex-shrink-0 will-change-transform"
+            className="w-[48%] xs:w-[48%] sm:w-[160px] md:w-[190px] lg:w-[205px] mt-5 sm:mt-12 md:mt-16 flex-shrink-0 will-change-transform"
           >
             <Image
               src="/assets/hero/hero_mock_iphone_left.svg"
@@ -313,7 +317,7 @@ export default function Hero() {
           {/* Middle iPhone (Moves FASTEST towards upper direction, positioned higher) */}
           <div
             ref={middlePhoneRef}
-            className="w-[140px] sm:w-[182px] md:w-[220px] lg:w-[235px] -mt-5 sm:-mt-8 md:-mt-10 z-10 flex-shrink-0 will-change-transform"
+            className="w-[50%] xs:w-[50%] sm:w-[182px] md:w-[220px] lg:w-[235px] -mt-1 sm:-mt-8 md:-mt-10 z-10 flex-shrink-0 will-change-transform"
           >
             <Image
               src="/assets/hero/hero_mock_iphone_middle.svg"
@@ -325,10 +329,10 @@ export default function Hero() {
             />
           </div>
 
-          {/* Right iPhone (Moves SLOWEST among them all towards upper direction) */}
+          {/* Right iPhone (Hidden on mobile, visible on sm+ desktop/tablets) */}
           <div
             ref={rightPhoneRef}
-            className="w-[126px] sm:w-[160px] md:w-[195px] lg:w-[210px] mt-12 sm:mt-16 md:mt-24 flex-shrink-0 will-change-transform"
+            className="hidden sm:block sm:w-[160px] md:w-[195px] lg:w-[210px] mt-8 sm:mt-16 md:mt-24 flex-shrink-0 will-change-transform"
           >
             <Image
               src="/assets/hero/hero_mock_iphone_right.svg"

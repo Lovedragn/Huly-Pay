@@ -48,7 +48,7 @@ export default function DesignPage() {
         accentColor="#FF00F5"
       />
 
-      <section className="w-full max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 py-16 sm:py-24 space-y-20">
+      <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-10 lg:px-16 py-10 sm:py-24 space-y-14 sm:space-y-20">
         {/* Core Principles */}
         <div>
           <div className="mb-10">
@@ -64,7 +64,7 @@ export default function DesignPage() {
             {PRINCIPLES.map((item) => (
               <div
                 key={item.num}
-                className="p-8 border-4 border-black bg-neutral-50 shadow-[6px_6px_0px_#000000] flex flex-col justify-between"
+                className="p-5 sm:p-8 border-[3px] sm:border-4 border-black bg-neutral-50 shadow-[4px_4px_0px_#000000] sm:shadow-[6px_6px_0px_#000000] flex flex-col justify-between"
               >
                 <div>
                   <span className="font-doto text-4xl font-black text-[#FF0000] block mb-4">
@@ -97,7 +97,7 @@ export default function DesignPage() {
             {PALETTE.map((c) => (
               <div
                 key={c.name}
-                className="border-4 border-black bg-white shadow-[6px_6px_0px_#000000] overflow-hidden"
+                className="border-[3px] sm:border-4 border-black bg-white shadow-[4px_4px_0px_#000000] sm:shadow-[6px_6px_0px_#000000] overflow-hidden"
               >
                 <div
                   className="h-28 w-full border-b-4 border-black flex items-end p-4"
@@ -134,9 +134,9 @@ export default function DesignPage() {
             </h2>
           </div>
 
-          <div className="border-4 border-black bg-[#FFFFEB] p-8 sm:p-12 shadow-[8px_8px_0px_#000000] space-y-10">
+          <div className="border-[3px] sm:border-4 border-black bg-[#FFFFEB] p-5 sm:p-12 shadow-[5px_5px_0px_#000000] sm:shadow-[8px_8px_0px_#000000] space-y-8 sm:space-y-10">
             {/* Pixelify Sans */}
-            <div className="border-b-2 border-neutral-300 pb-8">
+            <div className="border-b-2 border-neutral-300 pb-6 sm:pb-8">
               <div className="flex items-center justify-between gap-4 mb-2">
                 <span className="font-mono text-xs text-[#FF0000] uppercase font-bold">
                   PRIMARY BRAND FONT: PIXELIFY SANS
@@ -145,10 +145,10 @@ export default function DesignPage() {
                   font-pixel
                 </span>
               </div>
-              <p className="font-pixel text-4xl sm:text-6xl font-bold tracking-wider text-black">
+              <p className="font-pixel text-2xl xs:text-3xl sm:text-6xl font-bold tracking-wider text-black break-words">
                 PAY. TRACK. GROW.
               </p>
-              <p className="font-pixel text-base sm:text-lg text-neutral-600 mt-2">
+              <p className="font-pixel text-sm sm:text-lg text-neutral-600 mt-2">
                 The quick brown fox jumps over the lazy dog 0123456789
               </p>
             </div>
@@ -163,10 +163,10 @@ export default function DesignPage() {
                   font-doto
                 </span>
               </div>
-              <p className="font-doto text-4xl sm:text-6xl font-black text-black">
+              <p className="font-doto text-xl xs:text-2xl sm:text-4xl md:text-6xl font-black text-black break-words">
                 $1,489,230.00 / 99.98% SLA
               </p>
-              <p className="font-doto text-base sm:text-lg text-neutral-600 mt-2">
+              <p className="font-doto text-sm sm:text-lg text-neutral-600 mt-2">
                 FAST DATA MATRICES & SETTLEMENT COUNTERS
               </p>
             </div>
@@ -228,8 +228,8 @@ export default function DesignPage() {
             </h2>
           </div>
 
-          <div className="w-full border-4 border-black bg-neutral-50 shadow-[8px_8px_0px_#000000] p-3 sm:p-6 rounded-[12px] overflow-hidden">
-            <div className="w-full relative aspect-[16/9] min-h-[450px] sm:min-h-[550px] md:min-h-[650px] rounded-[6px] overflow-hidden border border-black/10">
+          <div className="w-full border-4 border-black bg-neutral-50 shadow-[8px_8px_0px_#000000] p-2 sm:p-6 rounded-[12px] overflow-hidden">
+            <div className="w-full relative aspect-[16/9] min-h-[260px] sm:min-h-[450px] md:min-h-[650px] rounded-[6px] overflow-hidden border border-black/10">
               <iframe
                 className="w-full h-full border-0 absolute inset-0"
                 src="https://embed.figma.com/design/xBakmB5ztVqw1mj0lmRTvr/HulyPay?embed-host=share"

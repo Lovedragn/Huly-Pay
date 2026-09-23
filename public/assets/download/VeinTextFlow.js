@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useId } from "react";
+import { useEffect, useRef, useState, useId } from "react";
 import gsap from "gsap";
 
 // Streamlined text data without arrays or runtime .join() allocations
@@ -10,16 +10,19 @@ const CURRENCY_TEXT =
 const CIPHER_TEXT =
   "#$^#$^ ✦ #&@!$% ✦ #^&&@# ✦ $#@%! ✦ #%^&@ ✦ $#^&&@! ✦ #$%@!&#^ ✦ *#&^@$! ✦ ";
 
-// Calibrated cycle distance matching 1 unit of text (~750 user units)
-const CYCLE_LENGTH = 750;
+// Calibrated cycle distance matching 1 unit of text at fontSize 24 (~1240 user units)
+const INITIAL_CYCLE_LENGTH = 1240;
 
 // Path arc length where the middle separator is located (~1640 user units)
 const SEPARATOR_OFFSET = 1640;
 
 const PLAIN_FLOW = CURRENCY_TEXT.repeat(4);
-const CIPHER_FLOW = CIPHER_TEXT.repeat(3);
+const CIPHER_FLOW = CIPHER_TEXT.repeat(4);
 
 export default function VeinTextFlow() {
+  const plainTextRef = useRef(null);
+  const [cycleLength, setCycleLength] = useState(INITIAL_CYCLE_LENGTH);
+
   // Dedicated refs for the physical lock animation timeline
   const shackleRef = useRef(null);
   const lockBodyRef = useRef(null);
@@ -45,6 +48,21 @@ export default function VeinTextFlow() {
     "C 980,60 1060,60 1140,110 " +
     "C 1220,160 1280,250 1350,300 " +
     "C 1390,330 1420,350 1440,360";
+
+  // Measure exact rendered text cycle on mount for sub-pixel seamless loop
+  useEffect(() => {
+    if (plainTextRef.current) {
+      try {
+        const measured = plainTextRef.current.getComputedTextLength();
+        if (measured > 0) {
+          const singleCycle = Math.round(measured / 4);
+          if (Math.abs(singleCycle - INITIAL_CYCLE_LENGTH) > 5) {
+            setCycleLength(singleCycle);
+          }
+        }
+      } catch {}
+    }
+  }, []);
 
   useEffect(() => {
     // GSAP context cleanly scoped for discrete, physical transform animation of the lock
@@ -116,10 +134,10 @@ export default function VeinTextFlow() {
   }, []);
 
   return (
-    <div className="w-full relative select-none overflow-visible pointer-events-none touch-pan-y">
+    <div className="w-full relative select-none overflow-hidden pointer-events-none touch-pan-y flex justify-center">
       <svg
         viewBox="-30 -30 1500 420"
-        className="w-full h-auto overflow-visible pointer-events-none"
+        className="w-[180%] sm:w-[130%] md:w-full h-auto shrink-0 overflow-visible pointer-events-none"
         style={{ display: "block" }}
       >
         <defs>
@@ -128,12 +146,12 @@ export default function VeinTextFlow() {
 
           {/* Left clip: covers entrance up to separator */}
           <clipPath id={leftClipId}>
-            <rect x="-100" y="-100" width="785" height="600" />
+            <rect x="-100" y="-100" width="769" height="600" />
           </clipPath>
 
           {/* Right clip: covers separator exit through the right edge */}
           <clipPath id={rightClipId}>
-            <rect x="755" y="-100" width="850" height="600" />
+            <rect x="771" y="-100" width="850" height="600" />
           </clipPath>
         </defs>
 
@@ -142,7 +160,7 @@ export default function VeinTextFlow() {
           d={veinPath}
           fill="none"
           stroke="#000000"
-          strokeWidth="42"
+          strokeWidth="56"
           strokeLinecap="round"
           strokeLinejoin="round"
           clipPath={`url(#${rightClipId})`}
@@ -158,17 +176,19 @@ export default function VeinTextFlow() {
           style={{ willChange: "transform", transform: "translate3d(0, 0, 0)" }}
         >
           <text
-            x={`-${CYCLE_LENGTH}`}
+            ref={plainTextRef}
+            x={`-${cycleLength}`}
             className="font-pixel font-bold"
             fill="#555555"
-            fontSize="14.5"
+            fontSize="24"
             letterSpacing="0.05em"
             dominantBaseline="central"
           >
             <textPath href={`#${pathId}`}>{PLAIN_FLOW}</textPath>
             <animate
+              key={`plain-anim-${cycleLength}`}
               attributeName="x"
-              from={`-${CYCLE_LENGTH}`}
+              from={`-${cycleLength}`}
               to="0"
               dur="14s"
               repeatCount="indefinite"
@@ -187,17 +207,18 @@ export default function VeinTextFlow() {
           style={{ willChange: "transform", transform: "translate3d(0, 0, 0)" }}
         >
           <text
-            x={`${SEPARATOR_OFFSET - CYCLE_LENGTH}`}
+            x={`${SEPARATOR_OFFSET - cycleLength}`}
             className="font-pixel font-bold"
             fill="#FFFFFF"
-            fontSize="14.5"
+            fontSize="24"
             letterSpacing="0.05em"
             dominantBaseline="central"
           >
             <textPath href={`#${pathId}`}>{CIPHER_FLOW}</textPath>
             <animate
+              key={`cipher-anim-${cycleLength}`}
               attributeName="x"
-              from={`${SEPARATOR_OFFSET - CYCLE_LENGTH}`}
+              from={`${SEPARATOR_OFFSET - cycleLength}`}
               to={`${SEPARATOR_OFFSET}`}
               dur="8s"
               repeatCount="indefinite"
@@ -209,29 +230,29 @@ export default function VeinTextFlow() {
         <g>
           {/* Background color (#FFFFEB) cutout gap cleanly slicing the vein */}
           <rect
-            x="675"
-            y="122"
-            width="90"
-            height="116"
-            rx="22"
+            x="656"
+            y="104"
+            width="128"
+            height="152"
+            rx="26"
             fill="#FFFFEB"
           />
 
           {/* Red Rounded Rectangle Separator */}
           <rect
-            x="685"
-            y="132"
-            width="70"
-            height="96"
-            rx="16"
+            x="669"
+            y="117"
+            width="102"
+            height="126"
+            rx="20"
             fill="#FF0000"
             stroke="#B30003"
-            strokeWidth="3.5"
-            style={{ filter: "drop-shadow(0 4px 10px rgba(179,0,3,0.35))" }}
+            strokeWidth="4"
+            style={{ filter: "drop-shadow(0 6px 14px rgba(179,0,3,0.4))" }}
           />
 
           {/* Chunky White Pixel Lock */}
-          <g transform="translate(720, 180) scale(0.52) translate(-70, -65)">
+          <g transform="translate(720, 180) scale(0.95) translate(-70, -65)">
             {/* Shackle: snaps between unlocked and locked positions */}
             <g ref={shackleRef} fill="white">
               {/* Top Arch */}

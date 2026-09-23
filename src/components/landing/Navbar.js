@@ -132,7 +132,7 @@ function DashboardButton() {
       prefetch={false}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="group h-full w-[180px] sm:w-[200px] md:w-[220px] bg-black flex items-center justify-center gap-2 cursor-pointer hover:bg-neutral-900 transition-colors select-none"
+      className="group h-full w-[220px] bg-black hidden md:flex items-center justify-center gap-2 cursor-pointer hover:bg-neutral-900 transition-colors select-none"
     >
       <span className="relative inline-block leading-none">
         <span className="font-pixel text-[14px] text-white tracking-wider whitespace-nowrap">
@@ -200,6 +200,18 @@ export default function Navbar() {
       }
     };
   }, []);
+
+  // Prevent background scroll when mobile menu drawer is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
 
   // Synchronize scroll position and determine hide/show direction
   useEffect(() => {
@@ -287,12 +299,12 @@ export default function Navbar() {
       >
         {/* Outer wrapper: flush edges with equal left and right sections - layered on top of dropdown */}
         <div className="w-full px-0 h-20 md:h-[80px] flex items-center justify-between relative z-20 bg-white border-b border-[#D4D4D8]">
-          {/* Left Section: Logo + Brand Name (equal length to right dashboard button) */}
-          <div className="flex items-center h-full z-10 w-[180px] sm:w-[200px] md:w-[220px]">
+          {/* Left Section: Logo only on mobile, Logo + HULYPAY on desktop */}
+          <div className="flex items-center h-full z-10 w-auto md:w-[220px]">
             <Link
               href="/"
               onClick={closeDropdownImmediately}
-              className="h-full w-full flex items-center justify-center gap-3 hover:opacity-85 transition-opacity px-4 sm:px-6"
+              className="h-full flex items-center justify-center gap-3 hover:opacity-85 transition-opacity px-4 sm:px-6"
             >
               <div className="w-7 h-7 relative flex items-center justify-center shrink-0">
                 <Image
@@ -304,7 +316,7 @@ export default function Navbar() {
                   className="w-7 h-7 object-contain"
                 />
               </div>
-              <span className="font-pixel text-lg sm:text-xl tracking-wider text-black select-none whitespace-nowrap">
+              <span className="hidden md:inline font-pixel text-lg sm:text-xl tracking-wider text-black select-none whitespace-nowrap">
                 HULYPAY
               </span>
             </Link>
@@ -380,7 +392,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden mr-3 p-2 text-black hover:bg-neutral-100 rounded focus:outline-none"
+              className="md:hidden mr-3 sm:mr-4 p-2 text-black hover:bg-neutral-100 rounded focus:outline-none cursor-pointer"
               aria-label="Toggle navigation menu"
             >
               <svg
@@ -618,6 +630,24 @@ export default function Navbar() {
                   })}
                 </div>
               )}
+            </div>
+
+            {/* Direct Dashboard Link for mobile drawer */}
+            <div className="pt-2 border-t border-neutral-200">
+              <Link
+                href={EXTERNAL_LINKS.nav.dashboard}
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full h-11 bg-black text-white flex items-center justify-center gap-2 rounded-[4px] font-pixel text-sm hover:bg-neutral-800 transition-colors"
+              >
+                <span>Open Dashboard</span>
+                <Image
+                  src="/assets/Open_Link.svg"
+                  alt=""
+                  width={10}
+                  height={10}
+                  className="w-2.5 h-2.5 invert"
+                />
+              </Link>
             </div>
           </div>
         )}

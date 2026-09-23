@@ -444,9 +444,9 @@ export default function Features() {
         tl.to({}, { duration: 0.8 });
       });
 
-      // Mobile Devices (< 768px): 48px tab spacing
+      // Mobile Devices (< 768px): 36px tab spacing to fit comfortably in viewport
       mm.add("(max-width: 767px)", () => {
-        const tabOffset = 48;
+        const tabOffset = 36;
         const totalCards = featureCards.length;
 
         gsap.set(cardsRef.current[0], { y: 0, opacity: 1 });
@@ -506,16 +506,16 @@ export default function Features() {
       id="features"
       className="relative w-full bg-[#FFFFEB] overflow-hidden"
     >
-      {/* 100% Full Screen Centered Viewport Wrapper */}
+      {/* 100% Full Screen Centered Viewport Wrapper (dynamic viewport height for mobile) */}
       <div
         ref={containerRef}
-        className="w-full h-screen flex items-center justify-center px-4 sm:px-6 md:px-8 pt-8 sm:pt-12 md:pt-16"
+        className="w-full h-screen min-h-[100dvh] flex items-center justify-center px-3 sm:px-6 md:px-8 pt-4 sm:pt-12 md:pt-16"
       >
         {/* Animated Stack Deck Container */}
         <div
           ref={stackRef}
-          className="relative w-full max-w-[1060px] mx-auto flex items-start justify-center translate-y-3 sm:translate-y-6"
-          style={{ minHeight: "560px" }}
+          className="relative w-full max-w-[1060px] mx-auto flex items-start justify-center translate-y-1 sm:translate-y-6"
+          style={{ minHeight: "440px" }}
         >
           {featureCards.map((card, index) => (
             <div
@@ -523,28 +523,28 @@ export default function Features() {
               ref={(el) => {
                 if (el) cardsRef.current[index] = el;
               }}
-              className="absolute top-0 left-0 right-0 w-full bg-[#FF0000] border-[7px] sm:border-[9px] md:border-[10px] border-[#CC0000] rounded-[28px] sm:rounded-[36px] md:rounded-[42px] p-6 sm:p-8 md:p-10 pt-5 sm:pt-6 md:pt-7 shadow-[0_12px_32px_rgba(0,0,0,0.22)] select-none"
+              className="absolute top-0 left-0 right-0 w-full bg-[#FF0000] border-[5px] sm:border-[9px] md:border-[10px] border-[#CC0000] rounded-[22px] sm:rounded-[36px] md:rounded-[42px] p-4 sm:p-8 md:p-10 pt-4 sm:pt-6 md:pt-7 shadow-[0_10px_28px_rgba(0,0,0,0.22)] select-none"
               style={{
                 zIndex: index + 1,
               }}
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
                 {/* Left Side: Title and Bullets */}
                 <div className="flex-1">
                   <h2
-                    className={`font-bold text-[26px] sm:text-[32px] font-doto md:text-[36px] tracking-wide text-white mb-5 sm:mb-6 select-none`}
+                    className={`font-bold text-[20px] sm:text-[32px] font-doto md:text-[36px] tracking-wide text-white mb-3 sm:mb-6 select-none`}
                   >
                     {card.title}
                   </h2>
 
-                  <ul className="space-y-3 sm:space-y-4 pl-3 sm:pl-6 md:pl-8 max-w-2xl">
+                  <ul className="space-y-2 sm:space-y-4 pl-1 sm:pl-6 md:pl-8 max-w-2xl">
                     {card.bullets.map((bullet, idx) => (
-                      <li key={idx} className="flex items-start gap-3 sm:gap-4">
+                      <li key={idx} className="flex items-start gap-2.5 sm:gap-4">
                         <span
                           aria-hidden="true"
-                          className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white mt-2 sm:mt-2.5 flex-shrink-0 select-none"
+                          className="w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 bg-white mt-1.5 sm:mt-2.5 flex-shrink-0 select-none"
                         />
-                        <p className="font-pixel text-[18px] sm:text-[20px] md:text-[22px] text-white leading-relaxed tracking-wide select-none">
+                        <p className="font-pixel text-[13px] sm:text-[20px] md:text-[22px] text-white leading-snug sm:leading-relaxed tracking-wide select-none">
                           {bullet}
                         </p>
                       </li>
@@ -553,7 +553,7 @@ export default function Features() {
                 </div>
 
                 {/* Right Side Visual Graphics */}
-                <div className="flex-shrink-0 self-center sm:self-auto sm:pr-2">
+                <div className="flex-shrink-0 self-center sm:self-auto sm:pr-2 scale-85 sm:scale-100">
                   {card.id === "qr-scan-and-pay" && <QrToTickAnimation />}
                   {card.id === "notification" && <BellNotificationAnimation />}
                   {card.id === "offline-first" && <WifiOfflineAnimation />}

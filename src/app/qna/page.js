@@ -86,9 +86,9 @@ export default function QnaPage() {
         accentColor="#D8FF00"
       />
 
-      <section className="w-full max-w-[1200px] mx-auto px-6 sm:px-10 lg:px-16 py-16 sm:py-24">
+      <section className="w-full max-w-[1200px] mx-auto px-4 sm:px-10 lg:px-16 py-10 sm:py-24">
         {/* Category Tabs */}
-        <div className="flex flex-wrap gap-3 mb-12">
+        <div className="flex flex-wrap gap-2 sm:gap-3 mb-8 sm:mb-12">
           {FAQ_DATA.map((cat) => {
             const isActive = activeCategory === cat.category;
             return (
@@ -96,9 +96,9 @@ export default function QnaPage() {
                 key={cat.category}
                 type="button"
                 onClick={() => setActiveCategory(cat.category)}
-                className={`px-6 py-3 font-pixel text-sm sm:text-base font-bold transition-all border-2 border-black cursor-pointer select-none ${
+                className={`px-4 py-2 sm:px-6 sm:py-3 font-pixel text-xs sm:text-base font-bold transition-all border-2 border-black cursor-pointer select-none ${
                   isActive
-                    ? "bg-black text-white shadow-[4px_4px_0px_#FF0000]"
+                    ? "bg-black text-white shadow-[3px_3px_0px_#FF0000] sm:shadow-[4px_4px_0px_#FF0000]"
                     : "bg-white text-black hover:bg-neutral-100"
                 }`}
               >
@@ -109,7 +109,7 @@ export default function QnaPage() {
         </div>
 
         {/* Questions Accordion List */}
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {currentQuestions.map((item, idx) => {
             const itemKey = `${activeCategory}-${idx}`;
             const isOpen = !!openItems[itemKey];
@@ -117,18 +117,18 @@ export default function QnaPage() {
             return (
               <div
                 key={idx}
-                className="border-4 border-black bg-white shadow-[6px_6px_0px_#000000] overflow-hidden transition-all"
+                className="border-[3px] sm:border-4 border-black bg-white shadow-[4px_4px_0px_#000000] sm:shadow-[6px_6px_0px_#000000] overflow-hidden transition-all"
               >
                 <button
                   type="button"
                   onClick={() => toggleItem(itemKey)}
-                  className="w-full px-6 sm:px-8 py-5 sm:py-6 flex items-center justify-between text-left gap-4 hover:bg-neutral-50 cursor-pointer select-none"
+                  className="w-full px-4 sm:px-8 py-3.5 sm:py-6 flex items-center justify-between text-left gap-3 sm:gap-4 hover:bg-neutral-50 cursor-pointer select-none"
                 >
-                  <span className="font-pixel text-lg sm:text-2xl font-bold text-black">
+                  <span className="font-pixel text-base sm:text-2xl font-bold text-black leading-snug">
                     {item.q}
                   </span>
                   <div
-                    className={`w-8 h-8 rounded-full border-2 border-black flex items-center justify-center shrink-0 font-mono text-lg font-bold transition-transform ${
+                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-black flex items-center justify-center shrink-0 font-mono text-base sm:text-lg font-bold transition-transform ${
                       isOpen ? "bg-[#FF0000] text-white rotate-45" : "bg-neutral-100 text-black"
                     }`}
                   >
@@ -137,8 +137,8 @@ export default function QnaPage() {
                 </button>
 
                 {isOpen && (
-                  <div className="px-6 sm:px-8 pb-6 sm:pb-8 pt-2 border-t-2 border-dashed border-neutral-200">
-                    <p className="font-sans text-base sm:text-lg text-neutral-700 leading-relaxed">
+                  <div className="px-4 sm:px-8 pb-4 sm:pb-8 pt-2 border-t-2 border-dashed border-neutral-200">
+                    <p className="font-sans text-sm sm:text-lg text-neutral-700 leading-relaxed">
                       {item.a}
                     </p>
                   </div>
@@ -149,12 +149,12 @@ export default function QnaPage() {
         </div>
 
         {/* Community Help Card */}
-        <div className="mt-16 p-8 border-4 border-black bg-[#FFFFEB] flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="mt-12 sm:mt-16 p-5 sm:p-8 border-[3px] sm:border-4 border-black bg-[#FFFFEB] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6 shadow-[4px_4px_0px_#000000] sm:shadow-none">
           <div>
-            <h3 className="font-pixel text-xl sm:text-2xl font-bold text-black">
+            <h3 className="font-pixel text-lg sm:text-2xl font-bold text-black">
               Have another question not answered here?
             </h3>
-            <p className="font-sans text-sm sm:text-base text-neutral-600 mt-1">
+            <p className="font-sans text-xs sm:text-base text-neutral-600 mt-1">
               Open an issue or start a discussion on our community repository.
             </p>
           </div>
@@ -162,7 +162,7 @@ export default function QnaPage() {
             href={`${EXTERNAL_LINKS.social.github}/issues`}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-6 py-3 bg-black text-white font-pixel font-bold text-sm hover:bg-neutral-800 transition-colors shrink-0 shadow-[4px_4px_0px_#CC0000]"
+            className="w-full sm:w-auto text-center px-6 py-3 bg-black text-white font-pixel font-bold text-xs sm:text-sm hover:bg-neutral-800 transition-colors shrink-0 shadow-[4px_4px_0px_#CC0000]"
           >
             ASK ON GITHUB
           </a>
