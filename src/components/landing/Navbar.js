@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
-import { EXTERNAL_LINKS } from "./external_data";
+import { EXTERNAL_LINKS } from "../../assets/external_data";
+import { NAV_BG_SVGS } from "@/assets";
 
 function NavLink({
   href,
@@ -435,6 +436,7 @@ export default function Navbar() {
             >
               {EXTERNAL_LINKS.blogsDropdown.map((item, index) => {
                 const isExt = item.href.startsWith("http");
+                const SvgComponent = NAV_BG_SVGS[item.label];
                 return (
                   <Link
                     key={item.label}
@@ -444,18 +446,17 @@ export default function Navbar() {
                     rel={isExt ? "noopener noreferrer" : undefined}
                     onClick={closeDropdownImmediately}
                     style={{ animationDelay: `${index * 100}ms` }}
-                    className="group/card animate-nav-card h-[250px] w-full bg-[#E6E6E6] hover:bg-[#DCDCDC] active:scale-[0.99] rounded-[6px] flex items-center justify-center gap-2 transition-colors duration-200 cursor-pointer select-none"
+                    className="group/card animate-nav-card h-[250px] w-full bg-[#E6E6E6] hover:bg-[#DCDCDC] active:scale-[0.99] rounded-[6px] flex flex-col items-center justify-center gap-4 transition-colors duration-200 cursor-pointer select-none"
                   >
+                    {/* SVG on top, full opacity black -> red on hover */}
+                    {SvgComponent && (
+                      <SvgComponent className="w-28 h-28 md:w-36 md:h-36 text-black group-hover/card:text-[#EF4444] transition-colors duration-200 shrink-0" />
+                    )}
+
+                    {/* Text below */}
                     <span className="font-pixel text-[16px] text-black tracking-wider leading-none">
                       {item.label}
                     </span>
-                    <Image
-                      src="/assets/Open_Link.svg"
-                      alt="Open Link"
-                      width={14}
-                      height={14}
-                      className="scale-90 object-contain shrink-0 invert transition-transform duration-200 group-hover/card:translate-x-0.5 group-hover/card:-translate-y-0.5"
-                    />
                   </Link>
                 );
               })}
@@ -469,6 +470,7 @@ export default function Navbar() {
             >
               {EXTERNAL_LINKS.downloadsDropdown.map((item, index) => {
                 const isExt = item.href.startsWith("http");
+                const SvgComponent = NAV_BG_SVGS[item.label];
                 return (
                   <Link
                     key={item.label}
@@ -478,18 +480,17 @@ export default function Navbar() {
                     rel={isExt ? "noopener noreferrer" : undefined}
                     onClick={closeDropdownImmediately}
                     style={{ animationDelay: `${index * 100}ms` }}
-                    className="group/card animate-nav-card h-[250px] w-full bg-[#E6E6E6] hover:bg-[#DCDCDC] active:scale-[0.99] rounded-[6px] flex items-center justify-center gap-2 transition-colors duration-200 cursor-pointer select-none"
+                    className="group/card animate-nav-card h-[250px] w-full bg-[#E6E6E6] hover:bg-[#DCDCDC] active:scale-[0.99] rounded-[6px] flex flex-col items-center justify-center gap-4 transition-colors duration-200 cursor-pointer select-none"
                   >
+                    {/* SVG on top, full opacity black -> red on hover */}
+                    {SvgComponent && (
+                      <SvgComponent className="w-28 h-28 md:w-36 md:h-36 text-black group-hover/card:text-[#EF4444] transition-colors duration-200 shrink-0" />
+                    )}
+
+                    {/* Text below */}
                     <span className="font-pixel text-[16px] text-black tracking-wider leading-none">
                       {item.label}
                     </span>
-                    <Image
-                      src="/assets/Open_Link.svg"
-                      alt="Open Link"
-                      width={14}
-                      height={14}
-                      className=" scale-90 object-contain shrink-0 invert transition-transform duration-200 group-hover/card:translate-x-0.5 group-hover/card:-translate-y-0.5"
-                    />
                   </Link>
                 );
               })}
@@ -538,6 +539,7 @@ export default function Navbar() {
                 <div className="grid grid-cols-2 gap-2 mt-2 pt-1 pb-1">
                   {EXTERNAL_LINKS.blogsDropdown.map((item, index) => {
                     const isExt = item.href.startsWith("http");
+                    const SvgComponent = NAV_BG_SVGS[item.label];
                     return (
                       <Link
                         key={item.label}
@@ -549,16 +551,12 @@ export default function Navbar() {
                           setMobileBlogsExpanded(false);
                         }}
                         style={{ animationDelay: `${index * 100}ms` }}
-                        className="animate-nav-card bg-[#E6E6E6] hover:bg-[#DCDCDC] p-3 rounded-[6px] flex items-center justify-center gap-1.5 text-[12px] text-black transition-colors"
+                        className="group/mob animate-nav-card bg-[#E6E6E6] hover:bg-[#DCDCDC] p-3 rounded-[6px] flex flex-col items-center justify-center gap-2 text-[12px] text-black transition-colors"
                       >
+                        {SvgComponent && (
+                          <SvgComponent className="w-14 h-14 text-black group-hover/mob:text-[#EF4444] transition-colors duration-200 shrink-0" />
+                        )}
                         <span>{item.label}</span>
-                        <Image
-                          src="/assets/Open_Link.svg"
-                          alt="Open Link"
-                          width={11}
-                          height={11}
-                          className="w-[11px] h-[11px] object-contain shrink-0 invert"
-                        />
                       </Link>
                     );
                   })}
@@ -598,6 +596,7 @@ export default function Navbar() {
                 <div className="grid grid-cols-2 gap-2 mt-2 pt-1 pb-1">
                   {EXTERNAL_LINKS.downloadsDropdown.map((item, index) => {
                     const isExt = item.href.startsWith("http");
+                    const SvgComponent = NAV_BG_SVGS[item.label];
                     return (
                       <Link
                         key={item.label}
@@ -609,16 +608,12 @@ export default function Navbar() {
                           setMobileDownloadExpanded(false);
                         }}
                         style={{ animationDelay: `${index * 100}ms` }}
-                        className="animate-nav-card bg-[#E6E6E6] hover:bg-[#DCDCDC] p-3 rounded-[6px] flex items-center justify-center gap-1.5 text-[12px] text-black transition-colors"
+                        className="group/mob animate-nav-card bg-[#E6E6E6] hover:bg-[#DCDCDC] p-3 rounded-[6px] flex flex-col items-center justify-center gap-2 text-[12px] text-black transition-colors"
                       >
+                        {SvgComponent && (
+                          <SvgComponent className="w-14 h-14 text-black group-hover/mob:text-[#EF4444] transition-colors duration-200 shrink-0" />
+                        )}
                         <span>{item.label}</span>
-                        <Image
-                          src="/assets/Open_Link.svg"
-                          alt="Open Link"
-                          width={11}
-                          height={11}
-                          className="w-[11px] h-[11px] object-contain shrink-0 invert"
-                        />
                       </Link>
                     );
                   })}

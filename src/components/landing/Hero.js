@@ -257,7 +257,7 @@ export default function Hero() {
     >
       {/* 
         Hover Spotlight Reveal Background:
-        Reveals /assets/Bg_hover_layout.svg within a circle around mouse cursor.
+        Reveals /assets/hero/Bg_hover_layout.svg within a circle around mouse cursor.
         Opacity is controlled by SVG_DIM_OPACITY.
       */}
       <div
@@ -271,7 +271,7 @@ export default function Hero() {
         }}
       >
         <Image
-          src="/assets/Bg_hover_layout.svg"
+          src="/assets/hero/Bg_hover_layout.svg"
           alt=""
           fill
           priority
@@ -309,7 +309,7 @@ export default function Hero() {
             className="w-[126px] sm:w-[160px] md:w-[190px] lg:w-[205px] mt-8 sm:mt-12 md:mt-16 flex-shrink-0 will-change-transform"
           >
             <Image
-              src="/assets/hero_mock_iphone_left.svg"
+              src="/assets/hero/hero_mock_iphone_left.svg"
               alt="Huly Pay iPhone Left View"
               width={205}
               height={485}
@@ -324,7 +324,7 @@ export default function Hero() {
             className="w-[140px] sm:w-[182px] md:w-[220px] lg:w-[235px] -mt-5 sm:-mt-8 md:-mt-10 z-10 flex-shrink-0 will-change-transform"
           >
             <Image
-              src="/assets/hero_mock_iphone_middle.svg"
+              src="/assets/hero/hero_mock_iphone_middle.svg"
               alt="Huly Pay iPhone Dashboard View"
               width={235}
               height={454}
@@ -339,7 +339,7 @@ export default function Hero() {
             className="w-[126px] sm:w-[160px] md:w-[195px] lg:w-[210px] mt-12 sm:mt-16 md:mt-24 flex-shrink-0 will-change-transform"
           >
             <Image
-              src="/assets/hero_mock_iphone_right.svg"
+              src="/assets/hero/hero_mock_iphone_right.svg"
               alt="Huly Pay iPhone Insights View"
               width={210}
               height={485}

@@ -414,7 +414,7 @@ export default function Workflow() {
     >
       {/* 
         Hover Spotlight Reveal Background:
-        Reveals /assets/workflow_grid_hover.svg within a 200px circle around mouse cursor.
+        Reveals /assets/workflow/workflow_grid_hover.svg within a 200px circle around mouse cursor.
         Opacity is controlled by GRID_OPACITY.
       */}
       <div
@@ -428,7 +428,7 @@ export default function Workflow() {
         }}
       >
         <Image
-          src="/assets/workflow_grid_hover.svg"
+          src="/assets/workflow/workflow_grid_hover.svg"
           alt=""
           fill
           priority

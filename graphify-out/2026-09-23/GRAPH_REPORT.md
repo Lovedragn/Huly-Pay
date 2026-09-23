@@ -1,12 +1,12 @@
 # Graph Report - frontend  (2026-09-23)
 
 ## Corpus Check
-- 32 files · ~78,780 words
+- 32 files · ~66,932 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 131 nodes · 173 edges · 17 communities (10 shown, 5 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 6 edges (avg confidence: 0.85)
+- 129 nodes · 171 edges · 17 communities (10 shown, 5 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 6 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
@@ -15,7 +15,7 @@
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- navBgIcons.js
+- app/page.js
 - package.json
 - AnimatedSignature.js
 - layout.js
@@ -28,8 +28,8 @@
 - AGENTS.md
 - eslint.config.mjs
 - postcss.config.mjs
-- app/page.js
-- VeinTextFlow.js
+- Workflow.js
+- gsap
 
 ## God Nodes (most connected - your core abstractions)
 1. `react` - 9 edges
@@ -51,9 +51,9 @@
 
 ## Communities (17 total, 5 thin omitted)
 
-### Community 0 - "navBgIcons.js"
-Cohesion: 0.14
-Nodes (3): NAV_BG_ASSETS, NAV_BG_SVGS, Navbar()
+### Community 0 - "app/page.js"
+Cohesion: 0.10
+Nodes (11): NAV_BG_SVGS, CardDownload(), EXTERNAL_LINKS, Features(), Footer(), Navbar(), CIPHER_ITEMS, CIPHER_TEXT (+3 more)
 
 ### Community 1 - "package.json"
 Cohesion: 0.11
@@ -83,31 +83,31 @@ Nodes (7): BellNotificationAnimation(), LockJwtAnimation(), PieChartAnimation(),
 Cohesion: 0.50
 Nodes (3): Deploy on Vercel, Getting Started, Learn More
 
-### Community 15 - "app/page.js"
-Cohesion: 0.21
-Nodes (8): gsap, Features(), Hero(), PARALLAX_CONFIG, Workflow(), Frame143Badge(), Frame144Badge(), Frame145Badge()
+### Community 15 - "Workflow.js"
+Cohesion: 0.53
+Nodes (4): Workflow(), Frame143Badge(), Frame144Badge(), Frame145Badge()
 
-### Community 16 - "VeinTextFlow.js"
-Cohesion: 0.21
-Nodes (8): CardDownload(), EXTERNAL_LINKS, Footer(), CIPHER_ITEMS, CIPHER_TEXT, CURRENCY_ITEMS, PLAIN_TEXT, VeinTextFlow()
+### Community 16 - "gsap"
+Cohesion: 0.40
+Nodes (3): gsap, Hero(), PARALLAX_CONFIG
 
 ## Knowledge Gaps
-- **50 isolated node(s):** `eslintConfig`, `paths`, `nextConfig`, `name`, `version` (+45 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 71 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **49 isolated node(s):** `eslintConfig`, `paths`, `nextConfig`, `name`, `version` (+44 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 69 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `react` connect `AnimatedSignature.js` to `navBgIcons.js`, `package.json`, `Features.js`, `app/page.js`, `VeinTextFlow.js`?**
-  _High betweenness centrality (0.291) - this node is a cross-community bridge._
-- **Why does `gsap` connect `app/page.js` to `navBgIcons.js`, `package.json`, `AnimatedSignature.js`, `Features.js`, `VeinTextFlow.js`?**
-  _High betweenness centrality (0.223) - this node is a cross-community bridge._
+- **Why does `react` connect `AnimatedSignature.js` to `app/page.js`, `package.json`, `Features.js`, `Workflow.js`, `gsap`?**
+  _High betweenness centrality (0.290) - this node is a cross-community bridge._
+- **Why does `gsap` connect `gsap` to `app/page.js`, `package.json`, `AnimatedSignature.js`, `Features.js`, `Workflow.js`?**
+  _High betweenness centrality (0.222) - this node is a cross-community bridge._
 - **Why does `dependencies` connect `dependencies` to `package.json`?**
-  _High betweenness centrality (0.089) - this node is a cross-community bridge._
+  _High betweenness centrality (0.090) - this node is a cross-community bridge._
 - **What connects `eslintConfig`, `paths`, `nextConfig` to the rest of the system?**
-  _50 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `navBgIcons.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.14285714285714285 - nodes in this community are weakly interconnected._
+  _49 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `app/page.js` be split into smaller, more focused modules?**
+  _Cohesion score 0.09788359788359788 - nodes in this community are weakly interconnected._
 - **Should `package.json` be split into smaller, more focused modules?**
   _Cohesion score 0.10526315789473684 - nodes in this community are weakly interconnected._
