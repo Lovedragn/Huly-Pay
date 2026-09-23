@@ -410,7 +410,7 @@ export default function Workflow() {
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative w-full bg-black text-white py-24 sm:py-32 lg:py-40 overflow-hidden"
+      className="relative w-full bg-black text-white py-14 sm:py-32 lg:py-40 overflow-hidden"
     >
       {/* 
         Hover Spotlight Reveal Background:
@@ -437,14 +437,14 @@ export default function Workflow() {
         />
       </div>
 
-      <div className="relative z-10 max-w-[1720px] mx-auto px-6 sm:px-12 lg:px-24">
+      <div className="relative z-10 max-w-[1720px] mx-auto px-4 sm:px-12 lg:px-24">
         {/* Header Section */}
-        <div className="mb-20 sm:mb-28 lg:mb-36">
+        <div className="mb-14 sm:mb-28 lg:mb-36">
           <div className="inline-flex items-center gap-2 sm:gap-3.5">
             {/* Vertical YOUR */}
             <div className="flex items-center justify-center self-stretch">
               <span
-                className="font-pixel text-3xl sm:text-5xl lg:text-5xl font-semibold text-[#FF0000] tracking-[0.12em] sm:tracking-[0.16em] uppercase select-none leading-none inline-block"
+                className="font-pixel text-2xl sm:text-5xl lg:text-5xl font-semibold text-[#FF0000] tracking-[0.12em] sm:tracking-[0.16em] uppercase select-none leading-none inline-block"
                 style={{
                   writingMode: "vertical-rl",
                   transform: "rotate(180deg)",
@@ -456,17 +456,17 @@ export default function Workflow() {
 
             {/* Money Control (tightly stacked so both words fit within YOUR) */}
             <div className="flex flex-col justify-center leading-none">
-              <h2 className="font-pixel text-5xl sm:text-7xl lg:text-7xl text-white tracking-tight leading-[0.85] select-none">
+              <h2 className="font-pixel text-4xl sm:text-7xl lg:text-7xl text-white tracking-tight leading-[0.85] select-none">
                 Money
               </h2>
-              <h2 className="font-pixel text-5xl sm:text-7xl lg:text-7xl text-white tracking-tight leading-[0.85] select-none mt-1 sm:mt-2">
+              <h2 className="font-pixel text-4xl sm:text-7xl lg:text-7xl text-white tracking-tight leading-[0.85] select-none mt-1 sm:mt-2">
                 Control
               </h2>
             </div>
           </div>
 
           {/* Subtitle */}
-          <p className="font-sans text-sm sm:text-base text-[#D4D4D8] tracking-normal mt-6 max-w-2xl leading-relaxed">
+          <p className="font-sans text-xs sm:text-base text-[#D4D4D8] tracking-normal mt-4 sm:mt-6 max-w-2xl leading-relaxed">
             HulyPay An open-source payment and expense tracking platform built
             to help anyone pay, track, and understand their money.
           </p>
@@ -499,12 +499,12 @@ export default function Workflow() {
           </svg>
 
           {/* STEP 1: QR Badge on Left, 2X Text on Right */}
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 items-center gap-8 lg:gap-12 mb-28 sm:mb-36 lg:mb-48">
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 items-center gap-6 lg:gap-12 mb-16 sm:mb-36 lg:mb-48">
             {/* Left Badge: QR Scanner */}
             <div className="lg:col-span-5 flex justify-start lg:pl-6">
               <div
                 ref={badge1Ref}
-                className="w-[108px] sm:w-[132px] lg:w-[150px] relative"
+                className="w-[92px] sm:w-[132px] lg:w-[150px] relative"
               >
                 <Frame145Badge
                   svgRef={badge1SvgRef}
@@ -515,19 +515,19 @@ export default function Workflow() {
 
             {/* Right Text: 2X Times Scan QR to pay */}
             <div className="lg:col-span-7 flex items-center justify-start lg:pl-8">
-              <div className="flex items-center gap-4 sm:gap-6">
+              <div className="flex items-center gap-3 sm:gap-6">
                 {/* 2X Graphic */}
                 <div className="flex flex-col items-center justify-center leading-none select-none">
-                  <span className="font-doto text-6xl sm:text-7xl lg:text-8xl font-black text-white tracking-tighter">
+                  <span className="font-doto text-5xl sm:text-7xl lg:text-8xl font-black text-white tracking-tighter">
                     2
                   </span>
-                  <span className="font-pixel text-2xl sm:text-3xl lg:text-4xl font-bold text-[#62D800] -mt-1 sm:-mt-2">
+                  <span className="font-pixel text-xl sm:text-3xl lg:text-4xl font-bold text-[#62D800] -mt-1 sm:-mt-2">
                     X
                   </span>
                 </div>
 
                 {/* Description Lines */}
-                <div className="flex flex-col font-pixel text-xl sm:text-2xl lg:text-3xl font-semibold text-[#D4D4D8] tracking-wide leading-snug select-none">
+                <div className="flex flex-col font-pixel text-base sm:text-2xl lg:text-3xl font-semibold text-[#D4D4D8] tracking-wide leading-snug select-none">
                   <span>Times Scan QR to pay</span>
                   <span>Faster Tracking</span>
                 </div>
@@ -536,21 +536,21 @@ export default function Workflow() {
           </div>
 
           {/* STEP 2: Secure Text on Left, Chevron Badge on Right */}
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 items-center gap-8 lg:gap-12 mb-28 sm:mb-36 lg:mb-48">
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 items-center gap-6 lg:gap-12 mb-16 sm:mb-36 lg:mb-48">
             {/* Left Text: Keep your transactions (Secure) & Expenses Organized. */}
             <div className="order-2 lg:order-1 lg:col-span-7 flex justify-start lg:justify-end lg:pr-12">
-              <p className="font-pixel text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#D4D4D8] tracking-wide leading-snug max-w-xl select-none">
+              <p className="font-pixel text-lg sm:text-3xl lg:text-4xl font-semibold text-[#D4D4D8] tracking-wide leading-snug max-w-xl select-none">
                 Keep your transactions{" "}
                 <span className="text-[#D8FF00] font-bold">(Secure)</span> &amp;
                 Expenses Organized.
               </p>
             </div>
 
-            {/* Right Badge: Down Chevrons */}
-            <div className="order-1 lg:order-2 lg:col-span-5 flex justify-start lg:justify-end lg:pr-6">
+            {/* Right Badge: Down Chevrons (aligned right on mobile for zigzag flow) */}
+            <div className="order-1 lg:order-2 lg:col-span-5 flex justify-end lg:justify-end lg:pr-6">
               <div
                 ref={badge2Ref}
-                className="w-[108px] sm:w-[132px] lg:w-[150px] relative"
+                className="w-[92px] sm:w-[132px] lg:w-[150px] relative"
               >
                 <Frame143Badge
                   svgRef={badge2SvgRef}
@@ -561,12 +561,12 @@ export default function Workflow() {
           </div>
 
           {/* STEP 3: Shield Badge on Left, Visual Data Text on Right */}
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 items-center gap-8 lg:gap-12">
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 items-center gap-6 lg:gap-12">
             {/* Left Badge: Star Shield */}
             <div className="lg:col-span-5 flex justify-start lg:pl-6">
               <div
                 ref={badge3Ref}
-                className="w-[108px] sm:w-[132px] lg:w-[150px] relative"
+                className="w-[92px] sm:w-[132px] lg:w-[150px] relative"
               >
                 <Frame144Badge
                   svgRef={badge3SvgRef}
@@ -577,7 +577,7 @@ export default function Workflow() {
 
             {/* Right Text: Turn your spending into useful Visual Data. */}
             <div className="lg:col-span-7 flex justify-start lg:pl-8">
-              <p className="font-pixel text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#D4D4D8] tracking-wide leading-snug select-none">
+              <p className="font-pixel text-lg sm:text-3xl lg:text-4xl font-semibold text-[#D4D4D8] tracking-wide leading-snug select-none">
                 Turn your spending into useful{" "}
                 <span className="text-[#FF00F5] font-bold">Visual</span> Data.
               </p>

@@ -20,11 +20,11 @@ export default function PrivacyAndTermsPage() {
         accentColor="#62D800"
       />
 
-      <section className="w-full max-w-[1000px] mx-auto px-6 sm:px-10 lg:px-16 py-16 sm:py-24 space-y-16">
+      <section className="w-full max-w-[1000px] mx-auto px-4 sm:px-10 lg:px-16 py-10 sm:py-24 space-y-12 sm:space-y-16">
         {/* Quick Summary Highlights */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {/* Privacy Callout */}
-          <div className="p-6 sm:p-8 border-4 border-black bg-[#FFFFEB] shadow-[6px_6px_0px_#000000] flex flex-col justify-between">
+          <div className="p-5 sm:p-8 border-[3px] sm:border-4 border-black bg-[#FFFFEB] shadow-[4px_4px_0px_#000000] sm:shadow-[6px_6px_0px_#000000] flex flex-col justify-between">
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <span className="w-3 h-3 bg-[#62D800] rounded-full inline-block" />
@@ -35,7 +35,7 @@ export default function PrivacyAndTermsPage() {
               <p className="font-sans text-sm sm:text-base text-neutral-800 leading-relaxed">
                 HulyPay never harvests, stores, or sells your transaction logs or
                 financial details. All parsing and metrics calculation execute
-                strictly inside your device's memory.
+                strictly inside your device&apos;s memory.
               </p>
             </div>
             <a
@@ -47,7 +47,7 @@ export default function PrivacyAndTermsPage() {
           </div>
 
           {/* Terms Callout */}
-          <div className="p-6 sm:p-8 border-4 border-black bg-neutral-50 shadow-[6px_6px_0px_#000000] flex flex-col justify-between">
+          <div className="p-5 sm:p-8 border-[3px] sm:border-4 border-black bg-neutral-50 shadow-[4px_4px_0px_#000000] sm:shadow-[6px_6px_0px_#000000] flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between gap-2 mb-3">
                 <span className="font-bold text-sm sm:text-base text-black uppercase tracking-wider">
@@ -80,7 +80,7 @@ export default function PrivacyAndTermsPage() {
             <span className="px-3 py-1 bg-[#62D800] text-black font-pixel font-bold text-xs uppercase tracking-wider">
               Part I
             </span>
-            <h2 className="font-pixel text-3xl sm:text-4xl font-bold tracking-tight text-black">
+            <h2 className="font-pixel text-2xl sm:text-4xl font-bold tracking-tight text-black">
               PRIVACY POLICY
             </h2>
           </div>
@@ -161,7 +161,7 @@ export default function PrivacyAndTermsPage() {
                   href="https://github.com/Lovedragn/Huly-Pay"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#FF0000] underline font-pixel font-bold hover:text-black transition-colors"
+                  className="text-[#FF0000] underline font-pixel font-bold hover:text-black transition-colors break-all"
                 >
                   github.com/Lovedragn/Huly-Pay
                 </a>
@@ -180,7 +180,7 @@ export default function PrivacyAndTermsPage() {
             <span className="px-3 py-1 bg-[#EF4444] text-white font-pixel font-bold text-xs uppercase tracking-wider">
               Part II
             </span>
-            <h2 className="font-pixel text-3xl sm:text-4xl font-bold tracking-tight text-black">
+            <h2 className="font-pixel text-2xl sm:text-4xl font-bold tracking-tight text-black">
               TERMS OF SERVICE
             </h2>
           </div>
@@ -216,7 +216,7 @@ export default function PrivacyAndTermsPage() {
               <h3 className="font-pixel text-xl sm:text-2xl font-bold tracking-tight text-black">
                 3. Disclaimer of Warranties
               </h3>
-              <p className="text-neutral-700 leading-relaxed text-base sm:text-lg font-mono text-sm bg-neutral-100 p-4 border-2 border-neutral-300">
+              <p className="text-neutral-700 leading-relaxed text-xs sm:text-base font-mono bg-neutral-100 p-3 sm:p-4 border-2 border-neutral-300 break-words">
                 THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF
                 ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
                 WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE

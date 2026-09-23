@@ -105,12 +105,12 @@ export default function FeaturesPage() {
       />
 
       {/* Main Features Deep-Dive Section */}
-      <section className="w-full max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 py-16 sm:py-24">
-        <div className="space-y-16 sm:space-y-24">
+      <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-10 lg:px-16 py-10 sm:py-24">
+        <div className="space-y-10 sm:space-y-24">
           {FEATURE_LIST.map((feat, idx) => (
             <div
               key={feat.id}
-              className="bg-white border-4 border-black rounded-[24px] sm:rounded-[32px] p-6 sm:p-10 lg:p-12 shadow-[8px_8px_0px_#000000] flex flex-col lg:flex-row items-center justify-between gap-10 hover:-translate-y-1 transition-transform"
+              className="bg-white border-4 border-black rounded-[20px] sm:rounded-[32px] p-5 sm:p-10 lg:p-12 shadow-[6px_6px_0px_#000000] sm:shadow-[8px_8px_0px_#000000] flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-10 hover:-translate-y-1 transition-transform"
             >
               {/* Left Column: Details */}
               <div className="flex-1 w-full">
@@ -150,8 +150,8 @@ export default function FeaturesPage() {
               </div>
 
               {/* Right Column: Visual Animation Component */}
-              <div className="w-full lg:w-[420px] h-[320px] bg-[#E6E6E6] border-2 border-black rounded-[18px] flex items-center justify-center p-6 shrink-0 relative overflow-hidden">
-                <div className="scale-90 sm:scale-100 flex items-center justify-center">
+              <div className="w-full lg:w-[420px] h-[220px] sm:h-[280px] lg:h-[320px] bg-[#E6E6E6] border-2 border-black rounded-[14px] sm:rounded-[18px] flex items-center justify-center p-4 sm:p-6 shrink-0 relative overflow-hidden">
+                <div className="scale-85 sm:scale-100 flex items-center justify-center">
                   {feat.animation}
                 </div>
               </div>
@@ -160,19 +160,19 @@ export default function FeaturesPage() {
         </div>
 
         {/* Bottom CTA Card */}
-        <div className="mt-20 bg-black text-white border-4 border-black rounded-[28px] p-8 sm:p-14 text-center flex flex-col items-center">
-          <h2 className="font-doto text-3xl sm:text-5xl font-black tracking-wide mb-4">
+        <div className="mt-14 sm:mt-20 bg-black text-white border-4 border-black rounded-[20px] sm:rounded-[28px] p-6 sm:p-14 text-center flex flex-col items-center">
+          <h2 className="font-doto text-2xl sm:text-5xl font-black tracking-wide mb-3 sm:mb-4">
             EXPERIENCE HULYPAY TODAY
           </h2>
-          <p className="text-neutral-400 max-w-xl text-base sm:text-lg mb-8 font-sans">
+          <p className="text-neutral-400 max-w-xl text-sm sm:text-lg mb-6 sm:mb-8 font-sans">
             Download the Android release or build directly from our open-source
             GitHub repository.
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
             <a
               href={EXTERNAL_LINKS.downloads.androidApk}
               download={EXTERNAL_LINKS.downloads.apkFilename}
-              className="px-8 py-3.5 bg-[#FF0000] text-white font-bold text-base hover:bg-[#CC0000] transition-colors rounded-none shadow-[4px_4px_0px_#FFFFFF]"
+              className="w-full sm:w-auto text-center px-6 sm:px-8 py-3 sm:py-3.5 bg-[#FF0000] text-white font-bold text-sm sm:text-base hover:bg-[#CC0000] transition-colors rounded-none shadow-[4px_4px_0px_#FFFFFF]"
             >
               DOWNLOAD APK
             </a>
@@ -180,7 +180,7 @@ export default function FeaturesPage() {
               href={EXTERNAL_LINKS.social.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-3.5 bg-white text-black font-bold text-base hover:bg-neutral-200 transition-colors rounded-none shadow-[4px_4px_0px_#FF0000]"
+              className="w-full sm:w-auto text-center px-6 sm:px-8 py-3 sm:py-3.5 bg-white text-black font-bold text-sm sm:text-base hover:bg-neutral-200 transition-colors rounded-none shadow-[4px_4px_0px_#FF0000]"
             >
               VIEW ON GITHUB
             </a>

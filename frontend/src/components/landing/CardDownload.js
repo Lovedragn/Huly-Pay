@@ -12,19 +12,19 @@ export default function CardDownload() {
       {/* Full-width SVG path spanning from window corner to corner */}
       <VeinTextFlow />
 
-      <div className="relative w-full max-w-[1550px] mx-auto flex flex-col px-6 sm:px-12 md:px-16 xl:px-[105px] mt-2 sm:mt-4">
+      <div className="relative w-full max-w-[1550px] mx-auto flex flex-col px-4 sm:px-12 md:px-16 xl:px-[105px] mt-2 sm:mt-4">
         {/* Top-Left Heading */}
-        <div className="select-none mb-8 sm:mb-10 lg:mb-14">
-          <h2 className="font-pixel text-3xl sm:text-5xl md:text-6xl lg:text-[64px] text-black leading-[1.12] tracking-wide">
+        <div className="select-none mb-6 sm:mb-10 lg:mb-14">
+          <h2 className="font-pixel text-2xl sm:text-5xl md:text-6xl lg:text-[64px] text-black leading-[1.15] tracking-wide">
             Ready to take control <br className="hidden sm:inline" />
             of your money?
           </h2>
         </div>
 
         {/* Download Platform Cards Container */}
-        <div className="w-full flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10 xl:gap-14">
+        <div className="w-full flex flex-col lg:flex-row items-center justify-center gap-5 sm:gap-6 lg:gap-10 xl:gap-14">
           {/* Card 1: Android & Dev Platforms (Red) */}
-          <div className="relative w-full max-w-[460px] h-[235px] sm:h-[250px] bg-[#FF0000] border-[8px] border-[#B30003] rounded-[20px] sm:rounded-[24px] p-5 sm:p-6 flex flex-col justify-between select-none shadow-xl transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl">
+          <div className="relative w-full max-w-[460px] h-[220px] sm:h-[250px] bg-[#FF0000] border-[6px] sm:border-[8px] border-[#B30003] rounded-[18px] sm:rounded-[24px] p-4 sm:p-6 flex flex-col justify-between select-none shadow-xl transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl">
             {/* Header Title (Dot-Matrix Font - Bold/Black) */}
             <div>
               <h3 className="font-doto font-bolder font-black text-2xl sm:text-3xl lg:text-[34px] text-white tracking-wider leading-none">
@@ -56,7 +56,7 @@ export default function CardDownload() {
           </div>
 
           {/* Card 2: iOS & Apple Platform (Black) */}
-          <div className="relative w-full max-w-[460px] h-[235px] sm:h-[250px] bg-black border-[8px] border-[#666666] rounded-[20px] sm:rounded-[24px] p-5 sm:p-6 flex flex-col justify-between select-none shadow-xl transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl">
+          <div className="relative w-full max-w-[460px] h-[220px] sm:h-[250px] bg-black border-[6px] sm:border-[8px] border-[#666666] rounded-[18px] sm:rounded-[24px] p-4 sm:p-6 flex flex-col justify-between select-none shadow-xl transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl">
             {/* Header Title (Dot-Matrix Font - Bold/Black) */}
             <div>
               <h3 className="font-doto font-bolder font-black text-2xl sm:text-3xl lg:text-[34px] text-white tracking-wider leading-none">
@@ -76,7 +76,7 @@ export default function CardDownload() {
               <button
                 type="button"
                 disabled
-                className="w-full max-w-[290px] h-[42px] sm:h-[46px] bg-white/90 rounded-full flex items-center justify-center font-pixel font-bolder font-black text-xs sm:text-sm text-black tracking-wider shadow-md opacity-80 cursor-not-allowed select-none"
+                className="w-full max-w-[290px] h-11 sm:h-[46px] bg-white/90 rounded-full flex items-center justify-center font-pixel font-bolder font-black text-xs sm:text-sm text-black tracking-wider shadow-md opacity-80 cursor-not-allowed select-none"
               >
                 COMING SOON
               </button>

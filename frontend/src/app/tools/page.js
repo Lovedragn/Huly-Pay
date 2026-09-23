@@ -196,17 +196,17 @@ export default function ToolsPage() {
         accentColor="#62D800"
       />
 
-      <section className="w-full max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 py-16 sm:py-24 space-y-20">
+      <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-10 lg:px-16 py-10 sm:py-24 space-y-14 sm:space-y-20">
         {/* ===================================================================== */}
         {/* SECTION 1: ARCHITECTURE & TECH STACK OVERVIEW */}
         {/* ===================================================================== */}
         <div>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pb-4 border-b-2 border-black">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4 mb-8 sm:mb-10 pb-4 border-b-2 border-black">
             <div>
               <span className="text-xs font-bold tracking-widest text-neutral-500 uppercase block">
                 CORE ARCHITECTURE
               </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-black mt-1">
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-black mt-1">
                 TECHNOLOGY STACK
               </h2>
             </div>
@@ -215,11 +215,11 @@ export default function ToolsPage() {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {TECH_STACK_CATEGORIES.map((cat, idx) => (
               <div
                 key={idx}
-                className="border-4 border-black bg-white p-6 sm:p-8 shadow-[6px_6px_0px_#000000] flex flex-col justify-between"
+                className="border-[3px] sm:border-4 border-black bg-white p-5 sm:p-8 shadow-[4px_4px_0px_#000000] sm:shadow-[6px_6px_0px_#000000] flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center gap-2 mb-6 pb-3 border-b border-neutral-200">
@@ -266,13 +266,13 @@ export default function ToolsPage() {
         {/* ===================================================================== */}
         {/* SECTION 2: API KEYS & ENVIRONMENT CONFIGURATION */}
         {/* ===================================================================== */}
-        <div className="border-4 border-black bg-[#FFFFEB] p-8 sm:p-12 shadow-[8px_8px_0px_#000000]">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-8 pb-6 border-b-2 border-black">
+        <div className="border-[3px] sm:border-4 border-black bg-[#FFFFEB] p-5 sm:p-12 shadow-[5px_5px_0px_#000000] sm:shadow-[8px_8px_0px_#000000]">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 sm:gap-6 mb-6 sm:mb-8 pb-5 sm:pb-6 border-b-2 border-black">
             <div>
               <span className="text-xs font-mono text-[#FF0000] font-bold uppercase tracking-wider block mb-1">
                 SECURITY &amp; ENVIRONMENT CONFIGURATION
               </span>
-              <h3 className="font-pixel text-2xl sm:text-4xl font-bold text-black">
+              <h3 className="font-pixel text-xl sm:text-4xl font-bold text-black">
                 API KEYS &amp; CREDENTIAL MANAGEMENT
               </h3>
             </div>
@@ -281,8 +281,8 @@ export default function ToolsPage() {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-sans">
-            <div className="bg-white border-2 border-black p-5 shadow-[4px_4px_0px_#000000]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 font-sans">
+            <div className="bg-white border-2 border-black p-4 sm:p-5 shadow-[3px_3px_0px_#000000] sm:shadow-[4px_4px_0px_#000000]">
               <span className="font-mono text-xs font-bold text-black bg-[#FF00F5]/20 px-2 py-0.5 block w-max mb-2">
                 GEMINI_API_KEY
               </span>
@@ -327,12 +327,12 @@ export default function ToolsPage() {
         {/* SECTION 3: DEVELOPER UTILITIES & TOOLS SUITE */}
         {/* ===================================================================== */}
         <div>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pb-4 border-b-2 border-black">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4 mb-8 sm:mb-10 pb-4 border-b-2 border-black">
             <div>
               <span className="text-xs font-bold tracking-widest text-neutral-500 uppercase block">
                 DEVELOPER TOOLING
               </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-black mt-1">
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-black mt-1">
                 ECOSYSTEM UTILITIES
               </h2>
             </div>
@@ -341,11 +341,11 @@ export default function ToolsPage() {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {TOOLS.map((tool) => (
               <div
                 key={tool.id}
-                className="border-4 border-black bg-white p-6 sm:p-8 shadow-[8px_8px_0px_#000000] flex flex-col justify-between hover:-translate-y-1 transition-transform"
+                className="border-[3px] sm:border-4 border-black bg-white p-5 sm:p-8 shadow-[5px_5px_0px_#000000] sm:shadow-[8px_8px_0px_#000000] flex flex-col justify-between hover:-translate-y-1 transition-transform"
               >
                 <div>
                   <div className="flex items-center justify-between gap-4 mb-4">
@@ -405,15 +405,15 @@ export default function ToolsPage() {
         {/* ===================================================================== */}
         {/* SECTION 4: CALL TO ACTION BANNER */}
         {/* ===================================================================== */}
-        <div className="bg-[#FFFFEB] border-4 border-black p-8 sm:p-12 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-[8px_8px_0px_#000000]">
+        <div className="bg-[#FFFFEB] border-[3px] sm:border-4 border-black p-5 sm:p-12 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 sm:gap-8 shadow-[5px_5px_0px_#000000] sm:shadow-[8px_8px_0px_#000000]">
           <div>
             <span className="font-mono text-xs text-[#FF0000] font-bold uppercase block mb-1">
               CONTRIBUTE TO HULYPAY
             </span>
-            <h3 className="font-doto text-2xl sm:text-4xl font-black text-black">
+            <h3 className="font-doto text-xl sm:text-4xl font-black text-black">
               WANT TO EXPAND THE HULYPAY ECOSYSTEM?
             </h3>
-            <p className="text-neutral-700 font-sans text-sm sm:text-base mt-2 max-w-xl">
+            <p className="text-neutral-700 font-sans text-xs sm:text-base mt-2 max-w-xl">
               We welcome custom Flutter widgets, Spring Boot microservice modules,
               Gemini AI prompt chains, and payment regex parser plugins. Submit a pull request on GitHub.
             </p>
@@ -422,7 +422,7 @@ export default function ToolsPage() {
             href={EXTERNAL_LINKS.social.github}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-8 py-3.5 bg-black text-white font-pixel font-bold text-base hover:bg-neutral-800 transition-colors shrink-0 shadow-[4px_4px_0px_#62D800]"
+            className="w-full sm:w-auto text-center px-6 sm:px-8 py-3 sm:py-3.5 bg-black text-white font-pixel font-bold text-sm sm:text-base hover:bg-neutral-800 transition-colors shrink-0 shadow-[4px_4px_0px_#62D800]"
           >
             CONTRIBUTE ON GITHUB
           </a>

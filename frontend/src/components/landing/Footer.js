@@ -20,26 +20,9 @@ export default function Footer() {
         </div>
 
         {/* Bottom Section: Links & Social Icons */}
-        <div className="w-full mt-10 sm:mt-14 lg:mt-[94px] flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-4 border-t border-neutral-900/60 sm:border-t-0 pt-6 sm:pt-0">
-          {/* Left: @HulyPay, Portfolio, Privacy, Terms */}
-          <div className="flex items-center gap-6 sm:gap-8 md:gap-10 lg:gap-14 font-pixel text-[14px] text-white">
-            <Link
-              href={EXTERNAL_LINKS.social.twitter}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-neutral-400 transition-colors select-none"
-            >
-              <span className="text-[17px] inline-block align-baseline">@</span>
-              HulyPay
-            </Link>
-            <a
-              href={EXTERNAL_LINKS.social.personal_portfolio}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-neutral-400 transition-colors select-none"
-            >
-              Portfolio
-            </a>
+        <div className="w-full mt-10 sm:mt-14 lg:mt-[94px] flex flex-row items-center justify-between gap-4 border-t border-neutral-900/60 sm:border-t-0 pt-6 sm:pt-0">
+          {/* Left: Privacy & Terms */}
+          <div className="font-pixel text-[13px] sm:text-[14px] text-white">
             <Link
               href={EXTERNAL_LINKS.nav.privacyTerms}
               className="hover:text-neutral-400 transition-colors select-none whitespace-nowrap"
