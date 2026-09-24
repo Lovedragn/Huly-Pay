@@ -19,22 +19,56 @@ import {
 
 const chartConfig = {
   totalAmount: {
-    label: "Total Spent ($)",
+    label: "Total Amount",
     color: "#FF0000", // Brand Red
   },
-  settlements: {
-    label: "Settled Volume ($)",
+  averageAmount: {
+    label: "Average Ticket",
     color: "#62D800", // Terminal Lime
-  },
-  count: {
-    label: "Tx Count",
-    color: "#FF00F5", // Neon Magenta
   },
 };
 
-export default function AreaChartSpending({ data = [], currency = "INR" }) {
-  const [timeRange, setTimeRange] = React.useState("30d");
-  const [activeMetric, setActiveMetric] = React.useState("both"); // "amount", "count", "both"
+const TIMEFRAMES = [
+  { id: "7d", label: "7D", days: 7 },
+  { id: "1m", label: "1M", days: 30 },
+  { id: "4m", label: "4M", days: 120 },
+  { id: "6m", label: "6M", days: 180 },
+  { id: "1y", label: "1Y", days: 365 },
+  { id: "all", label: "ALL", days: null },
+];
+
+export default function AreaChartSpending({
+  data = [],
+  currency = "INR",
+  isTheaterMode: controlledTheaterMode,
+  onToggleTheater,
+}) {
+  const [internalTheaterMode, setInternalTheaterMode] = React.useState(false);
+  const isTheater =
+    typeof controlledTheaterMode === "boolean"
+      ? controlledTheaterMode
+      : internalTheaterMode;
+
+  const handleToggleTheater = React.useCallback(() => {
+    if (onToggleTheater) {
+      onToggleTheater();
+    } else {
+      setInternalTheaterMode((prev) => !prev);
+    }
+  }, [onToggleTheater]);
+
+  React.useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Escape" && isTheater) {
+        handleToggleTheater();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isTheater, handleToggleTheater]);
+
+  const [timeRange, setTimeRange] = React.useState("1m");
+  const [activeMetric, setActiveMetric] = React.useState("amount"); // "amount" | "average"
 
   const currencySymbol = currency === "INR" ? "₹" : "$";
   const rate = currency === "USD" ? 83.5 : 1;
@@ -42,21 +76,58 @@ export default function AreaChartSpending({ data = [], currency = "INR" }) {
   // Filter and format based on time range and currency
   const filteredData = React.useMemo(() => {
     if (!data || data.length === 0) return [];
-    const sliced =
-      timeRange === "7d"
-        ? data.slice(-7)
-        : timeRange === "14d"
-        ? data.slice(-14)
-        : data;
+
+    let scoped = data;
+    if (timeRange !== "all") {
+      const selectedTf = TIMEFRAMES.find((t) => t.id === timeRange);
+      const days = selectedTf?.days || 30;
+
+      // Extract valid timestamps from items with date
+      const timestamps = data
+        .map((d) => (d.date ? new Date(d.date).getTime() : NaN))
+        .filter((t) => !isNaN(t));
+
+      if (timestamps.length > 0) {
+        const maxTime = Math.max(...timestamps);
+        const cutoffTime = maxTime - days * 24 * 60 * 60 * 1000;
+        const matched = data.filter((item) => {
+          if (!item.date) return true;
+          const t = new Date(item.date).getTime();
+          return isNaN(t) || t >= cutoffTime;
+        });
+        scoped = matched.length > 0 ? matched : data.slice(-days);
+      } else {
+        scoped = data.slice(-days);
+      }
+    }
 
     if (currency === "USD") {
-      return sliced.map((item) => ({
-        ...item,
-        totalAmount: Number(((item.totalAmount || 0) / rate).toFixed(2)),
-        settlements: Number(((item.settlements || 0) / rate).toFixed(2)),
-      }));
+      return scoped.map((item) => {
+        const totalAmount = Number(((item.totalAmount || 0) / rate).toFixed(2));
+        const count = item.count || 1;
+        const settlements = Number(((item.settlements || 0) / rate).toFixed(2));
+        const averageAmount = Number((totalAmount / count).toFixed(2));
+        return {
+          ...item,
+          totalAmount,
+          settlements,
+          averageAmount,
+        };
+      });
     }
-    return sliced;
+
+    return scoped.map((item) => {
+      const totalAmount = Math.round(item.totalAmount || 0);
+      const count = item.count || 1;
+      const settlements = Math.round(item.settlements || 0);
+      const averageAmount = Math.round(totalAmount / count);
+      return {
+        ...item,
+        totalAmount,
+        settlements,
+        averageAmount,
+      };
+    });
   }, [data, timeRange, currency, rate]);
 
   const totalPeriodAmount = React.useMemo(() => {
@@ -69,85 +140,116 @@ export default function AreaChartSpending({ data = [], currency = "INR" }) {
 
   const peakItem = React.useMemo(() => {
     if (!filteredData.length) return null;
+    const metricKey = activeMetric === "average" ? "averageAmount" : "totalAmount";
     return filteredData.reduce(
       (prev, curr) =>
-        (curr.totalAmount || 0) > (prev?.totalAmount || 0) ? curr : prev,
+        (curr[metricKey] || 0) > (prev?.[metricKey] || 0) ? curr : prev,
       filteredData[0]
     );
-  }, [filteredData]);
+  }, [filteredData, activeMetric]);
 
   return (
     <div className="border-[3px] border-black bg-white shadow-[6px_6px_0px_#000000] p-4 sm:p-6 flex flex-col justify-between">
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b-2 border-neutral-200">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 bg-[#FF0000] inline-block animate-pulse" />
-            <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#FF0000]">
-              ANALYTICS STREAM • AREA CHART
-            </span>
-          </div>
-          <h2 className="text-xl sm:text-2xl font-bold font-pixel text-black mt-1">
-            Settlement Velocity & Daily Volume
+        <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
+          <h2 className="text-xl sm:text-2xl font-bold font-pixel text-black">
+            Daily Spending
           </h2>
-          <p className="text-xs sm:text-sm text-neutral-600 font-sans mt-0.5">
-            Real-time daily expense outflow from Spring Boot backend (
-            <code className="text-xs bg-neutral-100 px-1 py-0.5 font-mono">
-              /api/v1/analytics/daily-spending
-            </code>
-            )
-          </p>
+          <button
+            type="button"
+            onClick={handleToggleTheater}
+            className={`px-3 py-1 border-2 border-black font-mono text-xs font-black transition-all cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 flex items-center gap-1.5 ${
+              isTheater
+                ? "bg-[#FF0000] text-white hover:bg-black"
+                : "bg-[#D8FF00] text-black hover:bg-black hover:text-white"
+            }`}
+            title={
+              isTheater
+                ? "Exit Theater View (normal width) [Esc]"
+                : "Theater View: Expand chart to full width of the window"
+            }
+          >
+            {isTheater ? (
+              <>
+                <svg
+                  className="w-3.5 h-3.5 shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2.5"
+                    d="M9 9L4 4m0 0v4m0-4h4m6 6l5 5m0 0v-4m0 4h-4m-7 5l-5 5m0 0v-4m0 4h4m11-5l5-5m0 0h-4m4 0v4"
+                  />
+                </svg>
+                <span>Exit Theater</span>
+              </>
+            ) : (
+              <>
+                <svg
+                  className="w-3.5 h-3.5 shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2.5"
+                    d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                  />
+                </svg>
+                <span>Theater View</span>
+              </>
+            )}
+          </button>
         </div>
 
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Metric Selector */}
+          {/* Metric Selector: Amount vs Average */}
           <div className="flex border-2 border-black bg-neutral-100 p-0.5 text-xs font-mono">
             <button
-              onClick={() => setActiveMetric("both")}
-              className={`px-2.5 py-1 transition-colors ${
-                activeMetric === "both"
-                  ? "bg-black text-white font-bold"
-                  : "text-neutral-700 hover:text-black"
-              }`}
-            >
-              Dual View
-            </button>
-            <button
+              type="button"
               onClick={() => setActiveMetric("amount")}
-              className={`px-2.5 py-1 transition-colors ${
+              className={`px-3 py-1 transition-colors cursor-pointer ${
                 activeMetric === "amount"
                   ? "bg-black text-white font-bold"
                   : "text-neutral-700 hover:text-black"
               }`}
             >
-              Amount Only
+              Amount
             </button>
             <button
-              onClick={() => setActiveMetric("count")}
-              className={`px-2.5 py-1 transition-colors ${
-                activeMetric === "count"
+              type="button"
+              onClick={() => setActiveMetric("average")}
+              className={`px-3 py-1 transition-colors cursor-pointer ${
+                activeMetric === "average"
                   ? "bg-black text-white font-bold"
                   : "text-neutral-700 hover:text-black"
               }`}
             >
-              Tx Count
+              Average
             </button>
           </div>
 
-          {/* Timeframe Selector */}
+          {/* Timeframe Selector: 7d, 1m, 4m, 6m, 1y, all */}
           <div className="flex border-2 border-black bg-neutral-100 p-0.5 text-xs font-mono">
-            {["7d", "14d", "30d"].map((range) => (
+            {TIMEFRAMES.map((t) => (
               <button
-                key={range}
-                onClick={() => setTimeRange(range)}
-                className={`px-2.5 py-1 uppercase transition-colors ${
-                  timeRange === range
+                key={t.id}
+                type="button"
+                onClick={() => setTimeRange(t.id)}
+                className={`px-2 sm:px-2.5 py-1 uppercase transition-colors cursor-pointer ${
+                  timeRange === t.id
                     ? "bg-[#62D800] text-black font-black"
                     : "text-neutral-700 hover:text-black"
                 }`}
               >
-                {range}
+                {t.label}
               </button>
             ))}
           </div>
@@ -155,64 +257,68 @@ export default function AreaChartSpending({ data = [], currency = "INR" }) {
       </div>
 
       {/* Summary KPI quick indicators */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-4 border-b border-neutral-100 my-2">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 py-4 border-b border-neutral-100 my-2">
         <div className="bg-[#FFFFEB] border border-neutral-300 p-2.5">
           <span className="text-[11px] font-mono uppercase text-neutral-500 block">
-            Period Volume
+            Total Amount
           </span>
           <span className="font-doto text-lg sm:text-xl font-black text-black">
             {currencySymbol}
-            {totalPeriodAmount.toLocaleString()}
+            {Math.round(totalPeriodAmount).toLocaleString()}
           </span>
         </div>
         <div className="bg-neutral-50 border border-neutral-300 p-2.5">
           <span className="text-[11px] font-mono uppercase text-neutral-500 block">
-            Total Tx Count
+            Avg Amount
           </span>
-          <span className="font-doto text-lg sm:text-xl font-black text-[#62D800]">
-            {totalPeriodTx} txs
-          </span>
-        </div>
-        <div className="bg-neutral-50 border border-neutral-300 p-2.5">
-          <span className="text-[11px] font-mono uppercase text-neutral-500 block">
-            Avg Daily Burn
-          </span>
-          <span className="font-doto text-lg sm:text-xl font-black text-black">
+          <span className="font-doto text-lg sm:text-xl font-black text-[#058a00]">
             {currencySymbol}
             {filteredData.length > 0
               ? Math.round(totalPeriodAmount / filteredData.length).toLocaleString()
               : 0}
           </span>
         </div>
-        <div className="bg-[#FFFFEB] border border-neutral-300 p-2.5">
+        <div className="bg-neutral-50 border border-neutral-300 p-2.5">
           <span className="text-[11px] font-mono uppercase text-neutral-500 block">
-            Settlement SLA
+            Avg Transaction
           </span>
-          <span className="font-doto text-lg sm:text-xl font-black text-[#FF00F5]">
-            99.98%
+          <span className="font-doto text-lg sm:text-xl font-black text-black">
+            {currencySymbol}
+            {totalPeriodTx > 0
+              ? Math.round(totalPeriodAmount / totalPeriodTx).toLocaleString()
+              : 0}
           </span>
         </div>
       </div>
 
       {/* Area Chart Container */}
-      <div className="w-full pt-4 min-h-[300px]">
-        <ChartContainer config={chartConfig} className="w-full h-[320px]">
+      <div
+        className={`w-full pt-4 transition-all duration-300 ${
+          isTheater ? "min-h-[480px]" : "min-h-[300px]"
+        }`}
+      >
+        <ChartContainer
+          config={chartConfig}
+          className={`w-full transition-all duration-300 ${
+            isTheater ? "h-[480px] sm:h-[520px]" : "h-[320px]"
+          }`}
+        >
           <AreaChart
             data={filteredData}
-            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+            margin={
+              isTheater
+                ? { top: 20, right: 30, left: -5, bottom: 5 }
+                : { top: 10, right: 10, left: -20, bottom: 0 }
+            }
           >
             <defs>
-              <linearGradient id="fillSpending" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fillAmount" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#FF0000" stopOpacity={0.45} />
                 <stop offset="95%" stopColor="#FF0000" stopOpacity={0.02} />
               </linearGradient>
-              <linearGradient id="fillSettlement" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#62D800" stopOpacity={0.35} />
+              <linearGradient id="fillAverage" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#62D800" stopOpacity={0.45} />
                 <stop offset="95%" stopColor="#62D800" stopOpacity={0.02} />
-              </linearGradient>
-              <linearGradient id="fillCount" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#FF00F5" stopOpacity={0.4} />
-                <stop offset="95%" stopColor="#FF00F5" stopOpacity={0.02} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -222,6 +328,7 @@ export default function AreaChartSpending({ data = [], currency = "INR" }) {
               axisLine={false}
               tickMargin={8}
               tickFormatter={(value) => {
+                if (!value) return "";
                 const parts = value.split("-");
                 return parts.length >= 3 ? `${parts[1]}/${parts[2]}` : value;
               }}
@@ -250,9 +357,7 @@ export default function AreaChartSpending({ data = [], currency = "INR" }) {
                         {chartConfig[name]?.label || name}:
                       </span>
                       <span className="font-doto font-bold text-black">
-                        {name === "count"
-                          ? `${val} txs`
-                          : `${currencySymbol}${Number(val).toLocaleString()}`}
+                        {currencySymbol}{Number(val).toLocaleString()}
                       </span>
                     </div>
                   )}
@@ -260,37 +365,29 @@ export default function AreaChartSpending({ data = [], currency = "INR" }) {
               }
             />
 
-            {(activeMetric === "both" || activeMetric === "amount") && (
+            {activeMetric === "amount" && (
               <Area
                 type="monotone"
                 dataKey="totalAmount"
+                name="totalAmount"
                 stroke="#FF0000"
                 strokeWidth={2.5}
-                fill="url(#fillSpending)"
+                fill="url(#fillAmount)"
                 dot={{ r: 3, fill: "#FF0000", strokeWidth: 1, stroke: "#000" }}
                 activeDot={{ r: 6, fill: "#FF0000", stroke: "#000", strokeWidth: 2 }}
               />
             )}
 
-            {activeMetric === "both" && (
+            {activeMetric === "average" && (
               <Area
                 type="monotone"
-                dataKey="settlements"
+                dataKey="averageAmount"
+                name="averageAmount"
                 stroke="#62D800"
-                strokeWidth={2}
-                fill="url(#fillSettlement)"
-                dot={false}
-              />
-            )}
-
-            {activeMetric === "count" && (
-              <Area
-                type="stepAfter"
-                dataKey="count"
-                stroke="#FF00F5"
                 strokeWidth={2.5}
-                fill="url(#fillCount)"
-                dot={{ r: 4, fill: "#FF00F5", strokeWidth: 1, stroke: "#000" }}
+                fill="url(#fillAverage)"
+                dot={{ r: 3, fill: "#62D800", strokeWidth: 1, stroke: "#000" }}
+                activeDot={{ r: 6, fill: "#62D800", stroke: "#000", strokeWidth: 2 }}
               />
             )}
             <ChartLegend content={<ChartLegendContent />} />
@@ -301,9 +398,13 @@ export default function AreaChartSpending({ data = [], currency = "INR" }) {
       <div className="mt-3 pt-3 border-t border-neutral-200 flex items-center justify-between text-[11px] font-mono text-neutral-500">
         <span>STATUS: 200 OK • STREAM SYNCED</span>
         <span>
-          PEAK: {currencySymbol}
-          {peakItem?.totalAmount
-            ? Math.round(peakItem.totalAmount).toLocaleString()
+          PEAK {activeMetric === "average" ? "AVERAGE" : "AMOUNT"}: {currencySymbol}
+          {peakItem
+            ? Math.round(
+                activeMetric === "average"
+                  ? peakItem.averageAmount || 0
+                  : peakItem.totalAmount || 0
+              ).toLocaleString()
             : 0}{" "}
           • {peakItem?.date || "LIVE"}
         </span>

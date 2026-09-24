@@ -43,18 +43,9 @@ export default function RadarChartPerformance({ data = [] }) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b-2 border-neutral-200">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 bg-[#D8FF00] inline-block border border-black" />
-            <span className="font-mono text-xs font-bold uppercase tracking-wider text-neutral-800">
-              NETWORK HEALTH • RADAR CHART
-            </span>
-          </div>
-          <h2 className="text-xl sm:text-2xl font-bold font-pixel text-black mt-1">
+          <h2 className="text-xl sm:text-2xl font-bold font-pixel text-black">
             System & Financial Radar
           </h2>
-          <p className="text-xs sm:text-sm text-neutral-600 font-sans mt-0.5">
-            Operational risk, SMS reconciliation & latency assessment
-          </p>
         </div>
 
         {/* Benchmark toggle */}

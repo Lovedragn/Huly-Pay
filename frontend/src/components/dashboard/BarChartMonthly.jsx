@@ -61,18 +61,9 @@ export default function BarChartMonthly({ data = [], currency = "INR" }) {
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b-2 border-neutral-200">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 bg-[#62D800] inline-block" />
-            <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#62D800]">
-              MONTHLY CADENCE • BAR CHART
-            </span>
-          </div>
-          <h2 className="text-xl sm:text-2xl font-bold font-pixel text-black mt-1">
-            Monthly Spend vs Budget Cap
+          <h2 className="text-xl sm:text-2xl font-bold font-pixel text-black">
+            Monthly Spending vs Budget
           </h2>
-          <p className="text-xs sm:text-sm text-neutral-600 font-sans mt-0.5">
-            Aggregated from live payment ledger & Spring Boot database
-          </p>
         </div>
 
         {/* View Toggle */}
