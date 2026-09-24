@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { EXTERNAL_LINKS } from "../../assets/external_data";
 import { NAV_BG_SVGS } from "@/assets";
+import { useAuth } from "@/context/AuthContext";
 
 function NavLink({
   href,
@@ -91,7 +92,9 @@ function NavLink({
 }
 
 function DashboardButton() {
+  const { isAuthenticated, user, signOut } = useAuth();
   const lineRef = useRef(null);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   useEffect(() => {
     if (lineRef.current) {
@@ -125,37 +128,107 @@ function DashboardButton() {
     });
   };
 
+  // If user is NOT logged in previously: display "Login" pointing to /login
+  if (!isAuthenticated) {
+    return (
+      <Link
+        href={EXTERNAL_LINKS.nav.login || "/login"}
+        aria-label="Login to HulyPay"
+        prefetch={false}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        className="group h-full w-[220px] bg-black hidden md:flex items-center justify-center gap-2 cursor-pointer hover:bg-neutral-900 transition-colors select-none"
+      >
+        <span className="relative inline-block leading-none">
+          <span className="font-pixel text-[14px] text-white tracking-wider whitespace-nowrap">
+            Login
+          </span>
+          {/* Animated White Underline: starts from left, kept while hovering, ends to right on leave */}
+          <span
+            className="absolute -bottom-[2px] left-0 w-full h-[2px] overflow-hidden pointer-events-none"
+            aria-hidden="true"
+          >
+            <span ref={lineRef} className="block w-full h-full bg-white" />
+          </span>
+        </span>
+        <Image
+          src="/assets/Open_Link.svg"
+          alt="Login"
+          width={10}
+          height={10}
+          className="w-[10px] h-[10px] object-contain shrink-0"
+        />
+      </Link>
+    );
+  }
+
+  // If user IS logged in previously: display "DashBoard" pointing to /dashboard
   return (
-    <Link
-      href={EXTERNAL_LINKS.nav.dashboard}
-      aria-label="Open Dashboard"
-      prefetch={false}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      className="group h-full w-[220px] bg-black hidden md:flex items-center justify-center gap-2 cursor-pointer hover:bg-neutral-900 transition-colors select-none"
+    <div
+      className="relative h-full hidden md:block"
+      onMouseEnter={() => setShowUserMenu(true)}
+      onMouseLeave={() => setShowUserMenu(false)}
     >
-      <span className="relative inline-block leading-none">
-        <span className="font-pixel text-[14px] text-white tracking-wider whitespace-nowrap">
-          DashBoard
+      <Link
+        href={EXTERNAL_LINKS.nav.dashboard}
+        aria-label="Open Dashboard"
+        prefetch={false}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        className="group h-full w-[220px] bg-black flex items-center justify-center gap-2 cursor-pointer hover:bg-neutral-900 transition-colors select-none"
+      >
+        <span className="w-2 h-2 rounded-full bg-[#62D800] shrink-0 animate-pulse" />
+        <span className="relative inline-block leading-none">
+          <span className="font-pixel text-[14px] text-white tracking-wider whitespace-nowrap">
+            DashBoard
+          </span>
+          {/* Animated White Underline */}
+          <span
+            className="absolute -bottom-[2px] left-0 w-full h-[2px] overflow-hidden pointer-events-none"
+            aria-hidden="true"
+          >
+            <span ref={lineRef} className="block w-full h-full bg-white" />
+          </span>
         </span>
-        {/* Animated White Underline: starts from left, kept while hovering, ends to right on leave */}
-        <span
-          className="absolute -bottom-[2px] left-0 w-full h-[2px] overflow-hidden pointer-events-none"
-          aria-hidden="true"
-        >
-          <span ref={lineRef} className="block w-full h-full bg-white" />
-        </span>
-      </span>
-      <Image
-        src="/assets/Open_Link.svg"
-        alt="Open Link"
-        width={10}
-        height={10}
-        className="w-[10px] h-[10px] object-contain shrink-0"
-      />
-    </Link>
+        <Image
+          src="/assets/Open_Link.svg"
+          alt="Open Link"
+          width={10}
+          height={10}
+          className="w-[10px] h-[10px] object-contain shrink-0"
+        />
+      </Link>
+
+      {/* User Quick Dropdown */}
+      {showUserMenu && (
+        <div className="absolute top-full right-0 w-[220px] bg-black border border-[#33333E] shadow-2xl p-3 z-50 text-white font-mono text-xs space-y-2 animate-in fade-in duration-150">
+          <div className="border-b border-[#2A2A34] pb-2">
+            <p className="text-[10px] uppercase text-[#62D800] font-bold">
+              Authenticated
+            </p>
+            <p className="text-white font-bold truncate text-xs mt-0.5">
+              {user?.fullName || user?.email || "Huly User"}
+            </p>
+          </div>
+          <Link
+            href="/dashboard"
+            className="block py-1 hover:text-[#FF0000] transition-colors"
+          >
+            → Dashboard Console
+          </Link>
+          <button
+            type="button"
+            onClick={() => signOut()}
+            className="w-full text-left py-1 text-red-400 hover:text-red-300 transition-colors cursor-pointer"
+          >
+            → Sign Out
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
+
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -632,22 +705,52 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Direct Dashboard Link for mobile drawer */}
+            {/* Direct Dashboard / Login Link for mobile drawer */}
             <div className="pt-2 border-t border-neutral-200">
-              <Link
-                href={EXTERNAL_LINKS.nav.dashboard}
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full h-11 bg-black text-white flex items-center justify-center gap-2 rounded-[4px] font-pixel text-sm hover:bg-neutral-800 transition-colors"
-              >
-                <span>Open Dashboard</span>
-                <Image
-                  src="/assets/Open_Link.svg"
-                  alt=""
-                  width={10}
-                  height={10}
-                  className="w-2.5 h-2.5 invert"
-                />
-              </Link>
+              {!isAuthenticated ? (
+                <Link
+                  href={EXTERNAL_LINKS.nav.login || "/login"}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full h-11 bg-black text-white flex items-center justify-center gap-2 rounded-[4px] font-pixel text-sm hover:bg-neutral-800 transition-colors"
+                >
+                  <span>Login</span>
+                  <Image
+                    src="/assets/Open_Link.svg"
+                    alt=""
+                    width={10}
+                    height={10}
+                    className="w-2.5 h-2.5 invert"
+                  />
+                </Link>
+              ) : (
+                <div className="space-y-2">
+                  <Link
+                    href={EXTERNAL_LINKS.nav.dashboard}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full h-11 bg-black text-white flex items-center justify-center gap-2 rounded-[4px] font-pixel text-sm hover:bg-neutral-800 transition-colors"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-[#62D800]" />
+                    <span>Open Dashboard</span>
+                    <Image
+                      src="/assets/Open_Link.svg"
+                      alt=""
+                      width={10}
+                      height={10}
+                      className="w-2.5 h-2.5 invert"
+                    />
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      signOut();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full py-1 text-center font-mono text-xs text-red-600 hover:underline cursor-pointer"
+                  >
+                    Sign Out ({user?.firstName || "User"})
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}

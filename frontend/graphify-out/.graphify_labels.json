@@ -1,11 +1,11 @@
 {
   "0": "navBgIcons.js",
   "1": "package.json",
-  "2": "react",
+  "2": "layout.js",
   "3": "design/page.js",
   "4": "dependencies",
-  "5": "layout.js",
-  "6": "Features.js",
+  "5": "react",
+  "6": "features/page.js",
   "7": "README.md",
   "8": "compilerOptions",
   "9": "next.config.mjs",
@@ -15,5 +15,5 @@
   "13": "dashboard/page.js",
   "14": "CLAUDE.md",
   "15": "app/page.js",
-  "16": "features/page.js"
+  "16": "Navbar.js"
 }

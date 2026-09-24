@@ -18,9 +18,9 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1790085078.5697129,
-    "seen": 1790088924.2488048,
-    "ast_hash": "8d4c9982c94de014ac48cbef16d1baaf",
+    "mtime": 1790236388.258844,
+    "seen": 1790236886.2998548,
+    "ast_hash": "ecba5cd174bf33ac9630188b75e8a2a0",
     "semantic_hash": ""
   },
   "postcss.config.mjs": {
@@ -30,9 +30,9 @@
     "semantic_hash": ""
   },
   "src/app/dashboard/page.js": {
-    "mtime": 1790179630.878285,
-    "seen": 1790179784.60513,
-    "ast_hash": "9e4a9d6ad6d1690c41a38a88ba12c9b5",
+    "mtime": 1790236743.7609904,
+    "seen": 1790236886.2998867,
+    "ast_hash": "cfa501a22c02cb0ab1194972ad9c7de4",
     "semantic_hash": ""
   },
   "src/app/layout.js": {
@@ -90,21 +90,21 @@
     "semantic_hash": ""
   },
   "src/components/transitions/AnimatedSignature.js": {
-    "mtime": 1790230742.0799377,
-    "seen": 1790230897.144684,
-    "ast_hash": "925539c885e90f80e3f42816b98637ff",
+    "mtime": 1790234038.794277,
+    "seen": 1790236886.2999816,
+    "ast_hash": "b258d4c84e80c3c7441bca7d389ed4a8",
     "semantic_hash": ""
   },
   "src/components/transitions/InitialLoader.js": {
-    "mtime": 1790230865.750716,
-    "seen": 1790230897.1446853,
-    "ast_hash": "b7cd35558a879b7e82924bda66c9561c",
+    "mtime": 1790233529.447102,
+    "seen": 1790236886.2999854,
+    "ast_hash": "8051fbc778aaad05a303fc4afa4e7bd5",
     "semantic_hash": ""
   },
   "src/components/transitions/TransitionProvider.js": {
-    "mtime": 1790230784.5656571,
-    "seen": 1790230897.1446903,
-    "ast_hash": "9f6e6eae00bc551624aeb70a18788dc7",
+    "mtime": 1790234055.6907678,
+    "seen": 1790236886.2999887,
+    "ast_hash": "ed869f9995b2b018fe5b8d6226af9fd7",
     "semantic_hash": ""
   },
   "src/components/transitions/signaturePaths.js": {
@@ -222,9 +222,9 @@
     "semantic_hash": ""
   },
   "src/app/design/page.js": {
-    "mtime": 1790179649.8233826,
-    "seen": 1790179784.6051316,
-    "ast_hash": "e07c8a0ff8550d64e294286d99bbe48c",
+    "mtime": 1790231622.3388395,
+    "seen": 1790236886.2998903,
+    "ast_hash": "0ada2fd3fe20de7cc1bb391731d5db50",
     "semantic_hash": ""
   },
   "src/app/features/page.js": {
@@ -377,28 +377,58 @@
     "ast_hash": "b6981f42f012a08f17f9e8a4f81b04af",
     "semantic_hash": ""
   },
-  "src/components/transitions/TransactionStatus.js": {
-    "mtime": 1790230725.0026977,
-    "seen": 1790230897.1446872,
-    "ast_hash": "3af59f448c1aa97c7398df59e5d016cd",
+  "src/components/dashboard/AreaChartSpending.jsx": {
+    "mtime": 1790236533.2363443,
+    "seen": 1790236886.2999396,
+    "ast_hash": "c15cf94d2433fa29fed6970b723c3c91",
     "semantic_hash": ""
   },
-  "src/components/transitions/TransactionTransition.js": {
-    "mtime": 1790230757.5086398,
-    "seen": 1790230897.1446884,
-    "ast_hash": "ba547aa800c59d69b08b7cc212d18f30",
+  "src/components/dashboard/BackendStatusBar.jsx": {
+    "mtime": 1790236692.6498742,
+    "seen": 1790236886.2999434,
+    "ast_hash": "851ea3b50dba5cdcb7a411a106e91325",
     "semantic_hash": ""
   },
-  "src/components/transitions/VerticalBlocks.js": {
-    "mtime": 1790230711.0356581,
-    "seen": 1790230897.1446912,
-    "ast_hash": "cb9d173d267a44e1d2ef3dbc0b7b0fdb",
+  "src/components/dashboard/BarChartMonthly.jsx": {
+    "mtime": 1790236543.7587178,
+    "seen": 1790236886.2999465,
+    "ast_hash": "b75b819d74d9ae3b0a4405a8bc54a1ce",
     "semantic_hash": ""
   },
-  "src/components/transitions/index.js": {
-    "mtime": 1790230826.8526692,
-    "seen": 1790230897.1446924,
-    "ast_hash": "18504866d6188b0bc902a564cb4e2321",
+  "src/components/dashboard/PieChartCategories.jsx": {
+    "mtime": 1790236553.4851196,
+    "seen": 1790236886.2999494,
+    "ast_hash": "9770a4ca138137480e779ffb24b17103",
+    "semantic_hash": ""
+  },
+  "src/components/dashboard/RadarChartPerformance.jsx": {
+    "mtime": 1790236563.4880683,
+    "seen": 1790236886.2999513,
+    "ast_hash": "dc2b4deea9b1dbcfcc00f44c3b02c2a9",
+    "semantic_hash": ""
+  },
+  "src/components/dashboard/TransactionsTable.jsx": {
+    "mtime": 1790236575.7433279,
+    "seen": 1790236886.2999542,
+    "ast_hash": "15565e97fd4f70291186d6ee1a4c2b74",
+    "semantic_hash": ""
+  },
+  "src/components/ui/chart.jsx": {
+    "mtime": 1790236499.605098,
+    "seen": 1790236886.2999945,
+    "ast_hash": "6e40275e8cadc628f54ef2dd31591e69",
+    "semantic_hash": ""
+  },
+  "src/lib/api.js": {
+    "mtime": 1790236516.7318678,
+    "seen": 1790236886.2999969,
+    "ast_hash": "17f29a17387cbf5ec900e5397b33eae0",
+    "semantic_hash": ""
+  },
+  "src/lib/utils.js": {
+    "mtime": 1790236485.2648516,
+    "seen": 1790236886.2999988,
+    "ast_hash": "d1c4afdedf414ae731f58a28173db977",
     "semantic_hash": ""
   }
 }

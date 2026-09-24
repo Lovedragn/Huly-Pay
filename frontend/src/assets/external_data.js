@@ -25,6 +25,7 @@ export const EXTERNAL_LINKS = {
     blogs: "#blogs",
     download: "#download",
     dashboard: "/dashboard",
+    login: "/login",
     privacyTerms: "/privacy-terms",
   },
 
