@@ -11,7 +11,8 @@ import React, {
 import { useRouter, usePathname } from "next/navigation";
 import gsap from "gsap";
 import AnimatedSignature from "./AnimatedSignature";
-import { SIGNATURE_STROKE_LENGTH } from "./signaturePaths";
+
+const SEGMENT_COUNT = 20;
 
 const TransitionContext = createContext({
   navigate: () => {},
@@ -23,12 +24,12 @@ export const usePageTransition = () => useContext(TransitionContext);
 /**
  * TransitionProvider Component
  *
- * Implements the Codegrid GSAP Page Transitions pattern:
+ * Implements 20-segmentation vertical rectangle page transitions:
  * - Intercepts route navigation to other pages.
- * - Slides in a full-screen white curtain with GSAP.
- * - Plays the normal given SVG signature animation (~1.1s).
+ * - 20 vertical white rectangles (no borders) sweep and fill from left to right.
+ * - Signature begins its smooth GSAP handwriting stroke animation in the center.
  * - Pushes the new route.
- * - Lifts the curtain cleanly with GSAP (power3.inOut) to reveal the new page.
+ * - 20 vertical white rectangles exit from left to right, revealing the new page.
  */
 export default function TransitionProvider({ children }) {
   const router = useRouter();
@@ -39,16 +40,19 @@ export default function TransitionProvider({ children }) {
 
   const overlayRef = useRef(null);
   const sigWrapperRef = useRef(null);
-  const maskPathRef = useRef(null);
-  const fillPathRef = useRef(null);
-  const targetHrefRef = useRef(null);
+  const blocksRef = useRef([]);
   const isNavigatingRef = useRef(false);
 
   // Initial GSAP setup for the transition overlay
   useEffect(() => {
+    const blocks = blocksRef.current.filter(Boolean);
     if (overlayRef.current) {
-      gsap.set(overlayRef.current, { yPercent: 100, pointerEvents: "none" });
-      gsap.set(sigWrapperRef.current, { opacity: 0, scale: 0.95 });
+      gsap.set(overlayRef.current, { pointerEvents: "none" });
+      gsap.set(blocks, {
+        clipPath: "inset(0% 100% 0% 0%)",
+        webkitClipPath: "inset(0% 100% 0% 0%)",
+      });
+      gsap.set(sigWrapperRef.current, { opacity: 0 });
     }
   }, []);
 
@@ -60,39 +64,43 @@ export default function TransitionProvider({ children }) {
       // Ensure window is scrolled to top on new page
       window.scrollTo(0, 0);
 
+      const blocks = blocksRef.current.filter(Boolean);
+
       // Give the new page component a brief tick to mount cleanly
       const timer = setTimeout(() => {
         const tl = gsap.timeline({
           onComplete: () => {
             if (overlayRef.current) {
-              gsap.set(overlayRef.current, {
-                yPercent: 100,
-                pointerEvents: "none",
-              });
+              gsap.set(overlayRef.current, { pointerEvents: "none" });
             }
             setIsTransitioning(false);
           },
         });
 
-        // Fade out signature slightly before lifting curtain
+        // 1. Fade out signature slightly before opening curtains
         tl.to(sigWrapperRef.current, {
           opacity: 0,
-          y: -15,
-          duration: 0.25,
+          y: -10,
+          duration: 0.2,
           ease: "power2.in",
         });
 
-        // White curtain lifts up off the screen to reveal new content
+        // 2. 20 vertical white rectangles exit from left side to right side (revealing the new page)
         tl.to(
-          overlayRef.current,
+          blocks,
           {
-            yPercent: -100,
-            duration: 0.55,
+            clipPath: "inset(-1% -1% -1% 101%)",
+            webkitClipPath: "inset(-1% -1% -1% 101%)",
+            duration: 0.62,
             ease: "power3.inOut",
+            stagger: {
+              each: 0.022,
+              from: "start", // reveals from left to right
+            },
           },
-          "-=0.1",
+          "-=0.08",
         );
-      }, 80);
+      }, 70);
 
       return () => clearTimeout(timer);
     }
@@ -113,45 +121,47 @@ export default function TransitionProvider({ children }) {
           targetUrl.pathname === currentUrl.pathname &&
           targetUrl.search === currentUrl.search
         ) {
-          // If hash changed, let browser handle smooth scroll
           if (targetUrl.hash) {
             window.location.hash = targetUrl.hash;
           }
           return;
         }
       } catch {
-        // Fallback standard push if URL parsing fails
         router.push(href);
         return;
       }
 
       isNavigatingRef.current = true;
-      targetHrefRef.current = href;
       setIsTransitioning(true);
       setSigKey((prev) => prev + 1);
 
+      const blocks = blocksRef.current.filter(Boolean);
+
       // Lock pointer events and reset initial positions
-      gsap.set(overlayRef.current, { yPercent: 100, pointerEvents: "auto" });
-      gsap.set(sigWrapperRef.current, { opacity: 1, y: 0, scale: 1 });
+      gsap.set(overlayRef.current, { pointerEvents: "auto" });
+      gsap.set(blocks, {
+        clipPath: "inset(0% 100% 0% 0%)",
+        webkitClipPath: "inset(0% 100% 0% 0%)",
+      });
+      gsap.set(sigWrapperRef.current, { opacity: 0, y: 0 });
 
       const tl = gsap.timeline({
         onComplete: () => {
-          // Push new route once the normal SVG animation and curtain cover are finished
+          // Push new route once the signature animation and rectangle cover are finished
           router.push(href);
 
           // Safety fallback: if pathname doesn't update within 4 seconds, release overlay
           setTimeout(() => {
             if (isNavigatingRef.current && overlayRef.current) {
               isNavigatingRef.current = false;
-              gsap.to(overlayRef.current, {
-                yPercent: -100,
-                duration: 0.4,
+              gsap.to(blocks, {
+                clipPath: "inset(-1% -1% -1% 101%)",
+                webkitClipPath: "inset(-1% -1% -1% 101%)",
+                duration: 0.5,
+                stagger: { each: 0.02, from: "start" },
                 ease: "power3.out",
                 onComplete: () => {
-                  gsap.set(overlayRef.current, {
-                    yPercent: 100,
-                    pointerEvents: "none",
-                  });
+                  gsap.set(overlayRef.current, { pointerEvents: "none" });
                   setIsTransitioning(false);
                 },
               });
@@ -160,15 +170,31 @@ export default function TransitionProvider({ children }) {
         },
       });
 
-      // 1. Curtain slides in from bottom to cover screen (Codegrid style)
-      tl.to(overlayRef.current, {
-        yPercent: 0,
-        duration: 0.45,
+      // 1. 20 segmentation vertical white rectangles fill from left to right
+      tl.to(blocks, {
+        clipPath: "inset(-1% -1% -1% -1%)",
+        webkitClipPath: "inset(-1% -1% -1% -1%)",
+        duration: 0.52,
         ease: "power3.inOut",
+        stagger: {
+          each: 0.022,
+          from: "start", // Left side to right side
+        },
       });
 
-      // 2. Signature SVG auto-plays its 1100ms animation
-      tl.to({}, { duration: 1.1 });
+      // 2. Signature fades in and cursive handwriting stroke plays
+      tl.to(
+        sigWrapperRef.current,
+        {
+          opacity: 1,
+          duration: 0.22,
+          ease: "power2.out",
+        },
+        "-=0.18",
+      );
+
+      // Duration for signature handwriting stroke animation to finish
+      tl.to({}, { duration: 1.35 });
     },
     [isTransitioning, router],
   );
@@ -176,33 +202,25 @@ export default function TransitionProvider({ children }) {
   // Global link interception for automatic smooth page transitions
   useEffect(() => {
     const handleDocumentClick = (e) => {
-      // Find closest anchor tag
       const anchor = e.target.closest("a");
       if (!anchor) return;
 
       const href = anchor.getAttribute("href");
       if (!href) return;
 
-      // Ignore clicks with modifier keys (new tab, download, etc.)
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       if (e.defaultPrevented) return;
       if (anchor.target === "_blank") return;
       if (anchor.hasAttribute("download")) return;
       if (anchor.getAttribute("rel") === "external") return;
       if (anchor.getAttribute("data-no-transition")) return;
-
-      // Ignore hash links
       if (href.startsWith("#")) return;
 
-      // Check origin
       try {
         const targetUrl = new URL(href, window.location.href);
         if (targetUrl.origin !== window.location.origin) return;
-
-        // If target is same pathname, don't trigger transition
         if (targetUrl.pathname === window.location.pathname) return;
 
-        // Internal page navigation intercepted!
         e.preventDefault();
         navigate(href);
       } catch {
@@ -222,20 +240,41 @@ export default function TransitionProvider({ children }) {
     <TransitionContext.Provider value={{ navigate, isTransitioning }}>
       {children}
 
-      {/* Codegrid-Style Page Transition Overlay */}
+      {/* 20-Segmentation Vertical Rectangles Page Transition Overlay */}
       <div
         ref={overlayRef}
-        className="fixed inset-0 z-[99990] bg-white flex flex-col items-center justify-center select-none overflow-hidden"
-        style={{ willChange: "transform" }}
+        className="fixed inset-0 z-[99990] pointer-events-none select-none overflow-hidden bg-transparent"
         aria-hidden={!isTransitioning}
       >
+        {/* 20 segmentation of vertical rectangles with brand red color #FF0000, no border colors */}
+        <div className="absolute inset-0 flex flex-row pointer-events-none overflow-hidden w-full h-full">
+          {Array.from({ length: SEGMENT_COUNT }).map((_, i) => (
+            <div
+              key={i}
+              ref={(el) => {
+                blocksRef.current[i] = el;
+              }}
+              className="h-full flex-1 bg-[#FF0000] border-0 outline-none select-none pointer-events-none"
+              style={{
+                clipPath: "inset(0% 100% 0% 0%)",
+                WebkitClipPath: "inset(0% 100% 0% 0%)",
+                willChange: "clip-path",
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Centered signature */}
         <div
           ref={sigWrapperRef}
-          className="flex items-center justify-center px-6 w-full"
+          className="relative z-10 w-full h-full flex items-center justify-center px-6 pointer-events-none"
+          style={{ opacity: 0 }}
         >
-          {/* Normal Mode Signature Animation (1.1s) — Pure Signature Only */}
           <AnimatedSignature
             key={sigKey}
+            delay={0.45}
+            duration={1.3}
+            color="#FFFFFF"
             className="w-[110px] sm:w-[150px] md:w-[190px] max-w-[85vw]"
           />
         </div>
