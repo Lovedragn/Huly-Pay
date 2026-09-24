@@ -182,7 +182,7 @@ export default function AreaChartSpending({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth="2.5"
-                    d="M9 9L4 4m0 0v4m0-4h4m6 6l5 5m0 0v-4m0 4h-4m-7 5l-5 5m0 0v-4m0 4h4m11-5l5-5m0 0h-4m4 0v4"
+                    d="M4 14h6m0 0v6m0-6L3 21m17-7h-6m0 0v6m0-6l7 7M4 10h6m0 0V4m0 6L3 3m17 7h-6m0 0V4m0 6l7-7"
                   />
                 </svg>
                 <span>Exit Theater</span>
@@ -199,7 +199,7 @@ export default function AreaChartSpending({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth="2.5"
-                    d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                    d="M15 3h6m0 0v6m0-6l-7 7M9 21H3m0 0v-6m0 6l7-7M3 9V3m0 0h6m-6 0l7 7m11 5v6m0 0h-6m6 0l-7-7"
                   />
                 </svg>
                 <span>Theater View</span>

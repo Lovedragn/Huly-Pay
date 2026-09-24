@@ -169,6 +169,10 @@ export const MOCK_EXPENSES = [
     paymentMethod: "UPI_AUTO_DEBIT",
     upiTransactionId: "UPI/260924/99102831",
     status: "SETTLED",
+    latitude: 19.0760,
+    longitude: 72.8777,
+    locationCity: "Mumbai",
+    locationState: "Maharashtra",
   },
   {
     id: "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
@@ -181,6 +185,10 @@ export const MOCK_EXPENSES = [
     paymentMethod: "DIRECT_TRANSFER",
     upiTransactionId: "STRIPE/TX/4819208",
     status: "SETTLED",
+    latitude: 12.9716,
+    longitude: 77.5946,
+    locationCity: "Bengaluru",
+    locationState: "Karnataka",
   },
   {
     id: "7ba7b811-9dad-11d1-80b4-00c04fd430c9",
@@ -193,6 +201,10 @@ export const MOCK_EXPENSES = [
     paymentMethod: "UPI_QR_INSTANT",
     upiTransactionId: "UPI/260923/77182901",
     status: "SETTLED",
+    latitude: 28.6139,
+    longitude: 77.2090,
+    locationCity: "New Delhi",
+    locationState: "Delhi",
   },
   {
     id: "8ba7b812-9dad-11d1-80b4-00c04fd430ca",
@@ -205,6 +217,10 @@ export const MOCK_EXPENSES = [
     paymentMethod: "UPI_CORPORATE",
     upiTransactionId: "UPI/260923/66291823",
     status: "SETTLED",
+    latitude: 17.3850,
+    longitude: 78.4867,
+    locationCity: "Hyderabad",
+    locationState: "Telangana",
   },
   {
     id: "9ba7b813-9dad-11d1-80b4-00c04fd430cb",
@@ -217,6 +233,10 @@ export const MOCK_EXPENSES = [
     paymentMethod: "UPI_AUTO_DEBIT",
     upiTransactionId: "UPI/260922/55192837",
     status: "SETTLED",
+    latitude: 13.0827,
+    longitude: 80.2707,
+    locationCity: "Chennai",
+    locationState: "Tamil Nadu",
   },
   {
     id: "aba7b814-9dad-11d1-80b4-00c04fd430cc",
@@ -229,6 +249,10 @@ export const MOCK_EXPENSES = [
     paymentMethod: "UPI_INSTANT",
     upiTransactionId: "UPI/260922/44102938",
     status: "SETTLED",
+    latitude: 18.5204,
+    longitude: 73.8567,
+    locationCity: "Pune",
+    locationState: "Maharashtra",
   },
 ];
 
