@@ -1,9 +1,131 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: var(--font-pixelify), monospace, sans-serif;
   --font-pixel: var(--font-pixelify), monospace, sans-serif;
   --font-doto: var(--font-doto), monospace, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+  --bg-page: #ffffeb;
+  --bg-surface: #ffffff;
+  --text-main: #000000;
+  --text-muted: #737373;
+  --border-main: #000000;
+}
+
+.dark {
+  color-scheme: dark;
+  --bg-page: #0c0d0f;
+  --bg-surface: #141519;
+  --text-main: #f4f4f5;
+  --text-muted: #a1a1aa;
+  --border-main: #32353e;
+}
+
+/* ========================================================
+   CYBERDECK DARK MODE SYSTEM
+   ======================================================== */
+.dark {
+  background-color: #0c0d0f;
+  color: #f4f4f5;
+}
+
+.dark body {
+  background-color: #0c0d0f;
+  color: #f4f4f5;
+}
+
+.dark .bg-white {
+  background-color: #141519 !important;
+}
+
+.dark .bg-\[\#FFFFEB\] {
+  background-color: #181920 !important;
+}
+
+.dark .bg-\[\#FFFFEB\]\/40 {
+  background-color: #0c0d0f !important;
+}
+
+.dark .bg-\[\#FFFFEB\]\/60 {
+  background-color: #1c1d24 !important;
+}
+
+.dark .bg-neutral-50 {
+  background-color: #16171d !important;
+}
+
+.dark .bg-neutral-100 {
+  background-color: #1f2128 !important;
+}
+
+.dark .bg-neutral-100\/70 {
+  background-color: #1c1e24 !important;
+}
+
+.dark .bg-neutral-200 {
+  background-color: #2b2e38 !important;
+}
+
+.dark .text-black {
+  color: #f4f4f5 !important;
+}
+
+.dark .text-neutral-700,
+.dark .text-neutral-600 {
+  color: #d4d4d8 !important;
+}
+
+.dark .text-neutral-500,
+.dark .text-neutral-400 {
+  color: #a1a1aa !important;
+}
+
+.dark .border-black {
+  border-color: #32353e !important;
+}
+
+.dark .border-neutral-200,
+.dark .border-neutral-300 {
+  border-color: #2b2d35 !important;
+}
+
+.dark .hover\:bg-neutral-100:hover {
+  background-color: #242731 !important;
+}
+
+.dark .hover\:bg-neutral-200:hover {
+  background-color: #2e313d !important;
+}
+
+.dark .hover\:bg-\[\#FFFFEB\]\/60:hover {
+  background-color: #22242c !important;
+}
+
+.dark .shadow-\[5px_5px_0px_\#000000\],
+.dark .shadow-\[6px_6px_0px_\#000000\],
+.dark .shadow-\[4px_4px_0px_\#000000\],
+.dark .shadow-\[2px_2px_0px_\#000000\] {
+  box-shadow: 4px 4px 0px #000000 !important;
+}
+
+/* Recharts in Dark Mode */
+.dark .recharts-cartesian-axis-tick text {
+  fill: #a1a1aa !important;
+}
+
+.dark .recharts-cartesian-grid line {
+  stroke: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark .recharts-polar-grid line,
+.dark .recharts-polar-grid circle,
+.dark .recharts-polar-grid polygon {
+  stroke: rgba(255, 255, 255, 0.12) !important;
 }
 
 /* Hide scrollbar across all browsers while allowing natural scrolling */

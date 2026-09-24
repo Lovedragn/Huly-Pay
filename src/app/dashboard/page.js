@@ -7,11 +7,12 @@ import AreaChartSpending from "@/components/dashboard/AreaChartSpending";
 import BarChartMonthly from "@/components/dashboard/BarChartMonthly";
 import PieChartCategories from "@/components/dashboard/PieChartCategories";
 import RadarChartPerformance from "@/components/dashboard/RadarChartPerformance";
-import BackendStatusBar from "@/components/dashboard/BackendStatusBar";
 import TransactionsTable from "@/components/dashboard/TransactionsTable";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import {
   syncAllDashboardData,
+  deleteTransaction,
   getSpendingSummary,
   getCategoryBreakdown,
   getDailySpending,
@@ -34,6 +35,23 @@ export default function DashboardPage() {
   const [lastSynced, setLastSynced] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(true);
   const [currency, setCurrency] = React.useState("INR");
+  const [dailyTheaterMode, setDailyTheaterMode] = React.useState(false);
+  const [showUserMenu, setShowUserMenu] = React.useState(false);
+  const userMenuRef = React.useRef(null);
+
+  React.useEffect(() => {
+    function handleClickOutside(e) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setShowUserMenu(false);
+      }
+    }
+    if (showUserMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showUserMenu]);
 
   const handleRefresh = React.useCallback(async () => {
     setIsLoading(true);
@@ -59,6 +77,40 @@ export default function DashboardPage() {
       setIsLoading(false);
     }
   }, [session, user]);
+
+  const handleDeleteTransaction = React.useCallback(
+    async (tx) => {
+      const token = session?.access_token || null;
+      await deleteTransaction(tx, token);
+
+      // Optimistically remove from state
+      setExpenses((prev) =>
+        prev.filter(
+          (item) =>
+            item.id !== tx.id && (!tx.expenseId || item.id !== tx.expenseId)
+        )
+      );
+      setRecordsCount((prev) => Math.max(0, prev - 1));
+
+      setSummary((prev) => {
+        if (!prev) return prev;
+        const removedAmt = Number(tx.amount) || 0;
+        const newSpent = Math.max(0, (Number(prev.totalSpent) || 0) - removedAmt);
+        const newCount = Math.max(0, (Number(prev.transactionCount) || 0) - 1);
+        const newAvg = newCount > 0 ? newSpent / newCount : 0;
+        return {
+          ...prev,
+          totalSpent: Math.round(newSpent * 100) / 100,
+          transactionCount: newCount,
+          averageTransaction: Math.round(newAvg * 100) / 100,
+        };
+      });
+
+      // Background refresh from Supabase to re-calculate all aggregated charts
+      handleRefresh();
+    },
+    [session, handleRefresh]
+  );
 
   React.useEffect(() => {
     let ignore = false;
@@ -114,385 +166,348 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#FFFFEB]/40 font-pixel flex flex-col text-black antialiased selection:bg-[#FF0000] selection:text-white">
-      {/* Top Cyberdeck Navbar */}
-      <header className="w-full border-b-[3px] border-black bg-white h-16 sm:h-20 flex items-center justify-between px-4 sm:px-8 lg:px-12 sticky top-0 z-40">
+      {/* Top Cyberdeck Navbar - Attached to page */}
+      <header className="w-full border-b-[3px] border-black bg-white h-16 sm:h-20 flex items-center justify-between pl-4 sm:pl-8 lg:pl-12 pr-0">
         <div className="flex items-center gap-3 sm:gap-4">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 relative flex items-center justify-center shrink-0 border border-black bg-black p-1 shadow-[2px_2px_0px_#FF0000]">
+          <Link href="/" className="flex items-center">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 relative flex items-center justify-center shrink-0">
               <Image
                 src="/assets/logo-Light.svg"
                 alt="Huly Pay Logo"
                 width={32}
                 height={32}
-                className="w-full h-full object-contain invert"
+                priority
+                className="w-full h-full object-contain dark:hidden"
+              />
+              <Image
+                src="/assets/Logo-Dark.svg"
+                alt="Huly Pay Logo"
+                width={32}
+                height={32}
+                priority
+                className="w-full h-full object-contain hidden dark:block"
               />
             </div>
-            <span className="text-xl sm:text-2xl font-black tracking-wider text-black select-none">
-              HULYPAY
-            </span>
           </Link>
           <span className="text-xs font-mono font-bold bg-[#D8FF00] text-black px-2 py-0.5 border border-black shadow-[2px_2px_0px_#000000]">
-            TERMINAL v2.4
+            v2.4
           </span>
         </div>
 
-        {/* Center Navigation Links */}
-        <nav className="hidden md:flex items-center gap-1 font-mono text-xs">
-          <Link
-            href="/features"
-            className="px-3 py-1.5 hover:bg-neutral-100 border border-transparent hover:border-black transition-colors"
-          >
-            Features
-          </Link>
-          <Link
-            href="/design"
-            className="px-3 py-1.5 hover:bg-neutral-100 border border-transparent hover:border-black transition-colors"
-          >
-            Design Spec
-          </Link>
-          <Link
-            href="/tools"
-            className="px-3 py-1.5 hover:bg-neutral-100 border border-transparent hover:border-black transition-colors"
-          >
-            Developer Tools
-          </Link>
-          <Link
-            href="/qna"
-            className="px-3 py-1.5 hover:bg-neutral-100 border border-transparent hover:border-black transition-colors"
-          >
-            Q&A
-          </Link>
-        </nav>
-
-        {/* Right CTA */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
+        {/* Right CTA - Theme Toggle & Account / Login */}
+        <div className="flex items-center h-full">
+          <ThemeToggle fullHeight />
           {isAuthenticated ? (
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-neutral-100 border border-black font-mono text-xs">
+            <div ref={userMenuRef} className="relative h-full">
+              <button
+                type="button"
+                onClick={() => setShowUserMenu((prev) => !prev)}
+                className="h-full px-4 sm:px-6 bg-neutral-100 hover:bg-neutral-200 transition-colors flex items-center gap-2.5 sm:gap-3 border-l-[3px] border-black font-mono text-xs cursor-pointer select-none"
+              >
                 {user?.avatarUrl ? (
                   <Image
                     src={user.avatarUrl}
                     alt={user.fullName || "User"}
-                    width={20}
-                    height={20}
+                    width={28}
+                    height={28}
                     unoptimized
-                    className="w-5 h-5 rounded-full object-cover"
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border border-black shrink-0"
                   />
                 ) : (
-                  <span className="w-5 h-5 rounded-full bg-black text-white flex items-center justify-center text-[10px] font-bold">
+                  <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">
                     {(user?.fullName || user?.email || "U")[0].toUpperCase()}
                   </span>
                 )}
-                <span className="max-w-[100px] sm:max-w-[130px] truncate font-bold text-black">
-                  {user?.fullName || user?.email?.split("@")[0] || "User"}
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => signOut()}
-                className="px-3 py-1.5 border border-red-300 text-red-600 hover:bg-red-50 text-xs font-mono transition-colors cursor-pointer"
-              >
-                Sign Out
+                <div className="flex flex-col text-left">
+                  <span className="max-w-[100px] sm:max-w-[150px] truncate font-bold text-black font-pixel text-xs sm:text-sm leading-tight">
+                    {user?.fullName || user?.email?.split("@")[0] || "User"}
+                  </span>
+                  <span className="text-[10px] font-mono text-neutral-500 uppercase leading-none mt-0.5">
+                    Google Account
+                  </span>
+                </div>
+                <svg
+                  className={`w-3.5 h-3.5 text-neutral-600 transition-transform ${
+                    showUserMenu ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
               </button>
+
+              {/* User Dropdown Menu */}
+              {showUserMenu && (
+                <div className="absolute top-full right-0 w-52 sm:w-60 bg-white border-[3px] border-black shadow-[4px_4px_0px_#000000] p-3 z-50 font-mono text-xs space-y-2 animate-in fade-in duration-150">
+                  <div className="border-b-2 border-neutral-200 pb-2">
+                    <span className="text-[10px] uppercase font-bold text-[#058a00] block">
+                      Google Authenticated
+                    </span>
+                    <p className="text-black font-bold truncate text-xs mt-0.5">
+                      {user?.fullName || "User"}
+                    </p>
+                    <p className="text-neutral-500 truncate text-[11px]">
+                      {user?.email}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      signOut();
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 text-white bg-[#FF0000] hover:bg-black font-bold transition-colors cursor-pointer border border-black shadow-[2px_2px_0px_#000000] flex items-center justify-between"
+                  >
+                    <span>Sign Out</span>
+                    <span>→</span>
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <Link
               href="/login"
-              className="flex items-center gap-1.5 px-3 sm:px-4 py-2 bg-black text-white text-xs font-bold border-2 border-black hover:bg-neutral-800 transition-colors shadow-[2px_2px_0px_#62D800]"
+              className="h-full px-5 sm:px-8 bg-black text-white hover:bg-neutral-900 transition-colors flex items-center justify-center gap-2.5 border-l-[3px] border-black font-pixel text-xs sm:text-sm font-bold select-none cursor-pointer"
             >
-              <span>Sign In</span>
+              {/* Google Icon */}
+              <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                <path
+                  fill="#EA4335"
+                  d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
+                />
+                <path
+                  fill="#4285F4"
+                  d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.8s.2-2.1.4-2.8L1.9 6.3C.7 8.7 0 10.3 0 12s.7 3.3 1.9 5.7l3.7-2.9z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 16.4C3.7 20.1 7.5 23 12 23z"
+                />
+              </svg>
+              <span>Sign In with Google</span>
             </Link>
           )}
-
-          <Link
-            href="/"
-            className="flex items-center gap-2 px-3.5 sm:px-5 py-2 bg-white text-black text-xs sm:text-sm font-bold border-2 border-black hover:bg-neutral-100 transition-transform active:translate-x-0.5 active:translate-y-0.5 shadow-[3px_3px_0px_#000000]"
-          >
-            <svg
-              className="w-3.5 h-3.5 sm:w-4 sm:h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            <span>Landing Page</span>
-          </Link>
         </div>
       </header>
 
-
       {/* Main Container */}
       <main className="flex-1 max-w-[1440px] w-full mx-auto p-4 sm:p-8 lg:p-10 space-y-6 sm:space-y-8">
-        {/* Backend Server Status & Health Bar */}
-        <BackendStatusBar
-          dataSource={dataSource}
-          onRefresh={handleRefresh}
-          isSyncing={isLoading}
-          lastSynced={lastSynced}
-          recordsCount={recordsCount}
-          currency={currency}
-          onToggleCurrency={setCurrency}
-        />
+        {/* Financial Metrics & Actions Toolbar */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-end">
+            {/* Right side controls: Currency switch, Export JSON, Sync Telemetry */}
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+              {/* INR / USD Toggle */}
+              <div className="flex items-center border-2 border-black bg-neutral-100 p-0.5 font-mono text-xs shadow-[2px_2px_0px_#000000]">
+                <button
+                  type="button"
+                  onClick={() => setCurrency("INR")}
+                  className={`px-2.5 py-1 font-bold transition-colors cursor-pointer ${
+                    currency === "INR"
+                      ? "bg-black text-white"
+                      : "text-black hover:bg-neutral-200"
+                  }`}
+                >
+                  ₹ INR (UPI)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCurrency("USD")}
+                  className={`px-2.5 py-1 font-bold transition-colors cursor-pointer ${
+                    currency === "USD"
+                      ? "bg-black text-white"
+                      : "text-black hover:bg-neutral-200"
+                  }`}
+                >
+                  $ USD
+                </button>
+              </div>
 
-        {/* Overview Header & Controls */}
-        <div className="border-[3px] border-black bg-white p-5 sm:p-8 shadow-[6px_6px_0px_#000000] flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-xs font-bold text-[#FF0000] uppercase tracking-widest">
-                FINANCIAL OPERATIONS CONSOLE
-              </span>
-              <span className="text-neutral-400">•</span>
-              <span className="font-mono text-xs text-neutral-500">
-                SPRING BOOT REST + RECHARTS
-              </span>
+              {/* Export JSON */}
+              <button
+                type="button"
+                onClick={() => {
+                  const jsonStr = JSON.stringify(
+                    { summary, categoryData, dailyData, monthlyData, expenses },
+                    null,
+                    2,
+                  );
+                  const blob = new Blob([jsonStr], {
+                    type: "application/json",
+                  });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `hulypay-telemetry-${new Date().toISOString().slice(0, 10)}.json`;
+                  a.click();
+                }}
+                className="px-3.5 py-1.5 border-2 border-black bg-white hover:bg-neutral-100 text-xs font-mono font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-[2px_2px_0px_#000000]"
+                title="Export JSON Telemetry"
+              >
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+                <span>Export JSON</span>
+              </button>
+
+              {/* Sync Telemetry */}
+              <button
+                type="button"
+                onClick={handleRefresh}
+                disabled={isLoading}
+                className="px-3.5 py-1.5 border-2 border-black bg-[#62D800] hover:bg-[#52b600] text-black text-xs font-mono font-black flex items-center gap-1.5 transition-colors cursor-pointer shadow-[2px_2px_0px_#000000] disabled:opacity-50"
+                title="Sync Actual Data"
+              >
+                <svg
+                  className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+                <span>{isLoading ? "" : "Sync"}</span>
+              </button>
             </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-black mt-1">
-              FINANCIAL ANALYTICS & SETTLEMENT
-            </h1>
-            <p className="text-sm sm:text-base text-neutral-600 font-sans mt-2 max-w-3xl leading-relaxed">
-              Real-time cashflow telemetry, UPI auto-reconciliation, multi-currency
-              breakdown, and network risk indices. Powered by reactive shadcn/ui charts.
-            </p>
           </div>
 
-          {/* Quick Actions */}
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3 shrink-0">
-            <button
-              onClick={() => {
-                const jsonStr = JSON.stringify(
-                  { summary, categoryData, dailyData, monthlyData, expenses },
-                  null,
-                  2
-                );
-                const blob = new Blob([jsonStr], { type: "application/json" });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `hulypay-telemetry-${new Date().toISOString().slice(0, 10)}.json`;
-                a.click();
-              }}
-              className="px-3.5 py-2 border-2 border-black bg-neutral-100 hover:bg-neutral-200 text-xs font-mono font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              <span>Export JSON</span>
-            </button>
-
-            <button
-              onClick={handleRefresh}
-              className="px-4 py-2 border-2 border-black bg-[#62D800] hover:bg-[#52b600] text-black text-xs font-mono font-black flex items-center gap-1.5 transition-colors cursor-pointer shadow-[3px_3px_0px_#000000]"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              <span>Sync Telemetry</span>
-            </button>
-          </div>
-        </div>
-
-        {/* 4 Core Financial KPI Metric Cards (With Doto Font & Neo-Brutalist Frame) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {/* KPI 1: Total Volume */}
-          <div className="p-5 sm:p-6 border-[3px] border-black bg-white shadow-[5px_5px_0px_#000000] flex flex-col justify-between relative overflow-hidden group hover:translate-x-0.5 hover:-translate-y-0.5 transition-transform">
-            <div className="absolute top-0 right-0 w-12 h-12 bg-[#FF0000]/10 rounded-bl-full flex items-start justify-end p-2">
-              <span className="w-2.5 h-2.5 bg-[#FF0000]" />
-            </div>
-            <div>
-              <span className="font-mono text-xs font-bold uppercase tracking-wider text-neutral-500 block">
-                Total Outflow Volume
-              </span>
-              <div className="font-doto text-2xl sm:text-3xl lg:text-4xl font-black text-black mt-2">
-                {formatMoney(summary?.totalSpent || 184520)}
+          {/* 3 Core Financial KPI Metric Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {/* KPI 1: Total Volume */}
+            <div className="p-5 sm:p-6 border-[3px] border-black bg-white shadow-[5px_5px_0px_#000000] flex flex-col justify-between relative overflow-hidden group hover:translate-x-0.5 hover:-translate-y-0.5 transition-transform">
+              <div className="absolute top-0 right-0 w-12 h-12 bg-[#FF0000]/10 rounded-bl-full flex items-start justify-end p-2">
+                <span className="w-2.5 h-2.5 bg-[#FF0000]" />
+              </div>
+              <div>
+                <span className="font-mono text-xs font-bold uppercase tracking-wider text-neutral-500 block">
+                  Total Outflow Volume
+                </span>
+                <div className="font-doto text-2xl sm:text-3xl lg:text-4xl font-black text-black mt-2">
+                  {formatMoney(summary?.totalSpent ?? 0)}
+                </div>
               </div>
             </div>
-            <div className="mt-4 pt-3 border-t border-neutral-200 flex items-center justify-between text-xs font-mono">
-              <span className="text-[#058a00] font-bold">+18.4% MoM</span>
-              <span className="text-neutral-400">Spring Boot Sync</span>
-            </div>
-          </div>
 
-          {/* KPI 2: Transaction Count */}
-          <div className="p-5 sm:p-6 border-[3px] border-black bg-white shadow-[5px_5px_0px_#000000] flex flex-col justify-between relative overflow-hidden group hover:translate-x-0.5 hover:-translate-y-0.5 transition-transform">
-            <div className="absolute top-0 right-0 w-12 h-12 bg-[#62D800]/15 rounded-bl-full flex items-start justify-end p-2">
-              <span className="w-2.5 h-2.5 bg-[#62D800]" />
-            </div>
-            <div>
-              <span className="font-mono text-xs font-bold uppercase tracking-wider text-neutral-500 block">
-                Reconciled Transactions
-              </span>
-              <div className="font-doto text-2xl sm:text-3xl lg:text-4xl font-black text-black mt-2">
-                {summary?.transactionCount || 312}
+            {/* KPI 2: Transaction Count */}
+            <div className="p-5 sm:p-6 border-[3px] border-black bg-white shadow-[5px_5px_0px_#000000] flex flex-col justify-between relative overflow-hidden group hover:translate-x-0.5 hover:-translate-y-0.5 transition-transform">
+              <div className="absolute top-0 right-0 w-12 h-12 bg-[#62D800]/15 rounded-bl-full flex items-start justify-end p-2">
+                <span className="w-2.5 h-2.5 bg-[#62D800]" />
+              </div>
+              <div>
+                <span className="font-mono text-xs font-bold uppercase tracking-wider text-neutral-500 block">
+                  Reconciled Transactions
+                </span>
+                <div className="font-doto text-2xl sm:text-3xl lg:text-4xl font-black text-black mt-2">
+                  {summary?.transactionCount ?? 0}
+                </div>
               </div>
             </div>
-            <div className="mt-4 pt-3 border-t border-neutral-200 flex items-center justify-between text-xs font-mono">
-              <span className="text-neutral-800 font-bold">100% Verified</span>
-              <span className="text-neutral-400">SMS Parser</span>
-            </div>
-          </div>
 
-          {/* KPI 3: Average Ticket */}
-          <div className="p-5 sm:p-6 border-[3px] border-black bg-white shadow-[5px_5px_0px_#000000] flex flex-col justify-between relative overflow-hidden group hover:translate-x-0.5 hover:-translate-y-0.5 transition-transform">
-            <div className="absolute top-0 right-0 w-12 h-12 bg-[#FF00F5]/10 rounded-bl-full flex items-start justify-end p-2">
-              <span className="w-2.5 h-2.5 bg-[#FF00F5]" />
-            </div>
-            <div>
-              <span className="font-mono text-xs font-bold uppercase tracking-wider text-neutral-500 block">
-                Average Transaction
-              </span>
-              <div className="font-doto text-2xl sm:text-3xl lg:text-4xl font-black text-black mt-2">
-                {formatMoney(summary?.averageTransaction || 591.41)}
+            {/* KPI 3: Average Ticket */}
+            <div className="p-5 sm:p-6 border-[3px] border-black bg-white shadow-[5px_5px_0px_#000000] flex flex-col justify-between relative overflow-hidden group hover:translate-x-0.5 hover:-translate-y-0.5 transition-transform">
+              <div className="absolute top-0 right-0 w-12 h-12 bg-[#FF00F5]/10 rounded-bl-full flex items-start justify-end p-2">
+                <span className="w-2.5 h-2.5 bg-[#FF00F5]" />
               </div>
-            </div>
-            <div className="mt-4 pt-3 border-t border-neutral-200 flex items-center justify-between text-xs font-mono">
-              <span className="text-neutral-700 font-bold">Normal Distribution</span>
-              <span className="text-neutral-400">Micro & Bulk</span>
-            </div>
-          </div>
-
-          {/* KPI 4: Settlement SLA */}
-          <div className="p-5 sm:p-6 border-[3px] border-black bg-white shadow-[5px_5px_0px_#000000] flex flex-col justify-between relative overflow-hidden group hover:translate-x-0.5 hover:-translate-y-0.5 transition-transform">
-            <div className="absolute top-0 right-0 w-12 h-12 bg-[#D8FF00]/30 rounded-bl-full flex items-start justify-end p-2">
-              <span className="w-2.5 h-2.5 bg-[#D8FF00] border border-black" />
-            </div>
-            <div>
-              <span className="font-mono text-xs font-bold uppercase tracking-wider text-neutral-500 block">
-                Settlement Latency & SLA
-              </span>
-              <div className="font-doto text-2xl sm:text-3xl lg:text-4xl font-black text-black mt-2">
-                ~380ms
+              <div>
+                <span className="font-mono text-xs font-bold uppercase tracking-wider text-neutral-500 block">
+                  Average Transaction
+                </span>
+                <div className="font-doto text-2xl sm:text-3xl lg:text-4xl font-black text-black mt-2">
+                  {formatMoney(summary?.averageTransaction ?? 0)}
+                </div>
               </div>
-            </div>
-            <div className="mt-4 pt-3 border-t border-neutral-200 flex items-center justify-between text-xs font-mono">
-              <span className="text-[#058a00] font-bold">99.98% Uptime</span>
-              <span className="text-neutral-400">Solana / UPI</span>
             </div>
           </div>
         </div>
 
         {/* CHARTS SECTION 1: AREA CHART & BAR CHART */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 bg-black inline-block" />
-            <span className="font-mono text-xs font-black uppercase tracking-wider text-black">
-              SHADCN CHART MODULES 01 & 02: TEMPORAL DYNAMICS
-            </span>
+        <div
+          className={`grid grid-cols-1 ${
+            dailyTheaterMode ? "" : "lg:grid-cols-2"
+          } gap-6 items-start transition-all duration-300`}
+        >
+          {/* Chart 1: Area Chart (Daily Spending - with Theater View support) */}
+          <div
+            className={`w-full transition-all duration-300 ${
+              dailyTheaterMode ? "col-span-full" : ""
+            }`}
+          >
+            <AreaChartSpending
+              data={dailyData}
+              currency={currency}
+              isTheaterMode={dailyTheaterMode}
+              onToggleTheater={() => setDailyTheaterMode((prev) => !prev)}
+            />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Chart 1: Area Chart (Daily Spending / Settlement Velocity) */}
-            <AreaChartSpending data={dailyData} currency={currency} />
-
-            {/* Chart 2: Bar Chart (Monthly Outflow vs Budget Cap) */}
+          {/* Chart 2: Bar Chart (Monthly Outflow vs Budget Cap) */}
+          <div
+            className={`w-full transition-all duration-300 ${
+              dailyTheaterMode ? "col-span-full" : ""
+            }`}
+          >
             <BarChartMonthly data={monthlyData} currency={currency} />
           </div>
         </div>
 
         {/* CHARTS SECTION 2: PIE / DONUT CHART & RADAR CHART */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 bg-black inline-block" />
-            <span className="font-mono text-xs font-black uppercase tracking-wider text-black">
-              SHADCN CHART MODULES 03 & 04: DISTRIBUTION & HEALTH RADAR
-            </span>
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Chart 3: Pie / Donut Chart (Category Distribution & Filter) */}
+          <PieChartCategories
+            data={categoryData}
+            expenses={expenses}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+            currency={currency}
+          />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Chart 3: Pie / Donut Chart (Category Distribution & Filter) */}
-            <PieChartCategories
-              data={categoryData}
-              selectedCategory={selectedCategory}
-              onSelectCategory={setSelectedCategory}
-              currency={currency}
-            />
-
-            {/* Chart 4: Radar Chart (System & Operational Risk Benchmark) */}
-            <RadarChartPerformance data={radarData} />
-          </div>
+          {/* Chart 4: Radar Chart (System & Operational Risk Benchmark) */}
+          <RadarChartPerformance data={radarData} />
         </div>
 
         {/* BACKEND TRANSACTIONS & RECONCILED LEDGER */}
-        <div className="space-y-4 pt-2">
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 bg-[#FF0000] inline-block" />
-            <span className="font-mono text-xs font-black uppercase tracking-wider text-black">
-              LEDGER AUDIT & EXPENSE ENTITY RECORD
-            </span>
-          </div>
-
+        <div className="pt-2">
           <TransactionsTable
             expenses={expenses}
             selectedCategory={selectedCategory}
             onClearCategory={() => setSelectedCategory(null)}
             currency={currency}
+            onDelete={handleDeleteTransaction}
           />
         </div>
 
-        {/* Architecture Spec Card */}
-        <div className="border-[3px] border-black bg-neutral-900 text-white p-6 sm:p-8 shadow-[6px_6px_0px_#000000] space-y-4">
-          <div className="flex items-center justify-between border-b border-neutral-700 pb-3">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 bg-[#62D800]" />
-              <span className="font-mono text-xs font-bold text-[#62D800] uppercase tracking-wider">
-                BACKEND INTEGRATION MAP & DATA CONTRACTS
-              </span>
-            </div>
-            <span className="font-mono text-xs text-neutral-400">
-              Spring Boot 3.x / Java 21 / PostgreSQL
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
-            <div className="space-y-1.5">
-              <span className="text-[#FF00F5] font-bold block">
-                01. ANALYTICS API (CONTROLLER)
-              </span>
-              <p className="text-neutral-400 font-sans text-xs leading-relaxed">
-                <code className="text-white">AnalyticsController.java</code> exposes
-                aggregations computed in SQL via{" "}
-                <code className="text-white">ExpenseRepository</code>: daily spending,
-                monthly rollups, category group-by, and summary totals.
-              </p>
-            </div>
-
-            <div className="space-y-1.5">
-              <span className="text-[#62D800] font-bold block">
-                02. EXPENSES & PAYMENTS ENTITY
-              </span>
-              <p className="text-neutral-400 font-sans text-xs leading-relaxed">
-                Stores UUIDs, UPI Transaction IDs, GPS latitude/longitude, merchant
-                metadata, and execution timestamps. Reconciled via SMS parser
-                pattern matching.
-              </p>
-            </div>
-
-            <div className="space-y-1.5">
-              <span className="text-[#D8FF00] font-bold block">
-                03. SHADCN / RECHARTS ENGINE
-              </span>
-              <p className="text-neutral-400 font-sans text-xs leading-relaxed">
-                Rendered with CSS variables (<code className="text-white">--color-*</code>)
-                and responsive SVG viewports, styled with Pixelify Sans and Doto
-                matrix typography.
-              </p>
-            </div>
-          </div>
-        </div>
       </main>
 
       {/* Retro Cyberdeck Footer */}
       <footer className="w-full border-t-[3px] border-black bg-white py-6 px-4 sm:px-8 lg:px-12 mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs">
-        <div className="flex items-center gap-3">
-          <span className="w-2 h-2 bg-[#62D800]" />
-          <span className="font-bold text-black">HULYPAY FINANCIAL NETWORK</span>
-          <span className="text-neutral-400">•</span>
-          <span className="text-neutral-500">SYSTEM ALL SYSTEMS NOMINAL</span>
+        <div className="flex items-center">
+          <span className="font-bold text-black">@hulypay</span>
         </div>
         <div className="flex items-center gap-4 text-neutral-600">
           <Link href="/" className="hover:text-black hover:underline">

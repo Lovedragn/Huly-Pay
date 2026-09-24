@@ -8,17 +8,35 @@ export default function TransactionsTable({
   onClearCategory,
   currency = "INR",
   exchangeRate = 83.5,
+  onDelete,
 }) {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState("ALL");
   const [copiedId, setCopiedId] = React.useState(null);
+  const [visibleCount, setVisibleCount] = React.useState(5);
+  const [confirmingId, setConfirmingId] = React.useState(null);
+  const [deletingId, setDeletingId] = React.useState(null);
+  const [noticeMessage, setNoticeMessage] = React.useState(null);
+  const [errorMessage, setErrorMessage] = React.useState(null);
+  const [prevFilterKey, setPrevFilterKey] = React.useState(
+    `${searchQuery}|${statusFilter}|${selectedCategory || ""}`
+  );
+
+  const currentFilterKey = `${searchQuery}|${statusFilter}|${selectedCategory || ""}`;
+  if (prevFilterKey !== currentFilterKey) {
+    setPrevFilterKey(currentFilterKey);
+    setVisibleCount(5);
+  }
 
   const filteredExpenses = React.useMemo(() => {
     return expenses.filter((item) => {
-      // Category filter
+      // Category or Merchant filter
       if (selectedCategory) {
         const cat = item.category?.name || item.paymentMethod;
-        if (cat !== selectedCategory) return false;
+        const merchant = item.merchantName || item.provider;
+        if (cat !== selectedCategory && merchant !== selectedCategory) {
+          return false;
+        }
       }
 
       // Status filter
@@ -52,6 +70,42 @@ export default function TransactionsTable({
     });
   }, [expenses, selectedCategory, statusFilter, searchQuery]);
 
+  const visibleExpenses = React.useMemo(() => {
+    return filteredExpenses.slice(0, visibleCount);
+  }, [filteredExpenses, visibleCount]);
+
+  const hasActiveFilter = Boolean(
+    searchQuery.trim() || statusFilter !== "ALL" || selectedCategory
+  );
+
+  const handleClearAllFilters = () => {
+    setSearchQuery("");
+    setStatusFilter("ALL");
+    if (onClearCategory) {
+      onClearCategory();
+    }
+  };
+
+  const handleConfirmDelete = async (tx) => {
+    if (!onDelete) return;
+    try {
+      setDeletingId(tx.id);
+      setErrorMessage(null);
+      await onDelete(tx);
+      setNoticeMessage(`Transaction removed from database successfully.`);
+      setTimeout(() => setNoticeMessage(null), 4000);
+      setConfirmingId(null);
+    } catch (err) {
+      console.error("Failed to remove transaction:", err);
+      setErrorMessage(
+        err?.message || "Failed to remove transaction from database."
+      );
+      setTimeout(() => setErrorMessage(null), 5000);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   const copyToClipboard = (id) => {
     if (!id) return;
     navigator.clipboard.writeText(id);
@@ -83,18 +137,14 @@ export default function TransactionsTable({
       {/* Header & Controls */}
       <div className="p-4 sm:p-6 border-b-2 border-black flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#FFFFEB]">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 bg-black inline-block" />
-            <span className="font-mono text-xs font-bold uppercase tracking-wider text-neutral-800">
-              LEDGER AUDIT STREAM • ACTUAL LIVE TRANSACTIONS
+          <h3 className="text-xl sm:text-2xl font-bold font-pixel text-black inline-flex items-baseline gap-1.5">
+            <span>Transaction Logs</span>
+            <span className="font-sans font-bold text-neutral-600">(</span>
+            <span className="font-doto font-black text-lg sm:text-xl text-black">
+              {filteredExpenses.length}
             </span>
-          </div>
-          <h3 className="text-xl sm:text-2xl font-bold font-pixel text-black mt-1">
-            Reconciled Transactions & Settlement Log ({filteredExpenses.length})
+            <span className="font-sans font-bold text-neutral-600">)</span>
           </h3>
-          <p className="text-xs sm:text-sm text-neutral-600 font-sans mt-0.5">
-            Synchronized directly from Supabase PostgreSQL & Spring Boot payments registry
-          </p>
         </div>
 
         {/* Filter bar */}
@@ -136,14 +186,62 @@ export default function TransactionsTable({
               </button>
             ))}
           </div>
+
+          {/* Clear Filter Button */}
+          <button
+            type="button"
+            onClick={handleClearAllFilters}
+            disabled={!hasActiveFilter}
+            className={`px-3 py-1.5 text-xs font-mono font-bold border-2 transition-all flex items-center gap-1.5 ${
+              hasActiveFilter
+                ? "border-black bg-[#FF0000] text-white hover:bg-black cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5"
+                : "border-neutral-300 bg-neutral-100 text-neutral-400 cursor-not-allowed opacity-60"
+            }`}
+            title={hasActiveFilter ? "Clear all active filters" : "No filters active"}
+          >
+            <span>Clear Filter</span>
+            {hasActiveFilter && <span className="font-bold">×</span>}
+          </button>
         </div>
       </div>
+
+      {/* Action Notification Banners */}
+      {noticeMessage && (
+        <div className="px-4 py-2 bg-[#62D800]/20 border-b-2 border-black text-black font-mono text-xs font-bold flex items-center justify-between animate-in fade-in duration-150">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 bg-[#058a00] inline-block" />
+            <span>{noticeMessage}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setNoticeMessage(null)}
+            className="font-bold text-neutral-600 hover:text-black cursor-pointer px-1 text-sm"
+          >
+            ×
+          </button>
+        </div>
+      )}
+      {errorMessage && (
+        <div className="px-4 py-2 bg-[#FF0000]/15 border-b-2 border-black text-black font-mono text-xs font-bold flex items-center justify-between animate-in fade-in duration-150">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 bg-[#FF0000] inline-block" />
+            <span>{errorMessage}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setErrorMessage(null)}
+            className="font-bold text-neutral-600 hover:text-black cursor-pointer px-1 text-sm"
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       {/* Active Category Filter Tag if any */}
       {selectedCategory && (
         <div className="px-4 py-2 bg-neutral-100 border-b border-neutral-300 flex items-center justify-between text-xs font-mono">
           <div className="flex items-center gap-2">
-            <span className="text-neutral-500 uppercase">Active Category Filter:</span>
+            <span className="text-neutral-500 uppercase">Active Filter:</span>
             <span className="font-bold px-2 py-0.5 bg-black text-white">
               {selectedCategory}
             </span>
@@ -151,7 +249,7 @@ export default function TransactionsTable({
           <button
             type="button"
             onClick={onClearCategory}
-            className="text-neutral-600 hover:text-black underline cursor-pointer"
+            className="text-xs font-mono font-bold px-2.5 py-1 bg-[#FF0000] text-white border border-black hover:bg-black transition-colors cursor-pointer shadow-[2px_2px_0px_#000000]"
           >
             Clear Filter [X]
           </button>
@@ -168,20 +266,30 @@ export default function TransactionsTable({
               <th className="py-3 px-4">UPI Identifier & Hash</th>
               <th className="py-3 px-4 sm:px-6 text-right">Amount</th>
               <th className="py-3 px-4 text-center">Status</th>
+              <th className="py-3 px-4 text-center">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-200 text-xs sm:text-sm">
             {filteredExpenses.length === 0 ? (
               <tr>
                 <td
-                  colSpan={5}
+                  colSpan={6}
                   className="py-12 text-center text-neutral-500 font-mono text-xs"
                 >
-                  No matching transactions located in ledger.
+                  <p>No matching transactions located in ledger.</p>
+                  {hasActiveFilter && (
+                    <button
+                      type="button"
+                      onClick={handleClearAllFilters}
+                      className="mt-3 px-3.5 py-1.5 border-2 border-black bg-[#FF0000] text-white hover:bg-black font-bold text-xs cursor-pointer shadow-[2px_2px_0px_#000000] transition-colors"
+                    >
+                      Clear Filters
+                    </button>
+                  )}
                 </td>
               </tr>
             ) : (
-              filteredExpenses.map((tx) => (
+              visibleExpenses.map((tx) => (
                 <tr
                   key={tx.id}
                   className="hover:bg-[#FFFFEB]/60 transition-colors group"
@@ -276,12 +384,96 @@ export default function TransactionsTable({
                       {tx.status}
                     </span>
                   </td>
+
+                  {/* Action (Remove from Database) */}
+                  <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                    {confirmingId === tx.id ? (
+                      <div className="inline-flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-100">
+                        <button
+                          type="button"
+                          onClick={() => handleConfirmDelete(tx)}
+                          disabled={deletingId === tx.id}
+                          className="px-2.5 py-1 text-xs font-mono font-bold border-2 border-black bg-[#FF0000] text-white hover:bg-black transition-colors cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 flex items-center gap-1.5"
+                          title="Confirm permanent removal from database"
+                        >
+                          {deletingId === tx.id ? (
+                            <>
+                              <span className="w-2.5 h-2.5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
+                              <span>Removing...</span>
+                            </>
+                          ) : (
+                            <span>Confirm</span>
+                          )}
+                        </button>
+                        {deletingId !== tx.id && (
+                          <button
+                            type="button"
+                            onClick={() => setConfirmingId(null)}
+                            className="px-2 py-1 text-xs font-mono font-bold border-2 border-black bg-neutral-100 hover:bg-neutral-200 text-black cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5"
+                            title="Cancel"
+                          >
+                            ×
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setConfirmingId(tx.id)}
+                        disabled={deletingId !== null}
+                        className="px-2.5 py-1 text-xs font-mono font-bold border-2 border-black bg-white hover:bg-[#FF0000] hover:text-white transition-all text-neutral-800 cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 inline-flex items-center gap-1.5 group disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Remove transaction from database"
+                      >
+                        <svg
+                          className="w-3.5 h-3.5 text-neutral-600 group-hover:text-white transition-colors"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                        <span>Remove</span>
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
+
+      {/* Footer / More Transactions Bar */}
+      {filteredExpenses.length > 5 && (
+        <div className="p-3.5 sm:p-4 bg-neutral-50 border-t-2 border-black flex flex-col sm:flex-row items-center justify-between gap-3">
+          <span className="text-xs font-mono text-neutral-600">
+            Showing <strong className="text-black">{Math.min(visibleCount, filteredExpenses.length)}</strong> of{" "}
+            <strong className="text-black">{filteredExpenses.length}</strong> transactions
+          </span>
+
+          {visibleCount < filteredExpenses.length ? (
+            <button
+              type="button"
+              onClick={() => setVisibleCount((prev) => prev + 10)}
+              className="px-5 py-2 border-2 border-black bg-white hover:bg-black hover:text-white text-xs font-mono font-bold transition-all cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 flex items-center gap-2 group"
+            >
+              <span>More</span>
+              <span className="text-[10px] font-bold bg-[#D8FF00] group-hover:bg-white text-black px-1.5 py-0.5 border border-black transition-colors">
+                +10
+              </span>
+            </button>
+          ) : (
+            <span className="text-xs font-mono text-neutral-500 font-bold bg-neutral-100 px-3 py-1.5 border border-neutral-300">
+              ALL TRANSACTIONS LOADED
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

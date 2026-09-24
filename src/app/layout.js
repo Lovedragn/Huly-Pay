@@ -6,6 +6,7 @@ import SmoothScroll from "@/components/SmoothScroll";
 import TransitionProvider from "@/components/transitions/TransitionProvider";
 import InitialLoader from "@/components/transitions/InitialLoader";
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,16 +42,38 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} ${pixelifySans.variable} ${dotoFont.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var stored = localStorage.getItem('hulypay_theme_preference');
+                  if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.setAttribute('data-theme', 'light');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
-        className="min-h-full flex flex-col font-pixel"
+        className="min-h-full flex flex-col font-pixel bg-[#FFFFEB] dark:bg-[#0C0D0F] text-black dark:text-white transition-colors duration-200"
         suppressHydrationWarning
       >
         <InitialLoader />
-        <AuthProvider>
-          <TransitionProvider>
-            <SmoothScroll>{children}</SmoothScroll>
-          </TransitionProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <TransitionProvider>
+              <SmoothScroll>{children}</SmoothScroll>
+            </TransitionProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

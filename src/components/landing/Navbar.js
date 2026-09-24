@@ -7,6 +7,7 @@ import gsap from "gsap";
 import { EXTERNAL_LINKS } from "../../assets/external_data";
 import { NAV_BG_SVGS } from "@/assets";
 import { useAuth } from "@/context/AuthContext";
+import ThemeToggle from "@/components/ThemeToggle";
 
 function NavLink({
   href,
@@ -386,7 +387,15 @@ export default function Navbar() {
                   width={28}
                   height={28}
                   priority
-                  className="w-7 h-7 object-contain"
+                  className="w-7 h-7 object-contain dark:hidden"
+                />
+                <Image
+                  src="/assets/Logo-Dark.svg"
+                  alt="Huly Pay Logo"
+                  width={28}
+                  height={28}
+                  priority
+                  className="w-7 h-7 object-contain hidden dark:block"
                 />
               </div>
               <span className="hidden md:inline font-pixel text-lg sm:text-xl tracking-wider text-black select-none whitespace-nowrap">
@@ -492,6 +501,9 @@ export default function Navbar() {
               </svg>
             </button>
 
+            {/* Theme Toggle Button */}
+            <ThemeToggle fullHeight={false} className="mr-2 sm:mr-3 hidden sm:flex" />
+
             {/* Open Dashboard Link Box (Solid Black Button matching left section length) with animated white underline */}
             <DashboardButton />
           </div>
@@ -585,6 +597,12 @@ export default function Navbar() {
         {/* Mobile Drawer Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-[#D4D4D8] bg-white px-6 py-4 flex flex-col gap-4 font-pixel text-[14px] max-h-[calc(100vh-80px)] overflow-y-auto">
+            {/* Theme Toggle in Mobile Menu */}
+            <div className="py-2 border-b border-neutral-100 flex items-center justify-between">
+              <span className="text-black font-bold">Display Theme</span>
+              <ThemeToggle />
+            </div>
+
             <Link
               href={EXTERNAL_LINKS.nav.portfolio}
               onClick={() => setMobileMenuOpen(false)}

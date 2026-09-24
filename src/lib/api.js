@@ -264,17 +264,56 @@ export async function checkBackendHealth() {
  */
 export async function syncActualDataFromSupabase(userId = null) {
   try {
+    let targetUserId = userId;
+    if (!targetUserId) {
+      try {
+        const { data: authData } = await supabase.auth.getUser();
+        targetUserId = authData?.user?.id || null;
+      } catch {
+        // ignore
+      }
+    }
+
+    // Only get data for the logged-in user; do not pull all data from Supabase!
+    if (!targetUserId) {
+      return null;
+    }
+
+    // If demo analyst testing mode, return simulated mock data
+    if (targetUserId === "demo-user-8842-4f1b-a9b0") {
+      return {
+        summary: MOCK_SUMMARY,
+        categoryData: MOCK_CATEGORY_BREAKDOWN,
+        dailyData: MOCK_DAILY_SPENDING,
+        monthlyData: MOCK_MONTHLY_SPENDING,
+        expenses: MOCK_EXPENSES,
+        radarMetrics: MOCK_RADAR_METRICS,
+        source: "demo_analyst",
+        recordsCount: MOCK_EXPENSES.length,
+        lastSynced: new Date().toLocaleTimeString(),
+      };
+    }
+
     const [paymentsRes, expensesRes, categoriesRes] = await Promise.all([
       supabase
         .from("payments")
         .select("*")
+        .eq("user_id", targetUserId)
         .order("created_at", { ascending: false }),
       supabase
         .from("expenses")
         .select("*")
+        .eq("user_id", targetUserId)
         .order("created_at", { ascending: false }),
       supabase.from("categories").select("*"),
     ]);
+
+    if (paymentsRes.error) {
+      console.warn("Supabase payments fetch error for user:", paymentsRes.error);
+    }
+    if (expensesRes.error) {
+      console.warn("Supabase expenses fetch error for user:", expensesRes.error);
+    }
 
     const rawPayments = paymentsRes.data || [];
     const rawExpenses = expensesRes.data || [];
@@ -287,7 +326,32 @@ export async function syncActualDataFromSupabase(userId = null) {
     });
 
     if (rawPayments.length === 0 && rawExpenses.length === 0) {
-      return null;
+      return {
+        summary: {
+          totalSpent: 0,
+          transactionCount: 0,
+          averageTransaction: 0,
+          settlementLatencyMs: 0,
+          successRate: 100,
+          activeNodes: 1,
+          currency: "INR",
+        },
+        dailyData: [],
+        monthlyData: [],
+        categoryData: [],
+        expenses: [],
+        radarMetrics: [
+          { metric: "Settlement Speed", score: 100, benchmark: 80, fullMark: 100, description: "Instant finality" },
+          { metric: "SLA Uptime", score: 100, benchmark: 95, fullMark: 100, description: "Cluster PostgreSQL active" },
+          { metric: "Auto-Reconcile", score: 100, benchmark: 85, fullMark: 100, description: "Ready for transactions" },
+          { metric: "Budget Bounds", score: 100, benchmark: 70, fullMark: 100, description: "Zero variance" },
+          { metric: "Zero-Knowledge", score: 100, benchmark: 90, fullMark: 100, description: "Client-side encrypted" },
+          { metric: "DB Telemetry", score: 100, benchmark: 75, fullMark: 100, description: "Direct real-time Supabase replication" },
+        ],
+        source: "live_supabase",
+        recordsCount: 0,
+        lastSynced: new Date().toLocaleTimeString(),
+      };
     }
 
     // Standardize payments into normalized transactions
@@ -299,6 +363,8 @@ export async function syncActualDataFromSupabase(userId = null) {
 
       return {
         id: p.id,
+        expenseId: p.expense_id || null,
+        paymentId: p.id,
         merchantName: p.merchant_name || p.provider || "UPI Merchant",
         description: p.transaction_reference
           ? `Ref: ${p.transaction_reference}`
@@ -339,6 +405,8 @@ export async function syncActualDataFromSupabase(userId = null) {
           catMap[e.category_id] || e.payment_method || "General Expense";
         normalizedTransactions.push({
           id: e.id,
+          expenseId: e.id,
+          paymentId: null,
           merchantName: e.merchant_name || "Merchant",
           description: e.description || `Expense for ${categoryName}`,
           amount,
@@ -582,20 +650,20 @@ export async function syncActualDataFromSupabase(userId = null) {
  * Universal sync helper: Fetches actual data across Spring Boot backend and Supabase
  */
 export async function syncAllDashboardData(authToken = null, userId = null) {
-  // 1. First attempt to pull live records directly from Supabase database
+  // 1. First attempt to pull live records directly from Supabase database for the logged-in user
   const liveDbData = await syncActualDataFromSupabase(userId);
-  if (liveDbData && liveDbData.recordsCount > 0) {
+  if (liveDbData) {
     return liveDbData;
   }
 
-  // 2. If Supabase direct query returned null, attempt Spring Boot backend
+  // 2. If Supabase direct query returned null (no logged in user), attempt Spring Boot backend
   try {
     const [sumRes, catRes, dailyRes, monthRes, expRes] = await Promise.all([
-      getSpendingSummary(authToken),
-      getCategoryBreakdown(authToken),
-      getDailySpending(authToken),
-      getMonthlySpending(authToken),
-      getExpenses(authToken),
+      getSpendingSummary(authToken, userId),
+      getCategoryBreakdown(authToken, userId),
+      getDailySpending(authToken, userId),
+      getMonthlySpending(authToken, userId),
+      getExpenses(authToken, userId),
     ]);
 
     return {
@@ -610,7 +678,7 @@ export async function syncAllDashboardData(authToken = null, userId = null) {
       lastSynced: new Date().toLocaleTimeString(),
     };
   } catch {
-    // 3. Fallback
+    // 3. Fallback preview for unauthenticated visitors
     return {
       summary: MOCK_SUMMARY,
       categoryData: MOCK_CATEGORY_BREAKDOWN,
@@ -628,7 +696,7 @@ export async function syncAllDashboardData(authToken = null, userId = null) {
 /**
  * Fetch spending summary from /api/v1/analytics/summary
  */
-export async function getSpendingSummary(authToken = null) {
+export async function getSpendingSummary(authToken = null, userId = null) {
   try {
     const headers = { Accept: "application/json" };
     if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
@@ -651,7 +719,7 @@ export async function getSpendingSummary(authToken = null) {
   } catch {
     // Fallback to live Supabase DB
   }
-  const live = await syncActualDataFromSupabase();
+  const live = await syncActualDataFromSupabase(userId);
   if (live) return { data: live.summary, source: "live_supabase" };
   return { data: MOCK_SUMMARY, source: "mock" };
 }
@@ -659,7 +727,7 @@ export async function getSpendingSummary(authToken = null) {
 /**
  * Fetch category breakdown from /api/v1/analytics/category-breakdown
  */
-export async function getCategoryBreakdown(authToken = null) {
+export async function getCategoryBreakdown(authToken = null, userId = null) {
   try {
     const headers = { Accept: "application/json" };
     if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
@@ -678,7 +746,7 @@ export async function getCategoryBreakdown(authToken = null) {
   } catch {
     // Fallback to live Supabase DB
   }
-  const live = await syncActualDataFromSupabase();
+  const live = await syncActualDataFromSupabase(userId);
   if (live) return { data: live.categoryData, source: "live_supabase" };
   return { data: MOCK_CATEGORY_BREAKDOWN, source: "mock" };
 }
@@ -686,7 +754,7 @@ export async function getCategoryBreakdown(authToken = null) {
 /**
  * Fetch daily spending from /api/v1/analytics/daily-spending
  */
-export async function getDailySpending(authToken = null) {
+export async function getDailySpending(authToken = null, userId = null) {
   try {
     const headers = { Accept: "application/json" };
     if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
@@ -705,7 +773,7 @@ export async function getDailySpending(authToken = null) {
   } catch {
     // Fallback to live Supabase DB
   }
-  const live = await syncActualDataFromSupabase();
+  const live = await syncActualDataFromSupabase(userId);
   if (live) return { data: live.dailyData, source: "live_supabase" };
   return { data: MOCK_DAILY_SPENDING, source: "mock" };
 }
@@ -713,7 +781,7 @@ export async function getDailySpending(authToken = null) {
 /**
  * Fetch monthly spending from /api/v1/analytics/monthly-spending
  */
-export async function getMonthlySpending(authToken = null) {
+export async function getMonthlySpending(authToken = null, userId = null) {
   try {
     const headers = { Accept: "application/json" };
     if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
@@ -732,7 +800,7 @@ export async function getMonthlySpending(authToken = null) {
   } catch {
     // Fallback to live Supabase DB
   }
-  const live = await syncActualDataFromSupabase();
+  const live = await syncActualDataFromSupabase(userId);
   if (live) return { data: live.monthlyData, source: "live_supabase" };
   return { data: MOCK_MONTHLY_SPENDING, source: "mock" };
 }
@@ -740,7 +808,7 @@ export async function getMonthlySpending(authToken = null) {
 /**
  * Fetch user expenses from /api/v1/expenses
  */
-export async function getExpenses(authToken = null) {
+export async function getExpenses(authToken = null, userId = null) {
   try {
     const headers = { Accept: "application/json" };
     if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
@@ -759,7 +827,7 @@ export async function getExpenses(authToken = null) {
   } catch {
     // Fallback to live Supabase DB
   }
-  const live = await syncActualDataFromSupabase();
+  const live = await syncActualDataFromSupabase(userId);
   if (live) return { data: live.expenses, source: "live_supabase" };
   return { data: MOCK_EXPENSES, source: "mock" };
 }
@@ -784,6 +852,76 @@ export async function getCurrentUserProfile(authToken = null) {
     // Graceful fallback
   }
   return null;
+}
+
+/**
+ * Delete a transaction from Supabase database (payments and expenses tables)
+ * and notify Spring Boot backend if available.
+ */
+export async function deleteTransaction(txOrId, authToken = null, extraExpenseId = null) {
+  const transactionId =
+    typeof txOrId === "object" && txOrId !== null ? txOrId.id : txOrId;
+  const expenseId =
+    typeof txOrId === "object" && txOrId !== null
+      ? txOrId.expenseId || txOrId.category?.id || extraExpenseId
+      : extraExpenseId;
+
+  if (!transactionId && !expenseId) {
+    throw new Error("Transaction ID is required to delete.");
+  }
+
+  // 1. Delete from Supabase `payments` table first to prevent foreign key issues
+  try {
+    if (transactionId) {
+      await supabase.from("payments").delete().eq("id", transactionId);
+      await supabase.from("payments").delete().eq("expense_id", transactionId);
+    }
+    if (expenseId && expenseId !== transactionId) {
+      await supabase.from("payments").delete().eq("expense_id", expenseId);
+      await supabase.from("payments").delete().eq("id", expenseId);
+    }
+  } catch (err) {
+    console.warn("Supabase payments delete warning:", err);
+  }
+
+  // 2. Delete from Supabase `expenses` table
+  try {
+    if (transactionId) {
+      await supabase.from("expenses").delete().eq("id", transactionId);
+    }
+    if (expenseId && expenseId !== transactionId) {
+      await supabase.from("expenses").delete().eq("id", expenseId);
+    }
+  } catch (err) {
+    console.warn("Supabase expenses delete warning:", err);
+  }
+
+  // 3. Notify Spring Boot backend if running
+  try {
+    const targetId = expenseId || transactionId;
+    if (targetId) {
+      const headers = { Accept: "application/json" };
+      if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
+
+      await fetch(`${API_BASE_URL}/api/v1/expenses/${targetId}`, {
+        method: "DELETE",
+        headers,
+      });
+    }
+  } catch {
+    // Backend may not be reachable or direct-to-Supabase mode; non-blocking
+  }
+
+  // 4. Update in-memory mock data (for demo mode / fallback)
+  const targetId = transactionId || expenseId;
+  const mockIndex = MOCK_EXPENSES.findIndex(
+    (item) => item.id === targetId || (expenseId && item.id === expenseId)
+  );
+  if (mockIndex !== -1) {
+    MOCK_EXPENSES.splice(mockIndex, 1);
+  }
+
+  return { success: true };
 }
 
 
