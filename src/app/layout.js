@@ -5,6 +5,7 @@ import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import TransitionProvider from "@/components/transitions/TransitionProvider";
 import InitialLoader from "@/components/transitions/InitialLoader";
+import { AuthProvider } from "@/context/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,9 +46,11 @@ export default function RootLayout({ children }) {
         suppressHydrationWarning
       >
         <InitialLoader />
-        <TransitionProvider>
-          <SmoothScroll>{children}</SmoothScroll>
-        </TransitionProvider>
+        <AuthProvider>
+          <TransitionProvider>
+            <SmoothScroll>{children}</SmoothScroll>
+          </TransitionProvider>
+        </AuthProvider>
       </body>
     </html>
   );
