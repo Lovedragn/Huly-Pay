@@ -920,17 +920,21 @@ export async function deleteTransaction(txOrId, authToken = null, extraExpenseId
     console.warn("Supabase expenses delete warning:", err);
   }
 
-  // 3. Notify Spring Boot backend if running
+  // 3. Notify Spring Boot backend if running (non-blocking, best-effort)
   try {
     const targetId = expenseId || transactionId;
     if (targetId) {
       const headers = { Accept: "application/json" };
       if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
 
-      await fetch(`${API_BASE_URL}/api/v1/expenses/${targetId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/v1/expenses/${targetId}`, {
         method: "DELETE",
         headers,
       });
+      // Silently ignore 404 (record not in backend) and other non-2xx responses
+      if (!res.ok && res.status !== 404) {
+        console.warn(`Backend DELETE returned ${res.status} for expense ${targetId}`);
+      }
     }
   } catch {
     // Backend may not be reachable or direct-to-Supabase mode; non-blocking

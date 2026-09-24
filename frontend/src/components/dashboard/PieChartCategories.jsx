@@ -160,7 +160,7 @@ export default function PieChartCategories({
       {/* Header with Title and Mode Switcher Button */}
       <div className="pb-4 border-b-2 border-neutral-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-          <h2 className="text-xl sm:text-2xl font-bold font-pixel text-black">
+          <h2 className="text-xl sm:text-2xl font-bold font-pixel text-black dark:text-white">
             {viewMode === "category"
               ? "Category Breakdown"
               : "Merchandise Outflow"}
@@ -178,7 +178,7 @@ export default function PieChartCategories({
         </div>
 
         {/* Segmentation Mode Toggle Button */}
-        <div className="flex border-2 border-black bg-white p-0.5 text-xs font-mono shrink-0 shadow-[2px_2px_0px_#000000]">
+        <div className="flex border-2 border-black bg-white dark:bg-[#141519] p-0.5 text-xs font-mono shrink-0 shadow-[2px_2px_0px_#000000]">
           <button
             type="button"
             onClick={() => {
@@ -188,7 +188,7 @@ export default function PieChartCategories({
             className={`px-2.5 sm:px-3 py-1 transition-colors cursor-pointer font-bold flex items-center gap-1.5 ${
               viewMode === "category"
                 ? "bg-black text-white"
-                : "text-neutral-700 hover:text-black hover:bg-neutral-100"
+                : "text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800"
             }`}
             title="View spending grouped by Category"
           >
@@ -203,7 +203,7 @@ export default function PieChartCategories({
             className={`px-2.5 sm:px-3 py-1 transition-colors cursor-pointer font-bold flex items-center gap-1.5 ${
               viewMode === "merchant"
                 ? "bg-black text-white"
-                : "text-neutral-700 hover:text-black hover:bg-neutral-100"
+                : "text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800"
             }`}
             title="View single transactions grouped by merchandise / merchant"
           >
@@ -213,7 +213,7 @@ export default function PieChartCategories({
                 className={`text-[10px] px-1 py-0.2 border leading-none ${
                   viewMode === "merchant"
                     ? "bg-[#D8FF00] text-black border-black font-black"
-                    : "bg-neutral-200 text-neutral-800 border-neutral-400"
+                    : "bg-neutral-200 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border-neutral-400"
                 }`}
               >
                 {merchantData.length}
@@ -329,7 +329,7 @@ export default function PieChartCategories({
                           <tspan
                             x={viewBox.cx}
                             y={(viewBox.cy || 0) - 10}
-                            className="fill-neutral-500 font-mono text-[10px] uppercase tracking-wider font-bold"
+                            className="fill-neutral-500 dark:fill-neutral-400 font-mono text-[10px] uppercase tracking-wider font-bold"
                           >
                             {displayLabel.length > 15
                               ? displayLabel.slice(0, 13) + ".."
@@ -338,7 +338,7 @@ export default function PieChartCategories({
                           <tspan
                             x={viewBox.cx}
                             y={(viewBox.cy || 0) + 12}
-                            className="fill-black font-doto text-base sm:text-lg font-black"
+                            className="fill-black dark:fill-white font-doto text-base sm:text-lg font-black"
                           >
                             {currencySymbol}
                             {displayAmount
@@ -368,30 +368,30 @@ export default function PieChartCategories({
               onClick={() => onSelectCategory && onSelectCategory(key)}
               className={`w-full text-left p-2 border transition-colors flex items-center justify-between text-xs cursor-pointer ${
                 isSelected
-                  ? "border-black bg-neutral-100 shadow-[2px_2px_0px_#000000]"
-                  : "border-neutral-200 hover:border-black bg-white"
+                  ? "border-black dark:border-neutral-500 bg-neutral-100 dark:bg-neutral-800 shadow-[2px_2px_0px_#000000]"
+                  : "border-neutral-200 dark:border-neutral-700 hover:border-black dark:hover:border-neutral-500 bg-white dark:bg-[#141519]"
               }`}
             >
               <div className="flex items-center gap-2">
                 <span
-                  className="w-3 h-3 shrink-0 border border-black"
+                  className="w-3 h-3 shrink-0 border border-black dark:border-neutral-600"
                   style={{ backgroundColor: cat.color }}
                 />
-                <span className="font-pixel text-neutral-800 truncate max-w-[120px] sm:max-w-[160px]">
+                <span className="font-pixel text-neutral-800 dark:text-neutral-100 truncate max-w-[120px] sm:max-w-[160px]">
                   {key}
                 </span>
                 {cat.count && (
-                  <span className="text-[10px] font-mono px-1 py-0.2 bg-neutral-100 text-neutral-600 border border-neutral-300">
+                  <span className="text-[10px] font-mono px-1 py-0.2 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700">
                     {cat.count} tx{cat.count > 1 ? "s" : ""}
                   </span>
                 )}
               </div>
               <div className="flex items-center gap-2">
-                <span className="font-doto font-bold text-black">
+                <span className="font-doto font-bold text-black dark:text-white">
                   {currencySymbol}
                   {Number(cat.totalAmount).toLocaleString()}
                 </span>
-                <span className="font-mono text-[10px] text-neutral-500 w-10 text-right">
+                <span className="font-mono text-[10px] text-neutral-500 dark:text-neutral-400 w-10 text-right">
                   {cat.percentage}%
                 </span>
               </div>
@@ -401,7 +401,7 @@ export default function PieChartCategories({
       </div>
 
       {/* Footer Meta */}
-      <div className="mt-3 pt-3 border-t border-neutral-200 text-[11px] font-mono text-neutral-500 flex justify-between">
+      <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-700 text-[11px] font-mono text-neutral-500 dark:text-neutral-400 flex justify-between">
         <span>
           {viewMode === "merchant"
             ? `MERCHANTS: ${currentData.length} ACTIVE`

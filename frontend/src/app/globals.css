@@ -89,6 +89,11 @@
   stroke: #000000 !important;
 }
 
+.dark .text-neutral-900,
+.dark .text-neutral-800 {
+  color: #f4f4f5 !important;
+}
+
 .dark .text-neutral-700,
 .dark .text-neutral-600 {
   color: #d4d4d8 !important;
@@ -127,6 +132,21 @@
   box-shadow: 4px 4px 0px #000000 !important;
 }
 
+/* Table / Button hover text fixes in dark mode */
+.dark .hover\:bg-black:hover {
+  background-color: #000000 !important;
+}
+
+.dark .hover\:text-white:hover {
+  color: #ffffff !important;
+}
+
+/* Location button: preserve D8FF00 hover with black text in dark mode */
+.dark .hover\:bg-\[\#D8FF00\]:hover {
+  background-color: #D8FF00 !important;
+  color: #000000 !important;
+}
+
 /* Recharts in Dark Mode */
 .dark .recharts-cartesian-axis-tick text {
   fill: #a1a1aa !important;
@@ -140,6 +160,24 @@
 .dark .recharts-polar-grid circle,
 .dark .recharts-polar-grid polygon {
   stroke: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Donut chart center tspan labels in dark mode */
+.dark .recharts-pie text tspan.fill-black,
+.dark .recharts-pie text tspan[class*="fill-black"] {
+  fill: #f4f4f5 !important;
+}
+
+.dark .recharts-pie text tspan.fill-neutral-500,
+.dark .recharts-pie text tspan[class*="fill-neutral-500"],
+.dark .recharts-pie text tspan[class*="fill-neutral-400"] {
+  fill: #a1a1aa !important;
+}
+
+/* Also handle the dark:fill-white variant — force white in dark mode */
+.dark .recharts-pie text tspan[class*="fill-white"],
+.dark .recharts-pie text tspan[class*="dark:fill-white"] {
+  fill: #f4f4f5 !important;
 }
 
 /* Hide scrollbar across all browsers while allowing natural scrolling */

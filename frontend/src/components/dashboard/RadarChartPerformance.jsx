@@ -43,7 +43,7 @@ export default function RadarChartPerformance({ data = [] }) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b-2 border-neutral-200">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold font-pixel text-black">
+          <h2 className="text-xl sm:text-2xl font-bold font-pixel text-black dark:text-white">
             System & Financial Radar
           </h2>
         </div>
@@ -61,21 +61,6 @@ export default function RadarChartPerformance({ data = [] }) {
         </button>
       </div>
 
-      {/* Quick Score Badge */}
-      <div className="flex items-center justify-between py-2 px-3 bg-neutral-50 border border-neutral-200 my-2">
-        <span className="text-xs font-mono text-neutral-500 uppercase">
-          Composite Network Health
-        </span>
-        <div className="flex items-center gap-2">
-          <span className="font-doto text-xl font-black text-[#62D800]">
-            {averageScore} / 100
-          </span>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 bg-black text-white">
-            TIER 1
-          </span>
-        </div>
-      </div>
-
       {/* Radar Chart */}
       <div className="w-full flex items-center justify-center pt-2 min-h-[290px]">
         <ChartContainer
@@ -91,15 +76,15 @@ export default function RadarChartPerformance({ data = [] }) {
                   formatter={(val, name, item) => (
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center justify-between gap-4 font-mono">
-                        <span className="font-pixel text-xs text-neutral-600">
+                        <span className="font-pixel text-xs text-neutral-600 dark:text-neutral-300">
                           {chartConfig[name]?.label || name}:
                         </span>
-                        <span className="font-doto font-bold text-black text-sm">
+                        <span className="font-doto font-bold text-black dark:text-white text-sm">
                           {val} / 100
                         </span>
                       </div>
                       {item.payload.description && (
-                        <span className="text-[10px] text-neutral-500 font-sans">
+                        <span className="text-[10px] text-neutral-500 dark:text-neutral-400 font-sans">
                           {item.payload.description}
                         </span>
                       )}
@@ -147,7 +132,22 @@ export default function RadarChartPerformance({ data = [] }) {
         </ChartContainer>
       </div>
 
-      <div className="mt-3 pt-3 border-t border-neutral-200 flex items-center justify-between text-[11px] font-mono text-neutral-500">
+      {/* Quick Score Badge - Positioned below the Radar Chart */}
+      <div className="flex items-center justify-between py-2 px-3 bg-neutral-50 dark:bg-neutral-800/80 border border-neutral-200 dark:border-neutral-700 my-2">
+        <span className="text-xs font-mono text-neutral-500 dark:text-neutral-400 uppercase font-semibold">
+          Composite Network Health
+        </span>
+        <div className="flex items-center gap-2">
+          <span className="font-doto text-xl font-black text-[#62D800]">
+            {averageScore} / 100
+          </span>
+          <span className="text-[10px] font-mono px-1.5 py-0.5 bg-black dark:bg-neutral-900 text-white border border-neutral-600 font-bold">
+            TIER 1
+          </span>
+        </div>
+      </div>
+
+      <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-700 flex items-center justify-between text-[11px] font-mono text-neutral-500 dark:text-neutral-400">
         <span>SECURITY: SUPABASE ES256/RS256</span>
         <span>SMS PARSER: 94% MATCH</span>
       </div>
