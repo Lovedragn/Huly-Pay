@@ -410,7 +410,7 @@ export default function Workflow() {
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative w-full bg-black text-white py-14 sm:py-32 lg:py-40 overflow-hidden"
+      className="relative w-full bg-black text-white py-14 sm:py-32 lg:py-40 overflow-hidden rounded-[28px] sm:rounded-[40px] md:rounded-[48px]"
     >
       {/* 
         Hover Spotlight Reveal Background:
