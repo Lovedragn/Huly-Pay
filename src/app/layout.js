@@ -1,5 +1,6 @@
 import localFont from "next/font/local";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "lenis/dist/lenis.css";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
@@ -43,7 +44,9 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning
     >
       <head>
-        <script
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
