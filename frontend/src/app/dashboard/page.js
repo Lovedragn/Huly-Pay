@@ -31,7 +31,7 @@ export default function DashboardPage() {
   const [radarData, setRadarData] = React.useState(MOCK_RADAR_METRICS);
   const [selectedCategory, setSelectedCategory] = React.useState(null);
   const [dataSource, setDataSource] = React.useState("live_supabase");
-  const [recordsCount, setRecordsCount] = React.useState(55);
+  const [recordsCount, setRecordsCount] = React.useState(0);
   const [lastSynced, setLastSynced] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(true);
   const [currency, setCurrency] = React.useState("INR");
