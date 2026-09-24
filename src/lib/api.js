@@ -12,249 +12,73 @@
 import { supabase } from "./supabase";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+  process.env.BACKEND_API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:8080";
 
-// Fallback & Realistic Seed Data matching Java DTOs exactly
+// Clean initial data templates matching backend DTO schemas
 export const MOCK_SUMMARY = {
-  totalSpent: 184520.0,
-  transactionCount: 312,
-  averageTransaction: 591.41,
-  settlementLatencyMs: 380,
-  successRate: 99.96,
-  activeNodes: 14,
-  currency: "USD",
+  totalSpent: 0,
+  transactionCount: 0,
+  averageTransaction: 0,
+  settlementLatencyMs: 0,
+  successRate: 100,
+  activeNodes: 1,
+  currency: "INR",
 };
 
-export const MOCK_CATEGORY_BREAKDOWN = [
-  {
-    category: "Cloud Infrastructure",
-    totalAmount: 62400.0,
-    count: 48,
-    percentage: 33.82,
-    color: "#FF0000", // Brand Red
-    icon: "server",
-  },
-  {
-    category: "SaaS & Developer Tools",
-    totalAmount: 41200.0,
-    count: 82,
-    percentage: 22.33,
-    color: "#FF00F5", // Neon Magenta
-    icon: "code",
-  },
-  {
-    category: "Hardware & POS Terminals",
-    totalAmount: 34800.0,
-    count: 24,
-    percentage: 18.86,
-    color: "#62D800", // Terminal Lime
-    icon: "cpu",
-  },
-  {
-    category: "Payment Gateway Fees",
-    totalAmount: 24100.0,
-    count: 116,
-    percentage: 13.06,
-    color: "#D8FF00", // Cyber Yellow
-    icon: "zap",
-  },
-  {
-    category: "Growth & Global Marketing",
-    totalAmount: 14220.0,
-    count: 26,
-    percentage: 7.71,
-    color: "#00E5FF", // Cyan Accent
-    icon: "trending-up",
-  },
-  {
-    category: "Office & Operations",
-    totalAmount: 7800.0,
-    count: 16,
-    percentage: 4.22,
-    color: "#71717A", // Slate/Zinc
-    icon: "briefcase",
-  },
-];
+export const MOCK_CATEGORY_BREAKDOWN = [];
 
-export const MOCK_DAILY_SPENDING = [
-  { date: "2026-09-01", totalAmount: 4200.0, count: 8, settlements: 4100 },
-  { date: "2026-09-02", totalAmount: 5120.0, count: 11, settlements: 5050 },
-  { date: "2026-09-03", totalAmount: 3890.0, count: 7, settlements: 3800 },
-  { date: "2026-09-04", totalAmount: 6450.0, count: 14, settlements: 6400 },
-  { date: "2026-09-05", totalAmount: 7200.0, count: 15, settlements: 7100 },
-  { date: "2026-09-06", totalAmount: 4900.0, count: 10, settlements: 4900 },
-  { date: "2026-09-07", totalAmount: 5600.0, count: 12, settlements: 5500 },
-  { date: "2026-09-08", totalAmount: 8100.0, count: 18, settlements: 8000 },
-  { date: "2026-09-09", totalAmount: 6300.0, count: 13, settlements: 6250 },
-  { date: "2026-09-10", totalAmount: 7850.0, count: 17, settlements: 7800 },
-  { date: "2026-09-11", totalAmount: 9200.0, count: 21, settlements: 9150 },
-  { date: "2026-09-12", totalAmount: 6900.0, count: 15, settlements: 6800 },
-  { date: "2026-09-13", totalAmount: 5400.0, count: 11, settlements: 5400 },
-  { date: "2026-09-14", totalAmount: 8300.0, count: 19, settlements: 8250 },
-  { date: "2026-09-15", totalAmount: 11400.0, count: 25, settlements: 11200 },
-  { date: "2026-09-16", totalAmount: 9800.0, count: 22, settlements: 9750 },
-  { date: "2026-09-17", totalAmount: 7600.0, count: 16, settlements: 7600 },
-  { date: "2026-09-18", totalAmount: 8900.0, count: 20, settlements: 8850 },
-  { date: "2026-09-19", totalAmount: 10200.0, count: 23, settlements: 10100 },
-  { date: "2026-09-20", totalAmount: 12600.0, count: 27, settlements: 12500 },
-  { date: "2026-09-21", totalAmount: 9400.0, count: 19, settlements: 9350 },
-  { date: "2026-09-22", totalAmount: 8800.0, count: 18, settlements: 8750 },
-  { date: "2026-09-23", totalAmount: 13500.0, count: 29, settlements: 13400 },
-  { date: "2026-09-24", totalAmount: 11900.0, count: 24, settlements: 11800 },
-];
+export const MOCK_DAILY_SPENDING = [];
 
-export const MOCK_MONTHLY_SPENDING = [
-  { month: "Apr 26", rawMonth: "2026-04", totalAmount: 124500.0, count: 195, budget: 140000 },
-  { month: "May 26", rawMonth: "2026-05", totalAmount: 142000.0, count: 228, budget: 150000 },
-  { month: "Jun 26", rawMonth: "2026-06", totalAmount: 158900.0, count: 264, budget: 165000 },
-  { month: "Jul 26", rawMonth: "2026-07", totalAmount: 171300.0, count: 289, budget: 175000 },
-  { month: "Aug 26", rawMonth: "2026-08", totalAmount: 179400.0, count: 301, budget: 185000 },
-  { month: "Sep 26", rawMonth: "2026-09", totalAmount: 184520.0, count: 312, budget: 190000 },
-];
+export const MOCK_MONTHLY_SPENDING = [];
 
 export const MOCK_RADAR_METRICS = [
   {
     metric: "Settlement Speed",
-    score: 96,
+    score: 100,
     benchmark: 80,
     fullMark: 100,
-    description: "380ms vs 1200ms industry average",
+    description: "Instant finality",
   },
   {
     metric: "SLA Uptime",
-    score: 99,
+    score: 100,
     benchmark: 95,
     fullMark: 100,
-    description: "99.98% cluster reliability",
+    description: "Database and cluster active",
   },
   {
-    metric: "SMS Auto-Parse",
-    score: 94,
-    benchmark: 75,
-    fullMark: 100,
-    description: "Regex/AI SMS payment reconciliation",
-  },
-  {
-    metric: "Budget Adherence",
-    score: 88,
-    benchmark: 70,
-    fullMark: 100,
-    description: "Within quarterly target bounds",
-  },
-  {
-    metric: "Security & JWT",
-    score: 98,
+    metric: "Auto-Reconcile",
+    score: 100,
     benchmark: 85,
     fullMark: 100,
-    description: "RS256 / ES256 multi-sig token validation",
+    description: "Zero pending mismatches",
   },
   {
-    metric: "Liquidity Depth",
-    score: 91,
-    benchmark: 78,
+    metric: "Budget Bounds",
+    score: 100,
+    benchmark: 70,
     fullMark: 100,
-    description: "Instant on-chain & UPI settlement reserves",
+    description: "Real-time expense monitoring",
+  },
+  {
+    metric: "Zero-Knowledge",
+    score: 100,
+    benchmark: 90,
+    fullMark: 100,
+    description: "Client-side encrypted token payloads",
+  },
+  {
+    metric: "DB Telemetry",
+    score: 100,
+    benchmark: 75,
+    fullMark: 100,
+    description: "Direct real-time database replication",
   },
 ];
 
-export const MOCK_EXPENSES = [
-  {
-    id: "f81d4fae-7dec-11d0-a765-00a0c91e6bf6",
-    merchantName: "AWS Cloud Infrastructure",
-    amount: 14250.0,
-    currency: "USD",
-    category: { name: "Cloud Infrastructure", color: "#FF0000" },
-    description: "Multi-region EC2, EKS & RDS Aurora instances",
-    transactionTime: "2026-09-24T06:14:00Z",
-    paymentMethod: "UPI_AUTO_DEBIT",
-    upiTransactionId: "UPI/260924/99102831",
-    status: "SETTLED",
-    latitude: 19.0760,
-    longitude: 72.8777,
-    locationCity: "Mumbai",
-    locationState: "Maharashtra",
-  },
-  {
-    id: "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
-    merchantName: "Stripe Connect Settlement",
-    amount: 8450.0,
-    currency: "USD",
-    category: { name: "Payment Gateway Fees", color: "#D8FF00" },
-    description: "Inter-bank clearing & interchange routing",
-    transactionTime: "2026-09-24T04:32:00Z",
-    paymentMethod: "DIRECT_TRANSFER",
-    upiTransactionId: "STRIPE/TX/4819208",
-    status: "SETTLED",
-    latitude: 12.9716,
-    longitude: 77.5946,
-    locationCity: "Bengaluru",
-    locationState: "Karnataka",
-  },
-  {
-    id: "7ba7b811-9dad-11d1-80b4-00c04fd430c9",
-    merchantName: "Vercel Enterprise Tier",
-    amount: 3200.0,
-    currency: "USD",
-    category: { name: "SaaS & Developer Tools", color: "#FF00F5" },
-    description: "Edge network bandwidth & compute nodes",
-    transactionTime: "2026-09-23T18:45:00Z",
-    paymentMethod: "UPI_QR_INSTANT",
-    upiTransactionId: "UPI/260923/77182901",
-    status: "SETTLED",
-    latitude: 28.6139,
-    longitude: 77.2090,
-    locationCity: "New Delhi",
-    locationState: "Delhi",
-  },
-  {
-    id: "8ba7b812-9dad-11d1-80b4-00c04fd430ca",
-    merchantName: "Pax Technology POS Hardware",
-    amount: 12800.0,
-    currency: "USD",
-    category: { name: "Hardware & POS Terminals", color: "#62D800" },
-    description: "50x Biometric QR payment scanners",
-    transactionTime: "2026-09-23T12:10:00Z",
-    paymentMethod: "UPI_CORPORATE",
-    upiTransactionId: "UPI/260923/66291823",
-    status: "SETTLED",
-    latitude: 17.3850,
-    longitude: 78.4867,
-    locationCity: "Hyderabad",
-    locationState: "Telangana",
-  },
-  {
-    id: "9ba7b813-9dad-11d1-80b4-00c04fd430cb",
-    merchantName: "Datadog Telemetry & APM",
-    amount: 2450.0,
-    currency: "USD",
-    category: { name: "SaaS & Developer Tools", color: "#FF00F5" },
-    description: "Distributed tracing and real-time logs",
-    transactionTime: "2026-09-22T21:05:00Z",
-    paymentMethod: "UPI_AUTO_DEBIT",
-    upiTransactionId: "UPI/260922/55192837",
-    status: "SETTLED",
-    latitude: 13.0827,
-    longitude: 80.2707,
-    locationCity: "Chennai",
-    locationState: "Tamil Nadu",
-  },
-  {
-    id: "aba7b814-9dad-11d1-80b4-00c04fd430cc",
-    merchantName: "Google Cloud Spanner",
-    amount: 6700.0,
-    currency: "USD",
-    category: { name: "Cloud Infrastructure", color: "#FF0000" },
-    description: "Globally consistent distributed ledger DB",
-    transactionTime: "2026-09-22T14:20:00Z",
-    paymentMethod: "UPI_INSTANT",
-    upiTransactionId: "UPI/260922/44102938",
-    status: "SETTLED",
-    latitude: 18.5204,
-    longitude: 73.8567,
-    locationCity: "Pune",
-    locationState: "Maharashtra",
-  },
-];
+export const MOCK_EXPENSES = [];
 
 /**
  * Check if the Spring Boot backend server is reachable on port 8080
