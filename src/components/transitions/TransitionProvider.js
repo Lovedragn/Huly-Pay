@@ -274,7 +274,7 @@ export default function TransitionProvider({ children }) {
             key={sigKey}
             delay={0.45}
             duration={1.3}
-            color="#FFFFFF"
+            color="#1a1a1a"
             className="w-[110px] sm:w-[150px] md:w-[190px] max-w-[85vw]"
           />
         </div>

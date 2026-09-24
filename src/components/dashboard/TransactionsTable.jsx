@@ -317,7 +317,7 @@ export default function TransactionsTable({
                           onChange={() => toggleColumn(col.key)}
                           className="w-3.5 h-3.5 accent-black rounded-none cursor-pointer"
                         />
-                        <span className="text-black font-semibold text-xs">{col.label}</span>
+                        <span className="text-black dark:text-white font-semibold text-xs">{col.label}</span>
                       </label>
                     ))}
                   </div>
@@ -484,11 +484,10 @@ export default function TransactionsTable({
                   {visibleColumns.category && (
                     <td className="py-3.5 px-4 whitespace-nowrap">
                       <span
-                        className="inline-flex items-center gap-1.5 px-2 py-1 text-xs border border-black font-mono font-bold"
+                        className="inline-flex items-center gap-1.5 px-2 py-1 text-xs border border-black font-mono font-bold text-black dark:text-white"
                         style={{
                           backgroundColor: `${tx.category?.color || "#000000"}15`,
                           borderColor: tx.category?.color || "#000000",
-                          color: "#000000",
                         }}
                       >
                         <span
@@ -646,11 +645,11 @@ export default function TransactionsTable({
                           type="button"
                           onClick={() => setConfirmingId(tx.id)}
                           disabled={deletingId !== null}
-                          className="px-2.5 py-1 text-xs font-mono font-bold border-2 border-black bg-white hover:bg-[#FF0000] hover:text-white transition-all text-neutral-800 cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 inline-flex items-center gap-1.5 group disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="px-2.5 py-1 text-xs font-mono font-bold border-2 border-black bg-[#FF0000] text-white hover:bg-black transition-all cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 inline-flex items-center gap-1.5 group disabled:opacity-50 disabled:cursor-not-allowed"
                           title="Remove transaction from database"
                         >
                           <svg
-                            className="w-3.5 h-3.5 text-neutral-600 group-hover:text-white transition-colors"
+                            className="w-3.5 h-3.5 text-white transition-colors"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
