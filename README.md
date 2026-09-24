@@ -1,7 +1,7 @@
 # 💳 HulyPay — Next-Gen Intelligent Fintech App
 
 <p align="center">
-  <img src="assets/logo/Logo-Dark.png" alt="HulyPay Logo" width="100" height="100" />
+  <img src="mobile/hulypay/assets/logo/Logo-Dark.png" alt="HulyPay Logo" width="100" height="100" />
 </p>
 
 <p align="center">
@@ -19,11 +19,6 @@
 
 ## 📥 Quick Download & Installation
 
-### Android APK Direct Download
-You can immediately test and install the production build APK:
-* **Download APK directly from repository:** [**Download Hulypay.apk**](./Release/Hulypay.apk)
-* **Local path:** `mobile/Release/Hulypay.apk`
-
 > **Note for Android users:** When installing from your device file manager or browser, make sure to allow **"Install from unknown sources"** in your device security settings.
 
 ---
@@ -33,18 +28,22 @@ You can immediately test and install the production build APK:
 Follow these steps to clone, configure, and launch the application on Android, iOS, or physical devices.
 
 ### 1. Prerequisites
+
 Ensure you have the following installed on your machine:
-* [Flutter SDK](https://docs.flutter.dev/get-started/install) (version `^3.13.3` or later)
-* [Dart SDK](https://dart.dev/get-dart) (included with Flutter)
-* **Android:** Android Studio, Android SDK (API 21+), and an Emulator or physical Android device with USB debugging enabled
-* **iOS (macOS only):** Xcode 14+, CocoaPods, and an iOS Simulator or connected iPhone
+
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) (version `^3.13.3` or later)
+- [Dart SDK](https://dart.dev/get-dart) (included with Flutter)
+- **Android:** Android Studio, Android SDK (API 21+), and an Emulator or physical Android device with USB debugging enabled
+- **iOS (macOS only):** Xcode 14+, CocoaPods, and an iOS Simulator or connected iPhone
 
 Verify your setup:
+
 ```bash
 flutter doctor
 ```
 
 ### 2. Clone Repository & Setup
+
 ```bash
 # Clone the repository
 git clone https://github.com/Lovedragn/Huly-Pay.git
@@ -57,13 +56,16 @@ flutter pub get
 ```
 
 ### 3. Environment Configuration
+
 Create a `.env` file in the `mobile/` root directory (refer to `.env.example` or configure your Supabase credentials):
+
 ```env
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your-anon-key-here
 ```
 
 ### 4. Run on Android
+
 ```bash
 # List available devices/emulators
 flutter devices
@@ -77,6 +79,7 @@ flutter build apk --release
 ```
 
 ### 5. Run on iOS (macOS required)
+
 ```bash
 # Install iOS CocoaPods dependencies
 cd ios
@@ -96,36 +99,36 @@ open ios/Runner.xcworkspace
 
 ### Core Features
 
-* **⚡ Real-Time Scan & Pay:**
-  * Ultra-responsive QR code scanner powered by `mobile_scanner`.
-  * Support for camera flash toggle, camera flips, barcode decoding, and simulated sandbox QR payloads for test environments.
-* **📊 Spending Insights & Analytics:**
-  * Multi-theme interactive donut & bar charts utilizing `fl_chart`.
-  * Temporal expense matrix, category breakdowns, and weekly/monthly trends.
-* **💾 Offline-First Architecture:**
-  * Local caching and rapid offline transaction reads/writes using `sqflite`.
-  * Automatic sync engine syncing queued offline records with cloud backends when online.
-* **🎨 Adaptive Theme & Dynamic Customization:**
-  * Instant, flicker-free light and dark mode switching with persistent local state.
-  * Custom theme palette support and glassmorphic UI components.
-* **🔒 Biometrics & Security:**
-  * Token validation, session handling, and configurable payment authentication controls.
-* **💳 Multi-Method Payment Management:**
-  * Virtual card cards, bank linking, and simulated payment gateways.
+- **⚡ Real-Time Scan & Pay:**
+  - Ultra-responsive QR code scanner powered by `mobile_scanner`.
+  - Support for camera flash toggle, camera flips, barcode decoding, and simulated sandbox QR payloads for test environments.
+- **📊 Spending Insights & Analytics:**
+  - Multi-theme interactive donut & bar charts utilizing `fl_chart`.
+  - Temporal expense matrix, category breakdowns, and weekly/monthly trends.
+- **💾 Offline-First Architecture:**
+  - Local caching and rapid offline transaction reads/writes using `sqflite`.
+  - Automatic sync engine syncing queued offline records with cloud backends when online.
+- **🎨 Adaptive Theme & Dynamic Customization:**
+  - Instant, flicker-free light and dark mode switching with persistent local state.
+  - Custom theme palette support and glassmorphic UI components.
+- **🔒 Biometrics & Security:**
+  - Token validation, session handling, and configurable payment authentication controls.
+- **💳 Multi-Method Payment Management:**
+  - Virtual card cards, bank linking, and simulated payment gateways.
 
 ---
 
 ### Tech Stack & Tools
 
-| Category | Technology / Library | Purpose |
-| :--- | :--- | :--- |
-| **Framework** | [Flutter](https://flutter.dev/) & [Dart](https://dart.dev/) | Cross-platform native mobile application |
-| **Backend & Auth** | [Supabase](https://supabase.com/) (`supabase_flutter`) | Cloud auth, user data storage, and backend sync |
-| **Local Database** | [SQLite](https://sqlite.org/) (`sqflite`) | Offline-first transaction persistence & caching |
-| **Networking** | [Dio](https://pub.dev/packages/dio) | RESTful API client and HTTP request interceptors |
-| **Scanner & Camera** | [mobile_scanner](https://pub.dev/packages/mobile_scanner) | High-performance native camera QR code scanning |
-| **Data Visualization** | [fl_chart](https://pub.dev/packages/fl_chart) | Dynamic financial spending graphs & pie charts |
-| **Location & Maps** | [google_maps_flutter](https://pub.dev/packages/google_maps_flutter), [geolocator](https://pub.dev/packages/geolocator) | Merchant geolocation and nearby ATM/store discovery |
+| Category               | Technology / Library                                                                                                   | Purpose                                             |
+| :--------------------- | :--------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------- |
+| **Framework**          | [Flutter](https://flutter.dev/) & [Dart](https://dart.dev/)                                                            | Cross-platform native mobile application            |
+| **Backend & Auth**     | [Supabase](https://supabase.com/) (`supabase_flutter`)                                                                 | Cloud auth, user data storage, and backend sync     |
+| **Local Database**     | [SQLite](https://sqlite.org/) (`sqflite`)                                                                              | Offline-first transaction persistence & caching     |
+| **Networking**         | [Dio](https://pub.dev/packages/dio)                                                                                    | RESTful API client and HTTP request interceptors    |
+| **Scanner & Camera**   | [mobile_scanner](https://pub.dev/packages/mobile_scanner)                                                              | High-performance native camera QR code scanning     |
+| **Data Visualization** | [fl_chart](https://pub.dev/packages/fl_chart)                                                                          | Dynamic financial spending graphs & pie charts      |
+| **Location & Maps**    | [google_maps_flutter](https://pub.dev/packages/google_maps_flutter), [geolocator](https://pub.dev/packages/geolocator) | Merchant geolocation and nearby ATM/store discovery |
 
 ---
 
@@ -192,7 +195,7 @@ sequenceDiagram
 
 ```text
 mobile/
-├── assets/              # Image assets, brand logos, custom icons
+├── mobile/hulypay/assets/              # Image mobile/hulypay/assets, brand logos, custom icons
 ├── android/              # Native Android configuration & Gradle files
 ├── ios/                  # Native iOS Xcode workspace & Podfiles
 ├── lib/
@@ -224,4 +227,5 @@ Created & maintained by **Sujith Sappani** ([sujithsappani.vercel.app](https://s
 ---
 
 ## 📄 License
+
 This project is for demonstration and development purposes. Check [LICENSE](LICENSE) for more details.
