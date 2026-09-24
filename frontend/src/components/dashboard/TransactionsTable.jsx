@@ -19,10 +19,8 @@ export default function TransactionsTable({
   const [noticeMessage, setNoticeMessage] = React.useState(null);
   const [errorMessage, setErrorMessage] = React.useState(null);
   const [isFilterMenuOpen, setIsFilterMenuOpen] = React.useState(false);
-  const [isColumnsMenuOpen, setIsColumnsMenuOpen] = React.useState(false);
   const [activeMapTx, setActiveMapTx] = React.useState(null);
   const filterMenuRef = React.useRef(null);
-  const columnsMenuRef = React.useRef(null);
 
   // Column visibility state with localStorage persistence
   const [visibleColumns, setVisibleColumns] = React.useState({
@@ -60,14 +58,11 @@ export default function TransactionsTable({
     });
   };
 
-  // Close menus on outside click
+  // Close filter menu on outside click
   React.useEffect(() => {
     function handleClickOutside(e) {
       if (filterMenuRef.current && !filterMenuRef.current.contains(e.target)) {
         setIsFilterMenuOpen(false);
-      }
-      if (columnsMenuRef.current && !columnsMenuRef.current.contains(e.target)) {
-        setIsColumnsMenuOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -243,7 +238,7 @@ export default function TransactionsTable({
 
         {/* Filter bar */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Dedicated Filter Button (Left side of filter tools) */}
+          {/* Unified Filter & Column Controls */}
           <div ref={filterMenuRef} className="relative">
             <button
               type="button"
@@ -253,7 +248,7 @@ export default function TransactionsTable({
                   ? "bg-[#D8FF00] text-black"
                   : "bg-white hover:bg-neutral-100 text-black"
               }`}
-              title="Filter transactions by status (All, Confirmed, Pending, Canceled)"
+              title="Filter by status and toggle visible columns"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -275,82 +270,58 @@ export default function TransactionsTable({
               </svg>
             </button>
 
-            {/* Filter Dropdown Popover */}
+            {/* Combined Filter Popover: Status Options & Visible Columns */}
             {isFilterMenuOpen && (
-              <div className="absolute top-full left-0 mt-1 w-48 bg-white border-[2.5px] border-black shadow-[4px_4px_0px_#000000] p-1.5 z-40 font-mono text-xs space-y-1 animate-in fade-in duration-100">
-                <div className="px-2 py-1 text-[10px] uppercase font-bold text-neutral-500 border-b border-neutral-200">
-                  Select Status
+              <div className="absolute top-full left-0 mt-1 w-64 bg-white border-[2.5px] border-black shadow-[4px_4px_0px_#000000] p-2.5 z-40 font-mono text-xs space-y-2.5 animate-in fade-in duration-100 divide-y divide-neutral-200">
+                {/* Section 1: Status Filter */}
+                <div>
+                  <div className="px-1 pb-1.5 text-[10px] uppercase font-bold text-neutral-500">
+                    Filter by Status
+                  </div>
+                  <div className="grid grid-cols-2 gap-1">
+                    {STATUS_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => {
+                          setStatusFilter(opt.id);
+                        }}
+                        className={`text-left px-2 py-1.5 transition-colors cursor-pointer border text-xs flex items-center justify-between ${
+                          statusFilter === opt.id
+                            ? "bg-black text-white font-bold border-black shadow-[1px_1px_0px_#000000]"
+                            : "bg-neutral-50 hover:bg-[#FFFFEB] border-neutral-300 text-neutral-800"
+                        }`}
+                      >
+                        <span className="truncate">{opt.label}</span>
+                        {statusFilter === opt.id && <span className="font-bold">✓</span>}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                {STATUS_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => {
-                      setStatusFilter(opt.id);
-                      setIsFilterMenuOpen(false);
-                    }}
-                    className={`w-full text-left px-2.5 py-1.5 rounded-none flex items-center justify-between transition-colors cursor-pointer border ${
-                      statusFilter === opt.id
-                        ? "bg-black text-white font-bold border-black"
-                        : "hover:bg-[#FFFFEB] border-transparent text-neutral-800"
-                    }`}
-                  >
-                    <span>{opt.label}</span>
-                    {statusFilter === opt.id && <span className="font-bold">✓</span>}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
 
-          {/* Columns Selector Button */}
-          <div ref={columnsMenuRef} className="relative">
-            <button
-              type="button"
-              onClick={() => setIsColumnsMenuOpen((prev) => !prev)}
-              className="px-3 py-1.5 text-xs font-mono font-bold border-2 border-black bg-white hover:bg-neutral-100 text-black transition-all flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5"
-              title="Select which columns and data are shown in the table"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
-                />
-              </svg>
-              <span>Columns</span>
-              <svg
-                className={`w-3 h-3 transition-transform ${isColumnsMenuOpen ? "rotate-180" : ""}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-
-            {/* Columns Dropdown Popover */}
-            {isColumnsMenuOpen && (
-              <div className="absolute top-full right-0 sm:left-0 mt-1 w-56 bg-white border-[2.5px] border-black shadow-[4px_4px_0px_#000000] p-2 z-40 font-mono text-xs space-y-1.5 animate-in fade-in duration-100">
-                <div className="px-1.5 pb-1 text-[10px] uppercase font-bold text-neutral-500 border-b border-neutral-200 flex justify-between items-center">
-                  <span>Visible Data Fields</span>
-                  <span className="text-[9px] text-[#058a00]">Auto-saved</span>
+                {/* Section 2: Visible Columns Combined Inside Filter */}
+                <div className="pt-2">
+                  <div className="px-1 pb-1 text-[10px] uppercase font-bold text-neutral-500 flex justify-between items-center">
+                    <span>Visible Columns</span>
+                    <span className="text-[9px] text-[#058a00] font-bold">Auto-saved</span>
+                  </div>
+                  <div className="space-y-1">
+                    {COLUMN_DEFINITIONS.map((col) => (
+                      <label
+                        key={col.key}
+                        className="flex items-center gap-2 px-2 py-1 hover:bg-[#FFFFEB] cursor-pointer select-none border border-transparent hover:border-neutral-200 transition-colors"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={visibleColumns[col.key]}
+                          onChange={() => toggleColumn(col.key)}
+                          className="w-3.5 h-3.5 accent-black rounded-none cursor-pointer"
+                        />
+                        <span className="text-black font-semibold text-xs">{col.label}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
-                {COLUMN_DEFINITIONS.map((col) => (
-                  <label
-                    key={col.key}
-                    className="flex items-center gap-2.5 px-2 py-1.5 hover:bg-[#FFFFEB] cursor-pointer select-none border border-transparent hover:border-neutral-200"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={visibleColumns[col.key]}
-                      onChange={() => toggleColumn(col.key)}
-                      className="w-3.5 h-3.5 accent-black rounded-none cursor-pointer"
-                    />
-                    <span className="text-black font-semibold text-xs">{col.label}</span>
-                  </label>
-                ))}
               </div>
             )}
           </div>
@@ -362,7 +333,7 @@ export default function TransactionsTable({
               placeholder="Search merchant, UPI ID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="px-3 py-1.5 text-xs font-mono border-2 border-black bg-white focus:outline-none focus:ring-2 focus:ring-[#FF0000] w-44 sm:w-52"
+              className="px-3 py-1.5 text-xs font-mono border-2 border-black bg-white focus:outline-none focus:ring-2 focus:ring-[#FF0000] w-48 sm:w-56"
             />
             {searchQuery && (
               <button
@@ -373,24 +344,6 @@ export default function TransactionsTable({
                 ×
               </button>
             )}
-          </div>
-
-          {/* Quick Status Pill Bar (All, Confirmed, Pending, Canceled) */}
-          <div className="hidden lg:flex border-2 border-black bg-white p-0.5 text-xs font-mono">
-            {["ALL", "CONFIRMED", "PENDING", "CANCELED"].map((status) => (
-              <button
-                type="button"
-                key={status}
-                onClick={() => setStatusFilter(status)}
-                className={`px-2 py-1 transition-colors cursor-pointer text-[11px] ${
-                  statusFilter === status
-                    ? "bg-black text-white font-bold"
-                    : "text-neutral-700 hover:text-black"
-                }`}
-              >
-                {status}
-              </button>
-            ))}
           </div>
 
           {/* Clear Filter Button */}
@@ -477,7 +430,7 @@ export default function TransactionsTable({
                 <th className="py-3 px-4">UPI Identifier & Hash</th>
               )}
               {visibleColumns.location && (
-                <th className="py-3 px-4">Location / Map</th>
+                <th className="py-3 px-4 text-center">Location</th>
               )}
               {visibleColumns.amount && (
                 <th className="py-3 px-4 sm:px-6 text-right">Amount</th>
@@ -571,39 +524,35 @@ export default function TransactionsTable({
                     </td>
                   )}
 
-                  {/* Location & Map Trigger */}
+                  {/* Location & Map Trigger (Just Location Symbol) */}
                   {visibleColumns.location && (
-                    <td className="py-3.5 px-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setActiveMapTx(tx)}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-bold border-2 border-black bg-white hover:bg-[#D8FF00] hover:text-black transition-colors cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 group"
-                          title="View transaction geolocation on interactive map"
+                    <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                      <button
+                        type="button"
+                        onClick={() => setActiveMapTx(tx)}
+                        className="inline-flex items-center justify-center w-8 h-8 border-2 border-black bg-white hover:bg-[#D8FF00] hover:text-black transition-all cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 group mx-auto"
+                        title={`Location: ${getTxLocation(tx)} (Click to view interactive map)`}
+                      >
+                        <svg
+                          className="w-4 h-4 text-[#FF0000] group-hover:scale-110 transition-transform"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
                         >
-                          <svg
-                            className="w-3.5 h-3.5 text-[#FF0000] group-hover:scale-110 transition-transform"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2.5"
-                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                            />
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2.5"
-                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                            />
-                          </svg>
-                          <span>{getTxLocation(tx)}</span>
-                          <span className="text-[10px] font-bold text-neutral-500 underline ml-0.5">Map</span>
-                        </button>
-                      </div>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2.5"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2.5"
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                      </button>
                     </td>
                   )}
 
@@ -815,12 +764,6 @@ export default function TransactionsTable({
                     />
                   );
                 })()}
-
-                {/* Map Overlay Badge */}
-                <div className="absolute top-2 left-2 px-2.5 py-1 bg-black text-[#D8FF00] font-mono text-[11px] font-bold border border-black shadow-[2px_2px_0px_rgba(0,0,0,0.5)] flex items-center gap-1.5 pointer-events-none">
-                  <span className="w-2 h-2 rounded-full bg-[#62D800] animate-pulse" />
-                  <span>GPS POS NODE VERIFIED</span>
-                </div>
               </div>
 
               {/* External Navigation Links */}
@@ -842,7 +785,7 @@ export default function TransactionsTable({
                     href={`https://www.openstreetmap.org/?mlat=${activeMapTx.latitude || 19.076}&mlon=${activeMapTx.longitude || 72.8777}#map=16/${activeMapTx.latitude || 19.076}/${activeMapTx.longitude || 72.8777}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-3 py-1.5 border-2 border-black bg-[#D8FF00] hover:bg-black hover:text-white font-mono text-xs font-bold transition-all cursor-pointer shadow-[2px_2px_0px_#000000] flex items-center gap-1.5"
+                    className="px-3 py-1.5 border-2 border-black bg-[#D8FF00] text-black font-black hover:bg-black hover:text-white font-mono text-xs transition-all cursor-pointer shadow-[2px_2px_0px_#000000] flex items-center gap-1.5"
                   >
                     <span>OpenStreetMap</span>
                     <span>↗</span>
