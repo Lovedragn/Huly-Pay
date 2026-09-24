@@ -4,6 +4,58 @@
   "graph": {},
   "nodes": [
     {
+      "id": "backend_src_test_java_com_hulypay_backend_backendapplicationtests_backendapplicationtests",
+      "label": "BackendApplicationTests",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "backendapplicationtests",
+      "source_file": "backend/src/test/java/com/hulypay/backend/BackendApplicationTests.java",
+      "source_location": "L6"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_healthcontrollertests_healthcontrollertests",
+      "label": "HealthControllerTests",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "healthcontrollertests",
+      "source_file": "backend/src/test/java/com/hulypay/backend/HealthControllerTests.java",
+      "source_location": "L12"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_paymentcontrollertests_paymentcontrollertests",
+      "label": "PaymentControllerTests",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "paymentcontrollertests",
+      "source_file": "backend/src/test/java/com/hulypay/backend/PaymentControllerTests.java",
+      "source_location": "L20"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_securityandusertests_securityandusertests",
+      "label": "SecurityAndUserTests",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 107,
+      "community_name": "SecurityAndUserTests",
+      "file_type": "code",
+      "norm_label": "securityandusertests",
+      "source_file": "backend/src/test/java/com/hulypay/backend/SecurityAndUserTests.java",
+      "source_location": "L22"
+    },
+    {
       "id": "backend_src_main_java_com_hulypay_backend_analytics_dto_categorybreakdownresponse_categorybreakdownresponse",
       "label": "CategoryBreakdownResponse",
       "_callable": true,
@@ -134,19 +186,6 @@
       "source_location": "L9"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_dto_smsverificationresponse_smsverificationresponse",
-      "label": "SmsVerificationResponse",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "lombok.AllArgsConstructor",
-      "file_type": "code",
-      "norm_label": "smsverificationresponse",
-      "source_file": "backend/src/main/java/com/hulypay/backend/payments/dto/SmsVerificationResponse.java",
-      "source_location": "L11"
-    },
-    {
       "id": "backend_src_main_java_com_hulypay_backend_payments_sms_parsedsmsresult_parsedsmsresult",
       "label": "ParsedSmsResult",
       "_callable": true,
@@ -186,6 +225,45 @@
       "source_location": "L11"
     },
     {
+      "id": "backend_src_main_java_com_hulypay_backend_common_exception_badrequestexception_badrequestexception",
+      "label": "BadRequestException",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 123,
+      "community_name": "Expense",
+      "file_type": "code",
+      "norm_label": "badrequestexception",
+      "source_file": "backend/src/main/java/com/hulypay/backend/common/exception/BadRequestException.java",
+      "source_location": "L6"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_common_exception_resourcenotfoundexception_resourcenotfoundexception",
+      "label": "ResourceNotFoundException",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 123,
+      "community_name": "Expense",
+      "file_type": "code",
+      "norm_label": "resourcenotfoundexception",
+      "source_file": "backend/src/main/java/com/hulypay/backend/common/exception/ResourceNotFoundException.java",
+      "source_location": "L6"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_expenses_dto_expenseresponse_expenseresponse",
+      "label": "ExpenseResponse",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 123,
+      "community_name": "Expense",
+      "file_type": "code",
+      "norm_label": "expenseresponse",
+      "source_file": "backend/src/main/java/com/hulypay/backend/expenses/dto/ExpenseResponse.java",
+      "source_location": "L14"
+    },
+    {
       "id": "backend_src_main_java_com_hulypay_backend_expenses_expense_expense",
       "label": "Expense",
       "_callable": true,
@@ -212,6 +290,19 @@
       "source_location": "L17"
     },
     {
+      "id": "backend_src_main_java_com_hulypay_backend_payments_dto_smsverificationresponse_smsverificationresponse",
+      "label": "SmsVerificationResponse",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 123,
+      "community_name": "Expense",
+      "file_type": "code",
+      "norm_label": "smsverificationresponse",
+      "source_file": "backend/src/main/java/com/hulypay/backend/payments/dto/SmsVerificationResponse.java",
+      "source_location": "L11"
+    },
+    {
       "id": "backend_src_main_java_com_hulypay_backend_payments_paymentservice_paymentservice",
       "label": "PaymentService",
       "_callable": true,
@@ -223,19 +314,6 @@
       "norm_label": "paymentservice",
       "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentService.java",
       "source_location": "L29"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_sms_smsparserservice_smsparserservice",
-      "label": "SmsParserService",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 123,
-      "community_name": "Expense",
-      "file_type": "code",
-      "norm_label": "smsparserservice",
-      "source_file": "backend/src/main/java/com/hulypay/backend/payments/sms/SmsParserService.java",
-      "source_location": "L12"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_common_databasehealthcontroller_databasehealthcontroller",
@@ -316,19 +394,6 @@
       "source_location": "L29"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_analytics_analyticsservice_analyticsservice",
-      "label": "AnalyticsService",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "ExpenseRepository",
-      "file_type": "code",
-      "norm_label": "analyticsservice",
-      "source_file": "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsService.java",
-      "source_location": "L18"
-    },
-    {
       "id": "backend_src_main_java_com_hulypay_backend_expenses_expenserepository_expenserepository",
       "label": "ExpenseRepository",
       "_callable": true,
@@ -340,6 +405,19 @@
       "norm_label": "expenserepository",
       "source_file": "backend/src/main/java/com/hulypay/backend/expenses/ExpenseRepository.java",
       "source_location": "L13"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_users_userrepository_userrepository",
+      "label": "UserRepository",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "ExpenseRepository",
+      "file_type": "code",
+      "norm_label": "userrepository",
+      "source_file": "backend/src/main/java/com/hulypay/backend/users/UserRepository.java",
+      "source_location": "L9"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_config_openapiconfig_openapiconfig",
@@ -366,6 +444,71 @@
       "norm_label": "securityconfig",
       "source_file": "backend/src/main/java/com/hulypay/backend/config/SecurityConfig.java",
       "source_location": "L18"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_payments_payment_payment",
+      "label": "Payment",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "Payment",
+      "file_type": "code",
+      "norm_label": "payment",
+      "source_file": "backend/src/main/java/com/hulypay/backend/payments/Payment.java",
+      "source_location": "L16"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_payments_paymentrepository_paymentrepository",
+      "label": "PaymentRepository",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "Payment",
+      "file_type": "code",
+      "norm_label": "paymentrepository",
+      "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentRepository.java",
+      "source_location": "L10"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_payments_sms_smsparserservice_smsparserservice",
+      "label": "SmsParserService",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "Payment",
+      "file_type": "code",
+      "norm_label": "smsparserservice",
+      "source_file": "backend/src/main/java/com/hulypay/backend/payments/sms/SmsParserService.java",
+      "source_location": "L12"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_payments_sms_smsparserservice_verificationmatchresult",
+      "label": "VerificationMatchResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "Payment",
+      "file_type": "code",
+      "norm_label": "verificationmatchresult",
+      "source_file": "backend/src/main/java/com/hulypay/backend/payments/sms/SmsParserService.java",
+      "source_location": "L176"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests_smsparserservicetests",
+      "label": "SmsParserServiceTests",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "Payment",
+      "file_type": "code",
+      "norm_label": "smsparserservicetests",
+      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
+      "source_location": "L12"
     },
     {
       "id": "mobile_android_app_src_main_kotlin_com_example_mobile_mainactivity_mainactivity",
@@ -407,6 +550,45 @@
       "source_location": "L3"
     },
     {
+      "id": "backend_src_main_java_com_hulypay_backend_analytics_analyticscontroller_analyticscontroller",
+      "label": "AnalyticsController",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "User",
+      "file_type": "code",
+      "norm_label": "analyticscontroller",
+      "source_file": "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsController.java",
+      "source_location": "L19"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_analytics_analyticsservice_analyticsservice",
+      "label": "AnalyticsService",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "User",
+      "file_type": "code",
+      "norm_label": "analyticsservice",
+      "source_file": "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsService.java",
+      "source_location": "L18"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_categories_categorycontroller_categorycontroller",
+      "label": "CategoryController",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "User",
+      "file_type": "code",
+      "norm_label": "categorycontroller",
+      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryController.java",
+      "source_location": "L18"
+    },
+    {
       "id": "backend_src_main_java_com_hulypay_backend_categories_categoryservice_categoryservice",
       "label": "CategoryService",
       "_callable": true,
@@ -433,45 +615,6 @@
       "source_location": "L11"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_common_exception_badrequestexception_badrequestexception",
-      "label": "BadRequestException",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "User",
-      "file_type": "code",
-      "norm_label": "badrequestexception",
-      "source_file": "backend/src/main/java/com/hulypay/backend/common/exception/BadRequestException.java",
-      "source_location": "L6"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_common_exception_resourcenotfoundexception_resourcenotfoundexception",
-      "label": "ResourceNotFoundException",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "User",
-      "file_type": "code",
-      "norm_label": "resourcenotfoundexception",
-      "source_file": "backend/src/main/java/com/hulypay/backend/common/exception/ResourceNotFoundException.java",
-      "source_location": "L6"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_expenses_dto_expenseresponse_expenseresponse",
-      "label": "ExpenseResponse",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "User",
-      "file_type": "code",
-      "norm_label": "expenseresponse",
-      "source_file": "backend/src/main/java/com/hulypay/backend/expenses/dto/ExpenseResponse.java",
-      "source_location": "L14"
-    },
-    {
       "id": "backend_src_main_java_com_hulypay_backend_expenses_expenseservice_expenseservice",
       "label": "ExpenseService",
       "_callable": true,
@@ -496,6 +639,19 @@
       "norm_label": "user",
       "source_file": "backend/src/main/java/com/hulypay/backend/users/User.java",
       "source_location": "L11"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_users_userservice_userservice",
+      "label": "UserService",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "User",
+      "file_type": "code",
+      "norm_label": "userservice",
+      "source_file": "backend/src/main/java/com/hulypay/backend/users/UserService.java",
+      "source_location": "L13"
     },
     {
       "id": "mobile_ios_runner_appdelegate_appdelegate",
@@ -543,7 +699,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "category",
       "source_file": "backend/src/main/java/com/hulypay/backend/categories/Category.java",
@@ -556,63 +712,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "categoryrepository",
       "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryRepository.java",
       "source_location": "L12"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_payment_payment",
-      "label": "Payment",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "payment",
-      "source_file": "backend/src/main/java/com/hulypay/backend/payments/Payment.java",
-      "source_location": "L16"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_paymentrepository_paymentrepository",
-      "label": "PaymentRepository",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "paymentrepository",
-      "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentRepository.java",
-      "source_location": "L10"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_sms_smsparserservice_verificationmatchresult",
-      "label": "VerificationMatchResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "verificationmatchresult",
-      "source_file": "backend/src/main/java/com/hulypay/backend/payments/sms/SmsParserService.java",
-      "source_location": "L176"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_users_userrepository_userrepository",
-      "label": "UserRepository",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "userrepository",
-      "source_file": "backend/src/main/java/com/hulypay/backend/users/UserRepository.java",
-      "source_location": "L9"
     },
     {
       "id": "backend_src_test_java_com_hulypay_backend_analyticscontrollertests_analyticscontrollertests",
@@ -621,24 +725,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "analyticscontrollertests",
       "source_file": "backend/src/test/java/com/hulypay/backend/AnalyticsControllerTests.java",
       "source_location": "L19"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_backendapplicationtests_backendapplicationtests",
-      "label": "BackendApplicationTests",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "backendapplicationtests",
-      "source_file": "backend/src/test/java/com/hulypay/backend/BackendApplicationTests.java",
-      "source_location": "L6"
     },
     {
       "id": "backend_src_test_java_com_hulypay_backend_categorycontrollertests_categorycontrollertests",
@@ -647,7 +738,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "categorycontrollertests",
       "source_file": "backend/src/test/java/com/hulypay/backend/CategoryControllerTests.java",
@@ -660,63 +751,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "expensecontrollertests",
       "source_file": "backend/src/test/java/com/hulypay/backend/ExpenseControllerTests.java",
       "source_location": "L20"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_healthcontrollertests_healthcontrollertests",
-      "label": "HealthControllerTests",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "healthcontrollertests",
-      "source_file": "backend/src/test/java/com/hulypay/backend/HealthControllerTests.java",
-      "source_location": "L12"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_paymentcontrollertests_paymentcontrollertests",
-      "label": "PaymentControllerTests",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "paymentcontrollertests",
-      "source_file": "backend/src/test/java/com/hulypay/backend/PaymentControllerTests.java",
-      "source_location": "L20"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_securityandusertests_securityandusertests",
-      "label": "SecurityAndUserTests",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "securityandusertests",
-      "source_file": "backend/src/test/java/com/hulypay/backend/SecurityAndUserTests.java",
-      "source_location": "L22"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests_smsparserservicetests",
-      "label": "SmsParserServiceTests",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "smsparserservicetests",
-      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
-      "source_location": "L12"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_backendapplication_backendapplication",
@@ -725,37 +764,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 95,
-      "community_name": "BackendApplication",
+      "community_name": "jakarta.annotation.PostConstruct",
       "file_type": "code",
       "norm_label": "backendapplication",
       "source_file": "backend/src/main/java/com/hulypay/backend/BackendApplication.java",
       "source_location": "L9"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_analytics_analyticscontroller_analyticscontroller",
-      "label": "AnalyticsController",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "org.springframework.http.ResponseEntity",
-      "file_type": "code",
-      "norm_label": "analyticscontroller",
-      "source_file": "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsController.java",
-      "source_location": "L19"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_categories_categorycontroller_categorycontroller",
-      "label": "CategoryController",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "org.springframework.http.ResponseEntity",
-      "file_type": "code",
-      "norm_label": "categorycontroller",
-      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryController.java",
-      "source_location": "L18"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_expenses_expensecontroller_expensecontroller",
@@ -797,17 +810,610 @@
       "source_location": "L12"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_users_userservice_userservice",
-      "label": "UserService",
+      "id": "backend_src_main_java_com_hulypay_backend_categories_categoryrepository_categoryrepository_findbyisdefaulttrue",
+      "label": ".findByIsDefaultTrue()",
       "_callable": true,
-      "_callable_class": true,
       "_origin": "ast",
-      "community": 98,
-      "community_name": "org.springframework.http.ResponseEntity",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
-      "norm_label": "userservice",
-      "source_file": "backend/src/main/java/com/hulypay/backend/users/UserService.java",
-      "source_location": "L13"
+      "norm_label": ".findbyisdefaulttrue()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryRepository.java",
+      "source_location": "L18"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_analyticscontrollertests_analyticscontrollertests_analyticscalculatesdatabaseaggregationsaccurately",
+      "label": ".analyticsCalculatesDatabaseAggregationsAccurately()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "randomUUID",
+            "receiver_type": "UUID",
+            "lang": "java",
+            "line": "L31"
+          },
+          {
+            "callee": "perform",
+            "receiver_type": "MockMvc",
+            "lang": "java",
+            "line": "L43"
+          },
+          {
+            "callee": "format",
+            "receiver_type": "String",
+            "lang": "java",
+            "line": "L46"
+          }
+        ]
+      },
+      "norm_label": ".analyticscalculatesdatabaseaggregationsaccurately()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/AnalyticsControllerTests.java",
+      "source_location": "L29"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_backendapplicationtests_backendapplicationtests_contextloads",
+      "label": ".contextLoads()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".contextloads()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/BackendApplicationTests.java",
+      "source_location": "L9"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_categorycontrollertests_categorycontrollertests_cannotmodifydefaultcategory",
+      "label": ".cannotModifyDefaultCategory()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "randomUUID",
+            "receiver_type": "UUID",
+            "lang": "java",
+            "line": "L85"
+          },
+          {
+            "callee": "perform",
+            "receiver_type": "MockMvc",
+            "lang": "java",
+            "line": "L88"
+          }
+        ]
+      },
+      "norm_label": ".cannotmodifydefaultcategory()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/CategoryControllerTests.java",
+      "source_location": "L83"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_categorycontrollertests_categorycontrollertests_defaultcategoriesarereturned",
+      "label": ".defaultCategoriesAreReturned()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "randomUUID",
+            "receiver_type": "UUID",
+            "lang": "java",
+            "line": "L32"
+          },
+          {
+            "callee": "perform",
+            "receiver_type": "MockMvc",
+            "lang": "java",
+            "line": "L34"
+          }
+        ]
+      },
+      "norm_label": ".defaultcategoriesarereturned()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/CategoryControllerTests.java",
+      "source_location": "L30"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_categorycontrollertests_categorycontrollertests_usercancreatecustomcategoryanditisisolated",
+      "label": ".userCanCreateCustomCategoryAndItIsIsolated()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "randomUUID",
+            "receiver_type": "UUID",
+            "lang": "java",
+            "line": "L43"
+          },
+          {
+            "callee": "perform",
+            "receiver_type": "MockMvc",
+            "lang": "java",
+            "line": "L48"
+          },
+          {
+            "callee": "getResponse",
+            "receiver_type": "MvcResult",
+            "lang": "java",
+            "line": "L63"
+          },
+          {
+            "callee": "read",
+            "receiver_type": "JsonPath",
+            "lang": "java",
+            "line": "L64"
+          }
+        ]
+      },
+      "norm_label": ".usercancreatecustomcategoryanditisisolated()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/CategoryControllerTests.java",
+      "source_location": "L41"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_expensecontrollertests_expensecontrollertests_createexpensevalidatesamountgreaterthanzero",
+      "label": ".createExpenseValidatesAmountGreaterThanZero()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "randomUUID",
+            "receiver_type": "UUID",
+            "lang": "java",
+            "line": "L32"
+          },
+          {
+            "callee": "perform",
+            "receiver_type": "MockMvc",
+            "lang": "java",
+            "line": "L35"
+          }
+        ]
+      },
+      "norm_label": ".createexpensevalidatesamountgreaterthanzero()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/ExpenseControllerTests.java",
+      "source_location": "L30"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_expensecontrollertests_expensecontrollertests_expensecrudanduserisolation",
+      "label": ".expenseCrudAndUserIsolation()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "randomUUID",
+            "receiver_type": "UUID",
+            "lang": "java",
+            "line": "L53"
+          },
+          {
+            "callee": "perform",
+            "receiver_type": "MockMvc",
+            "lang": "java",
+            "line": "L63"
+          },
+          {
+            "callee": "format",
+            "receiver_type": "String",
+            "lang": "java",
+            "line": "L66"
+          },
+          {
+            "callee": "getResponse",
+            "receiver_type": "MvcResult",
+            "lang": "java",
+            "line": "L82"
+          },
+          {
+            "callee": "read",
+            "receiver_type": "JsonPath",
+            "lang": "java",
+            "line": "L83"
+          }
+        ]
+      },
+      "norm_label": ".expensecrudanduserisolation()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/ExpenseControllerTests.java",
+      "source_location": "L51"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_healthcontrollertests_healthcontrollertests_databasehealthendpointreturnsupwithoutauth",
+      "label": ".databaseHealthEndpointReturnsUpWithoutAuth()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "perform",
+            "receiver_type": "MockMvc",
+            "lang": "java",
+            "line": "L37"
+          }
+        ]
+      },
+      "norm_label": ".databasehealthendpointreturnsupwithoutauth()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/HealthControllerTests.java",
+      "source_location": "L35"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_healthcontrollertests_healthcontrollertests_healthendpointreturnsupwithoutauth",
+      "label": ".healthEndpointReturnsUpWithoutAuth()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "perform",
+            "receiver_type": "MockMvc",
+            "lang": "java",
+            "line": "L29"
+          }
+        ]
+      },
+      "norm_label": ".healthendpointreturnsupwithoutauth()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/HealthControllerTests.java",
+      "source_location": "L27"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_healthcontrollertests_healthcontrollertests_rootendpointreturnsupwithoutauth",
+      "label": ".rootEndpointReturnsUpWithoutAuth()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "perform",
+            "receiver_type": "MockMvc",
+            "lang": "java",
+            "line": "L21"
+          }
+        ]
+      },
+      "norm_label": ".rootendpointreturnsupwithoutauth()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/HealthControllerTests.java",
+      "source_location": "L19"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_paymentcontrollertests_paymentcontrollertests_createdirectconfirmedpaymentautolinksexpense",
+      "label": ".createDirectConfirmedPaymentAutoLinksExpense()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "randomUUID",
+            "receiver_type": "UUID",
+            "lang": "java",
+            "line": "L153"
+          },
+          {
+            "callee": "perform",
+            "receiver_type": "MockMvc",
+            "lang": "java",
+            "line": "L156"
+          }
+        ]
+      },
+      "norm_label": ".createdirectconfirmedpaymentautolinksexpense()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/PaymentControllerTests.java",
+      "source_location": "L151"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_paymentcontrollertests_paymentcontrollertests_createpaymentvalidatesamount",
+      "label": ".createPaymentValidatesAmount()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "randomUUID",
+            "receiver_type": "UUID",
+            "lang": "java",
+            "line": "L81"
+          },
+          {
+            "callee": "perform",
+            "receiver_type": "MockMvc",
+            "lang": "java",
+            "line": "L84"
+          }
+        ]
+      },
+      "norm_label": ".createpaymentvalidatesamount()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/PaymentControllerTests.java",
+      "source_location": "L79"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_paymentcontrollertests_paymentcontrollertests_createpaymentwithlocationandverifyscoping",
+      "label": ".createPaymentWithLocationAndVerifyScoping()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "randomUUID",
+            "receiver_type": "UUID",
+            "lang": "java",
+            "line": "L29"
+          },
+          {
+            "callee": "perform",
+            "receiver_type": "MockMvc",
+            "lang": "java",
+            "line": "L34"
+          },
+          {
+            "callee": "read",
+            "receiver_type": "JsonPath",
+            "lang": "java",
+            "line": "L63"
+          },
+          {
+            "callee": "getResponse",
+            "receiver_type": "MvcResult",
+            "lang": "java",
+            "line": "L63"
+          }
+        ]
+      },
+      "norm_label": ".createpaymentwithlocationandverifyscoping()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/PaymentControllerTests.java",
+      "source_location": "L27"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_paymentcontrollertests_paymentcontrollertests_reconcilepaymentlifecycleandverifyexpenselinking",
+      "label": ".reconcilePaymentLifecycleAndVerifyExpenseLinking()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "randomUUID",
+            "receiver_type": "UUID",
+            "lang": "java",
+            "line": "L99"
+          },
+          {
+            "callee": "perform",
+            "receiver_type": "MockMvc",
+            "lang": "java",
+            "line": "L102"
+          },
+          {
+            "callee": "read",
+            "receiver_type": "JsonPath",
+            "lang": "java",
+            "line": "L121"
+          },
+          {
+            "callee": "getResponse",
+            "receiver_type": "MvcResult",
+            "lang": "java",
+            "line": "L121"
+          }
+        ]
+      },
+      "norm_label": ".reconcilepaymentlifecycleandverifyexpenselinking()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/PaymentControllerTests.java",
+      "source_location": "L97"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_paymentcontrollertests_paymentcontrollertests_verifysmsfailedpaymentflow",
+      "label": ".verifySmsFailedPaymentFlow()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "randomUUID",
+            "receiver_type": "UUID",
+            "lang": "java",
+            "line": "L240"
+          },
+          {
+            "callee": "perform",
+            "receiver_type": "MockMvc",
+            "lang": "java",
+            "line": "L243"
+          },
+          {
+            "callee": "read",
+            "receiver_type": "JsonPath",
+            "lang": "java",
+            "line": "L258"
+          },
+          {
+            "callee": "getResponse",
+            "receiver_type": "MvcResult",
+            "lang": "java",
+            "line": "L258"
+          },
+          {
+            "callee": "format",
+            "receiver_type": "String",
+            "lang": "java",
+            "line": "L264"
+          }
+        ]
+      },
+      "norm_label": ".verifysmsfailedpaymentflow()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/PaymentControllerTests.java",
+      "source_location": "L238"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_paymentcontrollertests_paymentcontrollertests_verifysmssuccessandidempotency",
+      "label": ".verifySmsSuccessAndIdempotency()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "randomUUID",
+            "receiver_type": "UUID",
+            "lang": "java",
+            "line": "L180"
+          },
+          {
+            "callee": "perform",
+            "receiver_type": "MockMvc",
+            "lang": "java",
+            "line": "L184"
+          },
+          {
+            "callee": "read",
+            "receiver_type": "JsonPath",
+            "lang": "java",
+            "line": "L202"
+          },
+          {
+            "callee": "getResponse",
+            "receiver_type": "MvcResult",
+            "lang": "java",
+            "line": "L202"
+          },
+          {
+            "callee": "format",
+            "receiver_type": "String",
+            "lang": "java",
+            "line": "L209"
+          }
+        ]
+      },
+      "norm_label": ".verifysmssuccessandidempotency()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/PaymentControllerTests.java",
+      "source_location": "L178"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_securityandusertests_securityandusertests_missingjwtreturns401onprotectedendpoint",
+      "label": ".missingJwtReturns401OnProtectedEndpoint()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 107,
+      "community_name": "SecurityAndUserTests",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "perform",
+            "receiver_type": "MockMvc",
+            "lang": "java",
+            "line": "L34"
+          }
+        ]
+      },
+      "norm_label": ".missingjwtreturns401onprotectedendpoint()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/SecurityAndUserTests.java",
+      "source_location": "L32"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_securityandusertests_securityandusertests_updateprofilemodifiesusersuccessfully",
+      "label": ".updateProfileModifiesUserSuccessfully()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 107,
+      "community_name": "SecurityAndUserTests",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "randomUUID",
+            "receiver_type": "UUID",
+            "lang": "java",
+            "line": "L66"
+          },
+          {
+            "callee": "perform",
+            "receiver_type": "MockMvc",
+            "lang": "java",
+            "line": "L69"
+          }
+        ]
+      },
+      "norm_label": ".updateprofilemodifiesusersuccessfully()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/SecurityAndUserTests.java",
+      "source_location": "L64"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_securityandusertests_securityandusertests_validjwtsyncsandreturnsuser",
+      "label": ".validJwtSyncsAndReturnsUser()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 107,
+      "community_name": "SecurityAndUserTests",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "randomUUID",
+            "receiver_type": "UUID",
+            "lang": "java",
+            "line": "L40"
+          },
+          {
+            "callee": "perform",
+            "receiver_type": "MockMvc",
+            "lang": "java",
+            "line": "L43"
+          },
+          {
+            "callee": "of",
+            "receiver_type": "Map",
+            "lang": "java",
+            "line": "L47"
+          }
+        ]
+      },
+      "norm_label": ".validjwtsyncsandreturnsuser()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/SecurityAndUserTests.java",
+      "source_location": "L38"
     },
     {
       "id": "frontend_src_app_login_page_logincontent",
@@ -978,18 +1584,6 @@
       "source_location": "L40"
     },
     {
-      "id": "frontend_src_components_dashboard_areachartspending_areachartspending_handlekeydown",
-      "label": "handleKeyDown()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 112,
-      "community_name": "react",
-      "file_type": "code",
-      "norm_label": "handlekeydown()",
-      "source_file": "frontend/src/components/dashboard/AreaChartSpending.jsx",
-      "source_location": "L61"
-    },
-    {
       "id": "frontend_src_components_dashboard_barchartmonthly_barchartmonthly",
       "label": "BarChartMonthly()",
       "_callable": true,
@@ -1074,16 +1668,122 @@
       "source_location": "L4"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_expenses_expenserepository_expenserepository_findbyuseridorderbytransactiontimedesc",
-      "label": ".findByUserIdOrderByTransactionTimeDesc()",
+      "id": "backend_src_main_java_com_hulypay_backend_categories_categoryservice_categoryservice_deletecategory",
+      "label": ".deleteCategory()",
       "_callable": true,
       "_origin": "ast",
       "community": 123,
       "community_name": "Expense",
       "file_type": "code",
-      "norm_label": ".findbyuseridorderbytransactiontimedesc()",
+      "norm_label": ".deletecategory()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryService.java",
+      "source_location": "L99"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_categories_categoryservice_categoryservice_getvalidcategory",
+      "label": ".getValidCategory()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 123,
+      "community_name": "Expense",
+      "file_type": "code",
+      "norm_label": ".getvalidcategory()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryService.java",
+      "source_location": "L115"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_common_exception_badrequestexception_badrequestexception_badrequestexception",
+      "label": ".BadRequestException()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 123,
+      "community_name": "Expense",
+      "file_type": "code",
+      "norm_label": ".badrequestexception()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/common/exception/BadRequestException.java",
+      "source_location": "L8"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_common_exception_resourcenotfoundexception_resourcenotfoundexception_resourcenotfoundexception",
+      "label": ".ResourceNotFoundException()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 123,
+      "community_name": "Expense",
+      "file_type": "code",
+      "norm_label": ".resourcenotfoundexception()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/common/exception/ResourceNotFoundException.java",
+      "source_location": "L8"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_expenses_dto_expenseresponse_expenseresponse_fromentity",
+      "label": ".fromEntity()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 123,
+      "community_name": "Expense",
+      "file_type": "code",
+      "norm_label": ".fromentity()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/expenses/dto/ExpenseResponse.java",
+      "source_location": "L36"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_expenses_expenserepository_expenserepository_findbyidanduserid",
+      "label": ".findByIdAndUserId()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 123,
+      "community_name": "Expense",
+      "file_type": "code",
+      "norm_label": ".findbyidanduserid()",
       "source_file": "backend/src/main/java/com/hulypay/backend/expenses/ExpenseRepository.java",
-      "source_location": "L16"
+      "source_location": "L18"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_expenses_expenseservice_expenseservice_createexpense",
+      "label": ".createExpense()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 123,
+      "community_name": "Expense",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "now",
+            "receiver_type": "Instant",
+            "lang": "java",
+            "line": "L38"
+          }
+        ]
+      },
+      "norm_label": ".createexpense()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/expenses/ExpenseService.java",
+      "source_location": "L27"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_expenses_expenseservice_expenseservice_getexpensebyid",
+      "label": ".getExpenseById()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 123,
+      "community_name": "Expense",
+      "file_type": "code",
+      "norm_label": ".getexpensebyid()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/expenses/ExpenseService.java",
+      "source_location": "L69"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_expenses_expenseservice_expenseservice_updateexpense",
+      "label": ".updateExpense()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 123,
+      "community_name": "Expense",
+      "file_type": "code",
+      "norm_label": ".updateexpense()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/expenses/ExpenseService.java",
+      "source_location": "L76"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_payments_dto_paymentresponse_paymentresponse_fromentity",
@@ -1098,20 +1798,8 @@
       "source_location": "L48"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_paymentrepository_paymentrepository_findbyidanduserid",
-      "label": ".findByIdAndUserId()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 123,
-      "community_name": "Expense",
-      "file_type": "code",
-      "norm_label": ".findbyidanduserid()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentRepository.java",
-      "source_location": "L15"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_paymentservice_paymentservice_ensurepaymentstatusconstraint",
-      "label": ".ensurePaymentStatusConstraint()",
+      "id": "backend_src_main_java_com_hulypay_backend_payments_paymentservice_paymentservice_createpayment",
+      "label": ".createPayment()",
       "_callable": true,
       "_origin": "ast",
       "community": 123,
@@ -1120,16 +1808,28 @@
       "metadata": {
         "unresolved_calls": [
           {
-            "callee": "execute",
-            "receiver_type": "JdbcTemplate",
+            "callee": "now",
+            "receiver_type": "LocalDate",
             "lang": "java",
-            "line": "L42"
+            "line": "L72"
+          },
+          {
+            "callee": "now",
+            "receiver_type": "LocalTime",
+            "lang": "java",
+            "line": "L73"
+          },
+          {
+            "callee": "now",
+            "receiver_type": "Instant",
+            "lang": "java",
+            "line": "L93"
           }
         ]
       },
-      "norm_label": ".ensurepaymentstatusconstraint()",
+      "norm_label": ".createpayment()",
       "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentService.java",
-      "source_location": "L39"
+      "source_location": "L50"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_payments_paymentservice_paymentservice_getpaymentbyid",
@@ -1142,6 +1842,18 @@
       "norm_label": ".getpaymentbyid()",
       "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentService.java",
       "source_location": "L174"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_payments_paymentservice_paymentservice_getpaymentsforuser",
+      "label": ".getPaymentsForUser()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 123,
+      "community_name": "Expense",
+      "file_type": "code",
+      "norm_label": ".getpaymentsforuser()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentService.java",
+      "source_location": "L166"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_payments_paymentservice_paymentservice_reconcilepayment",
@@ -1560,102 +2272,6 @@
       "source_location": "L10"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_analytics_analyticsservice_analyticsservice_getcategorybreakdown",
-      "label": ".getCategoryBreakdown()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "ExpenseRepository",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "of",
-            "receiver_type": "List",
-            "lang": "java",
-            "line": "L51"
-          },
-          {
-            "callee": "round",
-            "receiver_type": "Math",
-            "lang": "java",
-            "line": "L69"
-          }
-        ]
-      },
-      "norm_label": ".getcategorybreakdown()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsService.java",
-      "source_location": "L47"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_analytics_analyticsservice_analyticsservice_getdailyspending",
-      "label": ".getDailySpending()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "ExpenseRepository",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "of",
-            "receiver_type": "List",
-            "lang": "java",
-            "line": "L87"
-          }
-        ]
-      },
-      "norm_label": ".getdailyspending()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsService.java",
-      "source_location": "L83"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_analytics_analyticsservice_analyticsservice_getmonthlyspending",
-      "label": ".getMonthlySpending()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "ExpenseRepository",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "of",
-            "receiver_type": "List",
-            "lang": "java",
-            "line": "L110"
-          }
-        ]
-      },
-      "norm_label": ".getmonthlyspending()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsService.java",
-      "source_location": "L106"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_analytics_analyticsservice_analyticsservice_getspendingsummary",
-      "label": ".getSpendingSummary()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "ExpenseRepository",
-      "file_type": "code",
-      "norm_label": ".getspendingsummary()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsService.java",
-      "source_location": "L24"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_categories_categoryrepository_categoryrepository_findallavailableforuser",
-      "label": ".findAllAvailableForUser()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "ExpenseRepository",
-      "file_type": "code",
-      "norm_label": ".findallavailableforuser()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryRepository.java",
-      "source_location": "L15"
-    },
-    {
       "id": "backend_src_main_java_com_hulypay_backend_expenses_expenserepository_expenserepository_getcategorybreakdown",
       "label": ".getCategoryBreakdown()",
       "_callable": true,
@@ -1702,6 +2318,30 @@
       "norm_label": ".getspendingsummary()",
       "source_file": "backend/src/main/java/com/hulypay/backend/expenses/ExpenseRepository.java",
       "source_location": "L20"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_users_userrepository_userrepository_existsbyemail",
+      "label": ".existsByEmail()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "ExpenseRepository",
+      "file_type": "code",
+      "norm_label": ".existsbyemail()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/users/UserRepository.java",
+      "source_location": "L12"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_users_userrepository_userrepository_findbyemail",
+      "label": ".findByEmail()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "ExpenseRepository",
+      "file_type": "code",
+      "norm_label": ".findbyemail()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/users/UserRepository.java",
+      "source_location": "L11"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_config_openapiconfig_openapiconfig_customopenapi",
@@ -1834,6 +2474,188 @@
       "norm_label": ".securityfilterchain()",
       "source_file": "backend/src/main/java/com/hulypay/backend/config/SecurityConfig.java",
       "source_location": "L25"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_payments_paymentrepository_paymentrepository_findbyidanduserid",
+      "label": ".findByIdAndUserId()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "Payment",
+      "file_type": "code",
+      "norm_label": ".findbyidanduserid()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentRepository.java",
+      "source_location": "L15"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_payments_paymentrepository_paymentrepository_findbyupitransactionid",
+      "label": ".findByUpiTransactionId()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "Payment",
+      "file_type": "code",
+      "norm_label": ".findbyupitransactionid()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentRepository.java",
+      "source_location": "L17"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_payments_paymentrepository_paymentrepository_findbyuseridorderbycreatedatdesc",
+      "label": ".findByUserIdOrderByCreatedAtDesc()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "Payment",
+      "file_type": "code",
+      "norm_label": ".findbyuseridorderbycreatedatdesc()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentRepository.java",
+      "source_location": "L13"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_payments_sms_smsparserservice_smsparserservice_matchpaymentwithsms",
+      "label": ".matchPaymentWithSms()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "Payment",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "format",
+            "receiver_type": "String",
+            "lang": "java",
+            "line": "L156"
+          }
+        ]
+      },
+      "norm_label": ".matchpaymentwithsms()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/payments/sms/SmsParserService.java",
+      "source_location": "L128"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_payments_sms_smsparserservice_smsparserservice_parse",
+      "label": ".parse()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "Payment",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "find",
+            "receiver_type": "Matcher",
+            "lang": "java",
+            "line": "L76"
+          },
+          {
+            "callee": "group",
+            "receiver_type": "Matcher",
+            "lang": "java",
+            "line": "L77"
+          }
+        ]
+      },
+      "norm_label": ".parse()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/payments/sms/SmsParserService.java",
+      "source_location": "L41"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests_smsparserservicetests_testamountmismatchdetection",
+      "label": ".testAmountMismatchDetection()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "Payment",
+      "file_type": "code",
+      "norm_label": ".testamountmismatchdetection()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
+      "source_location": "L94"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests_smsparserservicetests_testaxisbankdebitsms",
+      "label": ".testAxisBankDebitSms()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "Payment",
+      "file_type": "code",
+      "norm_label": ".testaxisbankdebitsms()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
+      "source_location": "L51"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests_smsparserservicetests_testcreditsmsrejectedforoutgoingpayment",
+      "label": ".testCreditSmsRejectedForOutgoingPayment()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "Payment",
+      "file_type": "code",
+      "norm_label": ".testcreditsmsrejectedforoutgoingpayment()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
+      "source_location": "L108"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests_smsparserservicetests_testfailedtransactionsms",
+      "label": ".testFailedTransactionSms()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "Payment",
+      "file_type": "code",
+      "norm_label": ".testfailedtransactionsms()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
+      "source_location": "L62"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests_smsparserservicetests_testhdfcdebitsmsparsing",
+      "label": ".testHdfcDebitSmsParsing()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "Payment",
+      "file_type": "code",
+      "norm_label": ".testhdfcdebitsmsparsing()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
+      "source_location": "L16"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests_smsparserservicetests_testicicibanksentsms",
+      "label": ".testIciciBankSentSms()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "Payment",
+      "file_type": "code",
+      "norm_label": ".testicicibanksentsms()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
+      "source_location": "L39"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests_smsparserservicetests_testmatchingsuccesspaymentwithsms",
+      "label": ".testMatchingSuccessPaymentWithSms()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "Payment",
+      "file_type": "code",
+      "norm_label": ".testmatchingsuccesspaymentwithsms()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
+      "source_location": "L80"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests_smsparserservicetests_testsbidebitsmsparsing",
+      "label": ".testSbiDebitSmsParsing()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "Payment",
+      "file_type": "code",
+      "norm_label": ".testsbidebitsmsparsing()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
+      "source_location": "L28"
     },
     {
       "id": "mobile_android_app_src_main_kotlin_com_example_mobile_mainactivity_mainactivity_checkgooglepayinstalled",
@@ -2040,8 +2862,8 @@
       "source_location": "L22"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_categories_categorycontroller_categorycontroller_createcategory",
-      "label": ".createCategory()",
+      "id": "backend_src_main_java_com_hulypay_backend_analytics_analyticsservice_analyticsservice_getcategorybreakdown",
+      "label": ".getCategoryBreakdown()",
       "_callable": true,
       "_origin": "ast",
       "community": 47,
@@ -2050,16 +2872,78 @@
       "metadata": {
         "unresolved_calls": [
           {
-            "callee": "status",
-            "receiver_type": "ResponseEntity",
+            "callee": "of",
+            "receiver_type": "List",
             "lang": "java",
-            "line": "L39"
+            "line": "L51"
+          },
+          {
+            "callee": "round",
+            "receiver_type": "Math",
+            "lang": "java",
+            "line": "L69"
           }
         ]
       },
-      "norm_label": ".createcategory()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryController.java",
-      "source_location": "L32"
+      "norm_label": ".getcategorybreakdown()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsService.java",
+      "source_location": "L47"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_analytics_analyticsservice_analyticsservice_getdailyspending",
+      "label": ".getDailySpending()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "User",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "of",
+            "receiver_type": "List",
+            "lang": "java",
+            "line": "L87"
+          }
+        ]
+      },
+      "norm_label": ".getdailyspending()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsService.java",
+      "source_location": "L83"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_analytics_analyticsservice_analyticsservice_getmonthlyspending",
+      "label": ".getMonthlySpending()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "User",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "of",
+            "receiver_type": "List",
+            "lang": "java",
+            "line": "L110"
+          }
+        ]
+      },
+      "norm_label": ".getmonthlyspending()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsService.java",
+      "source_location": "L106"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_analytics_analyticsservice_analyticsservice_getspendingsummary",
+      "label": ".getSpendingSummary()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "User",
+      "file_type": "code",
+      "norm_label": ".getspendingsummary()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsService.java",
+      "source_location": "L24"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_categories_categoryservice_categoryservice_createcategory",
@@ -2074,18 +2958,6 @@
       "source_location": "L60"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_categories_categoryservice_categoryservice_deletecategory",
-      "label": ".deleteCategory()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "User",
-      "file_type": "code",
-      "norm_label": ".deletecategory()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryService.java",
-      "source_location": "L99"
-    },
-    {
       "id": "backend_src_main_java_com_hulypay_backend_categories_categoryservice_categoryservice_getcategoriesforuser",
       "label": ".getCategoriesForUser()",
       "_callable": true,
@@ -2096,30 +2968,6 @@
       "norm_label": ".getcategoriesforuser()",
       "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryService.java",
       "source_location": "L52"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_categories_categoryservice_categoryservice_getvalidcategory",
-      "label": ".getValidCategory()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "User",
-      "file_type": "code",
-      "norm_label": ".getvalidcategory()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryService.java",
-      "source_location": "L115"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_categories_categoryservice_categoryservice_seeddefaultcategories",
-      "label": ".seedDefaultCategories()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "User",
-      "file_type": "code",
-      "norm_label": ".seeddefaultcategories()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryService.java",
-      "source_location": "L37"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_categories_categoryservice_categoryservice_updatecategory",
@@ -2146,74 +2994,16 @@
       "source_location": "L23"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_common_exception_badrequestexception_badrequestexception_badrequestexception",
-      "label": ".BadRequestException()",
+      "id": "backend_src_main_java_com_hulypay_backend_expenses_expenserepository_expenserepository_findbyuseridorderbytransactiontimedesc",
+      "label": ".findByUserIdOrderByTransactionTimeDesc()",
       "_callable": true,
       "_origin": "ast",
       "community": 47,
       "community_name": "User",
       "file_type": "code",
-      "norm_label": ".badrequestexception()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/common/exception/BadRequestException.java",
-      "source_location": "L8"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_common_exception_resourcenotfoundexception_resourcenotfoundexception_resourcenotfoundexception",
-      "label": ".ResourceNotFoundException()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "User",
-      "file_type": "code",
-      "norm_label": ".resourcenotfoundexception()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/common/exception/ResourceNotFoundException.java",
-      "source_location": "L8"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_expenses_dto_expenseresponse_expenseresponse_fromentity",
-      "label": ".fromEntity()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "User",
-      "file_type": "code",
-      "norm_label": ".fromentity()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/expenses/dto/ExpenseResponse.java",
-      "source_location": "L36"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_expenses_expenserepository_expenserepository_findbyidanduserid",
-      "label": ".findByIdAndUserId()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "User",
-      "file_type": "code",
-      "norm_label": ".findbyidanduserid()",
+      "norm_label": ".findbyuseridorderbytransactiontimedesc()",
       "source_file": "backend/src/main/java/com/hulypay/backend/expenses/ExpenseRepository.java",
-      "source_location": "L18"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_expenses_expenseservice_expenseservice_createexpense",
-      "label": ".createExpense()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "User",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "now",
-            "receiver_type": "Instant",
-            "lang": "java",
-            "line": "L38"
-          }
-        ]
-      },
-      "norm_label": ".createexpense()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/expenses/ExpenseService.java",
-      "source_location": "L27"
+      "source_location": "L16"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_expenses_expenseservice_expenseservice_deleteexpense",
@@ -2228,18 +3018,6 @@
       "source_location": "L133"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_expenses_expenseservice_expenseservice_getexpensebyid",
-      "label": ".getExpenseById()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "User",
-      "file_type": "code",
-      "norm_label": ".getexpensebyid()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/expenses/ExpenseService.java",
-      "source_location": "L69"
-    },
-    {
       "id": "backend_src_main_java_com_hulypay_backend_expenses_expenseservice_expenseservice_getexpensesforuser",
       "label": ".getExpensesForUser()",
       "_callable": true,
@@ -2252,61 +3030,15 @@
       "source_location": "L61"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_expenses_expenseservice_expenseservice_updateexpense",
-      "label": ".updateExpense()",
+      "id": "backend_src_main_java_com_hulypay_backend_users_userservice_userservice_updateprofile",
+      "label": ".updateProfile()",
       "_callable": true,
       "_origin": "ast",
       "community": 47,
       "community_name": "User",
       "file_type": "code",
-      "norm_label": ".updateexpense()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/expenses/ExpenseService.java",
-      "source_location": "L76"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_paymentservice_paymentservice_createpayment",
-      "label": ".createPayment()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "User",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "now",
-            "receiver_type": "LocalDate",
-            "lang": "java",
-            "line": "L72"
-          },
-          {
-            "callee": "now",
-            "receiver_type": "LocalTime",
-            "lang": "java",
-            "line": "L73"
-          },
-          {
-            "callee": "now",
-            "receiver_type": "Instant",
-            "lang": "java",
-            "line": "L93"
-          }
-        ]
-      },
-      "norm_label": ".createpayment()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentService.java",
-      "source_location": "L50"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_paymentservice_paymentservice_getpaymentsforuser",
-      "label": ".getPaymentsForUser()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "User",
-      "file_type": "code",
-      "norm_label": ".getpaymentsforuser()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentService.java",
+      "norm_label": ".updateprofile()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/users/UserService.java",
       "source_location": "L166"
     },
     {
@@ -2845,7 +3577,7 @@
       "file_type": "code",
       "norm_label": "handleclickoutside()",
       "source_file": "frontend/src/app/dashboard/page.js",
-      "source_location": "L43"
+      "source_location": "L42"
     },
     {
       "id": "frontend_src_app_dashboard_page_dashboardpage_loaddata",
@@ -2857,7 +3589,7 @@
       "file_type": "code",
       "norm_label": "loaddata()",
       "source_file": "frontend/src/app/dashboard/page.js",
-      "source_location": "L118"
+      "source_location": "L117"
     },
     {
       "id": "frontend_src_components_dashboard_transactionstable_transactionstable",
@@ -3009,11 +3741,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": ".existsbynameignorecaseandisdefaulttrue()",
       "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryRepository.java",
       "source_location": "L20"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_categories_categoryrepository_categoryrepository_findallavailableforuser",
+      "label": ".findAllAvailableForUser()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 94,
+      "community_name": "Category",
+      "file_type": "code",
+      "norm_label": ".findallavailableforuser()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryRepository.java",
+      "source_location": "L15"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_categories_categoryrepository_categoryrepository_findbyidanduserid",
@@ -3021,811 +3765,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": ".findbyidanduserid()",
       "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryRepository.java",
       "source_location": "L22"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_categories_categoryrepository_categoryrepository_findbyisdefaulttrue",
-      "label": ".findByIsDefaultTrue()",
+      "id": "backend_src_main_java_com_hulypay_backend_categories_categoryservice_categoryservice_seeddefaultcategories",
+      "label": ".seedDefaultCategories()",
       "_callable": true,
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
-      "norm_label": ".findbyisdefaulttrue()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryRepository.java",
-      "source_location": "L18"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_paymentrepository_paymentrepository_findbyupitransactionid",
-      "label": ".findByUpiTransactionId()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": ".findbyupitransactionid()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentRepository.java",
-      "source_location": "L17"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_paymentrepository_paymentrepository_findbyuseridorderbycreatedatdesc",
-      "label": ".findByUserIdOrderByCreatedAtDesc()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": ".findbyuseridorderbycreatedatdesc()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentRepository.java",
-      "source_location": "L13"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_sms_smsparserservice_smsparserservice_matchpaymentwithsms",
-      "label": ".matchPaymentWithSms()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "format",
-            "receiver_type": "String",
-            "lang": "java",
-            "line": "L156"
-          }
-        ]
-      },
-      "norm_label": ".matchpaymentwithsms()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/payments/sms/SmsParserService.java",
-      "source_location": "L128"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_sms_smsparserservice_smsparserservice_parse",
-      "label": ".parse()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "find",
-            "receiver_type": "Matcher",
-            "lang": "java",
-            "line": "L76"
-          },
-          {
-            "callee": "group",
-            "receiver_type": "Matcher",
-            "lang": "java",
-            "line": "L77"
-          }
-        ]
-      },
-      "norm_label": ".parse()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/payments/sms/SmsParserService.java",
-      "source_location": "L41"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_users_userrepository_userrepository_existsbyemail",
-      "label": ".existsByEmail()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": ".existsbyemail()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/users/UserRepository.java",
-      "source_location": "L12"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_users_userrepository_userrepository_findbyemail",
-      "label": ".findByEmail()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": ".findbyemail()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/users/UserRepository.java",
-      "source_location": "L11"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_analyticscontrollertests_analyticscontrollertests_analyticscalculatesdatabaseaggregationsaccurately",
-      "label": ".analyticsCalculatesDatabaseAggregationsAccurately()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "randomUUID",
-            "receiver_type": "UUID",
-            "lang": "java",
-            "line": "L31"
-          },
-          {
-            "callee": "perform",
-            "receiver_type": "MockMvc",
-            "lang": "java",
-            "line": "L43"
-          },
-          {
-            "callee": "format",
-            "receiver_type": "String",
-            "lang": "java",
-            "line": "L46"
-          }
-        ]
-      },
-      "norm_label": ".analyticscalculatesdatabaseaggregationsaccurately()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/AnalyticsControllerTests.java",
-      "source_location": "L29"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_backendapplicationtests_backendapplicationtests_contextloads",
-      "label": ".contextLoads()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": ".contextloads()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/BackendApplicationTests.java",
-      "source_location": "L9"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_categorycontrollertests_categorycontrollertests_cannotmodifydefaultcategory",
-      "label": ".cannotModifyDefaultCategory()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "randomUUID",
-            "receiver_type": "UUID",
-            "lang": "java",
-            "line": "L85"
-          },
-          {
-            "callee": "perform",
-            "receiver_type": "MockMvc",
-            "lang": "java",
-            "line": "L88"
-          }
-        ]
-      },
-      "norm_label": ".cannotmodifydefaultcategory()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/CategoryControllerTests.java",
-      "source_location": "L83"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_categorycontrollertests_categorycontrollertests_defaultcategoriesarereturned",
-      "label": ".defaultCategoriesAreReturned()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "randomUUID",
-            "receiver_type": "UUID",
-            "lang": "java",
-            "line": "L32"
-          },
-          {
-            "callee": "perform",
-            "receiver_type": "MockMvc",
-            "lang": "java",
-            "line": "L34"
-          }
-        ]
-      },
-      "norm_label": ".defaultcategoriesarereturned()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/CategoryControllerTests.java",
-      "source_location": "L30"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_categorycontrollertests_categorycontrollertests_usercancreatecustomcategoryanditisisolated",
-      "label": ".userCanCreateCustomCategoryAndItIsIsolated()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "randomUUID",
-            "receiver_type": "UUID",
-            "lang": "java",
-            "line": "L43"
-          },
-          {
-            "callee": "perform",
-            "receiver_type": "MockMvc",
-            "lang": "java",
-            "line": "L48"
-          },
-          {
-            "callee": "getResponse",
-            "receiver_type": "MvcResult",
-            "lang": "java",
-            "line": "L63"
-          },
-          {
-            "callee": "read",
-            "receiver_type": "JsonPath",
-            "lang": "java",
-            "line": "L64"
-          }
-        ]
-      },
-      "norm_label": ".usercancreatecustomcategoryanditisisolated()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/CategoryControllerTests.java",
-      "source_location": "L41"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_expensecontrollertests_expensecontrollertests_createexpensevalidatesamountgreaterthanzero",
-      "label": ".createExpenseValidatesAmountGreaterThanZero()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "randomUUID",
-            "receiver_type": "UUID",
-            "lang": "java",
-            "line": "L32"
-          },
-          {
-            "callee": "perform",
-            "receiver_type": "MockMvc",
-            "lang": "java",
-            "line": "L35"
-          }
-        ]
-      },
-      "norm_label": ".createexpensevalidatesamountgreaterthanzero()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/ExpenseControllerTests.java",
-      "source_location": "L30"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_expensecontrollertests_expensecontrollertests_expensecrudanduserisolation",
-      "label": ".expenseCrudAndUserIsolation()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "randomUUID",
-            "receiver_type": "UUID",
-            "lang": "java",
-            "line": "L53"
-          },
-          {
-            "callee": "perform",
-            "receiver_type": "MockMvc",
-            "lang": "java",
-            "line": "L63"
-          },
-          {
-            "callee": "format",
-            "receiver_type": "String",
-            "lang": "java",
-            "line": "L66"
-          },
-          {
-            "callee": "getResponse",
-            "receiver_type": "MvcResult",
-            "lang": "java",
-            "line": "L82"
-          },
-          {
-            "callee": "read",
-            "receiver_type": "JsonPath",
-            "lang": "java",
-            "line": "L83"
-          }
-        ]
-      },
-      "norm_label": ".expensecrudanduserisolation()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/ExpenseControllerTests.java",
-      "source_location": "L51"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_healthcontrollertests_healthcontrollertests_databasehealthendpointreturnsupwithoutauth",
-      "label": ".databaseHealthEndpointReturnsUpWithoutAuth()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "perform",
-            "receiver_type": "MockMvc",
-            "lang": "java",
-            "line": "L37"
-          }
-        ]
-      },
-      "norm_label": ".databasehealthendpointreturnsupwithoutauth()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/HealthControllerTests.java",
-      "source_location": "L35"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_healthcontrollertests_healthcontrollertests_healthendpointreturnsupwithoutauth",
-      "label": ".healthEndpointReturnsUpWithoutAuth()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "perform",
-            "receiver_type": "MockMvc",
-            "lang": "java",
-            "line": "L29"
-          }
-        ]
-      },
-      "norm_label": ".healthendpointreturnsupwithoutauth()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/HealthControllerTests.java",
-      "source_location": "L27"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_healthcontrollertests_healthcontrollertests_rootendpointreturnsupwithoutauth",
-      "label": ".rootEndpointReturnsUpWithoutAuth()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "perform",
-            "receiver_type": "MockMvc",
-            "lang": "java",
-            "line": "L21"
-          }
-        ]
-      },
-      "norm_label": ".rootendpointreturnsupwithoutauth()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/HealthControllerTests.java",
-      "source_location": "L19"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_paymentcontrollertests_paymentcontrollertests_createdirectconfirmedpaymentautolinksexpense",
-      "label": ".createDirectConfirmedPaymentAutoLinksExpense()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "randomUUID",
-            "receiver_type": "UUID",
-            "lang": "java",
-            "line": "L153"
-          },
-          {
-            "callee": "perform",
-            "receiver_type": "MockMvc",
-            "lang": "java",
-            "line": "L156"
-          }
-        ]
-      },
-      "norm_label": ".createdirectconfirmedpaymentautolinksexpense()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/PaymentControllerTests.java",
-      "source_location": "L151"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_paymentcontrollertests_paymentcontrollertests_createpaymentvalidatesamount",
-      "label": ".createPaymentValidatesAmount()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "randomUUID",
-            "receiver_type": "UUID",
-            "lang": "java",
-            "line": "L81"
-          },
-          {
-            "callee": "perform",
-            "receiver_type": "MockMvc",
-            "lang": "java",
-            "line": "L84"
-          }
-        ]
-      },
-      "norm_label": ".createpaymentvalidatesamount()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/PaymentControllerTests.java",
-      "source_location": "L79"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_paymentcontrollertests_paymentcontrollertests_createpaymentwithlocationandverifyscoping",
-      "label": ".createPaymentWithLocationAndVerifyScoping()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "randomUUID",
-            "receiver_type": "UUID",
-            "lang": "java",
-            "line": "L29"
-          },
-          {
-            "callee": "perform",
-            "receiver_type": "MockMvc",
-            "lang": "java",
-            "line": "L34"
-          },
-          {
-            "callee": "read",
-            "receiver_type": "JsonPath",
-            "lang": "java",
-            "line": "L63"
-          },
-          {
-            "callee": "getResponse",
-            "receiver_type": "MvcResult",
-            "lang": "java",
-            "line": "L63"
-          }
-        ]
-      },
-      "norm_label": ".createpaymentwithlocationandverifyscoping()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/PaymentControllerTests.java",
-      "source_location": "L27"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_paymentcontrollertests_paymentcontrollertests_reconcilepaymentlifecycleandverifyexpenselinking",
-      "label": ".reconcilePaymentLifecycleAndVerifyExpenseLinking()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "randomUUID",
-            "receiver_type": "UUID",
-            "lang": "java",
-            "line": "L99"
-          },
-          {
-            "callee": "perform",
-            "receiver_type": "MockMvc",
-            "lang": "java",
-            "line": "L102"
-          },
-          {
-            "callee": "read",
-            "receiver_type": "JsonPath",
-            "lang": "java",
-            "line": "L121"
-          },
-          {
-            "callee": "getResponse",
-            "receiver_type": "MvcResult",
-            "lang": "java",
-            "line": "L121"
-          }
-        ]
-      },
-      "norm_label": ".reconcilepaymentlifecycleandverifyexpenselinking()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/PaymentControllerTests.java",
-      "source_location": "L97"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_paymentcontrollertests_paymentcontrollertests_verifysmsfailedpaymentflow",
-      "label": ".verifySmsFailedPaymentFlow()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "randomUUID",
-            "receiver_type": "UUID",
-            "lang": "java",
-            "line": "L240"
-          },
-          {
-            "callee": "perform",
-            "receiver_type": "MockMvc",
-            "lang": "java",
-            "line": "L243"
-          },
-          {
-            "callee": "read",
-            "receiver_type": "JsonPath",
-            "lang": "java",
-            "line": "L258"
-          },
-          {
-            "callee": "getResponse",
-            "receiver_type": "MvcResult",
-            "lang": "java",
-            "line": "L258"
-          },
-          {
-            "callee": "format",
-            "receiver_type": "String",
-            "lang": "java",
-            "line": "L264"
-          }
-        ]
-      },
-      "norm_label": ".verifysmsfailedpaymentflow()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/PaymentControllerTests.java",
-      "source_location": "L238"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_paymentcontrollertests_paymentcontrollertests_verifysmssuccessandidempotency",
-      "label": ".verifySmsSuccessAndIdempotency()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "randomUUID",
-            "receiver_type": "UUID",
-            "lang": "java",
-            "line": "L180"
-          },
-          {
-            "callee": "perform",
-            "receiver_type": "MockMvc",
-            "lang": "java",
-            "line": "L184"
-          },
-          {
-            "callee": "read",
-            "receiver_type": "JsonPath",
-            "lang": "java",
-            "line": "L202"
-          },
-          {
-            "callee": "getResponse",
-            "receiver_type": "MvcResult",
-            "lang": "java",
-            "line": "L202"
-          },
-          {
-            "callee": "format",
-            "receiver_type": "String",
-            "lang": "java",
-            "line": "L209"
-          }
-        ]
-      },
-      "norm_label": ".verifysmssuccessandidempotency()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/PaymentControllerTests.java",
-      "source_location": "L178"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_securityandusertests_securityandusertests_missingjwtreturns401onprotectedendpoint",
-      "label": ".missingJwtReturns401OnProtectedEndpoint()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "perform",
-            "receiver_type": "MockMvc",
-            "lang": "java",
-            "line": "L34"
-          }
-        ]
-      },
-      "norm_label": ".missingjwtreturns401onprotectedendpoint()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/SecurityAndUserTests.java",
-      "source_location": "L32"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_securityandusertests_securityandusertests_updateprofilemodifiesusersuccessfully",
-      "label": ".updateProfileModifiesUserSuccessfully()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "randomUUID",
-            "receiver_type": "UUID",
-            "lang": "java",
-            "line": "L66"
-          },
-          {
-            "callee": "perform",
-            "receiver_type": "MockMvc",
-            "lang": "java",
-            "line": "L69"
-          }
-        ]
-      },
-      "norm_label": ".updateprofilemodifiesusersuccessfully()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/SecurityAndUserTests.java",
-      "source_location": "L64"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_securityandusertests_securityandusertests_validjwtsyncsandreturnsuser",
-      "label": ".validJwtSyncsAndReturnsUser()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "randomUUID",
-            "receiver_type": "UUID",
-            "lang": "java",
-            "line": "L40"
-          },
-          {
-            "callee": "perform",
-            "receiver_type": "MockMvc",
-            "lang": "java",
-            "line": "L43"
-          },
-          {
-            "callee": "of",
-            "receiver_type": "Map",
-            "lang": "java",
-            "line": "L47"
-          }
-        ]
-      },
-      "norm_label": ".validjwtsyncsandreturnsuser()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/SecurityAndUserTests.java",
-      "source_location": "L38"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests_smsparserservicetests_testamountmismatchdetection",
-      "label": ".testAmountMismatchDetection()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": ".testamountmismatchdetection()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
-      "source_location": "L94"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests_smsparserservicetests_testaxisbankdebitsms",
-      "label": ".testAxisBankDebitSms()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": ".testaxisbankdebitsms()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
-      "source_location": "L51"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests_smsparserservicetests_testcreditsmsrejectedforoutgoingpayment",
-      "label": ".testCreditSmsRejectedForOutgoingPayment()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": ".testcreditsmsrejectedforoutgoingpayment()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
-      "source_location": "L108"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests_smsparserservicetests_testfailedtransactionsms",
-      "label": ".testFailedTransactionSms()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": ".testfailedtransactionsms()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
-      "source_location": "L62"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests_smsparserservicetests_testhdfcdebitsmsparsing",
-      "label": ".testHdfcDebitSmsParsing()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": ".testhdfcdebitsmsparsing()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
-      "source_location": "L16"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests_smsparserservicetests_testicicibanksentsms",
-      "label": ".testIciciBankSentSms()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": ".testicicibanksentsms()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
-      "source_location": "L39"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests_smsparserservicetests_testmatchingsuccesspaymentwithsms",
-      "label": ".testMatchingSuccessPaymentWithSms()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": ".testmatchingsuccesspaymentwithsms()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
-      "source_location": "L80"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests_smsparserservicetests_testsbidebitsmsparsing",
-      "label": ".testSbiDebitSmsParsing()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": ".testsbidebitsmsparsing()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
-      "source_location": "L28"
+      "norm_label": ".seeddefaultcategories()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryService.java",
+      "source_location": "L37"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_backendapplication_backendapplication_init",
@@ -3833,7 +3789,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 95,
-      "community_name": "BackendApplication",
+      "community_name": "jakarta.annotation.PostConstruct",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -3861,7 +3817,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 95,
-      "community_name": "BackendApplication",
+      "community_name": "jakarta.annotation.PostConstruct",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -3895,7 +3851,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 95,
-      "community_name": "BackendApplication",
+      "community_name": "jakarta.annotation.PostConstruct",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -3922,6 +3878,28 @@
       "norm_label": ".main()",
       "source_file": "backend/src/main/java/com/hulypay/backend/BackendApplication.java",
       "source_location": "L22"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_payments_paymentservice_paymentservice_ensurepaymentstatusconstraint",
+      "label": ".ensurePaymentStatusConstraint()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 95,
+      "community_name": "jakarta.annotation.PostConstruct",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "execute",
+            "receiver_type": "JdbcTemplate",
+            "lang": "java",
+            "line": "L42"
+          }
+        ]
+      },
+      "norm_label": ".ensurepaymentstatusconstraint()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentService.java",
+      "source_location": "L39"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_analytics_analyticscontroller_analyticscontroller_getcategorybreakdown",
@@ -4010,6 +3988,28 @@
       "norm_label": ".getsummary()",
       "source_file": "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsController.java",
       "source_location": "L27"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_categories_categorycontroller_categorycontroller_createcategory",
+      "label": ".createCategory()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 98,
+      "community_name": "org.springframework.http.ResponseEntity",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "status",
+            "receiver_type": "ResponseEntity",
+            "lang": "java",
+            "line": "L39"
+          }
+        ]
+      },
+      "norm_label": ".createcategory()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryController.java",
+      "source_location": "L32"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_categories_categorycontroller_categorycontroller_deletecategory",
@@ -4406,18 +4406,6 @@
       "source_location": "L20"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_users_userservice_userservice_updateprofile",
-      "label": ".updateProfile()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "org.springframework.http.ResponseEntity",
-      "file_type": "code",
-      "norm_label": ".updateprofile()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/users/UserService.java",
-      "source_location": "L166"
-    },
-    {
       "id": "mobile_lib_widgets_home_spend_trend_line_chart",
       "label": "home_spend_trend_line_chart.dart",
       "_origin": "ast",
@@ -4592,6 +4580,28 @@
       "norm_label": "_gradientcolors",
       "source_file": "mobile/lib/widgets/home_spend_trend_line_chart.dart",
       "source_location": "L32"
+    },
+    {
+      "id": "mobile_lib_widgets_home_spend_trend_line_chart_homespendtrendlinechart",
+      "label": "HomeSpendTrendLineChart",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "home_spend_trend_line_chart.dart",
+      "file_type": "code",
+      "norm_label": "homespendtrendlinechart",
+      "source_file": "mobile/lib/widgets/home_spend_trend_line_chart.dart",
+      "source_location": "L13"
+    },
+    {
+      "id": "mobile_lib_widgets_home_spend_trend_line_chart_homespendtrendlinechartstate",
+      "label": "_HomeSpendTrendLineChartState",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "home_spend_trend_line_chart.dart",
+      "file_type": "code",
+      "norm_label": "_homespendtrendlinechartstate",
+      "source_file": "mobile/lib/widgets/home_spend_trend_line_chart.dart",
+      "source_location": "L28"
     },
     {
       "id": "mobile_lib_widgets_home_spend_trend_line_chart_label",
@@ -5142,6 +5152,28 @@
       "norm_label": "_selectedfilterindex",
       "source_file": "mobile/lib/screens/transactions_screen.dart",
       "source_location": "L29"
+    },
+    {
+      "id": "mobile_lib_screens_transactions_screen_transactionsscreen",
+      "label": "TransactionsScreen",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "transactions_screen.dart",
+      "file_type": "code",
+      "norm_label": "transactionsscreen",
+      "source_file": "mobile/lib/screens/transactions_screen.dart",
+      "source_location": "L13"
+    },
+    {
+      "id": "mobile_lib_screens_transactions_screen_transactionsscreenstate",
+      "label": "_TransactionsScreenState",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "transactions_screen.dart",
+      "file_type": "code",
+      "norm_label": "_transactionsscreenstate",
+      "source_file": "mobile/lib/screens/transactions_screen.dart",
+      "source_location": "L27"
     },
     {
       "id": "single_transaction_screen_dart",
@@ -6299,6 +6331,28 @@
       "source_location": null
     },
     {
+      "id": "backend_src_test_java_com_hulypay_backend_backendapplicationtests",
+      "label": "BackendApplicationTests.java",
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "backendapplicationtests.java",
+      "source_file": "backend/src/test/java/com/hulypay/backend/BackendApplicationTests.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "org_junit_jupiter_api_test",
+      "label": "org.junit.jupiter.api.Test",
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "org.junit.jupiter.api.test",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "frontend_src_app_login_page",
       "label": "login/page.js",
       "_origin": "ast",
@@ -6352,17 +6406,6 @@
       "norm_label": "supabase",
       "source_file": "frontend/src/lib/supabase.js",
       "source_location": "L9"
-    },
-    {
-      "id": "ref_supabase_supabase_js",
-      "label": "@supabase/supabase-js",
-      "_origin": "ast",
-      "community": 108,
-      "community_name": "AuthContext.js",
-      "file_type": "concept",
-      "norm_label": "@supabase/supabase-js",
-      "source_file": "frontend/package.json",
-      "source_location": "L13"
     },
     {
       "id": "mobile_lib_widgets_home_weekly_bar_chart",
@@ -6462,6 +6505,28 @@
       "norm_label": "_getbottomtitles",
       "source_file": "mobile/lib/widgets/home_weekly_bar_chart.dart",
       "source_location": "L288"
+    },
+    {
+      "id": "mobile_lib_widgets_home_weekly_bar_chart_homeweeklybarchart",
+      "label": "HomeWeeklyBarChart",
+      "_origin": "ast",
+      "community": 109,
+      "community_name": "home_weekly_bar_chart.dart",
+      "file_type": "code",
+      "norm_label": "homeweeklybarchart",
+      "source_file": "mobile/lib/widgets/home_weekly_bar_chart.dart",
+      "source_location": "L11"
+    },
+    {
+      "id": "mobile_lib_widgets_home_weekly_bar_chart_homeweeklybarchartstate",
+      "label": "_HomeWeeklyBarChartState",
+      "_origin": "ast",
+      "community": 109,
+      "community_name": "home_weekly_bar_chart.dart",
+      "file_type": "code",
+      "norm_label": "_homeweeklybarchartstate",
+      "source_file": "mobile/lib/widgets/home_weekly_bar_chart.dart",
+      "source_location": "L21"
     },
     {
       "id": "mobile_lib_widgets_home_weekly_bar_chart_ontap",
@@ -7872,17 +7937,6 @@
       "source_location": null
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_analytics_analyticsservice",
-      "label": "AnalyticsService.java",
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "lombok.AllArgsConstructor",
-      "file_type": "code",
-      "norm_label": "analyticsservice.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsService.java",
-      "source_location": "L1"
-    },
-    {
       "id": "backend_src_main_java_com_hulypay_backend_analytics_dto_categorybreakdownresponse",
       "label": "CategoryBreakdownResponse.java",
       "_origin": "ast",
@@ -8422,14 +8476,25 @@
       "source_location": null
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_categories_categoryservice",
-      "label": "CategoryService.java",
+      "id": "backend_src_main_java_com_hulypay_backend_common_exception_badrequestexception",
+      "label": "BadRequestException.java",
       "_origin": "ast",
       "community": 123,
       "community_name": "Expense",
       "file_type": "code",
-      "norm_label": "categoryservice.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryService.java",
+      "norm_label": "badrequestexception.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/common/exception/BadRequestException.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_common_exception_resourcenotfoundexception",
+      "label": "ResourceNotFoundException.java",
+      "_origin": "ast",
+      "community": 123,
+      "community_name": "Expense",
+      "file_type": "code",
+      "norm_label": "resourcenotfoundexception.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/common/exception/ResourceNotFoundException.java",
       "source_location": "L1"
     },
     {
@@ -8521,17 +8586,6 @@
       "source_location": ""
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_payment",
-      "label": "Payment.java",
-      "_origin": "ast",
-      "community": 123,
-      "community_name": "Expense",
-      "file_type": "code",
-      "norm_label": "payment.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/payments/Payment.java",
-      "source_location": "L1"
-    },
-    {
       "id": "backend_src_main_java_com_hulypay_backend_payments_paymentservice",
       "label": "PaymentService.java",
       "_origin": "ast",
@@ -8541,72 +8595,6 @@
       "norm_label": "paymentservice.java",
       "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentService.java",
       "source_location": "L1"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_sms_smsparserservice",
-      "label": "SmsParserService.java",
-      "_origin": "ast",
-      "community": 123,
-      "community_name": "Expense",
-      "file_type": "code",
-      "norm_label": "smsparserservice.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/payments/sms/SmsParserService.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_users_userservice",
-      "label": "UserService.java",
-      "_origin": "ast",
-      "community": 123,
-      "community_name": "Expense",
-      "file_type": "code",
-      "norm_label": "userservice.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/users/UserService.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests",
-      "label": "SmsParserServiceTests.java",
-      "_origin": "ast",
-      "community": 123,
-      "community_name": "Expense",
-      "file_type": "code",
-      "norm_label": "smsparserservicetests.java",
-      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "jakarta_annotation_postconstruct",
-      "label": "jakarta.annotation.PostConstruct",
-      "_origin": "ast",
-      "community": 123,
-      "community_name": "Expense",
-      "file_type": "code",
-      "norm_label": "jakarta.annotation.postconstruct",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "java_util_regex_pattern",
-      "label": "java.util.regex.Pattern",
-      "_origin": "ast",
-      "community": 123,
-      "community_name": "Expense",
-      "file_type": "code",
-      "norm_label": "java.util.regex.pattern",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "lombok_extern_slf4j_slf4j",
-      "label": "lombok.extern.slf4j.Slf4j",
-      "_origin": "ast",
-      "community": 123,
-      "community_name": "Expense",
-      "file_type": "code",
-      "norm_label": "lombok.extern.slf4j.slf4j",
-      "source_file": "",
-      "source_location": ""
     },
     {
       "id": "org_springframework_jdbc_core_jdbctemplate",
@@ -8620,13 +8608,13 @@
       "source_location": ""
     },
     {
-      "id": "org_springframework_stereotype_service",
-      "label": "org.springframework.stereotype.Service",
+      "id": "org_springframework_web_bind_annotation_responsestatus",
+      "label": "org.springframework.web.bind.annotation.ResponseStatus",
       "_origin": "ast",
       "community": 123,
       "community_name": "Expense",
       "file_type": "code",
-      "norm_label": "org.springframework.stereotype.service",
+      "norm_label": "org.springframework.web.bind.annotation.responsestatus",
       "source_file": "",
       "source_location": ""
     },
@@ -8730,6 +8718,94 @@
       "source_location": null
     },
     {
+      "id": "frontend_src_components_transitions_animatedsignature",
+      "label": "AnimatedSignature.js",
+      "_origin": "ast",
+      "community": 128,
+      "community_name": "AnimatedSignature.js",
+      "file_type": "code",
+      "norm_label": "animatedsignature.js",
+      "source_file": "frontend/src/components/transitions/AnimatedSignature.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_components_transitions_signaturepaths",
+      "label": "signaturePaths.js",
+      "_origin": "ast",
+      "community": 128,
+      "community_name": "AnimatedSignature.js",
+      "file_type": "code",
+      "norm_label": "signaturepaths.js",
+      "source_file": "frontend/src/components/transitions/signaturePaths.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_components_transitions_signaturepaths_signature_fill_path",
+      "label": "SIGNATURE_FILL_PATH",
+      "_origin": "ast",
+      "community": 128,
+      "community_name": "AnimatedSignature.js",
+      "file_type": "code",
+      "norm_label": "signature_fill_path",
+      "source_file": "frontend/src/components/transitions/signaturePaths.js",
+      "source_location": "L9"
+    },
+    {
+      "id": "frontend_src_components_transitions_signaturepaths_signature_height",
+      "label": "SIGNATURE_HEIGHT",
+      "_origin": "ast",
+      "community": 128,
+      "community_name": "AnimatedSignature.js",
+      "file_type": "code",
+      "norm_label": "signature_height",
+      "source_file": "frontend/src/components/transitions/signaturePaths.js",
+      "source_location": "L4"
+    },
+    {
+      "id": "frontend_src_components_transitions_signaturepaths_signature_mask_path",
+      "label": "SIGNATURE_MASK_PATH",
+      "_origin": "ast",
+      "community": 128,
+      "community_name": "AnimatedSignature.js",
+      "file_type": "code",
+      "norm_label": "signature_mask_path",
+      "source_file": "frontend/src/components/transitions/signaturePaths.js",
+      "source_location": "L7"
+    },
+    {
+      "id": "frontend_src_components_transitions_signaturepaths_signature_stroke_length",
+      "label": "SIGNATURE_STROKE_LENGTH",
+      "_origin": "ast",
+      "community": 128,
+      "community_name": "AnimatedSignature.js",
+      "file_type": "code",
+      "norm_label": "signature_stroke_length",
+      "source_file": "frontend/src/components/transitions/signaturePaths.js",
+      "source_location": "L5"
+    },
+    {
+      "id": "frontend_src_components_transitions_signaturepaths_signature_viewbox",
+      "label": "SIGNATURE_VIEWBOX",
+      "_origin": "ast",
+      "community": 128,
+      "community_name": "AnimatedSignature.js",
+      "file_type": "code",
+      "norm_label": "signature_viewbox",
+      "source_file": "frontend/src/components/transitions/signaturePaths.js",
+      "source_location": "L2"
+    },
+    {
+      "id": "frontend_src_components_transitions_signaturepaths_signature_width",
+      "label": "SIGNATURE_WIDTH",
+      "_origin": "ast",
+      "community": 128,
+      "community_name": "AnimatedSignature.js",
+      "file_type": "code",
+      "norm_label": "signature_width",
+      "source_file": "frontend/src/components/transitions/signaturePaths.js",
+      "source_location": "L3"
+    },
+    {
       "id": "mobile_lib_screens_analysis_screen",
       "label": "analysis_screen.dart",
       "_origin": "ast",
@@ -8750,28 +8826,6 @@
       "norm_label": "_allpayments",
       "source_file": "mobile/lib/screens/analysis_screen.dart",
       "source_location": "L41"
-    },
-    {
-      "id": "mobile_lib_screens_analysis_screen_analysisscreen",
-      "label": "AnalysisScreen",
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "analysis_screen.dart",
-      "file_type": "code",
-      "norm_label": "analysisscreen",
-      "source_file": "mobile/lib/screens/analysis_screen.dart",
-      "source_location": "L20"
-    },
-    {
-      "id": "mobile_lib_screens_analysis_screen_analysisscreenstate",
-      "label": "_AnalysisScreenState",
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "analysis_screen.dart",
-      "file_type": "code",
-      "norm_label": "_analysisscreenstate",
-      "source_file": "mobile/lib/screens/analysis_screen.dart",
-      "source_location": "L38"
     },
     {
       "id": "mobile_lib_screens_analysis_screen_build",
@@ -10105,6 +10159,17 @@
       "source_location": ""
     },
     {
+      "id": "backend_src_main_java_com_hulypay_backend_categories_categoryrepository",
+      "label": "CategoryRepository.java",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "ExpenseRepository",
+      "file_type": "code",
+      "norm_label": "categoryrepository.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryRepository.java",
+      "source_location": "L1"
+    },
+    {
       "id": "backend_src_main_java_com_hulypay_backend_expenses_expenserepository",
       "label": "ExpenseRepository.java",
       "_origin": "ast",
@@ -10116,6 +10181,39 @@
       "source_location": "L1"
     },
     {
+      "id": "backend_src_main_java_com_hulypay_backend_payments_paymentrepository",
+      "label": "PaymentRepository.java",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "ExpenseRepository",
+      "file_type": "code",
+      "norm_label": "paymentrepository.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentRepository.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_users_userrepository",
+      "label": "UserRepository.java",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "ExpenseRepository",
+      "file_type": "code",
+      "norm_label": "userrepository.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/users/UserRepository.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "org_springframework_data_jpa_repository_jparepository",
+      "label": "org.springframework.data.jpa.repository.JpaRepository",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "ExpenseRepository",
+      "file_type": "code",
+      "norm_label": "org.springframework.data.jpa.repository.jparepository",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "org_springframework_data_jpa_repository_query",
       "label": "org.springframework.data.jpa.repository.Query",
       "_origin": "ast",
@@ -10123,6 +10221,17 @@
       "community_name": "ExpenseRepository",
       "file_type": "code",
       "norm_label": "org.springframework.data.jpa.repository.query",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_stereotype_repository",
+      "label": "org.springframework.stereotype.Repository",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "ExpenseRepository",
+      "file_type": "code",
+      "norm_label": "org.springframework.stereotype.repository",
       "source_file": "",
       "source_location": ""
     },
@@ -10248,136 +10357,125 @@
       "source_location": ""
     },
     {
-      "id": "frontend_package_dependencies",
-      "label": "dependencies",
+      "id": "backend_src_main_java_com_hulypay_backend_payments_payment",
+      "label": "Payment.java",
       "_origin": "ast",
       "community": 19,
-      "community_name": "dependencies",
+      "community_name": "Payment",
       "file_type": "code",
-      "norm_label": "dependencies",
-      "source_file": "frontend/package.json",
-      "source_location": "L11"
+      "norm_label": "payment.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/payments/Payment.java",
+      "source_location": "L1"
     },
     {
-      "id": "frontend_package_dependencies_clsx",
-      "label": "clsx",
+      "id": "backend_src_main_java_com_hulypay_backend_payments_payment_java_allargsconstructor",
+      "label": "AllArgsConstructor",
       "_origin": "ast",
       "community": 19,
-      "community_name": "dependencies",
+      "community_name": "Payment",
       "file_type": "code",
-      "norm_label": "clsx",
-      "source_file": "frontend/package.json",
-      "source_location": "L14"
+      "norm_label": "allargsconstructor",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "frontend_package_dependencies_gsap",
-      "label": "gsap",
+      "id": "backend_src_main_java_com_hulypay_backend_payments_payment_java_builder",
+      "label": "Builder",
       "_origin": "ast",
       "community": 19,
-      "community_name": "dependencies",
+      "community_name": "Payment",
       "file_type": "code",
-      "norm_label": "gsap",
-      "source_file": "frontend/package.json",
-      "source_location": "L15"
+      "norm_label": "builder",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "frontend_package_dependencies_gsap_react",
-      "label": "@gsap/react",
+      "id": "backend_src_main_java_com_hulypay_backend_payments_payment_java_entity",
+      "label": "Entity",
       "_origin": "ast",
       "community": 19,
-      "community_name": "dependencies",
+      "community_name": "Payment",
       "file_type": "code",
-      "norm_label": "@gsap/react",
-      "source_file": "frontend/package.json",
-      "source_location": "L12"
+      "norm_label": "entity",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "frontend_package_dependencies_lenis",
-      "label": "lenis",
+      "id": "backend_src_main_java_com_hulypay_backend_payments_payment_java_getter",
+      "label": "Getter",
       "_origin": "ast",
       "community": 19,
-      "community_name": "dependencies",
+      "community_name": "Payment",
       "file_type": "code",
-      "norm_label": "lenis",
-      "source_file": "frontend/package.json",
-      "source_location": "L16"
+      "norm_label": "getter",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "frontend_package_dependencies_lucide_react",
-      "label": "lucide-react",
+      "id": "backend_src_main_java_com_hulypay_backend_payments_payment_java_noargsconstructor",
+      "label": "NoArgsConstructor",
       "_origin": "ast",
       "community": 19,
-      "community_name": "dependencies",
+      "community_name": "Payment",
       "file_type": "code",
-      "norm_label": "lucide-react",
-      "source_file": "frontend/package.json",
-      "source_location": "L17"
+      "norm_label": "noargsconstructor",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "frontend_package_dependencies_next",
-      "label": "next",
+      "id": "backend_src_main_java_com_hulypay_backend_payments_payment_java_setter",
+      "label": "Setter",
       "_origin": "ast",
       "community": 19,
-      "community_name": "dependencies",
+      "community_name": "Payment",
       "file_type": "code",
-      "norm_label": "next",
-      "source_file": "frontend/package.json",
-      "source_location": "L18"
+      "norm_label": "setter",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "frontend_package_dependencies_next_transition_router",
-      "label": "next-transition-router",
+      "id": "backend_src_main_java_com_hulypay_backend_payments_payment_java_table",
+      "label": "Table",
       "_origin": "ast",
       "community": 19,
-      "community_name": "dependencies",
+      "community_name": "Payment",
       "file_type": "code",
-      "norm_label": "next-transition-router",
-      "source_file": "frontend/package.json",
-      "source_location": "L19"
+      "norm_label": "table",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "frontend_package_dependencies_react_dom",
-      "label": "react-dom",
+      "id": "backend_src_main_java_com_hulypay_backend_payments_sms_smsparserservice",
+      "label": "SmsParserService.java",
       "_origin": "ast",
       "community": 19,
-      "community_name": "dependencies",
+      "community_name": "Payment",
       "file_type": "code",
-      "norm_label": "react-dom",
-      "source_file": "frontend/package.json",
-      "source_location": "L21"
+      "norm_label": "smsparserservice.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/payments/sms/SmsParserService.java",
+      "source_location": "L1"
     },
     {
-      "id": "frontend_package_dependencies_recharts",
-      "label": "recharts",
+      "id": "backend_src_test_java_com_hulypay_backend_smsparserservicetests",
+      "label": "SmsParserServiceTests.java",
       "_origin": "ast",
       "community": 19,
-      "community_name": "dependencies",
+      "community_name": "Payment",
       "file_type": "code",
-      "norm_label": "recharts",
-      "source_file": "frontend/package.json",
-      "source_location": "L22"
+      "norm_label": "smsparserservicetests.java",
+      "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
+      "source_location": "L1"
     },
     {
-      "id": "frontend_package_dependencies_supabase_supabase_js",
-      "label": "@supabase/supabase-js",
+      "id": "java_util_regex_pattern",
+      "label": "java.util.regex.Pattern",
       "_origin": "ast",
       "community": 19,
-      "community_name": "dependencies",
+      "community_name": "Payment",
       "file_type": "code",
-      "norm_label": "@supabase/supabase-js",
-      "source_file": "frontend/package.json",
-      "source_location": "L13"
-    },
-    {
-      "id": "frontend_package_dependencies_tailwind_merge",
-      "label": "tailwind-merge",
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "dependencies",
-      "file_type": "code",
-      "norm_label": "tailwind-merge",
-      "source_file": "frontend/package.json",
-      "source_location": "L23"
+      "norm_label": "java.util.regex.pattern",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "double",
@@ -11194,6 +11292,138 @@
       "source_location": "L1"
     },
     {
+      "id": "frontend_package_dependencies",
+      "label": "dependencies",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "dependencies",
+      "source_file": "frontend/package.json",
+      "source_location": "L11"
+    },
+    {
+      "id": "frontend_package_dependencies_clsx",
+      "label": "clsx",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "clsx",
+      "source_file": "frontend/package.json",
+      "source_location": "L14"
+    },
+    {
+      "id": "frontend_package_dependencies_gsap",
+      "label": "gsap",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "gsap",
+      "source_file": "frontend/package.json",
+      "source_location": "L15"
+    },
+    {
+      "id": "frontend_package_dependencies_gsap_react",
+      "label": "@gsap/react",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "@gsap/react",
+      "source_file": "frontend/package.json",
+      "source_location": "L12"
+    },
+    {
+      "id": "frontend_package_dependencies_lenis",
+      "label": "lenis",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "lenis",
+      "source_file": "frontend/package.json",
+      "source_location": "L16"
+    },
+    {
+      "id": "frontend_package_dependencies_lucide_react",
+      "label": "lucide-react",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "lucide-react",
+      "source_file": "frontend/package.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "frontend_package_dependencies_next",
+      "label": "next",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "next",
+      "source_file": "frontend/package.json",
+      "source_location": "L18"
+    },
+    {
+      "id": "frontend_package_dependencies_next_transition_router",
+      "label": "next-transition-router",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "next-transition-router",
+      "source_file": "frontend/package.json",
+      "source_location": "L19"
+    },
+    {
+      "id": "frontend_package_dependencies_react_dom",
+      "label": "react-dom",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "react-dom",
+      "source_file": "frontend/package.json",
+      "source_location": "L21"
+    },
+    {
+      "id": "frontend_package_dependencies_recharts",
+      "label": "recharts",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "recharts",
+      "source_file": "frontend/package.json",
+      "source_location": "L22"
+    },
+    {
+      "id": "frontend_package_dependencies_supabase_supabase_js",
+      "label": "@supabase/supabase-js",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "@supabase/supabase-js",
+      "source_file": "frontend/package.json",
+      "source_location": "L13"
+    },
+    {
+      "id": "frontend_package_dependencies_tailwind_merge",
+      "label": "tailwind-merge",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "tailwind-merge",
+      "source_file": "frontend/package.json",
+      "source_location": "L23"
+    },
+    {
       "id": "frontend_package_devdependencies",
       "label": "devDependencies",
       "_origin": "ast",
@@ -11467,6 +11697,17 @@
       "norm_label": "react-dom",
       "source_file": "frontend/package.json",
       "source_location": "L21"
+    },
+    {
+      "id": "ref_supabase_supabase_js",
+      "label": "@supabase/supabase-js",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "package.json",
+      "file_type": "concept",
+      "norm_label": "@supabase/supabase-js",
+      "source_file": "frontend/package.json",
+      "source_location": "L13"
     },
     {
       "id": "ref_tailwind_merge",
@@ -14545,26 +14786,48 @@
       "source_location": "L1"
     },
     {
-      "id": "mobile_lib_screens_help_support_screen_helpsupportscreen",
-      "label": "HelpSupportScreen",
+      "id": "mobile_lib_screens_analysis_screen_analysisscreen",
+      "label": "AnalysisScreen",
       "_origin": "ast",
       "community": 36,
       "community_name": "State",
       "file_type": "code",
-      "norm_label": "helpsupportscreen",
-      "source_file": "mobile/lib/screens/help_support_screen.dart",
-      "source_location": "L7"
+      "norm_label": "analysisscreen",
+      "source_file": "mobile/lib/screens/analysis_screen.dart",
+      "source_location": "L20"
     },
     {
-      "id": "mobile_lib_screens_help_support_screen_helpsupportscreenstate",
-      "label": "_HelpSupportScreenState",
+      "id": "mobile_lib_screens_analysis_screen_analysisscreenstate",
+      "label": "_AnalysisScreenState",
       "_origin": "ast",
       "community": 36,
       "community_name": "State",
       "file_type": "code",
-      "norm_label": "_helpsupportscreenstate",
-      "source_file": "mobile/lib/screens/help_support_screen.dart",
-      "source_location": "L14"
+      "norm_label": "_analysisscreenstate",
+      "source_file": "mobile/lib/screens/analysis_screen.dart",
+      "source_location": "L38"
+    },
+    {
+      "id": "mobile_lib_screens_home_dashboard_screen_homedashboardscreen",
+      "label": "HomeDashboardScreen",
+      "_origin": "ast",
+      "community": 36,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "homedashboardscreen",
+      "source_file": "mobile/lib/screens/home_dashboard_screen.dart",
+      "source_location": "L21"
+    },
+    {
+      "id": "mobile_lib_screens_home_dashboard_screen_homedashboardscreenstate",
+      "label": "_HomeDashboardScreenState",
+      "_origin": "ast",
+      "community": 36,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "_homedashboardscreenstate",
+      "source_file": "mobile/lib/screens/home_dashboard_screen.dart",
+      "source_location": "L35"
     },
     {
       "id": "mobile_lib_screens_notifications_screen_notificationsscreen",
@@ -14589,6 +14852,28 @@
       "source_location": "L11"
     },
     {
+      "id": "mobile_lib_screens_sign_in_screen_signinscreen",
+      "label": "SignInScreen",
+      "_origin": "ast",
+      "community": 36,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "signinscreen",
+      "source_file": "mobile/lib/screens/sign_in_screen.dart",
+      "source_location": "L11"
+    },
+    {
+      "id": "mobile_lib_screens_sign_in_screen_signinscreenstate",
+      "label": "_SignInScreenState",
+      "_origin": "ast",
+      "community": 36,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "_signinscreenstate",
+      "source_file": "mobile/lib/screens/sign_in_screen.dart",
+      "source_location": "L27"
+    },
+    {
       "id": "mobile_lib_screens_splash_screen_splashscreen",
       "label": "SplashScreen",
       "_origin": "ast",
@@ -14609,116 +14894,6 @@
       "norm_label": "_splashscreenstate",
       "source_file": "mobile/lib/screens/splash_screen.dart",
       "source_location": "L40"
-    },
-    {
-      "id": "mobile_lib_screens_transactions_screen_transactionsscreen",
-      "label": "TransactionsScreen",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "transactionsscreen",
-      "source_file": "mobile/lib/screens/transactions_screen.dart",
-      "source_location": "L13"
-    },
-    {
-      "id": "mobile_lib_screens_transactions_screen_transactionsscreenstate",
-      "label": "_TransactionsScreenState",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "_transactionsscreenstate",
-      "source_file": "mobile/lib/screens/transactions_screen.dart",
-      "source_location": "L27"
-    },
-    {
-      "id": "mobile_lib_widgets_analysis_category_pie_chart_analysiscategorypiechart",
-      "label": "AnalysisCategoryPieChart",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "analysiscategorypiechart",
-      "source_file": "mobile/lib/widgets/analysis_category_pie_chart.dart",
-      "source_location": "L10"
-    },
-    {
-      "id": "mobile_lib_widgets_analysis_category_pie_chart_analysiscategorypiechartstate",
-      "label": "_AnalysisCategoryPieChartState",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "_analysiscategorypiechartstate",
-      "source_file": "mobile/lib/widgets/analysis_category_pie_chart.dart",
-      "source_location": "L33"
-    },
-    {
-      "id": "mobile_lib_widgets_home_spend_trend_line_chart_homespendtrendlinechart",
-      "label": "HomeSpendTrendLineChart",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "homespendtrendlinechart",
-      "source_file": "mobile/lib/widgets/home_spend_trend_line_chart.dart",
-      "source_location": "L13"
-    },
-    {
-      "id": "mobile_lib_widgets_home_spend_trend_line_chart_homespendtrendlinechartstate",
-      "label": "_HomeSpendTrendLineChartState",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "_homespendtrendlinechartstate",
-      "source_file": "mobile/lib/widgets/home_spend_trend_line_chart.dart",
-      "source_location": "L28"
-    },
-    {
-      "id": "mobile_lib_widgets_home_today_spend_gauge_hometodayspendgaugechart",
-      "label": "HomeTodaySpendGaugeChart",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "hometodayspendgaugechart",
-      "source_file": "mobile/lib/widgets/home_today_spend_gauge.dart",
-      "source_location": "L20"
-    },
-    {
-      "id": "mobile_lib_widgets_home_today_spend_gauge_hometodayspendgaugechartstate",
-      "label": "_HomeTodaySpendGaugeChartState",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "_hometodayspendgaugechartstate",
-      "source_file": "mobile/lib/widgets/home_today_spend_gauge.dart",
-      "source_location": "L37"
-    },
-    {
-      "id": "mobile_lib_widgets_home_weekly_bar_chart_homeweeklybarchart",
-      "label": "HomeWeeklyBarChart",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "homeweeklybarchart",
-      "source_file": "mobile/lib/widgets/home_weekly_bar_chart.dart",
-      "source_location": "L11"
-    },
-    {
-      "id": "mobile_lib_widgets_home_weekly_bar_chart_homeweeklybarchartstate",
-      "label": "_HomeWeeklyBarChartState",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "_homeweeklybarchartstate",
-      "source_file": "mobile/lib/widgets/home_weekly_bar_chart.dart",
-      "source_location": "L21"
     },
     {
       "id": "mobile_lib_widgets_spending_heatmap_spendingheatmap",
@@ -14772,6 +14947,28 @@
       "community_name": "State",
       "file_type": "code",
       "norm_label": "statefulwidget",
+      "source_file": null,
+      "source_location": null
+    },
+    {
+      "id": "tickerproviderstatemixin",
+      "label": "TickerProviderStateMixin",
+      "_origin": "ast",
+      "community": 36,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "tickerproviderstatemixin",
+      "source_file": null,
+      "source_location": null
+    },
+    {
+      "id": "widgetsbindingobserver",
+      "label": "WidgetsBindingObserver",
+      "_origin": "ast",
+      "community": 36,
+      "community_name": "State",
+      "file_type": "code",
+      "norm_label": "widgetsbindingobserver",
       "source_file": null,
       "source_location": null
     },
@@ -15711,17 +15908,6 @@
       "source_location": "L1"
     },
     {
-      "id": "frontend_src_components_transitions_animatedsignature",
-      "label": "AnimatedSignature.js",
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "layout.js",
-      "file_type": "code",
-      "norm_label": "animatedsignature.js",
-      "source_file": "frontend/src/components/transitions/AnimatedSignature.js",
-      "source_location": "L1"
-    },
-    {
       "id": "frontend_src_components_transitions_initialloader",
       "label": "InitialLoader.js",
       "_origin": "ast",
@@ -15731,83 +15917,6 @@
       "norm_label": "initialloader.js",
       "source_file": "frontend/src/components/transitions/InitialLoader.js",
       "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_components_transitions_signaturepaths",
-      "label": "signaturePaths.js",
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "layout.js",
-      "file_type": "code",
-      "norm_label": "signaturepaths.js",
-      "source_file": "frontend/src/components/transitions/signaturePaths.js",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_components_transitions_signaturepaths_signature_fill_path",
-      "label": "SIGNATURE_FILL_PATH",
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "layout.js",
-      "file_type": "code",
-      "norm_label": "signature_fill_path",
-      "source_file": "frontend/src/components/transitions/signaturePaths.js",
-      "source_location": "L9"
-    },
-    {
-      "id": "frontend_src_components_transitions_signaturepaths_signature_height",
-      "label": "SIGNATURE_HEIGHT",
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "layout.js",
-      "file_type": "code",
-      "norm_label": "signature_height",
-      "source_file": "frontend/src/components/transitions/signaturePaths.js",
-      "source_location": "L4"
-    },
-    {
-      "id": "frontend_src_components_transitions_signaturepaths_signature_mask_path",
-      "label": "SIGNATURE_MASK_PATH",
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "layout.js",
-      "file_type": "code",
-      "norm_label": "signature_mask_path",
-      "source_file": "frontend/src/components/transitions/signaturePaths.js",
-      "source_location": "L7"
-    },
-    {
-      "id": "frontend_src_components_transitions_signaturepaths_signature_stroke_length",
-      "label": "SIGNATURE_STROKE_LENGTH",
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "layout.js",
-      "file_type": "code",
-      "norm_label": "signature_stroke_length",
-      "source_file": "frontend/src/components/transitions/signaturePaths.js",
-      "source_location": "L5"
-    },
-    {
-      "id": "frontend_src_components_transitions_signaturepaths_signature_viewbox",
-      "label": "SIGNATURE_VIEWBOX",
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "layout.js",
-      "file_type": "code",
-      "norm_label": "signature_viewbox",
-      "source_file": "frontend/src/components/transitions/signaturePaths.js",
-      "source_location": "L2"
-    },
-    {
-      "id": "frontend_src_components_transitions_signaturepaths_signature_width",
-      "label": "SIGNATURE_WIDTH",
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "layout.js",
-      "file_type": "code",
-      "norm_label": "signature_width",
-      "source_file": "frontend/src/components/transitions/signaturePaths.js",
-      "source_location": "L3"
     },
     {
       "id": "frontend_src_components_transitions_transitionprovider",
@@ -15957,36 +16066,80 @@
       "source_location": "L1"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_categories_categorycontroller_java_postmapping",
-      "label": "PostMapping",
+      "id": "backend_src_main_java_com_hulypay_backend_analytics_analyticscontroller",
+      "label": "AnalyticsController.java",
       "_origin": "ast",
       "community": 47,
       "community_name": "User",
       "file_type": "code",
-      "norm_label": "postmapping",
+      "norm_label": "analyticscontroller.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsController.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_analytics_analyticsservice",
+      "label": "AnalyticsService.java",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "User",
+      "file_type": "code",
+      "norm_label": "analyticsservice.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsService.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_categories_categorycontroller",
+      "label": "CategoryController.java",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "User",
+      "file_type": "code",
+      "norm_label": "categorycontroller.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryController.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_categories_categorycontroller_java_requestmapping",
+      "label": "RequestMapping",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "User",
+      "file_type": "code",
+      "norm_label": "requestmapping",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_common_exception_badrequestexception",
-      "label": "BadRequestException.java",
+      "id": "backend_src_main_java_com_hulypay_backend_categories_categorycontroller_java_restcontroller",
+      "label": "RestController",
       "_origin": "ast",
       "community": 47,
       "community_name": "User",
       "file_type": "code",
-      "norm_label": "badrequestexception.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/common/exception/BadRequestException.java",
+      "norm_label": "restcontroller",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_categories_categoryservice",
+      "label": "CategoryService.java",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "User",
+      "file_type": "code",
+      "norm_label": "categoryservice.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryService.java",
       "source_location": "L1"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_common_exception_resourcenotfoundexception",
-      "label": "ResourceNotFoundException.java",
+      "id": "backend_src_main_java_com_hulypay_backend_expenses_expensecontroller",
+      "label": "ExpenseController.java",
       "_origin": "ast",
       "community": 47,
       "community_name": "User",
       "file_type": "code",
-      "norm_label": "resourcenotfoundexception.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/common/exception/ResourceNotFoundException.java",
+      "norm_label": "expensecontroller.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/expenses/ExpenseController.java",
       "source_location": "L1"
     },
     {
@@ -15998,6 +16151,28 @@
       "file_type": "code",
       "norm_label": "expenseservice.java",
       "source_file": "backend/src/main/java/com/hulypay/backend/expenses/ExpenseService.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_payments_paymentcontroller",
+      "label": "PaymentController.java",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "User",
+      "file_type": "code",
+      "norm_label": "paymentcontroller.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentController.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_users_user",
+      "label": "User.java",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "User",
+      "file_type": "code",
+      "norm_label": "user.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/users/User.java",
       "source_location": "L1"
     },
     {
@@ -16078,6 +16253,61 @@
       "source_location": ""
     },
     {
+      "id": "backend_src_main_java_com_hulypay_backend_users_userservice",
+      "label": "UserService.java",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "User",
+      "file_type": "code",
+      "norm_label": "userservice.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/users/UserService.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "java_util_list",
+      "label": "java.util.List",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "User",
+      "file_type": "code",
+      "norm_label": "java.util.list",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "lombok_extern_slf4j_slf4j",
+      "label": "lombok.extern.slf4j.Slf4j",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "User",
+      "file_type": "code",
+      "norm_label": "lombok.extern.slf4j.slf4j",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "lombok_requiredargsconstructor",
+      "label": "lombok.RequiredArgsConstructor",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "User",
+      "file_type": "code",
+      "norm_label": "lombok.requiredargsconstructor",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_stereotype_service",
+      "label": "org.springframework.stereotype.Service",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "User",
+      "file_type": "code",
+      "norm_label": "org.springframework.stereotype.service",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "org_springframework_transaction_annotation_transactional",
       "label": "org.springframework.transaction.annotation.Transactional",
       "_origin": "ast",
@@ -16089,13 +16319,13 @@
       "source_location": ""
     },
     {
-      "id": "org_springframework_web_bind_annotation_responsestatus",
-      "label": "org.springframework.web.bind.annotation.ResponseStatus",
+      "id": "org_springframework_web_bind_annotation_requestmapping",
+      "label": "org.springframework.web.bind.annotation.RequestMapping",
       "_origin": "ast",
       "community": 47,
       "community_name": "User",
       "file_type": "code",
-      "norm_label": "org.springframework.web.bind.annotation.responsestatus",
+      "norm_label": "org.springframework.web.bind.annotation.requestmapping",
       "source_file": "",
       "source_location": ""
     },
@@ -16741,6 +16971,50 @@
       "source_location": null
     },
     {
+      "id": "mobile_lib_main_hulypayapp",
+      "label": "HulyPayApp",
+      "_origin": "ast",
+      "community": 54,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "hulypayapp",
+      "source_file": "mobile/lib/main.dart",
+      "source_location": "L30"
+    },
+    {
+      "id": "mobile_lib_screens_about_hulypay_screen_abouthulypayscreen",
+      "label": "AboutHulyPayScreen",
+      "_origin": "ast",
+      "community": 54,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "abouthulypayscreen",
+      "source_file": "mobile/lib/screens/about_hulypay_screen.dart",
+      "source_location": "L5"
+    },
+    {
+      "id": "mobile_lib_screens_splash_screen_animatedhulylogo",
+      "label": "AnimatedHulyLogo",
+      "_origin": "ast",
+      "community": 54,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "animatedhulylogo",
+      "source_file": "mobile/lib/screens/splash_screen.dart",
+      "source_location": "L416"
+    },
+    {
+      "id": "mobile_lib_screens_splash_screen_animatedwavebackground",
+      "label": "AnimatedWaveBackground",
+      "_origin": "ast",
+      "community": 54,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "animatedwavebackground",
+      "source_file": "mobile/lib/screens/splash_screen.dart",
+      "source_location": "L272"
+    },
+    {
       "id": "mobile_lib_widgets_action_button",
       "label": "action_button.dart",
       "_origin": "ast",
@@ -16796,6 +17070,17 @@
       "source_location": "L9"
     },
     {
+      "id": "mobile_lib_widgets_action_button_quickactionbutton",
+      "label": "QuickActionButton",
+      "_origin": "ast",
+      "community": 54,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "quickactionbutton",
+      "source_file": "mobile/lib/widgets/action_button.dart",
+      "source_location": "L5"
+    },
+    {
       "id": "mobile_lib_widgets_action_button_svgasset",
       "label": "svgAsset",
       "_origin": "ast",
@@ -16840,6 +17125,17 @@
       "source_location": "L71"
     },
     {
+      "id": "mobile_lib_widgets_custom_bottom_nav_bar_custombottomnavbar",
+      "label": "CustomBottomNavBar",
+      "_origin": "ast",
+      "community": 54,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "custombottomnavbar",
+      "source_file": "mobile/lib/widgets/custom_bottom_nav_bar.dart",
+      "source_location": "L6"
+    },
+    {
       "id": "mobile_lib_widgets_custom_bottom_nav_bar_onitemselected",
       "label": "onItemSelected",
       "_origin": "ast",
@@ -16862,6 +17158,28 @@
       "source_location": "L7"
     },
     {
+      "id": "mobile_lib_widgets_spending_heatmap_heatmapgridwidget",
+      "label": "_HeatmapGridWidget",
+      "_origin": "ast",
+      "community": 54,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "_heatmapgridwidget",
+      "source_file": "mobile/lib/widgets/spending_heatmap.dart",
+      "source_location": "L564"
+    },
+    {
+      "id": "mobile_lib_widgets_transaction_tile_transactiontile",
+      "label": "TransactionTile",
+      "_origin": "ast",
+      "community": 54,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "transactiontile",
+      "source_file": "mobile/lib/widgets/transaction_tile.dart",
+      "source_location": "L7"
+    },
+    {
       "id": "package_flutter_svg_flutter_svg_dart",
       "label": "package:flutter_svg/flutter_svg.dart",
       "_origin": "ast",
@@ -16869,6 +17187,17 @@
       "community_name": "../theme/app_theme.dart",
       "file_type": "code",
       "norm_label": "package:flutter_svg/flutter_svg.dart",
+      "source_file": null,
+      "source_location": null
+    },
+    {
+      "id": "statelesswidget",
+      "label": "StatelessWidget",
+      "_origin": "ast",
+      "community": 54,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "statelesswidget",
       "source_file": null,
       "source_location": null
     },
@@ -18636,105 +18965,6 @@
       "source_location": "L1"
     },
     {
-      "id": "mobile_lib_main_hulypayapp",
-      "label": "HulyPayApp",
-      "_origin": "ast",
-      "community": 87,
-      "community_name": "StatelessWidget",
-      "file_type": "code",
-      "norm_label": "hulypayapp",
-      "source_file": "mobile/lib/main.dart",
-      "source_location": "L30"
-    },
-    {
-      "id": "mobile_lib_screens_about_hulypay_screen_abouthulypayscreen",
-      "label": "AboutHulyPayScreen",
-      "_origin": "ast",
-      "community": 87,
-      "community_name": "StatelessWidget",
-      "file_type": "code",
-      "norm_label": "abouthulypayscreen",
-      "source_file": "mobile/lib/screens/about_hulypay_screen.dart",
-      "source_location": "L5"
-    },
-    {
-      "id": "mobile_lib_screens_splash_screen_animatedhulylogo",
-      "label": "AnimatedHulyLogo",
-      "_origin": "ast",
-      "community": 87,
-      "community_name": "StatelessWidget",
-      "file_type": "code",
-      "norm_label": "animatedhulylogo",
-      "source_file": "mobile/lib/screens/splash_screen.dart",
-      "source_location": "L416"
-    },
-    {
-      "id": "mobile_lib_screens_splash_screen_animatedwavebackground",
-      "label": "AnimatedWaveBackground",
-      "_origin": "ast",
-      "community": 87,
-      "community_name": "StatelessWidget",
-      "file_type": "code",
-      "norm_label": "animatedwavebackground",
-      "source_file": "mobile/lib/screens/splash_screen.dart",
-      "source_location": "L272"
-    },
-    {
-      "id": "mobile_lib_widgets_action_button_quickactionbutton",
-      "label": "QuickActionButton",
-      "_origin": "ast",
-      "community": 87,
-      "community_name": "StatelessWidget",
-      "file_type": "code",
-      "norm_label": "quickactionbutton",
-      "source_file": "mobile/lib/widgets/action_button.dart",
-      "source_location": "L5"
-    },
-    {
-      "id": "mobile_lib_widgets_custom_bottom_nav_bar_custombottomnavbar",
-      "label": "CustomBottomNavBar",
-      "_origin": "ast",
-      "community": 87,
-      "community_name": "StatelessWidget",
-      "file_type": "code",
-      "norm_label": "custombottomnavbar",
-      "source_file": "mobile/lib/widgets/custom_bottom_nav_bar.dart",
-      "source_location": "L6"
-    },
-    {
-      "id": "mobile_lib_widgets_spending_heatmap_heatmapgridwidget",
-      "label": "_HeatmapGridWidget",
-      "_origin": "ast",
-      "community": 87,
-      "community_name": "StatelessWidget",
-      "file_type": "code",
-      "norm_label": "_heatmapgridwidget",
-      "source_file": "mobile/lib/widgets/spending_heatmap.dart",
-      "source_location": "L564"
-    },
-    {
-      "id": "mobile_lib_widgets_transaction_tile_transactiontile",
-      "label": "TransactionTile",
-      "_origin": "ast",
-      "community": 87,
-      "community_name": "StatelessWidget",
-      "file_type": "code",
-      "norm_label": "transactiontile",
-      "source_file": "mobile/lib/widgets/transaction_tile.dart",
-      "source_location": "L7"
-    },
-    {
-      "id": "statelesswidget",
-      "label": "StatelessWidget",
-      "_origin": "ast",
-      "community": 87,
-      "community_name": "StatelessWidget",
-      "file_type": "code",
-      "norm_label": "statelesswidget",
-      "source_file": null,
-      "source_location": null
-    },
-    {
       "id": "list",
       "label": "List",
       "_origin": "ast",
@@ -18755,6 +18985,28 @@
       "norm_label": "analysis_category_pie_chart.dart",
       "source_file": "mobile/lib/widgets/analysis_category_pie_chart.dart",
       "source_location": null
+    },
+    {
+      "id": "mobile_lib_widgets_analysis_category_pie_chart_analysiscategorypiechart",
+      "label": "AnalysisCategoryPieChart",
+      "_origin": "ast",
+      "community": 88,
+      "community_name": "analysis_category_pie_chart.dart",
+      "file_type": "code",
+      "norm_label": "analysiscategorypiechart",
+      "source_file": "mobile/lib/widgets/analysis_category_pie_chart.dart",
+      "source_location": "L10"
+    },
+    {
+      "id": "mobile_lib_widgets_analysis_category_pie_chart_analysiscategorypiechartstate",
+      "label": "_AnalysisCategoryPieChartState",
+      "_origin": "ast",
+      "community": 88,
+      "community_name": "analysis_category_pie_chart.dart",
+      "file_type": "code",
+      "norm_label": "_analysiscategorypiechartstate",
+      "source_file": "mobile/lib/widgets/analysis_category_pie_chart.dart",
+      "source_location": "L33"
     },
     {
       "id": "mobile_lib_widgets_analysis_category_pie_chart_bottomrightaction",
@@ -19229,72 +19481,6 @@
       "community_name": "settings_screen.dart",
       "file_type": "code",
       "norm_label": "sign_in_screen.dart",
-      "source_file": null,
-      "source_location": null
-    },
-    {
-      "id": "mobile_lib_screens_home_dashboard_screen_homedashboardscreen",
-      "label": "HomeDashboardScreen",
-      "_origin": "ast",
-      "community": 90,
-      "community_name": "_HomeDashboardScreenState",
-      "file_type": "code",
-      "norm_label": "homedashboardscreen",
-      "source_file": "mobile/lib/screens/home_dashboard_screen.dart",
-      "source_location": "L21"
-    },
-    {
-      "id": "mobile_lib_screens_home_dashboard_screen_homedashboardscreenstate",
-      "label": "_HomeDashboardScreenState",
-      "_origin": "ast",
-      "community": 90,
-      "community_name": "_HomeDashboardScreenState",
-      "file_type": "code",
-      "norm_label": "_homedashboardscreenstate",
-      "source_file": "mobile/lib/screens/home_dashboard_screen.dart",
-      "source_location": "L35"
-    },
-    {
-      "id": "mobile_lib_screens_sign_in_screen_signinscreen",
-      "label": "SignInScreen",
-      "_origin": "ast",
-      "community": 90,
-      "community_name": "_HomeDashboardScreenState",
-      "file_type": "code",
-      "norm_label": "signinscreen",
-      "source_file": "mobile/lib/screens/sign_in_screen.dart",
-      "source_location": "L11"
-    },
-    {
-      "id": "mobile_lib_screens_sign_in_screen_signinscreenstate",
-      "label": "_SignInScreenState",
-      "_origin": "ast",
-      "community": 90,
-      "community_name": "_HomeDashboardScreenState",
-      "file_type": "code",
-      "norm_label": "_signinscreenstate",
-      "source_file": "mobile/lib/screens/sign_in_screen.dart",
-      "source_location": "L27"
-    },
-    {
-      "id": "tickerproviderstatemixin",
-      "label": "TickerProviderStateMixin",
-      "_origin": "ast",
-      "community": 90,
-      "community_name": "_HomeDashboardScreenState",
-      "file_type": "code",
-      "norm_label": "tickerproviderstatemixin",
-      "source_file": null,
-      "source_location": null
-    },
-    {
-      "id": "widgetsbindingobserver",
-      "label": "WidgetsBindingObserver",
-      "_origin": "ast",
-      "community": 90,
-      "community_name": "_HomeDashboardScreenState",
-      "file_type": "code",
-      "norm_label": "widgetsbindingobserver",
       "source_file": null,
       "source_location": null
     },
@@ -20041,7 +20227,7 @@
       "label": "Category.java",
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "category.java",
       "source_file": "backend/src/main/java/com/hulypay/backend/categories/Category.java",
@@ -20052,7 +20238,7 @@
       "label": "AllArgsConstructor",
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "allargsconstructor",
       "source_file": "",
@@ -20063,7 +20249,7 @@
       "label": "Builder",
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "builder",
       "source_file": "",
@@ -20074,7 +20260,7 @@
       "label": "Entity",
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "entity",
       "source_file": "",
@@ -20085,7 +20271,7 @@
       "label": "Getter",
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "getter",
       "source_file": "",
@@ -20096,7 +20282,7 @@
       "label": "NoArgsConstructor",
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "noargsconstructor",
       "source_file": "",
@@ -20107,7 +20293,7 @@
       "label": "Setter",
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "setter",
       "source_file": "",
@@ -20118,142 +20304,21 @@
       "label": "Table",
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "table",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_categories_categoryrepository",
-      "label": "CategoryRepository.java",
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "categoryrepository.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryRepository.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_payment_java_allargsconstructor",
-      "label": "AllArgsConstructor",
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "allargsconstructor",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_payment_java_builder",
-      "label": "Builder",
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "builder",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_payment_java_entity",
-      "label": "Entity",
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "entity",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_payment_java_getter",
-      "label": "Getter",
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "getter",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_payment_java_noargsconstructor",
-      "label": "NoArgsConstructor",
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "noargsconstructor",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_payment_java_setter",
-      "label": "Setter",
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "setter",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_payment_java_table",
-      "label": "Table",
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "table",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_paymentrepository",
-      "label": "PaymentRepository.java",
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "paymentrepository.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentRepository.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_users_userrepository",
-      "label": "UserRepository.java",
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "userrepository.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/users/UserRepository.java",
-      "source_location": "L1"
     },
     {
       "id": "backend_src_test_java_com_hulypay_backend_analyticscontrollertests",
       "label": "AnalyticsControllerTests.java",
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "analyticscontrollertests.java",
       "source_file": "backend/src/test/java/com/hulypay/backend/AnalyticsControllerTests.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_backendapplicationtests",
-      "label": "BackendApplicationTests.java",
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "backendapplicationtests.java",
-      "source_file": "backend/src/test/java/com/hulypay/backend/BackendApplicationTests.java",
       "source_location": "L1"
     },
     {
@@ -20261,7 +20326,7 @@
       "label": "CategoryControllerTests.java",
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "categorycontrollertests.java",
       "source_file": "backend/src/test/java/com/hulypay/backend/CategoryControllerTests.java",
@@ -20272,7 +20337,7 @@
       "label": "ExpenseControllerTests.java",
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "expensecontrollertests.java",
       "source_file": "backend/src/test/java/com/hulypay/backend/ExpenseControllerTests.java",
@@ -20283,7 +20348,7 @@
       "label": "HealthControllerTests.java",
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "healthcontrollertests.java",
       "source_file": "backend/src/test/java/com/hulypay/backend/HealthControllerTests.java",
@@ -20294,7 +20359,7 @@
       "label": "PaymentControllerTests.java",
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "paymentcontrollertests.java",
       "source_file": "backend/src/test/java/com/hulypay/backend/PaymentControllerTests.java",
@@ -20305,29 +20370,18 @@
       "label": "SecurityAndUserTests.java",
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "securityandusertests.java",
       "source_file": "backend/src/test/java/com/hulypay/backend/SecurityAndUserTests.java",
       "source_location": "L1"
     },
     {
-      "id": "org_junit_jupiter_api_test",
-      "label": "org.junit.jupiter.api.Test",
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "org.junit.jupiter.api.test",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "org_springframework_boot_test_context_springboottest",
       "label": "org.springframework.boot.test.context.SpringBootTest",
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "org.springframework.boot.test.context.springboottest",
       "source_file": "",
@@ -20338,31 +20392,9 @@
       "label": "org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc",
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "org.springframework.boot.webmvc.test.autoconfigure.autoconfiguremockmvc",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "org_springframework_data_jpa_repository_jparepository",
-      "label": "org.springframework.data.jpa.repository.JpaRepository",
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "org.springframework.data.jpa.repository.jparepository",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "org_springframework_stereotype_repository",
-      "label": "org.springframework.stereotype.Repository",
-      "_origin": "ast",
-      "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "org.springframework.stereotype.repository",
       "source_file": "",
       "source_location": ""
     },
@@ -20371,7 +20403,7 @@
       "label": "org.springframework.test.web.servlet.MockMvc",
       "_origin": "ast",
       "community": 94,
-      "community_name": "org.junit.jupiter.api.Test",
+      "community_name": "Category",
       "file_type": "code",
       "norm_label": "org.springframework.test.web.servlet.mockmvc",
       "source_file": "",
@@ -20382,18 +20414,29 @@
       "label": "BackendApplication.java",
       "_origin": "ast",
       "community": 95,
-      "community_name": "BackendApplication",
+      "community_name": "jakarta.annotation.PostConstruct",
       "file_type": "code",
       "norm_label": "backendapplication.java",
       "source_file": "backend/src/main/java/com/hulypay/backend/BackendApplication.java",
       "source_location": "L1"
     },
     {
+      "id": "jakarta_annotation_postconstruct",
+      "label": "jakarta.annotation.PostConstruct",
+      "_origin": "ast",
+      "community": 95,
+      "community_name": "jakarta.annotation.PostConstruct",
+      "file_type": "code",
+      "norm_label": "jakarta.annotation.postconstruct",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "org_springframework_boot_autoconfigure_springbootapplication",
       "label": "org.springframework.boot.autoconfigure.SpringBootApplication",
       "_origin": "ast",
       "community": 95,
-      "community_name": "BackendApplication",
+      "community_name": "jakarta.annotation.PostConstruct",
       "file_type": "code",
       "norm_label": "org.springframework.boot.autoconfigure.springbootapplication",
       "source_file": "",
@@ -20497,6 +20540,28 @@
       "norm_label": "createstate",
       "source_file": "mobile/lib/screens/help_support_screen.dart",
       "source_location": "L11"
+    },
+    {
+      "id": "mobile_lib_screens_help_support_screen_helpsupportscreen",
+      "label": "HelpSupportScreen",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "help_support_screen.dart",
+      "file_type": "code",
+      "norm_label": "helpsupportscreen",
+      "source_file": "mobile/lib/screens/help_support_screen.dart",
+      "source_location": "L7"
+    },
+    {
+      "id": "mobile_lib_screens_help_support_screen_helpsupportscreenstate",
+      "label": "_HelpSupportScreenState",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "help_support_screen.dart",
+      "file_type": "code",
+      "norm_label": "_helpsupportscreenstate",
+      "source_file": "mobile/lib/screens/help_support_screen.dart",
+      "source_location": "L14"
     },
     {
       "id": "mobile_lib_screens_help_support_screen_launchemail",
@@ -20675,6 +20740,28 @@
       "source_location": "L41"
     },
     {
+      "id": "mobile_lib_widgets_home_today_spend_gauge_hometodayspendgaugechart",
+      "label": "HomeTodaySpendGaugeChart",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "home_today_spend_gauge.dart",
+      "file_type": "code",
+      "norm_label": "hometodayspendgaugechart",
+      "source_file": "mobile/lib/widgets/home_today_spend_gauge.dart",
+      "source_location": "L20"
+    },
+    {
+      "id": "mobile_lib_widgets_home_today_spend_gauge_hometodayspendgaugechartstate",
+      "label": "_HomeTodaySpendGaugeChartState",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "home_today_spend_gauge.dart",
+      "file_type": "code",
+      "norm_label": "_hometodayspendgaugechartstate",
+      "source_file": "mobile/lib/widgets/home_today_spend_gauge.dart",
+      "source_location": "L37"
+    },
+    {
       "id": "mobile_lib_widgets_home_today_spend_gauge_istoday",
       "label": "_isToday",
       "_origin": "ast",
@@ -20774,28 +20861,6 @@
       "source_location": "L492"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_analytics_analyticscontroller",
-      "label": "AnalyticsController.java",
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "org.springframework.http.ResponseEntity",
-      "file_type": "code",
-      "norm_label": "analyticscontroller.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsController.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_categories_categorycontroller",
-      "label": "CategoryController.java",
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "org.springframework.http.ResponseEntity",
-      "file_type": "code",
-      "norm_label": "categorycontroller.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/categories/CategoryController.java",
-      "source_location": "L1"
-    },
-    {
       "id": "backend_src_main_java_com_hulypay_backend_categories_categorycontroller_java_deletemapping",
       "label": "DeleteMapping",
       "_origin": "ast",
@@ -20818,6 +20883,17 @@
       "source_location": ""
     },
     {
+      "id": "backend_src_main_java_com_hulypay_backend_categories_categorycontroller_java_postmapping",
+      "label": "PostMapping",
+      "_origin": "ast",
+      "community": 98,
+      "community_name": "org.springframework.http.ResponseEntity",
+      "file_type": "code",
+      "norm_label": "postmapping",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "backend_src_main_java_com_hulypay_backend_categories_categorycontroller_java_putmapping",
       "label": "PutMapping",
       "_origin": "ast",
@@ -20827,39 +20903,6 @@
       "norm_label": "putmapping",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_categories_categorycontroller_java_requestmapping",
-      "label": "RequestMapping",
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "org.springframework.http.ResponseEntity",
-      "file_type": "code",
-      "norm_label": "requestmapping",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_categories_categorycontroller_java_restcontroller",
-      "label": "RestController",
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "org.springframework.http.ResponseEntity",
-      "file_type": "code",
-      "norm_label": "restcontroller",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_expenses_expensecontroller",
-      "label": "ExpenseController.java",
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "org.springframework.http.ResponseEntity",
-      "file_type": "code",
-      "norm_label": "expensecontroller.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/expenses/ExpenseController.java",
-      "source_location": "L1"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_expenses_expensecontroller_java_deletemapping",
@@ -20928,17 +20971,6 @@
       "source_location": ""
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_payments_paymentcontroller",
-      "label": "PaymentController.java",
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "org.springframework.http.ResponseEntity",
-      "file_type": "code",
-      "norm_label": "paymentcontroller.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/payments/PaymentController.java",
-      "source_location": "L1"
-    },
-    {
       "id": "backend_src_main_java_com_hulypay_backend_payments_paymentcontroller_java_getmapping",
       "label": "GetMapping",
       "_origin": "ast",
@@ -20992,17 +21024,6 @@
       "norm_label": "restcontroller",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_users_user",
-      "label": "User.java",
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "org.springframework.http.ResponseEntity",
-      "file_type": "code",
-      "norm_label": "user.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/users/User.java",
-      "source_location": "L1"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_users_usercontroller",
@@ -21060,28 +21081,6 @@
       "source_location": ""
     },
     {
-      "id": "java_util_list",
-      "label": "java.util.List",
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "org.springframework.http.ResponseEntity",
-      "file_type": "code",
-      "norm_label": "java.util.list",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "lombok_requiredargsconstructor",
-      "label": "lombok.RequiredArgsConstructor",
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "org.springframework.http.ResponseEntity",
-      "file_type": "code",
-      "norm_label": "lombok.requiredargsconstructor",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "org_springframework_http_responseentity",
       "label": "org.springframework.http.ResponseEntity",
       "_origin": "ast",
@@ -21111,17 +21110,6 @@
       "community_name": "org.springframework.http.ResponseEntity",
       "file_type": "code",
       "norm_label": "org.springframework.web.bind.annotation.getmapping",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "org_springframework_web_bind_annotation_requestmapping",
-      "label": "org.springframework.web.bind.annotation.RequestMapping",
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "org.springframework.http.ResponseEntity",
-      "file_type": "code",
-      "norm_label": "org.springframework.web.bind.annotation.requestmapping",
       "source_file": "",
       "source_location": ""
     },
@@ -25280,7 +25268,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "frontend/src/app/dashboard/page.js",
-      "source_location": "L61",
+      "source_location": "L60",
       "weight": 1.0
     },
     {
@@ -25292,7 +25280,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "frontend/src/app/dashboard/page.js",
-      "source_location": "L84",
+      "source_location": "L83",
       "weight": 1.0
     },
     {
@@ -25304,7 +25292,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "frontend/src/app/dashboard/page.js",
-      "source_location": "L122",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -25760,7 +25748,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "frontend/src/app/dashboard/page.js",
-      "source_location": "L118",
+      "source_location": "L117",
       "weight": 1.0
     },
     {
@@ -26036,7 +26024,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "frontend/src/components/dashboard/AreaChartSpending.jsx",
-      "source_location": "L46",
+      "source_location": "L41",
       "weight": 1.0
     },
     {
@@ -26048,7 +26036,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "frontend/src/components/dashboard/AreaChartSpending.jsx",
-      "source_location": "L82",
+      "source_location": "L53",
       "weight": 1.0
     },
     {
@@ -57033,19 +57021,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "frontend/src/app/dashboard/page.js",
-      "source_location": "L49",
-      "weight": 1.0
-    },
-    {
-      "source": "frontend_src_components_dashboard_areachartspending_areachartspending",
-      "target": "frontend_src_components_dashboard_areachartspending_areachartspending_handlekeydown",
-      "relation": "indirect_call",
-      "_origin": "ast",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "context": "argument",
-      "source_file": "frontend/src/components/dashboard/AreaChartSpending.jsx",
-      "source_location": "L66",
+      "source_location": "L48",
       "weight": 1.0
     },
     {

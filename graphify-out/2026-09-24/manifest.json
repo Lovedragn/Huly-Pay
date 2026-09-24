@@ -1290,9 +1290,9 @@
     "semantic_hash": ""
   },
   "frontend/src/app/dashboard/page.js": {
-    "mtime": 1790258879.567335,
-    "seen": 1790258947.8124366,
-    "ast_hash": "1768c9b85a688221986bcbe2430b0436",
+    "mtime": 1790258579.1809812,
+    "seen": 1790258739.8279023,
+    "ast_hash": "f48b655d149adf04913d332338222058",
     "semantic_hash": ""
   },
   "frontend/src/components/landing/CardDownload.js": {
@@ -1620,9 +1620,9 @@
     "semantic_hash": ""
   },
   "frontend/src/components/dashboard/AreaChartSpending.jsx": {
-    "mtime": 1790258911.2253773,
-    "seen": 1790258947.8124642,
-    "ast_hash": "f8a67fa1c8f703525a12a1c2269e494c",
+    "mtime": 1790245898.6871698,
+    "seen": 1790245923.8010783,
+    "ast_hash": "c4c253f7f0df2092091041733c15b38d",
     "semantic_hash": ""
   },
   "frontend/src/components/dashboard/BackendStatusBar.jsx": {

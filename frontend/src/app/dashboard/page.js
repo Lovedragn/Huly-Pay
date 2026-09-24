@@ -37,8 +37,15 @@ export default function DashboardPage() {
   const [currency, setCurrency] = React.useState("INR");
   const [dailyTheaterMode, setDailyTheaterMode] = React.useState(false);
   const [showUserMenu, setShowUserMenu] = React.useState(false);
+  const [authMounted, setAuthMounted] = React.useState(false);
   const userMenuRef = React.useRef(null);
   const chartsContainerRef = React.useRef(null);
+
+  // Set authMounted after first client render to avoid hydration mismatch
+  // (isAuthenticated reads localStorage which is unavailable on the server)
+  React.useEffect(() => {
+    setAuthMounted(true);
+  }, []);
 
   // Preference keys
   // localStorage: Theater mode, Currency, Metric (amount/avg), Time range, Benchmark, Category/Merchant
@@ -417,7 +424,7 @@ export default function DashboardPage() {
         {/* Right CTA - Theme Toggle & Account / Login */}
         <div className="flex items-center h-full">
           <ThemeToggle fullHeight />
-          {isAuthenticated ? (
+          {authMounted && isAuthenticated ? (
             <div ref={userMenuRef} className="relative h-full">
               <button
                 type="button"
