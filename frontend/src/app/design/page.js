@@ -2,20 +2,61 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import PageBanner from "@/components/common/PageBanner";
 import Image from "next/image";
-import { Frame145Badge, Frame143Badge, Frame144Badge } from "@/components/landing/WorkflowBadges";
+import {
+  Frame145Badge,
+  Frame143Badge,
+  Frame144Badge,
+} from "@/components/landing/WorkflowBadges";
 
 export const metadata = {
-  title: "Design System - HulyPay",
-  description: "Explore the design philosophy, typography, chromatic hierarchy, and pixel-art components that power HulyPay.",
+  title: "HulyPay",
+  description:
+    "Explore the design philosophy, typography, chromatic hierarchy, and pixel-art components that power HulyPay.",
 };
 
 const PALETTE = [
-  { name: "Brand Red", hex: "#FF0000", rgb: "255, 0, 0", border: "#CC0000", usage: "Action CTAs, highlight dots, accents" },
-  { name: "Terminal Lime", hex: "#62D800", rgb: "98, 216, 0", border: "#459700", usage: "Speed & scanner metrics, step 1 status" },
-  { name: "Cyber Yellow", hex: "#D8FF00", rgb: "216, 255, 0", border: "#97B300", usage: "Security status badges, highlights" },
-  { name: "Neon Magenta", hex: "#FF00F5", rgb: "255, 0, 245", border: "#B300AC", usage: "Visual analytics, data accents" },
-  { name: "Chalk Background", hex: "#FFFFEB", rgb: "255, 255, 235", border: "#E6E6CC", usage: "Warm vintage paper landing background" },
-  { name: "Monolith Black", hex: "#000000", rgb: "0, 0, 0", border: "#333333", usage: "Cards, borders, dark mega menus, workflow" },
+  {
+    name: "Brand Red",
+    hex: "#FF0000",
+    rgb: "255, 0, 0",
+    border: "#CC0000",
+    usage: "Action CTAs, highlight dots, accents",
+  },
+  {
+    name: "Terminal Lime",
+    hex: "#62D800",
+    rgb: "98, 216, 0",
+    border: "#459700",
+    usage: "Speed & scanner metrics, step 1 status",
+  },
+  {
+    name: "Cyber Yellow",
+    hex: "#D8FF00",
+    rgb: "216, 255, 0",
+    border: "#97B300",
+    usage: "Security status badges, highlights",
+  },
+  {
+    name: "Neon Magenta",
+    hex: "#FF00F5",
+    rgb: "255, 0, 245",
+    border: "#B300AC",
+    usage: "Visual analytics, data accents",
+  },
+  {
+    name: "Chalk Background",
+    hex: "#FFFFEB",
+    rgb: "255, 255, 235",
+    border: "#E6E6CC",
+    usage: "Warm vintage paper landing background",
+  },
+  {
+    name: "Monolith Black",
+    hex: "#000000",
+    rgb: "0, 0, 0",
+    border: "#333333",
+    usage: "Cards, borders, dark mega menus, workflow",
+  },
 ];
 
 const PRINCIPLES = [
@@ -103,9 +144,7 @@ export default function DesignPage() {
                   className="h-28 w-full border-b-4 border-black flex items-end p-4"
                   style={{ backgroundColor: c.hex }}
                 >
-                  <span
-                    className="font-mono text-xs px-2 py-1 bg-black text-white font-bold"
-                  >
+                  <span className="font-mono text-xs px-2 py-1 bg-black text-white font-bold">
                     {c.hex}
                   </span>
                 </div>
@@ -191,7 +230,8 @@ export default function DesignPage() {
               </div>
               <h3 className="text-xl font-bold mb-2">Frame 145: Scan Code</h3>
               <p className="text-xs text-neutral-400 font-sans">
-                Dynamic QR matrix with reactive finder brackets that animate to terminal lime on scroll trigger.
+                Dynamic QR matrix with reactive finder brackets that animate to
+                terminal lime on scroll trigger.
               </p>
             </div>
 
@@ -199,9 +239,12 @@ export default function DesignPage() {
               <div className="w-28 h-28 flex items-center justify-center mb-6">
                 <Frame143Badge className="w-full h-full object-contain" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Frame 143: Secure Chevron</h3>
+              <h3 className="text-xl font-bold mb-2">
+                Frame 143: Secure Chevron
+              </h3>
               <p className="text-xs text-neutral-400 font-sans">
-                Double descending directional chevron representing transaction validation and verification.
+                Double descending directional chevron representing transaction
+                validation and verification.
               </p>
             </div>
 
@@ -209,9 +252,12 @@ export default function DesignPage() {
               <div className="w-28 h-28 flex items-center justify-center mb-6">
                 <Frame144Badge className="w-full h-full object-contain" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Frame 144: Visual Shield</h3>
+              <h3 className="text-xl font-bold mb-2">
+                Frame 144: Visual Shield
+              </h3>
               <p className="text-xs text-neutral-400 font-sans">
-                Eight-point starburst inside geometric shield for insights, analytics, and visual synthesis.
+                Eight-point starburst inside geometric shield for insights,
+                analytics, and visual synthesis.
               </p>
             </div>
           </div>

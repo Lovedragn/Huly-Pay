@@ -54,15 +54,15 @@
     "semantic_hash": ""
   },
   "src/components/landing/CardDownload.js": {
-    "mtime": 1790224600.416412,
-    "seen": 1790230897.1446733,
-    "ast_hash": "52221d670f5449b425dbfed5803b8ce9",
+    "mtime": 1790179560.8429563,
+    "seen": 1790179784.6051512,
+    "ast_hash": "556027701cd816f59b595560c7029407",
     "semantic_hash": ""
   },
   "src/components/landing/Features.js": {
-    "mtime": 1790224576.0172234,
-    "seen": 1790230897.1446755,
-    "ast_hash": "86144aa9d7bb18b087eb8691005d461f",
+    "mtime": 1790179542.1938114,
+    "seen": 1790179784.6051528,
+    "ast_hash": "65e4edb1c48b7a75f6b925de922676e6",
     "semantic_hash": ""
   },
   "src/components/landing/Footer.js": {
@@ -72,9 +72,9 @@
     "semantic_hash": ""
   },
   "src/components/landing/Hero.js": {
-    "mtime": 1790225355.6248899,
-    "seen": 1790230897.1446788,
-    "ast_hash": "0c9c45e8c5172828da8e503c01d40a30",
+    "mtime": 1790182805.5368516,
+    "seen": 1790182832.0567658,
+    "ast_hash": "0fe188152864ae47aa446e11e6516850",
     "semantic_hash": ""
   },
   "src/components/landing/Navbar.js": {
@@ -84,27 +84,27 @@
     "semantic_hash": ""
   },
   "src/components/landing/Workflow.js": {
-    "mtime": 1790227278.7804317,
-    "seen": 1790230897.1446812,
-    "ast_hash": "f07ec92ac91acc63138536ea0d32d965",
+    "mtime": 1790179524.1789777,
+    "seen": 1790179784.6051583,
+    "ast_hash": "ab394bdcaec4e9202b0d4685f11d225a",
     "semantic_hash": ""
   },
   "src/components/transitions/AnimatedSignature.js": {
-    "mtime": 1790230742.0799377,
-    "seen": 1790230897.144684,
-    "ast_hash": "925539c885e90f80e3f42816b98637ff",
+    "mtime": 1790174625.3045363,
+    "seen": 1790177575.8629818,
+    "ast_hash": "8b9dab55185871d6a4495c17d7e9c684",
     "semantic_hash": ""
   },
   "src/components/transitions/InitialLoader.js": {
-    "mtime": 1790230865.750716,
-    "seen": 1790230897.1446853,
-    "ast_hash": "b7cd35558a879b7e82924bda66c9561c",
+    "mtime": 1790155690.4851892,
+    "seen": 1790177575.8629835,
+    "ast_hash": "4a6751a01615164069268f02e52f2b60",
     "semantic_hash": ""
   },
   "src/components/transitions/TransitionProvider.js": {
-    "mtime": 1790230784.5656571,
-    "seen": 1790230897.1446903,
-    "ast_hash": "9f6e6eae00bc551624aeb70a18788dc7",
+    "mtime": 1790153177.2842793,
+    "seen": 1790177575.8629847,
+    "ast_hash": "d58dc9bed02e40c40b1b94523353ff21",
     "semantic_hash": ""
   },
   "src/components/transitions/signaturePaths.js": {
@@ -375,30 +375,6 @@
     "mtime": 1790094339.3708737,
     "seen": 1790177575.8630192,
     "ast_hash": "b6981f42f012a08f17f9e8a4f81b04af",
-    "semantic_hash": ""
-  },
-  "src/components/transitions/TransactionStatus.js": {
-    "mtime": 1790230725.0026977,
-    "seen": 1790230897.1446872,
-    "ast_hash": "3af59f448c1aa97c7398df59e5d016cd",
-    "semantic_hash": ""
-  },
-  "src/components/transitions/TransactionTransition.js": {
-    "mtime": 1790230757.5086398,
-    "seen": 1790230897.1446884,
-    "ast_hash": "ba547aa800c59d69b08b7cc212d18f30",
-    "semantic_hash": ""
-  },
-  "src/components/transitions/VerticalBlocks.js": {
-    "mtime": 1790230711.0356581,
-    "seen": 1790230897.1446912,
-    "ast_hash": "cb9d173d267a44e1d2ef3dbc0b7b0fdb",
-    "semantic_hash": ""
-  },
-  "src/components/transitions/index.js": {
-    "mtime": 1790230826.8526692,
-    "seen": 1790230897.1446924,
-    "ast_hash": "18504866d6188b0bc902a564cb4e2321",
     "semantic_hash": ""
   }
 }
