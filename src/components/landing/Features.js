@@ -532,7 +532,7 @@ export default function Features() {
                 {/* Left Side: Title and Bullets */}
                 <div className="flex-1">
                   <h2
-                    className={`font-bold text-[20px] sm:text-[32px] font-doto md:text-[36px] tracking-wide text-white mb-3 sm:mb-6 select-none`}
+                    className={`font-bold text-[22px] sm:text-[32px] font-doto md:text-[36px] tracking-wide text-white mb-3 sm:mb-6 select-none`}
                   >
                     {card.title}
                   </h2>
@@ -544,7 +544,7 @@ export default function Features() {
                           aria-hidden="true"
                           className="w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 bg-white mt-1.5 sm:mt-2.5 flex-shrink-0 select-none"
                         />
-                        <p className="font-pixel text-[13px] sm:text-[20px] md:text-[22px] text-white leading-snug sm:leading-relaxed tracking-wide select-none">
+                        <p className="font-pixel text-[15px] sm:text-[20px] md:text-[22px] text-white leading-snug sm:leading-relaxed tracking-wide select-none">
                           {bullet}
                         </p>
                       </li>
