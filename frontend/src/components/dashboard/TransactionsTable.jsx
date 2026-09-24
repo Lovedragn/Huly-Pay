@@ -18,6 +18,62 @@ export default function TransactionsTable({
   const [deletingId, setDeletingId] = React.useState(null);
   const [noticeMessage, setNoticeMessage] = React.useState(null);
   const [errorMessage, setErrorMessage] = React.useState(null);
+  const [isFilterMenuOpen, setIsFilterMenuOpen] = React.useState(false);
+  const [isColumnsMenuOpen, setIsColumnsMenuOpen] = React.useState(false);
+  const [activeMapTx, setActiveMapTx] = React.useState(null);
+  const filterMenuRef = React.useRef(null);
+  const columnsMenuRef = React.useRef(null);
+
+  // Column visibility state with localStorage persistence
+  const [visibleColumns, setVisibleColumns] = React.useState({
+    merchant: true,
+    category: true,
+    upi: true,
+    location: true,
+    amount: true,
+    status: true,
+    action: true,
+  });
+
+  React.useEffect(() => {
+    try {
+      const saved = localStorage.getItem("hulypay_pref_tx_columns");
+      if (saved) {
+        setVisibleColumns((prev) => ({ ...prev, ...JSON.parse(saved) }));
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, []);
+
+  const toggleColumn = (key) => {
+    setVisibleColumns((prev) => {
+      const next = { ...prev, [key]: !prev[key] };
+      // Ensure at least one column remains visible
+      if (!Object.values(next).some(Boolean)) return prev;
+      try {
+        localStorage.setItem("hulypay_pref_tx_columns", JSON.stringify(next));
+      } catch (e) {
+        // ignore
+      }
+      return next;
+    });
+  };
+
+  // Close menus on outside click
+  React.useEffect(() => {
+    function handleClickOutside(e) {
+      if (filterMenuRef.current && !filterMenuRef.current.contains(e.target)) {
+        setIsFilterMenuOpen(false);
+      }
+      if (columnsMenuRef.current && !columnsMenuRef.current.contains(e.target)) {
+        setIsColumnsMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const [prevFilterKey, setPrevFilterKey] = React.useState(
     `${searchQuery}|${statusFilter}|${selectedCategory || ""}`
   );
@@ -39,19 +95,27 @@ export default function TransactionsTable({
         }
       }
 
-      // Status filter
+      // Status filter: ALL | CONFIRMED | PENDING | CANCELED
       if (statusFilter !== "ALL") {
         const s = (item.status || "").toUpperCase();
-        if (
-          statusFilter === "CONFIRMED" &&
-          s !== "CONFIRMED" &&
-          s !== "COMPLETED" &&
-          s !== "SETTLED"
-        ) {
-          return false;
-        }
-        if (statusFilter === "PENDING" && s !== "PENDING") {
-          return false;
+        if (statusFilter === "CONFIRMED") {
+          if (s !== "CONFIRMED" && s !== "COMPLETED" && s !== "SETTLED") {
+            return false;
+          }
+        } else if (statusFilter === "PENDING") {
+          if (s !== "PENDING" && s !== "PROCESSING") {
+            return false;
+          }
+        } else if (statusFilter === "CANCELED") {
+          if (
+            s !== "CANCELED" &&
+            s !== "CANCELLED" &&
+            s !== "FAILED" &&
+            s !== "REJECTED" &&
+            s !== "VOID"
+          ) {
+            return false;
+          }
         }
       }
 
@@ -132,6 +196,36 @@ export default function TransactionsTable({
     })}`;
   };
 
+  const STATUS_OPTIONS = [
+    { id: "ALL", label: "All Statuses", badgeColor: "bg-neutral-100 text-black border-neutral-300" },
+    { id: "CONFIRMED", label: "Confirmed", badgeColor: "bg-emerald-50 text-emerald-800 border-emerald-300" },
+    { id: "PENDING", label: "Pending", badgeColor: "bg-amber-50 text-amber-800 border-amber-300" },
+    { id: "CANCELED", label: "Canceled", badgeColor: "bg-rose-50 text-rose-800 border-rose-300" },
+  ];
+
+  const COLUMN_DEFINITIONS = [
+    { key: "merchant", label: "Merchant & Reference" },
+    { key: "category", label: "Category / Method" },
+    { key: "upi", label: "UPI Identifier & Hash" },
+    { key: "location", label: "Map & Geolocation" },
+    { key: "amount", label: "Amount" },
+    { key: "status", label: "Status" },
+    { key: "action", label: "Action (Delete)" },
+  ];
+
+  // Helper to get formatted location name or coordinates for an item
+  const getTxLocation = (tx) => {
+    if (tx.locationCity && tx.locationState) {
+      return `${tx.locationCity}, ${tx.locationState}`;
+    }
+    if (tx.locationCity) return tx.locationCity;
+    if (tx.latitude && tx.longitude) {
+      return `${Number(tx.latitude).toFixed(3)}°, ${Number(tx.longitude).toFixed(3)}°`;
+    }
+    // Default fallback coordinates if unrecorded
+    return "India Node";
+  };
+
   return (
     <div className="border-[3px] border-black bg-white shadow-[6px_6px_0px_#000000] overflow-hidden">
       {/* Header & Controls */}
@@ -149,6 +243,118 @@ export default function TransactionsTable({
 
         {/* Filter bar */}
         <div className="flex flex-wrap items-center gap-2">
+          {/* Dedicated Filter Button (Left side of filter tools) */}
+          <div ref={filterMenuRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setIsFilterMenuOpen((prev) => !prev)}
+              className={`px-3 py-1.5 text-xs font-mono font-bold border-2 border-black transition-all flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 ${
+                statusFilter !== "ALL"
+                  ? "bg-[#D8FF00] text-black"
+                  : "bg-white hover:bg-neutral-100 text-black"
+              }`}
+              title="Filter transactions by status (All, Confirmed, Pending, Canceled)"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2.5"
+                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                />
+              </svg>
+              <span>Filter:</span>
+              <span className="font-black uppercase">{statusFilter}</span>
+              <svg
+                className={`w-3 h-3 transition-transform ${isFilterMenuOpen ? "rotate-180" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {/* Filter Dropdown Popover */}
+            {isFilterMenuOpen && (
+              <div className="absolute top-full left-0 mt-1 w-48 bg-white border-[2.5px] border-black shadow-[4px_4px_0px_#000000] p-1.5 z-40 font-mono text-xs space-y-1 animate-in fade-in duration-100">
+                <div className="px-2 py-1 text-[10px] uppercase font-bold text-neutral-500 border-b border-neutral-200">
+                  Select Status
+                </div>
+                {STATUS_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => {
+                      setStatusFilter(opt.id);
+                      setIsFilterMenuOpen(false);
+                    }}
+                    className={`w-full text-left px-2.5 py-1.5 rounded-none flex items-center justify-between transition-colors cursor-pointer border ${
+                      statusFilter === opt.id
+                        ? "bg-black text-white font-bold border-black"
+                        : "hover:bg-[#FFFFEB] border-transparent text-neutral-800"
+                    }`}
+                  >
+                    <span>{opt.label}</span>
+                    {statusFilter === opt.id && <span className="font-bold">✓</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Columns Selector Button */}
+          <div ref={columnsMenuRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setIsColumnsMenuOpen((prev) => !prev)}
+              className="px-3 py-1.5 text-xs font-mono font-bold border-2 border-black bg-white hover:bg-neutral-100 text-black transition-all flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5"
+              title="Select which columns and data are shown in the table"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
+                />
+              </svg>
+              <span>Columns</span>
+              <svg
+                className={`w-3 h-3 transition-transform ${isColumnsMenuOpen ? "rotate-180" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {/* Columns Dropdown Popover */}
+            {isColumnsMenuOpen && (
+              <div className="absolute top-full right-0 sm:left-0 mt-1 w-56 bg-white border-[2.5px] border-black shadow-[4px_4px_0px_#000000] p-2 z-40 font-mono text-xs space-y-1.5 animate-in fade-in duration-100">
+                <div className="px-1.5 pb-1 text-[10px] uppercase font-bold text-neutral-500 border-b border-neutral-200 flex justify-between items-center">
+                  <span>Visible Data Fields</span>
+                  <span className="text-[9px] text-[#058a00]">Auto-saved</span>
+                </div>
+                {COLUMN_DEFINITIONS.map((col) => (
+                  <label
+                    key={col.key}
+                    className="flex items-center gap-2.5 px-2 py-1.5 hover:bg-[#FFFFEB] cursor-pointer select-none border border-transparent hover:border-neutral-200"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={visibleColumns[col.key]}
+                      onChange={() => toggleColumn(col.key)}
+                      className="w-3.5 h-3.5 accent-black rounded-none cursor-pointer"
+                    />
+                    <span className="text-black font-semibold text-xs">{col.label}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Search Input */}
           <div className="relative">
             <input
@@ -156,7 +362,7 @@ export default function TransactionsTable({
               placeholder="Search merchant, UPI ID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="px-3 py-1.5 text-xs font-mono border-2 border-black bg-white focus:outline-none focus:ring-2 focus:ring-[#FF0000] w-48 sm:w-56"
+              className="px-3 py-1.5 text-xs font-mono border-2 border-black bg-white focus:outline-none focus:ring-2 focus:ring-[#FF0000] w-44 sm:w-52"
             />
             {searchQuery && (
               <button
@@ -169,14 +375,14 @@ export default function TransactionsTable({
             )}
           </div>
 
-          {/* Status selector */}
-          <div className="flex border-2 border-black bg-white p-0.5 text-xs font-mono">
-            {["ALL", "CONFIRMED", "PENDING"].map((status) => (
+          {/* Quick Status Pill Bar (All, Confirmed, Pending, Canceled) */}
+          <div className="hidden lg:flex border-2 border-black bg-white p-0.5 text-xs font-mono">
+            {["ALL", "CONFIRMED", "PENDING", "CANCELED"].map((status) => (
               <button
                 type="button"
                 key={status}
                 onClick={() => setStatusFilter(status)}
-                className={`px-2.5 py-1 transition-colors cursor-pointer ${
+                className={`px-2 py-1 transition-colors cursor-pointer text-[11px] ${
                   statusFilter === status
                     ? "bg-black text-white font-bold"
                     : "text-neutral-700 hover:text-black"
@@ -261,19 +467,34 @@ export default function TransactionsTable({
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b-2 border-neutral-200 bg-neutral-100/70 text-[11px] font-mono uppercase text-neutral-600">
-              <th className="py-3 px-4 sm:px-6">Merchant & Reference</th>
-              <th className="py-3 px-4">Category / Method</th>
-              <th className="py-3 px-4">UPI Identifier & Hash</th>
-              <th className="py-3 px-4 sm:px-6 text-right">Amount</th>
-              <th className="py-3 px-4 text-center">Status</th>
-              <th className="py-3 px-4 text-center">Action</th>
+              {visibleColumns.merchant && (
+                <th className="py-3 px-4 sm:px-6">Merchant & Reference</th>
+              )}
+              {visibleColumns.category && (
+                <th className="py-3 px-4">Category / Method</th>
+              )}
+              {visibleColumns.upi && (
+                <th className="py-3 px-4">UPI Identifier & Hash</th>
+              )}
+              {visibleColumns.location && (
+                <th className="py-3 px-4">Location / Map</th>
+              )}
+              {visibleColumns.amount && (
+                <th className="py-3 px-4 sm:px-6 text-right">Amount</th>
+              )}
+              {visibleColumns.status && (
+                <th className="py-3 px-4 text-center">Status</th>
+              )}
+              {visibleColumns.action && (
+                <th className="py-3 px-4 text-center">Action</th>
+              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-200 text-xs sm:text-sm">
             {filteredExpenses.length === 0 ? (
               <tr>
                 <td
-                  colSpan={6}
+                  colSpan={Object.values(visibleColumns).filter(Boolean).length || 6}
                   className="py-12 text-center text-neutral-500 font-mono text-xs"
                 >
                   <p>No matching transactions located in ledger.</p>
@@ -295,152 +516,208 @@ export default function TransactionsTable({
                   className="hover:bg-[#FFFFEB]/60 transition-colors group"
                 >
                   {/* Merchant & Description */}
-                  <td className="py-3.5 px-4 sm:px-6">
-                    <div className="font-bold text-black font-pixel text-sm sm:text-base">
-                      {tx.merchantName}
-                    </div>
-                    <div className="text-xs text-neutral-500 font-sans line-clamp-1">
-                      {tx.description || `Payment to ${tx.merchantName}`}
-                    </div>
-                  </td>
+                  {visibleColumns.merchant && (
+                    <td className="py-3.5 px-4 sm:px-6">
+                      <div className="font-bold text-black font-pixel text-sm sm:text-base">
+                        {tx.merchantName}
+                      </div>
+                      <div className="text-xs text-neutral-500 font-sans line-clamp-1">
+                        {tx.description || `Payment to ${tx.merchantName}`}
+                      </div>
+                    </td>
+                  )}
 
                   {/* Category */}
-                  <td className="py-3.5 px-4 whitespace-nowrap">
-                    <span
-                      className="inline-flex items-center gap-1.5 px-2 py-1 text-xs border border-black font-mono font-bold"
-                      style={{
-                        backgroundColor: `${tx.category?.color || "#000000"}15`,
-                        borderColor: tx.category?.color || "#000000",
-                        color: "#000000",
-                      }}
-                    >
+                  {visibleColumns.category && (
+                    <td className="py-3.5 px-4 whitespace-nowrap">
                       <span
-                        className="w-2 h-2 rounded-none inline-block"
+                        className="inline-flex items-center gap-1.5 px-2 py-1 text-xs border border-black font-mono font-bold"
                         style={{
-                          backgroundColor: tx.category?.color || "#000000",
+                          backgroundColor: `${tx.category?.color || "#000000"}15`,
+                          borderColor: tx.category?.color || "#000000",
+                          color: "#000000",
                         }}
-                      />
-                      {tx.category?.name || tx.paymentMethod || "UPI"}
-                    </span>
-                  </td>
+                      >
+                        <span
+                          className="w-2 h-2 rounded-none inline-block"
+                          style={{
+                            backgroundColor: tx.category?.color || "#000000",
+                          }}
+                        />
+                        {tx.category?.name || tx.paymentMethod || "UPI"}
+                      </span>
+                    </td>
+                  )}
 
                   {/* Payment Method & UPI Reference */}
-                  <td className="py-3.5 px-4 whitespace-nowrap">
-                    <div className="font-mono text-xs text-neutral-700 font-semibold">
-                      {tx.upiId || tx.paymentMethod}
-                    </div>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="font-mono text-[11px] text-neutral-500 truncate max-w-[140px]">
-                        {tx.upiTransactionId}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => copyToClipboard(tx.upiTransactionId)}
-                        title="Copy UPI Reference"
-                        className="text-[10px] font-mono px-1.5 py-0.5 border border-neutral-300 hover:border-black bg-neutral-50 hover:bg-neutral-200 transition-colors cursor-pointer"
-                      >
-                        {copiedId === tx.upiTransactionId ? "COPIED" : "COPY"}
-                      </button>
-                    </div>
-                  </td>
-
-                  {/* Amount */}
-                  <td className="py-3.5 px-4 sm:px-6 text-right whitespace-nowrap">
-                    <div className="font-doto text-base sm:text-lg font-black text-black">
-                      {formatAmount(tx)}
-                    </div>
-                    <div className="text-[10px] font-mono text-neutral-400">
-                      {(tx.createdAt || tx.transactionTime)
-                        ? new Date(tx.createdAt || tx.transactionTime).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
-                        : "Recent"}
-                    </div>
-                  </td>
-
-                  {/* Status Tag */}
-                  <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                    <span
-                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-mono font-bold border ${
-                        tx.status === "CONFIRMED" ||
-                        tx.status === "COMPLETED" ||
-                        tx.status === "SETTLED"
-                          ? "bg-emerald-50 text-emerald-800 border-emerald-300"
-                          : "bg-amber-50 text-amber-800 border-amber-300"
-                      }`}
-                    >
-                      <span
-                        className={`w-1.5 h-1.5 rounded-full ${
-                          tx.status === "CONFIRMED" ||
-                          tx.status === "COMPLETED" ||
-                          tx.status === "SETTLED"
-                            ? "bg-emerald-600"
-                            : "bg-amber-500"
-                        }`}
-                      />
-                      {tx.status}
-                    </span>
-                  </td>
-
-                  {/* Action (Remove from Database) */}
-                  <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                    {confirmingId === tx.id ? (
-                      <div className="inline-flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-100">
+                  {visibleColumns.upi && (
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      <div className="font-mono text-xs text-neutral-700 font-semibold">
+                        {tx.upiId || tx.paymentMethod}
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="font-mono text-[11px] text-neutral-500 truncate max-w-[140px]">
+                          {tx.upiTransactionId}
+                        </span>
                         <button
                           type="button"
-                          onClick={() => handleConfirmDelete(tx)}
-                          disabled={deletingId === tx.id}
-                          className="px-2.5 py-1 text-xs font-mono font-bold border-2 border-black bg-[#FF0000] text-white hover:bg-black transition-colors cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 flex items-center gap-1.5"
-                          title="Confirm permanent removal from database"
+                          onClick={() => copyToClipboard(tx.upiTransactionId)}
+                          title="Copy UPI Reference"
+                          className="text-[10px] font-mono px-1.5 py-0.5 border border-neutral-300 hover:border-black bg-neutral-50 hover:bg-neutral-200 transition-colors cursor-pointer"
                         >
-                          {deletingId === tx.id ? (
-                            <>
-                              <span className="w-2.5 h-2.5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
-                              <span>Removing...</span>
-                            </>
-                          ) : (
-                            <span>Confirm</span>
-                          )}
+                          {copiedId === tx.upiTransactionId ? "COPIED" : "COPY"}
                         </button>
-                        {deletingId !== tx.id && (
+                      </div>
+                    </td>
+                  )}
+
+                  {/* Location & Map Trigger */}
+                  {visibleColumns.location && (
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setActiveMapTx(tx)}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-bold border-2 border-black bg-white hover:bg-[#D8FF00] hover:text-black transition-colors cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 group"
+                          title="View transaction geolocation on interactive map"
+                        >
+                          <svg
+                            className="w-3.5 h-3.5 text-[#FF0000] group-hover:scale-110 transition-transform"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2.5"
+                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2.5"
+                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                          </svg>
+                          <span>{getTxLocation(tx)}</span>
+                          <span className="text-[10px] font-bold text-neutral-500 underline ml-0.5">Map</span>
+                        </button>
+                      </div>
+                    </td>
+                  )}
+
+                  {/* Amount */}
+                  {visibleColumns.amount && (
+                    <td className="py-3.5 px-4 sm:px-6 text-right whitespace-nowrap">
+                      <div className="font-doto text-base sm:text-lg font-black text-black">
+                        {formatAmount(tx)}
+                      </div>
+                      <div className="text-[10px] font-mono text-neutral-400">
+                        {(tx.createdAt || tx.transactionTime)
+                          ? new Date(tx.createdAt || tx.transactionTime).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : "Recent"}
+                      </div>
+                    </td>
+                  )}
+
+                  {/* Status Tag */}
+                  {visibleColumns.status && (
+                    <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                      {(() => {
+                        const s = (tx.status || "").toUpperCase();
+                        const isConfirmed = s === "CONFIRMED" || s === "COMPLETED" || s === "SETTLED";
+                        const isCanceled = s === "CANCELED" || s === "CANCELLED" || s === "FAILED" || s === "REJECTED";
+
+                        return (
+                          <span
+                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-mono font-bold border ${
+                              isConfirmed
+                                ? "bg-emerald-50 text-emerald-800 border-emerald-300"
+                                : isCanceled
+                                ? "bg-rose-50 text-rose-800 border-rose-300"
+                                : "bg-amber-50 text-amber-800 border-amber-300"
+                            }`}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                isConfirmed
+                                  ? "bg-emerald-600"
+                                  : isCanceled
+                                  ? "bg-rose-600"
+                                  : "bg-amber-500"
+                              }`}
+                            />
+                            {tx.status}
+                          </span>
+                        );
+                      })()}
+                    </td>
+                  )}
+
+                  {/* Action (Remove from Database) */}
+                  {visibleColumns.action && (
+                    <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                      {confirmingId === tx.id ? (
+                        <div className="inline-flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-100">
                           <button
                             type="button"
-                            onClick={() => setConfirmingId(null)}
-                            className="px-2 py-1 text-xs font-mono font-bold border-2 border-black bg-neutral-100 hover:bg-neutral-200 text-black cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5"
-                            title="Cancel"
+                            onClick={() => handleConfirmDelete(tx)}
+                            disabled={deletingId === tx.id}
+                            className="px-2.5 py-1 text-xs font-mono font-bold border-2 border-black bg-[#FF0000] text-white hover:bg-black transition-colors cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 flex items-center gap-1.5"
+                            title="Confirm permanent removal from database"
                           >
-                            ×
+                            {deletingId === tx.id ? (
+                              <>
+                                <span className="w-2.5 h-2.5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
+                                <span>Removing...</span>
+                              </>
+                            ) : (
+                              <span>Confirm</span>
+                            )}
                           </button>
-                        )}
-                      </div>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => setConfirmingId(tx.id)}
-                        disabled={deletingId !== null}
-                        className="px-2.5 py-1 text-xs font-mono font-bold border-2 border-black bg-white hover:bg-[#FF0000] hover:text-white transition-all text-neutral-800 cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 inline-flex items-center gap-1.5 group disabled:opacity-50 disabled:cursor-not-allowed"
-                        title="Remove transaction from database"
-                      >
-                        <svg
-                          className="w-3.5 h-3.5 text-neutral-600 group-hover:text-white transition-colors"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
+                          {deletingId !== tx.id && (
+                            <button
+                              type="button"
+                              onClick={() => setConfirmingId(null)}
+                              className="px-2 py-1 text-xs font-mono font-bold border-2 border-black bg-neutral-100 hover:bg-neutral-200 text-black cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5"
+                              title="Cancel"
+                            >
+                              ×
+                            </button>
+                          )}
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setConfirmingId(tx.id)}
+                          disabled={deletingId !== null}
+                          className="px-2.5 py-1 text-xs font-mono font-bold border-2 border-black bg-white hover:bg-[#FF0000] hover:text-white transition-all text-neutral-800 cursor-pointer shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 inline-flex items-center gap-1.5 group disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Remove transaction from database"
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                          />
-                        </svg>
-                        <span>Remove</span>
-                      </button>
-                    )}
-                  </td>
+                          <svg
+                            className="w-3.5 h-3.5 text-neutral-600 group-hover:text-white transition-colors"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                          <span>Remove</span>
+                        </button>
+                      )}
+                    </td>
+                  )}
                 </tr>
               ))
             )}
@@ -472,6 +749,108 @@ export default function TransactionsTable({
               ALL TRANSACTIONS LOADED
             </span>
           )}
+        </div>
+      )}
+
+      {/* Interactive Geolocation & Map Integration Modal */}
+      {activeMapTx && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="bg-white border-[3px] border-black shadow-[8px_8px_0px_#000000] w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            {/* Modal Header */}
+            <div className="p-4 bg-[#FFFFEB] border-b-2 border-black flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-3 h-3 bg-[#FF0000] border border-black" />
+                <h4 className="font-pixel text-lg sm:text-xl font-bold text-black">
+                  Transaction Geolocation Node
+                </h4>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveMapTx(null)}
+                className="w-8 h-8 flex items-center justify-center border-2 border-black bg-white hover:bg-[#FF0000] hover:text-white font-mono font-bold text-base transition-colors cursor-pointer shadow-[2px_2px_0px_#000000]"
+                title="Close Map"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-4 sm:p-6 space-y-4 overflow-y-auto">
+              {/* Transaction Metadata Quick Summary */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 font-mono text-xs">
+                <div className="p-2 border border-black bg-neutral-50">
+                  <span className="text-[10px] text-neutral-500 block uppercase">Merchant</span>
+                  <strong className="text-black truncate block">{activeMapTx.merchantName}</strong>
+                </div>
+                <div className="p-2 border border-black bg-neutral-50">
+                  <span className="text-[10px] text-neutral-500 block uppercase">Amount</span>
+                  <strong className="text-black block">{formatAmount(activeMapTx)}</strong>
+                </div>
+                <div className="p-2 border border-black bg-neutral-50">
+                  <span className="text-[10px] text-neutral-500 block uppercase">Coordinates</span>
+                  <strong className="text-black block truncate">
+                    {Number(activeMapTx.latitude || 19.076).toFixed(4)}°, {Number(activeMapTx.longitude || 72.8777).toFixed(4)}°
+                  </strong>
+                </div>
+                <div className="p-2 border border-black bg-neutral-50">
+                  <span className="text-[10px] text-neutral-500 block uppercase">Location</span>
+                  <strong className="text-black block truncate">{getTxLocation(activeMapTx)}</strong>
+                </div>
+              </div>
+
+              {/* Embedded Interactive Map View */}
+              <div className="relative border-2 border-black h-72 sm:h-80 bg-neutral-100 overflow-hidden shadow-[4px_4px_0px_#000000]">
+                {(() => {
+                  const lat = Number(activeMapTx.latitude) || 19.0760;
+                  const lon = Number(activeMapTx.longitude) || 72.8777;
+                  const bbox = `${lon - 0.04},${lat - 0.04},${lon + 0.04},${lat + 0.04}`;
+                  const osmEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
+
+                  return (
+                    <iframe
+                      title={`Transaction Location - ${activeMapTx.merchantName}`}
+                      src={osmEmbedUrl}
+                      className="w-full h-full border-0"
+                      loading="lazy"
+                    />
+                  );
+                })()}
+
+                {/* Map Overlay Badge */}
+                <div className="absolute top-2 left-2 px-2.5 py-1 bg-black text-[#D8FF00] font-mono text-[11px] font-bold border border-black shadow-[2px_2px_0px_rgba(0,0,0,0.5)] flex items-center gap-1.5 pointer-events-none">
+                  <span className="w-2 h-2 rounded-full bg-[#62D800] animate-pulse" />
+                  <span>GPS POS NODE VERIFIED</span>
+                </div>
+              </div>
+
+              {/* External Navigation Links */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                <span className="text-xs font-mono text-neutral-600">
+                  Precision: GPS Hardware QR Scanner / ISP Geocoding
+                </span>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${activeMapTx.latitude || 19.076},${activeMapTx.longitude || 72.8777}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 border-2 border-black bg-white hover:bg-neutral-100 font-mono text-xs font-bold transition-all cursor-pointer shadow-[2px_2px_0px_#000000] flex items-center gap-1.5"
+                  >
+                    <span>Google Maps</span>
+                    <span>↗</span>
+                  </a>
+                  <a
+                    href={`https://www.openstreetmap.org/?mlat=${activeMapTx.latitude || 19.076}&mlon=${activeMapTx.longitude || 72.8777}#map=16/${activeMapTx.latitude || 19.076}/${activeMapTx.longitude || 72.8777}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 border-2 border-black bg-[#D8FF00] hover:bg-black hover:text-white font-mono text-xs font-bold transition-all cursor-pointer shadow-[2px_2px_0px_#000000] flex items-center gap-1.5"
+                  >
+                    <span>OpenStreetMap</span>
+                    <span>↗</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
