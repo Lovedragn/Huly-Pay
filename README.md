@@ -61,7 +61,7 @@ Create a `.env` file in the `mobile/` root directory (refer to `.env.example` or
 
 ```env
 SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your-anon-key-here
+SUPABASE_PUBLISHABLE_KEY=your-publishable-key-here
 ```
 
 ### 4. Run on Android

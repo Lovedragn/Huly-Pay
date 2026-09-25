@@ -14,13 +14,18 @@ services:
         value: 8080
       - key: SUPABASE_URL
         sync: false
-      - key: SUPABASE_ANON_KEY
+      - key: SUPABASE_PUBLISHABLE_KEY
         sync: false
       - key: SUPABASE_JWT_SECRET
         sync: false
-      - key: DATABASE_URL
+      - key: SUPABASE_DB_URL
         sync: false
-      - key: DATABASE_USERNAME
+      - key: SUPABASE_DB_USERNAME
         sync: false
-      - key: DATABASE_PASSWORD
+      - key: SUPABASE_DB_PASSWORD
         sync: false
+      - key: GOOGLE_OAUTH_SECRET_ID_WEB
+        sync: false
+      - key: GITHUB_SECRET_ID
+        sync: false
+

@@ -21,6 +21,14 @@ services:
       # ── Supabase Auth ────────────────────────────────────────
       - key: SUPABASE_URL
         sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
+
+      # ── OAuth Provider Secrets (Server Only) ───────────────────
+      - key: GOOGLE_OAUTH_SECRET_ID_WEB
+        sync: false
+      - key: GITHUB_SECRET_ID
+        sync: false
 
       # ── Optional ─────────────────────────────────────────────
       - key: GOOGLE_MAPS_API_KEY

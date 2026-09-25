@@ -48,6 +48,13 @@ management:
 google:
   maps:
     api-key: ${GOOGLE_MAPS_API_KEY:}
+  oauth:
+    client-secret: ${GOOGLE_OAUTH_SECRET_ID_WEB:}
+
+github:
+  oauth:
+    client-secret: ${GITHUB_SECRET_ID:}
+
 
 app:
   cors:
