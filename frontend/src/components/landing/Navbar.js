@@ -232,6 +232,7 @@ function DashboardButton() {
 
 
 export default function Navbar() {
+  const { isAuthenticated, user, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileBlogsExpanded, setMobileBlogsExpanded] = useState(false);
   const [mobileDownloadExpanded, setMobileDownloadExpanded] = useState(false);
