@@ -59,9 +59,6 @@ export default function RootLayout({ children }) {
                       theme = parsed.theme;
                     } catch (e) {}
                   }
-                  if (!theme) {
-                    theme = localStorage.getItem('hulypay_theme_preference');
-                  }
                   if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.documentElement.classList.add('dark');
                     document.documentElement.setAttribute('data-theme', 'dark');

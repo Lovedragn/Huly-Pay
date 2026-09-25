@@ -26,40 +26,6 @@ export function getUserPreferences() {
       const parsed = JSON.parse(raw);
       return { ...DEFAULT_USER_PREFERENCES, ...parsed };
     }
-
-    // Backward-compatibility: migrate legacy individual keys if present
-    const legacyTheme = localStorage.getItem("hulypay_theme_preference");
-    const legacyCurrency = localStorage.getItem("hulypay_pref_currency");
-    const legacyTheater = localStorage.getItem("hulypay_pref_theater_mode");
-    const legacyMetric = localStorage.getItem("hulypay_pref_chart_metric");
-    const legacyRange = localStorage.getItem("hulypay_pref_time_range");
-    const legacyBenchmark = localStorage.getItem("hulypay_pref_benchmark");
-    const legacyViewMode = localStorage.getItem("hulypay_pref_view_mode");
-    const legacyTxCount = sessionStorage.getItem("hulypay_pref_tx_visible_count");
-
-    if (
-      legacyTheme ||
-      legacyCurrency ||
-      legacyTheater ||
-      legacyMetric ||
-      legacyRange ||
-      legacyBenchmark ||
-      legacyViewMode
-    ) {
-      const migrated = {
-        ...DEFAULT_USER_PREFERENCES,
-        ...(legacyTheme && { theme: legacyTheme }),
-        ...(legacyCurrency && { currency: legacyCurrency }),
-        ...(legacyTheater !== null && { theaterMode: legacyTheater === "true" }),
-        ...(legacyMetric && { chartMetric: legacyMetric }),
-        ...(legacyRange && { timeRange: legacyRange }),
-        ...(legacyBenchmark !== null && { benchmark: legacyBenchmark === "true" }),
-        ...(legacyViewMode && { viewMode: legacyViewMode }),
-        ...(legacyTxCount && { tableVisibleRecords: parseInt(legacyTxCount, 10) || 5 }),
-      };
-      saveUserPreferences(migrated);
-      return migrated;
-    }
   } catch (err) {
     console.warn("Could not parse user_preference_website from storage:", err);
   }
