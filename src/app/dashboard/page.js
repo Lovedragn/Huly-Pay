@@ -49,6 +49,13 @@ export default function DashboardPage() {
     setAuthMounted(true);
   }, []);
 
+  // Clean OAuth hash from URL once mounted
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash.includes("access_token")) {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+  }, []);
+
   // Redirect to landing page if user is not authenticated after initial mount
   React.useEffect(() => {
     if (authMounted && !isAuthenticated && !isLoading) {
