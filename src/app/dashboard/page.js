@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import AreaChartSpending from "@/components/dashboard/AreaChartSpending";
 import BarChartMonthly from "@/components/dashboard/BarChartMonthly";
 import PieChartCategories from "@/components/dashboard/PieChartCategories";
@@ -22,6 +23,7 @@ import {
 } from "@/lib/api";
 
 export default function DashboardPage() {
+  const router = useRouter();
   const { user, isAuthenticated, signOut, session } = useAuth();
   const [summary, setSummary] = React.useState(null);
   const [categoryData, setCategoryData] = React.useState([]);
@@ -46,6 +48,13 @@ export default function DashboardPage() {
   React.useEffect(() => {
     setAuthMounted(true);
   }, []);
+
+  // Redirect to landing page if user is not authenticated after initial mount
+  React.useEffect(() => {
+    if (authMounted && !isAuthenticated && !isLoading) {
+      router.push("/");
+    }
+  }, [authMounted, isAuthenticated, isLoading, router]);
 
   // Preference keys
   // localStorage: Theater mode, Currency, Metric (amount/avg), Time range, Benchmark, Category/Merchant
