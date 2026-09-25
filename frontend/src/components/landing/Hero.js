@@ -285,7 +285,7 @@ export default function Hero() {
 
       {/* Title */}
       <div className="relative z-10 w-full flex justify-start sm:justify-center px-5 xs:px-6 sm:px-4">
-        <h1 className="font-pixel text-[108px] xs:text-[80px] sm:text-6xl md:text-7xl lg:text-[88px] xl:text-[96px] leading-[0.84] sm:leading-tight tracking-[0.03em] sm:tracking-[0.2em] text-black text-left sm:text-center select-none uppercase">
+        <h1 className="font-pixel text-[92px] xs:text-[80px] sm:text-6xl md:text-7xl lg:text-[88px] xl:text-[96px] leading-[0.84] sm:leading-tight tracking-[0.03em] sm:tracking-[0.2em] text-black text-left sm:text-center select-none uppercase">
           <span className="block sm:inline">
             PAY<span className="text-[#ff0000] font-extrabold">.</span>
           </span>

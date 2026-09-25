@@ -147,6 +147,27 @@
   color: #000000 !important;
 }
 
+/* Navbar sublinks in both desktop mega-menu and mobile drawer: keep text and SVGs black */
+.nav-sublink,
+.nav-sublink *,
+.dark .nav-sublink,
+.dark .nav-sublink *,
+.dark .nav-sublink span,
+.dark .nav-sublink svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+/* Download section Android button in dark mode: white button with black text */
+.dark .download-btn-android {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+.dark .download-btn-android:hover {
+  background-color: #f4f4f5 !important;
+  color: #000000 !important;
+}
+
 /* Recharts in Dark Mode */
 .dark .recharts-cartesian-axis-tick text {
   fill: #a1a1aa !important;
