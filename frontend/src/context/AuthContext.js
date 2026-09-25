@@ -7,6 +7,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
+import { useRouter } from "next/navigation";
 import {
   supabase,
   signInWithGoogle as supaSignInGoogle,
@@ -51,6 +52,7 @@ function getInitialAuth() {
 }
 
 export function AuthProvider({ children }) {
+  const router = useRouter();
   const [user, setUser] = useState(() => getInitialAuth().user);
   const [session, setSession] = useState(() => getInitialAuth().session);
   const [backendProfile, setBackendProfile] = useState(null);
@@ -240,6 +242,10 @@ export function AuthProvider({ children }) {
       localStorage.removeItem(LOCAL_STORAGE_USER_KEY);
       localStorage.removeItem(LOCAL_STORAGE_SESSION_KEY);
     } catch {}
+
+    if (typeof window !== "undefined") {
+      router.push("/");
+    }
   };
 
   const isAuthenticated = Boolean(user);
