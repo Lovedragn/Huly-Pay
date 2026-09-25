@@ -54,12 +54,12 @@ export default function DashboardPage() {
     setAuthMounted(true);
   }, []);
 
-  // Clean OAuth hash from URL once mounted
+  // Clean OAuth hash from URL once session is verified and parsed by Supabase
   React.useEffect(() => {
-    if (typeof window !== "undefined" && window.location.hash.includes("access_token")) {
+    if (session && typeof window !== "undefined" && window.location.hash.includes("access_token")) {
       window.history.replaceState(null, "", window.location.pathname + window.location.search);
     }
-  }, []);
+  }, [session]);
 
   // Redirect to landing page if user is not authenticated after initial mount
   React.useEffect(() => {
