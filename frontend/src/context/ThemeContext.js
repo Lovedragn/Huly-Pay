@@ -9,8 +9,6 @@ const ThemeContext = React.createContext({
   mounted: false,
 });
 
-export const THEME_STORAGE_KEY = "hulypay_theme_preference";
-
 const listeners = new Set();
 
 function notifyListeners() {
@@ -46,8 +44,6 @@ function getSnapshot() {
         return parsed.theme;
       }
     }
-    const stored = localStorage.getItem(THEME_STORAGE_KEY);
-    if (stored === "dark" || stored === "light") return stored;
     if (
       window.matchMedia &&
       window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -94,7 +90,6 @@ export function ThemeProvider({ children }) {
 
   const setTheme = React.useCallback((nextTheme) => {
     try {
-      // 1. Save in user_preference_website JSON
       const rawPrefs = localStorage.getItem("user_preference_website");
       let prefs = {};
       if (rawPrefs) {
@@ -104,9 +99,6 @@ export function ThemeProvider({ children }) {
       }
       prefs.theme = nextTheme;
       localStorage.setItem("user_preference_website", JSON.stringify(prefs));
-
-      // 2. Also keep legacy key for backward compatibility
-      localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
     } catch {
       // Ignore write errors
     }
