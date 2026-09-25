@@ -12,6 +12,12 @@ import TransactionsTable from "@/components/dashboard/TransactionsTable";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import {
+  getUserPreferences,
+  saveUserPreferences,
+  updateUserPreference,
+  USER_PREFERENCE_WEBSITE_KEY,
+} from "@/lib/userPreferences";
+import {
   syncAllDashboardData,
   deleteTransaction,
   getSpendingSummary,
@@ -44,7 +50,6 @@ export default function DashboardPage() {
   const chartsContainerRef = React.useRef(null);
 
   // Set authMounted after first client render to avoid hydration mismatch
-  // (isAuthenticated reads localStorage which is unavailable on the server)
   React.useEffect(() => {
     setAuthMounted(true);
   }, []);
@@ -63,84 +68,58 @@ export default function DashboardPage() {
     }
   }, [authMounted, isAuthenticated, isLoading, router]);
 
-  // Preference keys
-  // localStorage: Theater mode, Currency, Metric (amount/avg), Time range, Benchmark, Category/Merchant
-  // sessionStorage: Transaction logs visible count (clears when browser session closes)
-  const PREF_KEYS = React.useMemo(
-    () => ({
-      THEATER: "hulypay_pref_theater_mode",
-      CURRENCY: "hulypay_pref_currency",
-      METRIC: "hulypay_pref_chart_metric",
-      TIME_RANGE: "hulypay_pref_time_range",
-      BENCHMARK: "hulypay_pref_benchmark",
-      VIEW_MODE: "hulypay_pref_view_mode",
-      TX_COUNT: "hulypay_pref_tx_visible_count",
-    }),
-    []
-  );
-
-  // Load initial preferences on client mount
+  // Load initial preferences from user_preference_website JSON on client mount
   React.useEffect(() => {
     try {
-      const savedTheater = localStorage.getItem(PREF_KEYS.THEATER);
-      if (savedTheater !== null) {
-        setDailyTheaterMode(savedTheater === "true");
+      const prefs = getUserPreferences();
+      if (typeof prefs.theaterMode === "boolean") {
+        setDailyTheaterMode(prefs.theaterMode);
       }
-
-      const savedCurrency = localStorage.getItem(PREF_KEYS.CURRENCY);
-      if (savedCurrency === "INR" || savedCurrency === "USD") {
-        setCurrency(savedCurrency);
+      if (prefs.currency === "INR" || prefs.currency === "USD") {
+        setCurrency(prefs.currency);
       }
     } catch (e) {
-      console.warn("Could not read preferences from localStorage:", e);
+      console.warn("Could not read preferences from user_preference_website:", e);
     }
-  }, [PREF_KEYS]);
+  }, []);
 
   // Persist currency
   const handleCurrencyChange = React.useCallback(
     (newCurrency) => {
       setCurrency(newCurrency);
-      try {
-        localStorage.setItem(PREF_KEYS.CURRENCY, newCurrency);
-      } catch (e) {
-        console.warn("Could not save currency preference:", e);
-      }
+      updateUserPreference("currency", newCurrency);
     },
-    [PREF_KEYS]
+    []
   );
 
   // Persist theater mode
   const handleToggleTheater = React.useCallback(() => {
     setDailyTheaterMode((prev) => {
       const next = !prev;
-      try {
-        localStorage.setItem(PREF_KEYS.THEATER, String(next));
-      } catch (e) {
-        console.warn("Could not save theater mode preference:", e);
-      }
+      updateUserPreference("theaterMode", next);
       return next;
     });
-  }, [PREF_KEYS]);
+  }, []);
 
   // Synchronize and observe embedded chart preferences (Metric, Range, Benchmark, Category/Merchant)
-  // and transaction table 'More' count (stored in sessionStorage so it clears on browser close)
+  // and transaction table 'More' count (stored under user_preference_website)
   React.useEffect(() => {
     const root = typeof document !== "undefined" ? document : null;
     if (!root) return;
 
     // 1. Initial restoration of child component controls
     try {
+      const prefs = getUserPreferences();
+
       // Metric (Amount / Average)
-      const savedMetric = localStorage.getItem(PREF_KEYS.METRIC);
-      if (savedMetric) {
+      if (prefs.chartMetric) {
         const metricBtns = root.querySelectorAll("button");
         for (const btn of metricBtns) {
           const txt = btn.textContent?.trim().toLowerCase();
           if (
-            (savedMetric === "average" && txt === "average") ||
-            (savedMetric === "amount" && txt === "amount")
+            (prefs.chartMetric === "average" && txt === "average") ||
+            (prefs.chartMetric === "amount" && txt === "amount")
           ) {
-            // Check if not already active
             if (!btn.className.includes("bg-black")) {
               btn.click();
             }
@@ -150,12 +129,11 @@ export default function DashboardPage() {
       }
 
       // Timeframe Range (7D, 1M, 4M, 6M, 1Y, ALL)
-      const savedRange = localStorage.getItem(PREF_KEYS.TIME_RANGE);
-      if (savedRange) {
+      if (prefs.timeRange) {
         const buttons = root.querySelectorAll("button");
         for (const btn of buttons) {
           const txt = btn.textContent?.trim().toLowerCase();
-          if (txt === savedRange.toLowerCase()) {
+          if (txt === prefs.timeRange.toLowerCase()) {
             if (!btn.className.includes("bg-[#62D800]")) {
               btn.click();
             }
@@ -165,9 +143,8 @@ export default function DashboardPage() {
       }
 
       // Benchmark ON / OFF
-      const savedBenchmark = localStorage.getItem(PREF_KEYS.BENCHMARK);
-      if (savedBenchmark !== null) {
-        const shouldBeOn = savedBenchmark === "true";
+      if (typeof prefs.benchmark === "boolean") {
+        const shouldBeOn = prefs.benchmark;
         const buttons = root.querySelectorAll("button");
         for (const btn of buttons) {
           const txt = btn.textContent?.trim();
@@ -182,14 +159,13 @@ export default function DashboardPage() {
       }
 
       // Category / Merchandise View Mode
-      const savedViewMode = localStorage.getItem(PREF_KEYS.VIEW_MODE);
-      if (savedViewMode) {
+      if (prefs.viewMode) {
         const buttons = root.querySelectorAll("button");
         for (const btn of buttons) {
           const txt = btn.textContent?.trim().toLowerCase();
           if (
-            (savedViewMode === "merchant" && txt.includes("merchandise")) ||
-            (savedViewMode === "category" && txt.includes("category") && !txt.includes("breakdown"))
+            (prefs.viewMode === "merchant" && txt.includes("merchandise")) ||
+            (prefs.viewMode === "category" && txt.includes("category") && !txt.includes("breakdown"))
           ) {
             if (!btn.className.includes("bg-black")) {
               btn.click();
@@ -199,22 +175,17 @@ export default function DashboardPage() {
         }
       }
 
-      // Transaction logs 'More' visible count (sessionStorage - clears when browser closes)
-      const savedTxCount = sessionStorage.getItem(PREF_KEYS.TX_COUNT);
-      if (savedTxCount) {
-        const targetCount = parseInt(savedTxCount, 10);
-        if (!isNaN(targetCount) && targetCount > 5) {
-          // Find the "More" button in transactions table and click as needed to restore count
-          const clicksNeeded = Math.min(Math.ceil((targetCount - 5) / 10), 20);
-          for (let i = 0; i < clicksNeeded; i++) {
-            const moreBtn = Array.from(root.querySelectorAll("button")).find(
-              (b) => b.textContent?.includes("More") && b.textContent?.includes("+10")
-            );
-            if (moreBtn) {
-              moreBtn.click();
-            } else {
-              break;
-            }
+      // Transaction logs 'More' visible count
+      if (prefs.tableVisibleRecords && prefs.tableVisibleRecords > 5) {
+        const clicksNeeded = Math.min(Math.ceil((prefs.tableVisibleRecords - 5) / 10), 20);
+        for (let i = 0; i < clicksNeeded; i++) {
+          const moreBtn = Array.from(root.querySelectorAll("button")).find(
+            (b) => b.textContent?.includes("More") && b.textContent?.includes("+10")
+          );
+          if (moreBtn) {
+            moreBtn.click();
+          } else {
+            break;
           }
         }
       }
@@ -222,7 +193,7 @@ export default function DashboardPage() {
       console.warn("Could not restore child component preferences:", e);
     }
 
-    // 2. Global click listener to track user interactions and update preferences immediately
+    // 2. Global click listener to track user interactions and update preferences immediately in user_preference_website
     function handleGlobalClick(e) {
       const target = e.target;
       if (!target) return;
@@ -235,41 +206,35 @@ export default function DashboardPage() {
       try {
         // Metric: Amount / Average
         if (lower === "amount") {
-          localStorage.setItem(PREF_KEYS.METRIC, "amount");
+          updateUserPreference("chartMetric", "amount");
         } else if (lower === "average") {
-          localStorage.setItem(PREF_KEYS.METRIC, "average");
+          updateUserPreference("chartMetric", "average");
         }
 
         // Time Range: 7d, 1m, 4m, 6m, 1y, all
         const validRanges = ["7d", "1m", "4m", "6m", "1y", "all"];
         if (validRanges.includes(lower)) {
-          localStorage.setItem(PREF_KEYS.TIME_RANGE, lower);
+          updateUserPreference("timeRange", lower);
         }
 
         // Benchmark toggle button ("Benchmark: ON" / "Benchmark: OFF")
         if (txt.startsWith("Benchmark:")) {
-          // Notice: button click will flip the benchmark, so if it currently was ON, it will become false
           const currentlyOn = txt.includes("ON");
-          localStorage.setItem(PREF_KEYS.BENCHMARK, String(!currentlyOn));
+          updateUserPreference("benchmark", !currentlyOn);
         }
 
         // Category vs Merchandise
         if (lower.includes("category") && !lower.includes("breakdown") && !lower.includes("filter")) {
-          localStorage.setItem(PREF_KEYS.VIEW_MODE, "category");
+          updateUserPreference("viewMode", "category");
         } else if (lower.includes("merchandise")) {
-          localStorage.setItem(PREF_KEYS.VIEW_MODE, "merchant");
+          updateUserPreference("viewMode", "merchant");
         }
 
         // Transactions table More button: +10 records
         if (txt.includes("More") && txt.includes("+10")) {
-          const currentCount = parseInt(
-            sessionStorage.getItem(PREF_KEYS.TX_COUNT) || "5",
-            10
-          );
-          sessionStorage.setItem(
-            PREF_KEYS.TX_COUNT,
-            String((isNaN(currentCount) ? 5 : currentCount) + 10)
-          );
+          const currentPrefs = getUserPreferences();
+          const currentCount = currentPrefs.tableVisibleRecords || 5;
+          updateUserPreference("tableVisibleRecords", currentCount + 10);
         }
       } catch (err) {
         console.warn("Could not save preference:", err);
@@ -280,7 +245,7 @@ export default function DashboardPage() {
     return () => {
       window.removeEventListener("click", handleGlobalClick, true);
     };
-  }, [dailyData, expenses, categoryData, PREF_KEYS]);
+  }, [dailyData, expenses, categoryData]);
 
   React.useEffect(() => {
     function handleClickOutside(e) {
