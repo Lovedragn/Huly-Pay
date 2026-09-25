@@ -13,7 +13,7 @@ import { supabase } from "./supabase";
 
 const API_BASE_URL =
   process.env.BACKEND_API_URL ||
-  process.env.NEXT_PUBLIC_API_URL ||
+  process.env.PUBLIC_API_URL ||
   "http://localhost:8080";
 
 // Clean initial data templates matching backend DTO schemas
