@@ -91,13 +91,13 @@ class _SplashScreenState extends State<SplashScreen>
     // 3. Initialize Supabase / AuthService in background if not yet initialized
     if (!AuthService.isInitialized) {
       final supabaseUrl =
-          dotenv.env['SUPABASE_URL'] ??
-          'https://aszhhxnbzstzemyhcjvi.supabase.co';
-      final supabaseAnonKey =
-          dotenv.env['SUPABASE_PUBLISHABLE_KEY'] ??
-          dotenv.env['SUPABASE_ANON_KEY'] ??
-          '';
-      await AuthService.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
+          dotenv.env['SUPABASE_URL'] ?? '';
+      final supabasePublishableKey =
+          dotenv.env['SUPABASE_PUBLISHABLE_KEY'] ?? '';
+      await AuthService.initialize(
+        url: supabaseUrl,
+        publishableKey: supabasePublishableKey,
+      );
     }
 
     // --- STEP 1: Fast Client-Side Check (Zero-Network) ---
