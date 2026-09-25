@@ -6,7 +6,7 @@ export const EXTERNAL_LINKS = {
   // Mobile app downloads
   downloads: {
     androidApk:
-      "https://github.com/Lovedragn/Huly-Pay/releases/download/v2.4.0/Hulypay_v2.4.0.apk",
+      "https://github.com/Lovedragn/Huly-Pay/releases/download/v2.4.0/hulypay_v2.4.0.apk",
     apkFilename: "hulypay_v2.4.0.apk",
     iosApp: "#download-ios",
   },
@@ -41,7 +41,7 @@ export const EXTERNAL_LINKS = {
   downloadsDropdown: [
     {
       label: "Android",
-      href: "https://github.com/Lovedragn/Huly-Pay/releases/download/v2.3.0/Hulypay_v2.3.0.apk",
+      href: "https://github.com/Lovedragn/Huly-Pay/releases/download/v2.4.0/hulypay_v2.4.0.apk",
     },
     {
       label: "IOS",
