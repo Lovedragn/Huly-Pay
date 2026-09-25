@@ -68,7 +68,7 @@ function LoginContent() {
     try {
       const redirectUrl =
         typeof window !== "undefined"
-          ? `${window.location.origin}/dashboard`
+          ? `${window.location.origin}/login?callback=true`
           : undefined;
 
       await signInWithGoogle(redirectUrl);
@@ -92,7 +92,7 @@ function LoginContent() {
     try {
       const redirectUrl =
         typeof window !== "undefined"
-          ? `${window.location.origin}/dashboard`
+          ? `${window.location.origin}/login?callback=true`
           : undefined;
 
       await signInWithGitHub(redirectUrl);
