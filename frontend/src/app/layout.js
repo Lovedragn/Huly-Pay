@@ -51,8 +51,18 @@ export default function RootLayout({ children }) {
             __html: `
               (function() {
                 try {
-                  var stored = localStorage.getItem('hulypay_theme_preference');
-                  if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  var theme = null;
+                  var rawPrefs = localStorage.getItem('user_preference_website');
+                  if (rawPrefs) {
+                    try {
+                      var parsed = JSON.parse(rawPrefs);
+                      theme = parsed.theme;
+                    } catch (e) {}
+                  }
+                  if (!theme) {
+                    theme = localStorage.getItem('hulypay_theme_preference');
+                  }
+                  if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.documentElement.classList.add('dark');
                     document.documentElement.setAttribute('data-theme', 'dark');
                   } else {

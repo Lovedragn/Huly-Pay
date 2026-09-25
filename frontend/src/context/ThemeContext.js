@@ -39,6 +39,13 @@ function subscribe(callback) {
 function getSnapshot() {
   if (typeof window === "undefined") return "light";
   try {
+    const rawPrefs = localStorage.getItem("user_preference_website");
+    if (rawPrefs) {
+      const parsed = JSON.parse(rawPrefs);
+      if (parsed.theme === "dark" || parsed.theme === "light") {
+        return parsed.theme;
+      }
+    }
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
     if (stored === "dark" || stored === "light") return stored;
     if (
@@ -87,6 +94,18 @@ export function ThemeProvider({ children }) {
 
   const setTheme = React.useCallback((nextTheme) => {
     try {
+      // 1. Save in user_preference_website JSON
+      const rawPrefs = localStorage.getItem("user_preference_website");
+      let prefs = {};
+      if (rawPrefs) {
+        try {
+          prefs = JSON.parse(rawPrefs);
+        } catch {}
+      }
+      prefs.theme = nextTheme;
+      localStorage.setItem("user_preference_website", JSON.stringify(prefs));
+
+      // 2. Also keep legacy key for backward compatibility
       localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
     } catch {
       // Ignore write errors
