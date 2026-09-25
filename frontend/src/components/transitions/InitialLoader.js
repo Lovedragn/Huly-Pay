@@ -29,12 +29,12 @@ export default function InitialLoader({ onComplete }) {
     const blocks = blocksRef.current.filter(Boolean);
 
     const ctx = gsap.context(() => {
-      // Initial state: 20 vertical rectangles clipped at right: 100% (hidden on left edge)
+      // Initial state: 20 vertical rectangles are already filled (full white screen)
       gsap.set(blocks, {
-        clipPath: "inset(0% 100% 0% 0%)",
-        webkitClipPath: "inset(0% 100% 0% 0%)",
+        clipPath: "inset(-1% -1% -1% -1%)",
+        webkitClipPath: "inset(-1% -1% -1% -1%)",
       });
-      gsap.set(signatureRef.current, { opacity: 0 });
+      gsap.set(signatureRef.current, { opacity: 1 });
 
       const tl = gsap.timeline({
         defaults: { ease: "power3.inOut" },
@@ -45,34 +45,10 @@ export default function InitialLoader({ onComplete }) {
         },
       });
 
-      // 1. Loading animation: 20 segmentation vertical rectangles fill from left to right
-      tl.to(blocks, {
-        clipPath: "inset(-1% -1% -1% -1%)",
-        webkitClipPath: "inset(-1% -1% -1% -1%)",
-        duration: 0.52,
-        ease: "power3.inOut",
-        stagger: {
-          each: 0.022,
-          from: "start", // Left side to right side
-        },
-      });
+      // 1. Give signature stroke drawing animation time to complete cleanly
+      tl.to({}, { duration: 1.45 });
 
-      // 2. Signature animation:
-      // Fade in the signature container as the center fills with white
-      tl.to(
-        signatureRef.current,
-        {
-          opacity: 1,
-          duration: 0.22,
-          ease: "power2.out",
-        },
-        "-=0.18",
-      );
-
-      // Give signature stroke drawing animation time to complete cleanly
-      tl.to({}, { duration: 1.35 });
-
-      // 3. Exit animation:
+      // 2. Exit animation:
       // Fade out signature cleanly
       tl.to(signatureRef.current, {
         opacity: 0,
@@ -81,7 +57,7 @@ export default function InitialLoader({ onComplete }) {
         ease: "power2.in",
       });
 
-      // 20 vertical rectangles exit from left side to right side (revealing the page)
+      // 3. 20 vertical rectangles exit from left side to right side (revealing the page)
       tl.to(
         blocks,
         {
@@ -123,8 +99,8 @@ export default function InitialLoader({ onComplete }) {
             }}
             className="h-full flex-1 bg-white border-0 outline-none select-none pointer-events-none"
             style={{
-              clipPath: "inset(0% 100% 0% 0%)",
-              WebkitClipPath: "inset(0% 100% 0% 0%)",
+              clipPath: "inset(-1% -1% -1% -1%)",
+              WebkitClipPath: "inset(-1% -1% -1% -1%)",
               willChange: "clip-path",
             }}
           />
@@ -135,10 +111,10 @@ export default function InitialLoader({ onComplete }) {
       <div
         ref={signatureRef}
         className="relative z-10 w-full h-full flex items-center justify-center px-6 pointer-events-none"
-        style={{ opacity: 0 }}
+        style={{ opacity: 1 }}
       >
         <AnimatedSignature
-          delay={0.45}
+          delay={0.05}
           duration={1.3}
           className="w-[110px] sm:w-[150px] md:w-[190px] max-w-[85vw]"
         />
