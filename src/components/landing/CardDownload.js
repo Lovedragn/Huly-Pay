@@ -48,7 +48,7 @@ export default function CardDownload() {
                 target=""
                 rel="noopener noreferrer"
                 download={EXTERNAL_LINKS.downloads.apkFilename}
-                className="w-full max-w-[290px] h-[42px] sm:h-[46px] bg-white rounded-full flex items-center justify-center font-pixel font-bolder font-black text-[16px] sm:text-base text-[#FF0000] tracking-wider shadow-md hover:bg-neutral-100 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none"
+                className="download-btn-android w-full max-w-[290px] h-[42px] sm:h-[46px] bg-white dark:!bg-white rounded-full flex items-center justify-center font-pixel font-bolder font-black text-[16px] sm:text-base text-[#FF0000] dark:!text-black tracking-wider shadow-md hover:bg-neutral-100 dark:hover:!bg-neutral-100 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none"
               >
                 DOWNLOAD
               </a>

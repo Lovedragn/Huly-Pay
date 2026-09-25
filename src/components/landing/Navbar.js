@@ -541,7 +541,7 @@ export default function Navbar() {
                     rel={isExt ? "noopener noreferrer" : undefined}
                     onClick={closeDropdownImmediately}
                     style={{ animationDelay: `${index * 100}ms` }}
-                    className="group/card animate-nav-card h-[250px] w-full bg-[#E6E6E6] active:scale-[0.99] rounded-[6px] flex flex-col items-center justify-center gap-4 cursor-pointer select-none"
+                    className="group/card animate-nav-card nav-sublink h-[250px] w-full bg-[#E6E6E6] active:scale-[0.99] rounded-[6px] flex flex-col items-center justify-center gap-4 cursor-pointer select-none"
                   >
                     {/* SVG on top, full opacity black */}
                     {SvgComponent && (
@@ -549,7 +549,10 @@ export default function Navbar() {
                     )}
 
                     {/* Text below */}
-                    <span className="font-pixel text-[16px] text-black tracking-wider leading-none">
+                    <span
+                      style={{ color: "#000000" }}
+                      className="font-pixel text-[16px] text-black tracking-wider leading-none"
+                    >
                       {item.label}
                     </span>
                   </Link>
@@ -575,7 +578,7 @@ export default function Navbar() {
                     rel={isExt ? "noopener noreferrer" : undefined}
                     onClick={closeDropdownImmediately}
                     style={{ animationDelay: `${index * 100}ms` }}
-                    className="group/card animate-nav-card h-[250px] w-full bg-[#E6E6E6] active:scale-[0.99] rounded-[6px] flex flex-col items-center justify-center gap-4 cursor-pointer select-none"
+                    className="group/card animate-nav-card nav-sublink h-[250px] w-full bg-[#E6E6E6] active:scale-[0.99] rounded-[6px] flex flex-col items-center justify-center gap-4 cursor-pointer select-none"
                   >
                     {/* SVG on top, full opacity black */}
                     {SvgComponent && (
@@ -583,7 +586,10 @@ export default function Navbar() {
                     )}
 
                     {/* Text below */}
-                    <span className="font-pixel text-[16px] text-black tracking-wider leading-none">
+                    <span
+                      style={{ color: "#000000" }}
+                      className="font-pixel text-[16px] text-black tracking-wider leading-none"
+                    >
                       {item.label}
                     </span>
                   </Link>
@@ -654,12 +660,12 @@ export default function Navbar() {
                           setMobileBlogsExpanded(false);
                         }}
                         style={{ animationDelay: `${index * 100}ms` }}
-                        className="group/mob animate-nav-card bg-[#E6E6E6] p-3 rounded-[6px] flex flex-col items-center justify-center gap-2 text-[12px] text-black"
+                        className="group/mob animate-nav-card nav-sublink bg-[#E6E6E6] p-3 rounded-[6px] flex flex-col items-center justify-center gap-2 text-[12px] text-black"
                       >
                         {SvgComponent && (
                           <SvgComponent className="w-14 h-14 text-black shrink-0" />
                         )}
-                        <span>{item.label}</span>
+                        <span style={{ color: "#000000" }}>{item.label}</span>
                       </Link>
                     );
                   })}
@@ -711,12 +717,12 @@ export default function Navbar() {
                           setMobileDownloadExpanded(false);
                         }}
                         style={{ animationDelay: `${index * 100}ms` }}
-                        className="group/mob animate-nav-card bg-[#E6E6E6] p-3 rounded-[6px] flex flex-col items-center justify-center gap-2 text-[12px] text-black"
+                        className="group/mob animate-nav-card nav-sublink bg-[#E6E6E6] p-3 rounded-[6px] flex flex-col items-center justify-center gap-2 text-[12px] text-black"
                       >
                         {SvgComponent && (
                           <SvgComponent className="w-14 h-14 text-black shrink-0" />
                         )}
-                        <span>{item.label}</span>
+                        <span style={{ color: "#000000" }}>{item.label}</span>
                       </Link>
                     );
                   })}

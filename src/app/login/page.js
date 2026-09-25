@@ -14,7 +14,6 @@ function LoginContent() {
     isAuthenticated,
     signInWithGoogle,
     signInWithGitHub,
-    loginAsDemoUser,
   } = useAuth();
 
   const isCallbackInitial = () => {
@@ -107,14 +106,6 @@ function LoginContent() {
     }
   };
 
-  const handleDemoSignIn = () => {
-    setIsProcessingAuth(true);
-    setTimeout(() => {
-      loginAsDemoUser();
-      router.push("/dashboard");
-    }, 400);
-  };
-
   const openPolicyDialog = (title, content) => {
     setPolicyModal({ title, content });
   };
@@ -135,41 +126,7 @@ function LoginContent() {
         aria-hidden="true"
       />
 
-      {/* Top Header with Back Navigation */}
-      <header className="relative z-20 w-full max-w-lg mx-auto px-6 pt-6 sm:pt-8 flex items-center justify-between">
-        <Link
-          href="/"
-          className="group inline-flex items-center gap-2.5 text-neutral-400 hover:text-white transition-colors duration-200"
-          aria-label="Back to home"
-        >
-          <div className="w-9 h-9 rounded-full bg-[#1C1C20] border border-[#33333E] flex items-center justify-center group-hover:border-neutral-500 group-hover:bg-[#25252B] transition-all">
-            <svg
-              className="w-4 h-4 text-neutral-300 group-hover:text-white transition-transform group-hover:-translate-x-0.5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2.5"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </div>
-          <span className="font-mono text-xs uppercase tracking-wider text-neutral-400 group-hover:text-white">
-            Return Home
-          </span>
-        </Link>
 
-        {/* Small Live Status Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1C1C20] border border-[#2D2D36]">
-          <span className="w-2 h-2 rounded-full bg-[#62D800] animate-pulse" />
-          <span className="font-mono text-[11px] text-neutral-300 uppercase tracking-wider">
-            Network Live
-          </span>
-        </div>
-      </header>
 
       {/* Main Body Centerpiece: Exactly replicating Flutter SignInScreen */}
       <main className="relative z-10 w-full max-w-md mx-auto px-6 py-8 flex-1 flex flex-col justify-center">
@@ -303,50 +260,6 @@ function LoginContent() {
               </>
             )}
           </button>
-
-          {/* Developer / Quick Preview Mode Divider */}
-          <div className="relative py-2 flex items-center justify-center">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-[#26262E]" />
-            </div>
-            <div className="relative px-3 bg-black text-[11px] font-mono uppercase tracking-widest text-[#71717A]">
-              instant testing
-            </div>
-          </div>
-
-          {/* Quick Demo Mode Login */}
-          <button
-            type="button"
-            onClick={handleDemoSignIn}
-            disabled={isProcessingAuth}
-            className="w-full h-12 rounded-full bg-[#141418] border border-[#2D2D36] text-neutral-300 font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#1D1D24] hover:text-white hover:border-neutral-500 transition-all cursor-pointer"
-          >
-            <span className="w-2 h-2 rounded-full bg-[#FF00F5]" />
-            <span>Continue as Demo Analyst</span>
-          </button>
-        </div>
-
-        {/* Security & Backend Spec Note */}
-        <div className="mt-8 p-3.5 rounded-2xl bg-[#0D0D11] border border-[#22222A] text-center">
-          <div className="flex items-center justify-center gap-2 text-neutral-400 font-mono text-[11px]">
-            <svg
-              className="w-3.5 h-3.5 text-[#62D800]"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-              />
-            </svg>
-            <span>Supabase RS256 / ES256 OAuth Engine</span>
-          </div>
-          <p className="mt-1 text-[11px] text-neutral-500 font-sans leading-relaxed">
-            Directly mapped to Spring Boot <code className="text-neutral-400">/api/v1/users/me</code> JWT token validation.
-          </p>
         </div>
       </main>
 
