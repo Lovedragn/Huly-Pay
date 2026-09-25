@@ -14,11 +14,11 @@ class AuthService {
 
   static Future<void> initialize({
     required String url,
-    required String anonKey,
+    required String publishableKey,
   }) async {
-    if (anonKey.trim().isEmpty) {
+    if (publishableKey.trim().isEmpty) {
       if (kDebugMode) {
-        print('AuthService: SUPABASE_ANON_KEY / SUPABASE_PUBLISHABLE_KEY is empty. Supabase authentication is not configured.');
+        print('AuthService: SUPABASE_PUBLISHABLE_KEY is empty. Supabase authentication is not configured.');
       }
       _initialized = false;
       return;
@@ -28,7 +28,7 @@ class AuthService {
       await Supabase.initialize(
         url: url,
         // ignore: deprecated_member_use
-        anonKey: anonKey,
+        anonKey: publishableKey,
       );
       _initialized = true;
     } catch (e) {
@@ -113,7 +113,7 @@ class AuthService {
     }
 
     throw const AuthException(
-      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY / SUPABASE_PUBLISHABLE_KEY in .env.',
+      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY in .env.',
     );
   }
 
@@ -132,7 +132,7 @@ class AuthService {
     }
 
     throw const AuthException(
-      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY / SUPABASE_PUBLISHABLE_KEY in .env.',
+      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY in .env.',
     );
   }
 
@@ -146,7 +146,7 @@ class AuthService {
     }
 
     throw const AuthException(
-      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY / SUPABASE_PUBLISHABLE_KEY in .env.',
+      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY in .env.',
     );
   }
 
@@ -160,7 +160,7 @@ class AuthService {
     }
 
     throw const AuthException(
-      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_ANON_KEY / SUPABASE_PUBLISHABLE_KEY in .env.',
+      'Supabase authentication is not configured. Please configure SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY in .env.',
     );
   }
 
