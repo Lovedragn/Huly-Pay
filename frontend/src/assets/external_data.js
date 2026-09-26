@@ -1,8 +1,8 @@
 /**
  * Centralized External Links & Data Configuration for Huly.pay
  */
-export const download_link = "https://github.com/Lovedragn/Huly-Pay/releases/download/v2.5.0/hulypay_v2.5.0.apk"; 
-export const download_version = "hulypay_v2.5.0.apk"; 
+export const download_link = "https://github.com/Lovedragn/Huly-Pay/releases/download/v2.6.0/hulypay_v2.6.0.apk"; 
+export const download_version = "hulypay_v2.6.0.apk"; 
 
 export const EXTERNAL_LINKS = {
   // Mobile app downloads
