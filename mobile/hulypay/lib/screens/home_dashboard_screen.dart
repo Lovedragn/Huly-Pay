@@ -357,35 +357,42 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
       onRefresh: _loadRealData,
       color: colors.accent,
       backgroundColor: colors.surfaceSecondary,
-      displacement: 28,
-      child: SingleChildScrollView(
-        controller: _scrollController,
-        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-        padding: const EdgeInsets.only(
-          left: 20,
-          right: 20,
-          top: 12,
-          bottom: 110, // padding for bottom nav
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            const SizedBox(height: 20),
-            _buildTotalSpentCard(),
-            const SizedBox(height: 20),
-            _buildQuickActions(),
-            const SizedBox(height: 20),
-            HomeSpendTrendLineChart(payments: _payments),
-            const SizedBox(height: 20),
-            HomeTodaySpendGaugeChart(
-              payments: _payments,
-              dailyBudget: _dailyLimit,
-              onLimitChanged: _loadRealData,
+      child: Column(
+        children: [
+          Container(
+            color: colors.background,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            child: _buildHeader(),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+              padding: const EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 4,
+                bottom: 110, // padding for bottom nav
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTotalSpentCard(),
+                  const SizedBox(height: 20),
+                  _buildQuickActions(),
+                  const SizedBox(height: 20),
+                  HomeSpendTrendLineChart(payments: _payments),
+                  const SizedBox(height: 20),
+                  HomeTodaySpendGaugeChart(
+                    payments: _payments,
+                    dailyBudget: _dailyLimit,
+                    onLimitChanged: _loadRealData,
+                  ),
+                ],
+              ),
             ),
-
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

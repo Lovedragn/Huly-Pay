@@ -8,6 +8,8 @@ import '../widgets/transaction_tile.dart';
 import 'analysis_screen.dart';
 import 'home_dashboard_screen.dart';
 import 'single_transaction_screen.dart';
+import 'notifications_screen.dart';
+import 'settings_screen.dart';
 import '../theme/app_theme.dart';
 
 class TransactionsScreen extends StatefulWidget {
@@ -206,26 +208,35 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       color: colors.accent,
       backgroundColor: colors.surfaceSecondary,
       displacement: 28,
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-        padding: const EdgeInsets.only(
-          left: 20,
-          right: 20,
-          top: 12,
-          bottom: 110, // padding for bottom nav
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            const SizedBox(height: 20),
-            _buildSearchBar(),
-            const SizedBox(height: 18),
-            _buildFilterChips(),
-            const SizedBox(height: 26),
-            _buildGroupedTransactions(groupsToDisplay),
-          ],
-        ),
+      child: Column(
+        children: [
+          Container(
+            color: colors.background,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            child: _buildHeader(),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+              padding: const EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 4,
+                bottom: 110, // padding for bottom nav
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSearchBar(),
+                  const SizedBox(height: 18),
+                  _buildFilterChips(),
+                  const SizedBox(height: 26),
+                  _buildGroupedTransactions(groupsToDisplay),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
 
@@ -267,16 +278,118 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     final colors = AppThemeManager.colors;
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          'Transactions',
-          style: TextStyle(
-            fontFamily: 'Google Sans',
-            color: colors.textPrimary,
-            fontSize: 26,
-            fontWeight: FontWeight.w800,
-            letterSpacing: -0.5,
+        if (Navigator.canPop(context) || widget.isEmbedded) ...[
+          Container(
+            decoration: BoxDecoration(
+              color: colors.surface,
+              shape: BoxShape.circle,
+              border: Border.all(color: colors.border, width: 1.5),
+            ),
+            child: IconButton(
+              icon: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: colors.textPrimary,
+                size: 18,
+              ),
+              onPressed: () {
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                } else {
+                  _openHome();
+                }
+              },
+              tooltip: 'Back',
+            ),
+          ),
+          const SizedBox(width: 14),
+        ],
+        Expanded(
+          child: Text(
+            'Transactions',
+            style: TextStyle(
+              fontFamily: 'Google Sans',
+              color: colors.textPrimary,
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.5,
+            ),
+          ),
+        ),
+        Tooltip(
+          message: 'Notifications',
+          child: GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const NotificationsScreen(),
+                ),
+              );
+            },
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: colors.surface,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: colors.border,
+                  width: 1.5,
+                ),
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(
+                    Icons.notifications_outlined,
+                    color: colors.textPrimary,
+                    size: 22,
+                  ),
+                  Positioned(
+                    top: 10,
+                    right: 11,
+                    child: Container(
+                      width: 7,
+                      height: 7,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFFF9500),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Tooltip(
+          message: 'Settings',
+          child: GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const SettingsScreen(),
+                ),
+              );
+            },
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: colors.surface,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: colors.border,
+                  width: 1.5,
+                ),
+              ),
+              child: Icon(
+                Icons.settings_outlined,
+                color: colors.textPrimary,
+                size: 22,
+              ),
+            ),
           ),
         ),
       ],
