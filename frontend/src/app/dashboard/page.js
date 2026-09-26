@@ -411,7 +411,8 @@ export default function DashboardPage() {
               <button
                 type="button"
                 onClick={() => setShowUserMenu((prev) => !prev)}
-                className="h-full px-4 sm:px-6 bg-neutral-100 hover:bg-neutral-200 transition-colors flex items-center gap-2.5 sm:gap-3 border-l-[3px] border-black font-mono text-xs cursor-pointer select-none"
+                aria-label="User Profile"
+                className="h-full px-3 sm:px-6 bg-neutral-100 hover:bg-neutral-200 transition-colors flex items-center gap-2.5 sm:gap-3 border-l-[3px] border-black font-mono text-xs cursor-pointer select-none"
               >
                 {user?.avatarUrl ? (
                   <Image
@@ -427,7 +428,7 @@ export default function DashboardPage() {
                     {(user?.fullName || user?.email || "U")[0].toUpperCase()}
                   </span>
                 )}
-                <div className="flex flex-col text-left">
+                <div className="hidden sm:flex flex-col text-left">
                   <span className="max-w-[100px] sm:max-w-[150px] truncate font-bold text-black font-pixel text-xs sm:text-sm leading-tight">
                     {user?.fullName || user?.email?.split("@")[0] || "User"}
                   </span>
@@ -436,7 +437,7 @@ export default function DashboardPage() {
                   </span>
                 </div>
                 <svg
-                  className={`w-3.5 h-3.5 text-neutral-600 transition-transform ${
+                  className={`hidden sm:block w-3.5 h-3.5 text-neutral-600 transition-transform ${
                     showUserMenu ? "rotate-180" : ""
                   }`}
                   fill="none"
