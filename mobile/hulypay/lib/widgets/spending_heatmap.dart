@@ -93,6 +93,7 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
     final gridModel = _buildGrid(widget.payments, period);
     final periodTotal = _computePeriodTotal(widget.payments, period);
     final colors = AppThemeManager.colors;
+    final chartPalette = AppThemeManager.chartPalette;
 
     return Container(
       width: double.infinity,
@@ -110,7 +111,7 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
           // Responsive Heatmap canvas using full width without forced squares
           _HeatmapGridWidget(
             key: ValueKey(
-              '${widget.period}_${widget.payments.length}_${periodTotal.toStringAsFixed(2)}',
+              '${widget.period}_${chartPalette}_${widget.payments.length}_${periodTotal.toStringAsFixed(2)}',
             ),
             columns: gridModel.columns,
             rows: gridModel.rows,
@@ -132,6 +133,8 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
   }
 
   Widget _buildHeader(double periodTotal) {
+    final colors = AppThemeManager.colors;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -139,7 +142,7 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
           'Heatmap',
           style: TextStyle(
             fontFamily: 'Google Sans',
-            color: AppThemeManager.colors.textPrimary,
+            color: colors.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w700,
           ),
@@ -150,12 +153,12 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
           decoration: BoxDecoration(
             color: _selectedCell != null
                 ? AppChartColors.heatmapChipBorder.withValues(alpha: 0.18)
-                : const Color(0xFF1E1E24),
+                : colors.surfaceSecondary,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: _selectedCell != null
                   ? AppChartColors.heatmapChipBorder
-                  : const Color(0xFF2A2A30),
+                  : colors.border,
             ),
           ),
           child: Text(
@@ -166,7 +169,7 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
               fontFamily: 'Google Sans',
               color: _selectedCell != null
                   ? AppChartColors.heatmapSelected
-                  : const Color(0xFF8E8E93),
+                  : colors.textSecondary,
               fontSize: 11,
               fontWeight: FontWeight.w600,
             ),

@@ -67,6 +67,8 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   @override
   void initState() {
     super.initState();
+    AppThemeManager.currentChartPalette.addListener(_onThemeOrPaletteChanged);
+    AppThemeManager.currentTheme.addListener(_onThemeOrPaletteChanged);
     final cached = UserPreferencesService().cachedAnalysisPeriod;
     if (cached != null && _periodOptions.contains(cached)) {
       _selectedPeriod = cached;
@@ -85,6 +87,19 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
       _totalSpent = widget.totalSpent ?? '₹0';
       _loadData();
     }
+  }
+
+  void _onThemeOrPaletteChanged() {
+    if (mounted) {
+      _filterAndRecalculate();
+    }
+  }
+
+  @override
+  void dispose() {
+    AppThemeManager.currentChartPalette.removeListener(_onThemeOrPaletteChanged);
+    AppThemeManager.currentTheme.removeListener(_onThemeOrPaletteChanged);
+    super.dispose();
   }
 
   Future<void> _loadCategoryOverrides() async {
