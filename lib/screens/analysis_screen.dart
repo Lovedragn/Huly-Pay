@@ -428,34 +428,43 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
       color: colors.accent,
       backgroundColor: colors.surfaceSecondary,
       displacement: 28,
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-        padding: const EdgeInsets.only(
-          left: 20,
-          right: 20,
-          top: 12,
-          bottom: 110, // padding for bottom nav
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            const SizedBox(height: 24),
-            AnalysisCategoryPieChart(
-              items: _categories,
-              totalAmount: _totalSpent,
-              centerLabel: _getCenterLabel(_selectedPeriod),
-              bottomRightAction: _buildClassificationToggleButton(),
+      child: Column(
+        children: [
+          Container(
+            color: colors.background,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            child: _buildHeader(),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+              padding: const EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 4,
+                bottom: 110, // padding for bottom nav
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AnalysisCategoryPieChart(
+                    items: _categories,
+                    totalAmount: _totalSpent,
+                    centerLabel: _getCenterLabel(_selectedPeriod),
+                    bottomRightAction: _buildClassificationToggleButton(),
+                  ),
+                  const SizedBox(height: 24),
+                  SpendingHeatmap(
+                    payments: _allPayments,
+                    period: _selectedPeriod,
+                  ),
+                  const SizedBox(height: 28),
+                  _buildCategoryList(),
+                ],
+              ),
             ),
-            const SizedBox(height: 24),
-            SpendingHeatmap(
-              payments: _allPayments,
-              period: _selectedPeriod,
-            ),
-            const SizedBox(height: 28),
-            _buildCategoryList(),
-          ],
-        ),
+          ),
+        ],
       ),
     );
 

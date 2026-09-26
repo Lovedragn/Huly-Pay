@@ -578,32 +578,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
         bottom: false,
         child: Stack(
           children: [
-            // Scrollable Settings Content
+            // Settings Layout with Sticky Top Bar
             Positioned.fill(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: 10,
-                  bottom: 110, // padding for bottom nav
-                ),
-                child: Column(
-                  children: [
-                    _buildTopBar(),
-                    const SizedBox(height: 24),
-                    _buildProfileCard(),
-                    const SizedBox(height: 16),
-                    _buildAccountSection(),
-                    const SizedBox(height: 16),
-                    _buildPreferencesSection(),
-                    const SizedBox(height: 16),
-                    _buildSupportSection(),
-                    const SizedBox(height: 16),
-                    _buildLogoutCard(),
-                    const SizedBox(height: 12),
-                  ],
-                ),
+              child: Column(
+                children: [
+                  Container(
+                    color: colors.background,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    child: _buildTopBar(),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.only(
+                        left: 20,
+                        right: 20,
+                        top: 4,
+                        bottom: 110, // padding for bottom nav
+                      ),
+                      child: Column(
+                        children: [
+                          _buildProfileCard(),
+                          const SizedBox(height: 16),
+                          _buildAccountSection(),
+                          const SizedBox(height: 16),
+                          _buildPreferencesSection(),
+                          const SizedBox(height: 16),
+                          _buildSupportSection(),
+                          const SizedBox(height: 16),
+                          _buildLogoutCard(),
+                          const SizedBox(height: 12),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
 
