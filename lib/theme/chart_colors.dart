@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 import 'app_theme.dart';
 
-/// Centralized Global Chart Color Schema for Huly.Pay
-///
-/// All charts across the application (Line Chart, Gauge Chart, Weekly Bar Chart,
-/// Analysis Donut / Pie Chart, and Spending Heatmap) are controlled by this
-/// single, unified list of colors and dynamically reactive to AppThemeManager.
 class AppChartColors {
   AppChartColors._();
 
@@ -125,24 +120,33 @@ class AppChartColors {
       ? const Color(0xFF1C1C20)
       : const Color(0xFFE5E7EB);
 
-  /// Heatmap activity intensity palette (from dark/light surface up to peak accent).
-  /// Uses opaque colors (lerped from background toward peak) so that each
-  /// intensity level is clearly distinguishable regardless of background.
-  static List<Color> get heatmapPalette {
+   static List<Color> get heatmapPalette {
     final p = globalPalette;
-    final base = p[2]; // Level 4 peak color (green / mint)
+    // Primary palette accent color (e.g. green in emerald, purple in cyber, amber in sunset, etc.)
+    final accent = p[0];
+    final highlight = p[1]; // Bright highlight tint in the palette
     final isDark = AppThemeManager.colors.isDark;
 
-    // Background tint to blend towards – keeps the "empty" cell on‑theme
+    // Background tint for empty cell (0 spend)
     final bg = isDark ? const Color(0xFF1C1C22) : const Color(0xFFE5E7EB);
 
-    return [
-      bg, // Level 0: No activity / empty cell
-      Color.lerp(bg, base, 0.25)!, // Level 1: Subtle
-      Color.lerp(bg, base, 0.50)!, // Level 2: Moderate
-      Color.lerp(bg, base, 0.75)!, // Level 3: High
-      base, // Level 4: Peak Activity – full bright green
-    ];
+    if (isDark) {
+       return [
+        bg,                                                        // Level 0: ₹0 (inactive)
+        Color.lerp(highlight, Colors.white, 0.35)!,               // Level 1: Lowest spend (brighter & luminous)
+        highlight,                                                 // Level 2: Moderate low spend
+        accent,                                                    // Level 3: Higher spend
+        Color.lerp(accent, const Color(0xFF000000), 0.35)!,        // Level 4: Highest spend (deepest saturated tone)
+      ];
+    } else {
+        return [
+        bg,                                                        // Level 0: ₹0 (inactive)
+        Color.lerp(highlight, Colors.white, 0.65)!,               // Level 1: Lowest spend (brightest pastel)
+        Color.lerp(highlight, accent, 0.4)!,                       // Level 2: Moderate low spend
+        accent,                                                    // Level 3: Higher spend
+        Color.lerp(accent, const Color(0xFF000000), 0.45)!,        // Level 4: Highest spend (deepest rich shade)
+      ];
+    }
   }
 
   /// Heatmap selected cell highlight color
