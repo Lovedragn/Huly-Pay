@@ -56,7 +56,7 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
         _selectedImage = picked;
       });
       _showFeedbackSnackBar(
-        'QR Image selected! Tap Upload to share to Google Pay.',
+        'QR image selected! Tap Pay with Google Pay to proceed.',
         isError: false,
       );
     }
@@ -83,7 +83,7 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
       return;
     }
 
-    // Step 2: Once image is selected, open native Android Sharesheet
+    // Step 2: Once image is selected, directly upload into Google Pay
     setState(() {
       _isSharing = true;
     });
@@ -94,7 +94,8 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
       filePath: _selectedImage!.path,
       amount: parsedAmount,
       note: note.isNotEmpty ? note : null,
-      title: 'Share QR to Pay',
+      title: 'Pay with Google Pay',
+      targetPackage: QrShareService.googlePayPackage,
     );
 
     if (mounted) {
@@ -103,7 +104,7 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
       });
       if (success) {
         _showFeedbackSnackBar(
-          'Sharesheet opened. Select Google Pay to complete payment.',
+          'Opening Google Pay with QR image...',
           isError: false,
         );
       }
@@ -373,7 +374,7 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              'Upload',
+                              _selectedImage != null ? 'Pay with Google Pay' : 'Upload',
                               style: TextStyle(
                                 fontFamily: 'Google Sans',
                                 fontSize: 16,

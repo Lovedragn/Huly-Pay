@@ -77,13 +77,18 @@ class QrShareService {
     }
   }
 
-  /// Launches the native Android Sharesheet with ACTION_SEND and EXTRA_STREAM.
+  /// Official Google Pay India package
+  static const String googlePayPackage = 'com.google.android.apps.nbu.paisa.user';
+
+  /// Launches the image share intent directly to Google Pay (or another target package),
+  /// falling back to the Android sharesheet if the app is not installed.
   static Future<bool> shareQrImage({
     required BuildContext context,
     required String filePath,
     double? amount,
     String? note,
     String? title,
+    String? targetPackage = googlePayPackage,
   }) async {
     if (!kIsWeb && defaultTargetPlatform != TargetPlatform.android) {
       if (context.mounted) {
@@ -96,7 +101,7 @@ class QrShareService {
     }
 
     try {
-      debugPrint('[HulyPay] Preparing image for sharing');
+      debugPrint('[HulyPay] Preparing image for sharing (target: $targetPackage)');
 
       if (!kIsWeb && !filePath.startsWith('content://')) {
         final localFile = File(filePath);
@@ -113,8 +118,6 @@ class QrShareService {
         }
       }
 
-      debugPrint('[HulyPay] Opening Android Sharesheet');
-
       String? shareText;
       if (amount != null && amount > 0) {
         shareText = '₹${amount.toStringAsFixed(2)}';
@@ -127,6 +130,7 @@ class QrShareService {
         'imagePath': filePath,
         'title': title ?? 'Share QR image',
         'text': ?shareText,
+        'targetPackage': ?targetPackage,
       });
 
       if (launched == true) {

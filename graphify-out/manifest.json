@@ -894,9 +894,9 @@
     "semantic_hash": ""
   },
   "mobile/hulypay/android/app/src/main/kotlin/com/hulypay/app/MainActivity.kt": {
-    "mtime": 1790403126.8812318,
-    "seen": 1790436942.8851671,
-    "ast_hash": "3afca399e3fd0a06b932712edf9f3504",
+    "mtime": 1790440752.7383037,
+    "seen": 1790440859.1678197,
+    "ast_hash": "ac5cfcfbfb69bd134444088aa7c9aceb",
     "semantic_hash": ""
   },
   "mobile/hulypay/android/app/src/main/kotlin/com/hulypay/hulypay/MainActivity.kt": {
@@ -1596,15 +1596,21 @@
     "semantic_hash": ""
   },
   "mobile/hulypay/lib/screens/upload_qr_screen.dart": {
-    "mtime": 1790403765.4965692,
-    "seen": 1790436942.885208,
-    "ast_hash": "5b3ed34e7a2d85b59a2206ce61f448b8",
+    "mtime": 1790438608.328233,
+    "seen": 1790438647.1472564,
+    "ast_hash": "580be6136d8b48743826645376d8ccf9",
     "semantic_hash": ""
   },
   "mobile/hulypay/lib/services/qr_share_service.dart": {
-    "mtime": 1790403266.9736686,
-    "seen": 1790436942.8852155,
-    "ast_hash": "4e62901c6b4feeabdea89c7130f3fc3a",
+    "mtime": 1790438579.8306959,
+    "seen": 1790438647.1472645,
+    "ast_hash": "6aeef8606f0d90138b08290ac9c57fe6",
+    "semantic_hash": ""
+  },
+  "mobile/hulypay/README.md": {
+    "mtime": 1790437081.327692,
+    "seen": 1790438647.1472955,
+    "ast_hash": "ee2cf101c850e16d9905933c21565d7e",
     "semantic_hash": ""
   }
 }

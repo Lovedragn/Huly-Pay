@@ -203,28 +203,27 @@ class MainActivity : FlutterActivity() {
                     val imagePath = call.argument<String>("imagePath")
                     val title = call.argument<String>("title") ?: "Share QR image"
                     val text = call.argument<String>("text")
+                    val targetPackage = call.argument<String>("targetPackage")
                     if (imagePath.isNullOrBlank()) {
                         result.error("INVALID_ARGS", "imagePath is required", null)
                         return@setMethodCallHandler
                     }
-                    shareImage(imagePath, title, text, result)
+                    shareImage(imagePath, title, text, targetPackage, result)
                 }
                 else -> result.notImplemented()
             }
         }
     }
 
-    private fun shareImage(imagePath: String, title: String, text: String?, result: MethodChannel.Result) {
+    private fun shareImage(imagePath: String, title: String, text: String?, targetPackage: String?, result: MethodChannel.Result) {
         try {
-            android.util.Log.d("HulyPay", "[HulyPay] Preparing image for sharing: $imagePath")
+            android.util.Log.d("HulyPay", "[HulyPay] Preparing image for sharing: $imagePath, targetPackage: $targetPackage")
             val imageUri = resolveShareableUri(imagePath)
             if (imageUri == null) {
                 android.util.Log.e("HulyPay", "[HulyPay] Failed to resolve shareable URI for: $imagePath")
                 result.error("URI_RESOLUTION_FAILED", "Could not resolve shareable URI for image", null)
                 return
             }
-
-            android.util.Log.d("HulyPay", "[HulyPay] Opening Android Sharesheet with URI: $imageUri")
 
             val sendIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "image/*"
@@ -236,11 +235,34 @@ class MainActivity : FlutterActivity() {
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
+            // If a specific target package (such as Google Pay) is requested and installed, launch directly into it
+            val resolvedTargetPackage = if (!targetPackage.isNullOrBlank() && checkPackageInstalled(targetPackage)) {
+                targetPackage
+            } else if (targetPackage == null && checkPackageInstalled(googlePayPackageName)) {
+                // If targetPackage is omitted but Google Pay is installed, check if preferred
+                null
+            } else {
+                null
+            }
+
+            if (resolvedTargetPackage != null) {
+                android.util.Log.d("HulyPay", "[HulyPay] Launching direct image share to package: $resolvedTargetPackage")
+                sendIntent.setPackage(resolvedTargetPackage)
+                sendIntent.addCategory(Intent.CATEGORY_DEFAULT)
+                sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                grantUriPermission(resolvedTargetPackage, imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                startActivity(sendIntent)
+                android.util.Log.d("HulyPay", "[HulyPay] Direct share intent launched to $resolvedTargetPackage")
+                result.success(true)
+                return
+            }
+
+            // Fallback: Open system chooser sheet if target app is not installed or not specified
+            android.util.Log.d("HulyPay", "[HulyPay] Opening Android Sharesheet with URI: $imageUri")
             val chooser = Intent.createChooser(sendIntent, title).apply {
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
-            // Proactively grant temporary URI read permission to all matching activities
             val resInfoList = packageManager.queryIntentActivities(sendIntent, PackageManager.MATCH_DEFAULT_ONLY)
             for (resolveInfo in resInfoList) {
                 val packageName = resolveInfo.activityInfo?.packageName
