@@ -27,6 +27,7 @@ import {
   getExpenses,
   MOCK_RADAR_METRICS,
 } from "@/lib/api";
+import { download_version } from "@/assets/external_data";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -398,7 +399,7 @@ export default function DashboardPage() {
             </div>
           </Link>
           <span className="text-xs font-mono font-bold bg-[#D8FF00] text-black px-2 py-0.5 border border-black shadow-[2px_2px_0px_#000000]">
-            v2.4
+            {download_version?.match(/v\d+(\.\d+)*/i)?.[0] || download_version}
           </span>
         </div>
 

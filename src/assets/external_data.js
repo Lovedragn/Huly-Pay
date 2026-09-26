@@ -1,13 +1,16 @@
 /**
  * Centralized External Links & Data Configuration for Huly.pay
  */
+export const download_link = "https://github.com/Lovedragn/Huly-Pay/releases/download/v2.5.0/hulypay_v2.5.0.apk"; 
+export const download_version = "hulypay_v2.5.0.apk"; 
 
 export const EXTERNAL_LINKS = {
   // Mobile app downloads
   downloads: {
     androidApk:
-      "https://github.com/Lovedragn/Huly-Pay/releases/download/v2.5.0/hulypay_v2.5.0.apk",
-    apkFilename: "hulypay_v2.5.0.apk",
+      download_link,
+    apkFilename: download_version,
+    version: download_version,
     iosApp: "#download-ios",
   },
 
@@ -41,7 +44,7 @@ export const EXTERNAL_LINKS = {
   downloadsDropdown: [
     {
       label: "Android",
-      href: "https://github.com/Lovedragn/Huly-Pay/releases/download/v2.5.0/hulypay_v2.5.0.apk",
+      href:download_link 
     },
     {
       label: "IOS",
