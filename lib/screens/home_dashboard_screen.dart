@@ -15,6 +15,7 @@ import 'scan_and_pay_screen.dart';
 import 'settings_screen.dart';
 import 'transactions_screen.dart';
 import 'notifications_screen.dart';
+import 'upload_qr_screen.dart';
 import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
 
@@ -404,6 +405,15 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
     _loadRealData();
   }
 
+  Future<void> _openUploadQr() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const UploadQrScreen(),
+      ),
+    );
+    _loadRealData();
+  }
+
   Future<void> _openSettings() async {
     final targetIndex = await Navigator.of(context).push<int>(
       MaterialPageRoute(
@@ -579,7 +589,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
           child: QuickActionButton(
             svgAsset: 'assets/icon/upload.svg',
             label: 'upload',
-            onTap: () {},
+            onTap: _openUploadQr,
           ),
         ),
         Expanded(
