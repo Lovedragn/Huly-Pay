@@ -3,6 +3,7 @@ package com.hulypay.app
 import android.Manifest
 import android.app.Activity
 import android.content.BroadcastReceiver
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -12,9 +13,11 @@ import android.os.Build
 import android.provider.Telephony
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import java.io.File
 
 class MainActivity : FlutterActivity() {
     private val channelName = "com.hulypay.app/google_pay"
@@ -191,6 +194,107 @@ class MainActivity : FlutterActivity() {
                     }
                     else -> result.notImplemented()
                 }
+            }
+        }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.hulypay/share_image").setMethodCallHandler { call, result ->
+            when (call.method) {
+                "shareImage" -> {
+                    val imagePath = call.argument<String>("imagePath")
+                    val title = call.argument<String>("title") ?: "Share QR image"
+                    val text = call.argument<String>("text")
+                    if (imagePath.isNullOrBlank()) {
+                        result.error("INVALID_ARGS", "imagePath is required", null)
+                        return@setMethodCallHandler
+                    }
+                    shareImage(imagePath, title, text, result)
+                }
+                else -> result.notImplemented()
+            }
+        }
+    }
+
+    private fun shareImage(imagePath: String, title: String, text: String?, result: MethodChannel.Result) {
+        try {
+            android.util.Log.d("HulyPay", "[HulyPay] Preparing image for sharing: $imagePath")
+            val imageUri = resolveShareableUri(imagePath)
+            if (imageUri == null) {
+                android.util.Log.e("HulyPay", "[HulyPay] Failed to resolve shareable URI for: $imagePath")
+                result.error("URI_RESOLUTION_FAILED", "Could not resolve shareable URI for image", null)
+                return
+            }
+
+            android.util.Log.d("HulyPay", "[HulyPay] Opening Android Sharesheet with URI: $imageUri")
+
+            val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "image/*"
+                putExtra(Intent.EXTRA_STREAM, imageUri)
+                if (!text.isNullOrBlank()) {
+                    putExtra(Intent.EXTRA_TEXT, text)
+                }
+                clipData = ClipData.newRawUri("QR Image", imageUri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+
+            val chooser = Intent.createChooser(sendIntent, title).apply {
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+
+            // Proactively grant temporary URI read permission to all matching activities
+            val resInfoList = packageManager.queryIntentActivities(sendIntent, PackageManager.MATCH_DEFAULT_ONLY)
+            for (resolveInfo in resInfoList) {
+                val packageName = resolveInfo.activityInfo?.packageName
+                if (packageName != null) {
+                    try {
+                        grantUriPermission(packageName, imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    } catch (_: Exception) {}
+                }
+            }
+
+            if (sendIntent.resolveActivity(packageManager) == null && resInfoList.isEmpty()) {
+                android.util.Log.w("HulyPay", "[HulyPay] No apps found to handle image share intent")
+                result.error("NO_APPS", "No compatible application found to share the QR image", null)
+                return
+            }
+
+            startActivity(chooser)
+            android.util.Log.d("HulyPay", "[HulyPay] Share intent launched")
+            result.success(true)
+        } catch (e: Exception) {
+            android.util.Log.e("HulyPay", "[HulyPay] Error launching share intent", e)
+            result.error("LAUNCH_FAILED", e.localizedMessage, null)
+        }
+    }
+
+    private fun resolveShareableUri(imagePath: String): Uri? {
+        if (imagePath.startsWith("content://")) {
+            return Uri.parse(imagePath)
+        }
+
+        val cleanPath = if (imagePath.startsWith("file://")) {
+            Uri.parse(imagePath).path ?: imagePath.substring(7)
+        } else {
+            imagePath
+        }
+
+        val file = File(cleanPath)
+        if (!file.exists()) {
+            return null
+        }
+
+        return try {
+            val authority = "${applicationContext.packageName}.fileprovider"
+            FileProvider.getUriForFile(this, authority, file)
+        } catch (e: Exception) {
+            // Fallback: If FileProvider cannot resolve the external path, copy to app cache and retry
+            try {
+                val cacheFile = File(cacheDir, "shared_qr_${System.currentTimeMillis()}.${file.extension.ifEmpty { "png" }}")
+                file.copyTo(cacheFile, overwrite = true)
+                val authority = "${applicationContext.packageName}.fileprovider"
+                FileProvider.getUriForFile(this, authority, cacheFile)
+            } catch (inner: Exception) {
+                inner.printStackTrace()
+                null
             }
         }
     }

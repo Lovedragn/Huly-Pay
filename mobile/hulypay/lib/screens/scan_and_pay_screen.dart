@@ -468,37 +468,6 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                           ),
                         ),
 
-                        // Quick Confirm banner if enabled
-                        if (UserPreferencesService().cachedQuickConfirm) ...[
-                          const SizedBox(height: 16),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFFB300).withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: const Color(0xFFFFB300).withValues(alpha: 0.3)),
-                            ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.bolt_rounded, color: Color(0xFFFFB300), size: 18),
-                                SizedBox(width: 8),
-                                Flexible(
-                                  child: Text(
-                                    'Quick Confirm active • Instant auto-confirmation',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontFamily: 'Google Sans',
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFFFFB300),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
 
                         const SizedBox(height: 32),
 
