@@ -2,6 +2,7 @@
 const nextConfig = {
   /* config options here */
   reactCompiler: true,
+  output: 'standalone', // Required for Docker: generates a self-contained server.js
   env: {
     BACKEND_API_URL: process.env.BACKEND_API_URL,
     SUPABASE_URL: process.env.SUPABASE_URL,
