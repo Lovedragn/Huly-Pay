@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../data/external_data.dart';
 import '../repositories/user_repository.dart';
 import '../services/auth_service.dart';
 import '../services/local_database_service.dart';
 import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
-import '../theme/chart_colors.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
+import '../widgets/customization_bottom_sheet.dart';
 import 'sign_in_screen.dart';
 import 'about_hulypay_screen.dart';
 import 'help_support_screen.dart';
@@ -23,7 +24,7 @@ class SettingsScreen extends StatefulWidget {
     super.key,
     this.userName,
     this.userEmail,
-    this.appVersion = 'v1.0.0',
+    this.appVersion = ExternalData.defaultAppVersion,
   });
 
   @override
@@ -117,371 +118,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  /// Transferred Customization modal presenting both App Themes and Chart Colors presets
+  /// Customization modal presenting both App Themes and Chart Colors presets
   void _showCustomizationModal() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: AppThemeManager.colors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (BuildContext ctx) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            final colors = AppThemeManager.colors;
-            final currentAppTheme = AppThemeManager.currentTheme.value;
-            final currentChartPalette = AppThemeManager.currentChartPalette.value;
-
-            // Transferred Theme presets from previous Themes & Skins section
-            final List<Map<String, dynamic>> themePresets = const [
-              {
-                'id': 'Black',
-                'name': 'OLED Black',
-                'label': 'Black',
-                'description': 'Pure black for AMOLED displays (Default)',
-              },
-              {
-                'id': 'White',
-                'name': 'Clean White',
-                'label': 'White',
-                'description': 'Crisp daytime light mode with high clarity',
-              },
-              {
-                'id': 'Blue',
-                'name': 'Midnight Dark',
-                'label': 'Blue',
-                'description': 'Deep navy and titanium tones (Blue aesthetic)',
-              },
-            ];
-
-            return SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Top Sheet Drag Handle
-                      Center(
-                        child: Container(
-                          width: 38,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: colors.textSecondary.withValues(alpha: 0.3),
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-
-                      // Header
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Customization',
-                                style: TextStyle(
-                                  fontFamily: 'Google Sans',
-                                  color: colors.textPrimary,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Themes & Chart Color Palettes',
-                                style: TextStyle(
-                                  fontFamily: 'Google Sans',
-                                  color: colors.textSecondary,
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: colors.surfaceSecondary,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: colors.border),
-                            ),
-                            child: IconButton(
-                              icon: Icon(Icons.close_rounded, color: colors.textPrimary, size: 18),
-                              onPressed: () => Navigator.of(ctx).pop(),
-                              tooltip: 'Close',
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Section 1: App Theme Presets
-                      Text(
-                        'APP THEME',
-                        style: TextStyle(
-                          fontFamily: 'Google Sans',
-                          color: colors.accent,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.1,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-
-                      for (final theme in themePresets) ...[
-                        _buildThemeOptionCard(
-                          name: theme['name'] as String,
-                          label: theme['label'] as String,
-                          description: theme['description'] as String,
-                          isSelected: currentAppTheme == theme['id'],
-                          onTap: () {
-                            final selectedTheme = theme['id'] as String;
-                            AppThemeManager.setTheme(selectedTheme);
-                            UserPreferencesService().savePreferences(
-                              theme: selectedTheme,
-                              chartPalette: AppThemeManager.chartPalette,
-                            );
-                            setState(() {});
-                            setModalState(() {});
-                          },
-                        ),
-                        const SizedBox(height: 8),
-                      ],
-
-                      const SizedBox(height: 16),
-                      Divider(color: colors.divider, height: 1, thickness: 1),
-                      const SizedBox(height: 16),
-
-                      // Section 2: Chart Color & Skin Presets
-                      Text(
-                        'CHART COLORS',
-                        style: TextStyle(
-                          fontFamily: 'Google Sans',
-                          color: colors.accent,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.1,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-
-                      for (final paletteName in kChartPaletteNames) ...[
-                        _buildChartPaletteOptionCard(
-                          name: paletteName,
-                          isSelected: currentChartPalette == paletteName,
-                          onTap: () {
-                            AppThemeManager.setChartPalette(paletteName);
-                            UserPreferencesService().savePreferences(
-                              theme: AppThemeManager.theme,
-                              chartPalette: paletteName,
-                            );
-                            setState(() {});
-                            setModalState(() {});
-                          },
-                        ),
-                        const SizedBox(height: 8),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
+    CustomizationBottomSheet.show(
+      context,
+      onThemeChanged: () {
+        if (mounted) setState(() {});
       },
-    );
-  }
-
-  Widget _buildThemeOptionCard({
-    required String name,
-    required String label,
-    required String description,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    final colors = AppThemeManager.colors;
-
-    return Material(
-      color: isSelected ? colors.surfaceSecondary : Colors.transparent,
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: isSelected ? colors.accent : colors.border,
-              width: isSelected ? 1.5 : 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          name,
-                          style: TextStyle(
-                            fontFamily: 'Google Sans',
-                            color: colors.textPrimary,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: colors.surfaceSecondary,
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(color: colors.border, width: 0.5),
-                          ),
-                          child: Text(
-                            label,
-                            style: TextStyle(
-                              fontFamily: 'Google Sans',
-                              color: colors.textSecondary,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      description,
-                      style: TextStyle(
-                        fontFamily: 'Google Sans',
-                        color: colors.textSecondary,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (isSelected)
-                Icon(
-                  Icons.check_circle_rounded,
-                  color: colors.accent,
-                  size: 22,
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildChartPaletteOptionCard({
-    required String name,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    final colors = AppThemeManager.colors;
-    final swatches = AppChartColors.allPalettes[name] ?? AppChartColors.defaultPalette;
-    final String description;
-
-    switch (name) {
-      case 'Emerald Mint':
-      case 'Emerald Slate':
-        description = 'Mint and emerald accents for growth and tracking';
-        break;
-      case 'Cyber Purple':
-        description = 'Neon violet highlights and cyberpunk glow';
-        break;
-      case 'Sunset Gold':
-        description = 'Warm amber, golden orange and coral radiant gradients';
-        break;
-      case 'Ocean Blue':
-        description = 'Sky cyan, electric blue and sapphire marine curves';
-        break;
-      case 'Default':
-      default:
-        description = 'Electric Blue, vibrant Cyan, Mint, Amber & Rose (Default)';
-        break;
-    }
-
-    return Material(
-      color: isSelected ? colors.surfaceSecondary : Colors.transparent,
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: isSelected ? colors.accent : colors.border,
-              width: isSelected ? 1.5 : 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              // Swatches row (5 dots)
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  for (int i = 0; i < 5 && i < swatches.length; i++)
-                    Container(
-                      margin: const EdgeInsets.only(right: 3),
-                      width: 9,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        color: swatches[i],
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: TextStyle(
-                        fontFamily: 'Google Sans',
-                        color: colors.textPrimary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      description,
-                      style: TextStyle(
-                        fontFamily: 'Google Sans',
-                        color: colors.textSecondary,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (isSelected)
-                Icon(
-                  Icons.check_circle_rounded,
-                  color: colors.accent,
-                  size: 22,
-                ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
@@ -611,7 +254,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           _buildSupportSection(),
                           const SizedBox(height: 16),
                           _buildLogoutCard(),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 24),
+                          _buildAppInfoFooter(),
+                          const SizedBox(height: 16),
                         ],
                       ),
                     ),
@@ -1006,6 +651,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildAppInfoFooter() {
+    final colors = AppThemeManager.colors;
+
+    return Column(
+      children: [
+        Text(
+          '${ExternalData.appName} ${widget.appVersion}',
+          style: TextStyle(
+            fontFamily: 'Google Sans',
+            color: colors.textSecondary,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.2,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          ExternalData.appTagline,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'Google Sans',
+            color: colors.textMuted,
+            fontSize: 11.5,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'Crafted by ${ExternalData.creatorName}',
+          style: TextStyle(
+            fontFamily: 'Google Sans',
+            color: colors.textMuted.withValues(alpha: 0.8),
+            fontSize: 11,
+          ),
+        ),
+      ],
     );
   }
 

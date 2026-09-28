@@ -197,69 +197,92 @@ class ExternalData {
   ];
 
   // ---------------------------------------------------------------------------
-  // Privacy & Security Data
+  // Privacy & Security Data (Data Storage, Retrieval & Databases)
   // ---------------------------------------------------------------------------
   static const String privacySecurityTitle = 'Privacy & Security';
+  static const String privacyScreenSubtitle =
+      'Transparent disclosure of what information is collected, how it is retrieved, and where it is stored.';
 
+  static const String dataWeStoreTitle = 'What Data We Store';
+  static const List<ScopeBulletItem> dataStoredItems = [
+    ScopeBulletItem(
+      highlight: 'Transaction Records:',
+      description:
+          'Payment amount, merchant name, UPI ID, note, timestamp, transaction reference (UTR), status, and assigned spending category.',
+    ),
+    ScopeBulletItem(
+      highlight: 'User Profile & Preferences:',
+      description:
+          'Display name, email address, avatar initials, default UPI app preference, quick confirm setting, and custom UI themes.',
+    ),
+    ScopeBulletItem(
+      highlight: 'Optional Geo-Location:',
+      description:
+          'Latitude and longitude coordinates only when a transaction is explicitly authorized with location permission enabled.',
+    ),
+    ScopeBulletItem(
+      highlight: 'What We NEVER Store:',
+      description:
+          'We do not store UPI PINs, banking passwords, debit/credit card CVVs, or full bank account numbers.',
+    ),
+  ];
+
+  static const String databasesUsedTitle = 'Databases & Storage Engines';
+  static const List<ScopeBulletItem> databasesUsedItems = [
+    ScopeBulletItem(
+      highlight: 'Local SQLite Engine (sqflite):',
+      description:
+          'Transactions and metadata are saved locally on your device in an offline-first SQLite database (`hulypay.db`). This allows full ledger functionality even without internet connectivity.',
+    ),
+    ScopeBulletItem(
+      highlight: 'Encrypted Device Preferences (SharedPreferences):',
+      description:
+          'Local user settings, app biometric flags, selected chart themes, and cached quick-confirm toggles are preserved in private app storage sandbox.',
+    ),
+    ScopeBulletItem(
+      highlight: 'Supabase Cloud Database (PostgreSQL):',
+      description:
+          'When signed in, transactions and profile records sync with a secure remote PostgreSQL database on Supabase using encrypted Row Level Security (RLS) policies.',
+    ),
+  ];
+
+  static const String dataRetrievalTitle = 'How Data is Retrieved & Synchronized';
+  static const List<ScopeBulletItem> dataRetrievalItems = [
+    ScopeBulletItem(
+      highlight: 'Offline-First Fetching:',
+      description:
+          'The application immediately reads cached ledger entries from local SQLite upon opening for 0ms lag.',
+    ),
+    ScopeBulletItem(
+      highlight: 'Real-Time Remote Sync:',
+      description:
+          'When online and authenticated, background synchronization fetches updated records from Supabase and reconciles pending offline entries.',
+    ),
+    ScopeBulletItem(
+      highlight: 'SMS & Sensor Decoding:',
+      description:
+          'The QR scanner accesses camera frames strictly in transient memory. Bank SMS verification parses incoming transaction SMS locally without uploading personal messages.',
+    ),
+    ScopeBulletItem(
+      highlight: 'Complete Data Eradication:',
+      description:
+          'You can reset or wipe all local SQLite tables and stored preferences at any time by signing out or clearing application data.',
+    ),
+  ];
+
+  static const String dataTransparencyTitle = 'User Rights & Data Control';
+  static const String dataTransparencyBody =
+      'You retain full control over your financial data. All transaction records and category tags can be purged or exported directly from your device.';
+
+  // Retained for backward-compatibility if referenced elsewhere
   static const String securityBannerTitle = 'End-to-End Encrypted Guard';
   static const String securityBannerDescription =
       'Client-side security policies and sandboxed credential vaulting are enabled for testing.';
-
   static const String devPrivacyNoticeTitle = 'Test & Development Environment Scope';
   static const String devPrivacyNoticeIntro =
-      'HulyPay is actively undergoing rapid engineering cycles, feature experiments, '
-      'and prototype iterations. Please note:';
-
-  static const List<ScopeBulletItem> devPrivacyScopeBullets = [
-    ScopeBulletItem(
-      highlight: 'No Genuine Payment Credentials:',
-      description:
-          'Do NOT input live production credit/debit card numbers, actual banking PINs, or sensitive production secrets.',
-    ),
-    ScopeBulletItem(
-      highlight: 'Local Storage Sandbox:',
-      description:
-          'Transactions are stored locally inside SQLite and demonstration tables. They can be purged or reset at any time during updates.',
-    ),
-    ScopeBulletItem(
-      highlight: 'Telemetry & Diagnostics:',
-      description:
-          'Crash logs and network latency statistics may be collected in debug modes to improve overall UI performance.',
-    ),
-  ];
-
-  static const List<SecurityProtocolItem> securityProtocols = [
-    SecurityProtocolItem(
-      icon: Icons.lock_outline_rounded,
-      title: 'Cryptographic Hashing',
-      description:
-          'All mock transaction payloads and identifiers are uniquely hashed to prevent duplicate replay attempts.',
-    ),
-    SecurityProtocolItem(
-      icon: Icons.camera_alt_outlined,
-      title: 'Camera Sensor Isolation',
-      description:
-          'The QR scanner only accesses camera buffers during active scanning views and never transmits footage remotely.',
-    ),
-    SecurityProtocolItem(
-      icon: Icons.location_off_outlined,
-      title: 'Zero Unwanted Geo-Tracking',
-      description:
-          'Location information attached to payment markers is simulated or requested strictly for local transaction mapping.',
-    ),
-    SecurityProtocolItem(
-      icon: Icons.fingerprint_rounded,
-      title: 'Biometric Keystore Auth',
-      description:
-          'Local hardware biometric tokens stay strictly sandboxed within your secure device hardware enclave.',
-    ),
-  ];
-
-  static const String dataTransparencyTitle = 'User Rights & Data Transparency';
-  static const String dataTransparencyBody =
-      'You retain full control over your local test profile. All transaction entries '
-      'and category aggregates generated during test sessions can be wiped instantly '
-      'from application memory and local device databases.';
+      'HulyPay is actively undergoing rapid engineering cycles, feature experiments, and prototype iterations.';
+  static const List<ScopeBulletItem> devPrivacyScopeBullets = [];
+  static const List<SecurityProtocolItem> securityProtocols = [];
 
   // ---------------------------------------------------------------------------
   // Full Legal Documents: Terms of Service & Privacy Policy
@@ -444,5 +467,164 @@ Website: $creatorWebsiteUrl
       isDevAlert: false,
     ),
   ];
+
+  /// Default categories available for assigning to transactions
+  static const List<TransactionCategoryItem> defaultCategories = [
+    TransactionCategoryItem(
+      name: 'Food & Dining',
+      icon: Icons.restaurant_rounded,
+      color: Color(0xFFFF9500),
+      description: 'Restaurants, cafes, food delivery & groceries',
+    ),
+    TransactionCategoryItem(
+      name: 'Shopping',
+      icon: Icons.shopping_bag_rounded,
+      color: Color(0xFF007AFF),
+      description: 'E-commerce, apparel, electronics & retail',
+    ),
+    TransactionCategoryItem(
+      name: 'Bills & Utilities',
+      icon: Icons.receipt_long_rounded,
+      color: Color(0xFFAF52DE),
+      description: 'Electricity, water, mobile recharge & broadband',
+    ),
+    TransactionCategoryItem(
+      name: 'Transportation',
+      icon: Icons.directions_car_rounded,
+      color: Color(0xFF30D158),
+      description: 'Cabs, fuel, tolls, train & metro tickets',
+    ),
+    TransactionCategoryItem(
+      name: 'Entertainment',
+      icon: Icons.movie_outlined,
+      color: Color(0xFFFF2D55),
+      description: 'Movies, streaming subscriptions & events',
+    ),
+    TransactionCategoryItem(
+      name: 'Groceries',
+      icon: Icons.local_grocery_store_rounded,
+      color: Color(0xFF34C759),
+      description: 'Supermarkets, daily essentials & produce',
+    ),
+    TransactionCategoryItem(
+      name: 'Health & Fitness',
+      icon: Icons.favorite_rounded,
+      color: Color(0xFF5AC8FA),
+      description: 'Pharmacies, clinics, doctors & gym',
+    ),
+    TransactionCategoryItem(
+      name: 'Travel',
+      icon: Icons.flight_takeoff_rounded,
+      color: Color(0xFFFFCC00),
+      description: 'Hotels, flights & vacations',
+    ),
+    TransactionCategoryItem(
+      name: 'Personal Care',
+      icon: Icons.spa_rounded,
+      color: Color(0xFFFF6482),
+      description: 'Salons, grooming & self-care',
+    ),
+    TransactionCategoryItem(
+      name: 'Education',
+      icon: Icons.school_rounded,
+      color: Color(0xFF5856D6),
+      description: 'Courses, books & tuition fees',
+    ),
+    TransactionCategoryItem(
+      name: 'Other',
+      icon: Icons.category_rounded,
+      color: Color(0xFF8E8E93),
+      description: 'General transactions & miscellaneous',
+    ),
+  ];
+
+  /// App Theme presets available for Customization
+  static const List<Map<String, String>> themePresets = [
+    {
+      'id': 'Black',
+      'name': 'OLED Black',
+      'label': 'Black',
+      'description': 'Pure black for AMOLED displays (Default)',
+    },
+    {
+      'id': 'White',
+      'name': 'Clean White',
+      'label': 'White',
+      'description': 'Crisp daytime light mode with high clarity',
+    },
+    {
+      'id': 'Blue',
+      'name': 'Midnight Dark',
+      'label': 'Blue',
+      'description': 'Deep navy and titanium tones (Blue aesthetic)',
+    },
+  ];
+
+  /// Short descriptions for each chart color palette
+  static const Map<String, String> chartPaletteDescriptions = {
+    'Default': 'Electric Blue, vibrant Cyan, Mint, Amber & Rose (Default)',
+    'Emerald Mint': 'Mint and emerald accents for growth and tracking',
+    'Emerald Slate': 'Mint and emerald accents for growth and tracking',
+    'Cyber Purple': 'Neon violet highlights and cyberpunk glow',
+    'Sunset Gold': 'Warm amber, golden orange and coral radiant gradients',
+    'Ocean Blue': 'Sky cyan, electric blue and sapphire marine curves',
+  };
+
+  /// Dark theme style json for embedded Google Maps
+  static const String darkMapStyle = '''[
+  {"elementType": "geometry", "stylers": [{"color": "#181a20"}]},
+  {"elementType": "labels.icon", "stylers": [{"visibility": "off"}]},
+  {"elementType": "labels.text.fill", "stylers": [{"color": "#8c93a0"}]},
+  {"elementType": "labels.text.stroke", "stylers": [{"color": "#141416"}]},
+  {"featureType": "administrative", "elementType": "geometry", "stylers": [{"color": "#383c48"}]},
+  {"featureType": "administrative.country", "elementType": "labels.text.fill", "stylers": [{"color": "#9ca3af"}]},
+  {"featureType": "poi", "elementType": "labels.text.fill", "stylers": [{"color": "#6b7280"}]},
+  {"featureType": "poi.park", "elementType": "geometry", "stylers": [{"color": "#16221c"}]},
+  {"featureType": "road", "elementType": "geometry.fill", "stylers": [{"color": "#232630"}]},
+  {"featureType": "road", "elementType": "labels.text.fill", "stylers": [{"color": "#8a919e"}]},
+  {"featureType": "road.arterial", "elementType": "geometry", "stylers": [{"color": "#2c313d"}]},
+  {"featureType": "road.highway", "elementType": "geometry.fill", "stylers": [{"color": "#343b49"}]},
+  {"featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{"color": "#222731"}]},
+  {"featureType": "water", "elementType": "geometry", "stylers": [{"color": "#101622"}]},
+  {"featureType": "water", "elementType": "labels.text.fill", "stylers": [{"color": "#4b5563"}]}
+]''';
+
+  /// Scan & Pay Screen static copy and configuration messages
+  static const String scanQrTitle = 'Scan & Pay';
+  static const String invalidQrMessage = 'This is not a valid UPI payment QR.';
+  static const String openingGPayMessage = 'Opening Google Pay with scanned QR image...';
+  static const String gPayShareTitle = 'Pay with Google Pay';
+  static const String quickConfirmActiveTitle = 'Quick Confirm is active';
+  static const String switchedToFrontCamera = 'Switched to Front Camera';
+  static const String switchedToRearCamera = 'Switched to Rear Camera';
+  static const String smsPermissionRequiredTitle = 'SMS Permission Required';
+  static const String smsPermissionRequiredContent =
+      'SMS permission is required to verify this development payment. Payment verification through SMS cannot proceed without it.';
+  static const String paymentVerificationTimeoutMsg = 'Payment verification timed out after 5 minutes.';
+  static const String verifyingSmsStatus = 'Analyzing incoming bank transaction SMS...';
+  static const String paymentVerifiedSuccess = 'Payment verified successfully';
+  static const String paymentFailedBankSms = 'Payment failed according to bank SMS';
+  static const String quickConfirmSuccessBody =
+      'Payment has been marked as successful and recorded in your ledger without SMS verification.';
+  static const String smsVerifiedSuccessBody =
+      'Payment has been confirmed via bank transaction SMS and recorded in your ledger.';
+  static const String listeningForSmsBody =
+      'Complete the payment in Google Pay. Huly.Pay is actively listening for your bank transaction SMS.';
+  static const String paymentTimeoutBody =
+      'Payment verification timed out. If money was debited from your account, it will reflect upon refresh.';
+}
+
+class TransactionCategoryItem {
+  final String name;
+  final IconData icon;
+  final Color color;
+  final String description;
+
+  const TransactionCategoryItem({
+    required this.name,
+    required this.icon,
+    required this.color,
+    required this.description,
+  });
 }
 

@@ -344,4 +344,21 @@ class PaymentRepository {
       rethrow;
     }
   }
+
+  /// Delete a payment from local SQLite and Supabase
+  Future<void> deletePayment(String id) async {
+    // 1. Delete from local SQLite cache
+    try {
+      await _localDb.deletePayment(id);
+    } catch (_) {}
+
+    // 2. Delete from Supabase if connected
+    try {
+      final client = AuthService().client;
+      if (client != null && !id.startsWith('local_')) {
+        await client.from('payments').delete().eq('id', id);
+      }
+    } catch (_) {}
+  }
 }
+

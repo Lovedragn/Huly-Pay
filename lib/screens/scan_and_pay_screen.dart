@@ -5,20 +5,22 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:path_provider/path_provider.dart';
+
+import '../data/external_data.dart';
 import '../models/payment_model.dart';
 import '../repositories/payment_repository.dart';
+import '../services/auth_service.dart';
 import '../services/google_pay_service.dart';
+import '../services/local_database_service.dart';
 import '../services/location_service.dart';
 import '../services/qr_share_service.dart';
 import '../services/sms_filter_service.dart';
 import '../services/upi_payment_service.dart';
 import '../services/upi_service.dart';
 import '../services/user_preferences_service.dart';
-import '../services/local_database_service.dart';
-import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
-import 'payment_methods_screen.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
+import 'payment_methods_screen.dart';
 
 class ScanAndPayScreen extends StatefulWidget {
   final double? initialAmount;
@@ -42,6 +44,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   bool _isFrontCamera = false;
   bool _isProcessing = false;
   DateTime? _lastInvalidQrToastTime;
+
+  static const Duration _paymentVerificationTimeout = Duration(minutes: 5);
 
   @override
   void initState() {
@@ -80,34 +84,28 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   void _toggleFlash() async {
     try {
       await _scannerController.toggleTorch();
-      setState(() {
-        _isFlashOn = !_isFlashOn;
-      });
-    } catch (_) {
-      setState(() {
-        _isFlashOn = !_isFlashOn;
-      });
-    }
+    } catch (_) {}
+    setState(() {
+      _isFlashOn = !_isFlashOn;
+    });
   }
 
   void _toggleCamera() async {
     try {
       await _scannerController.switchCamera();
-      setState(() {
-        _isFrontCamera = !_isFrontCamera;
-      });
-    } catch (_) {
-      setState(() {
-        _isFrontCamera = !_isFrontCamera;
-      });
-    }
+    } catch (_) {}
+    setState(() {
+      _isFrontCamera = !_isFrontCamera;
+    });
 
     if (mounted) {
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _isFrontCamera ? 'Switched to Front Camera' : 'Switched to Rear Camera',
+            _isFrontCamera
+                ? ExternalData.switchedToFrontCamera
+                : ExternalData.switchedToRearCamera,
             style: const TextStyle(
               fontFamily: 'Google Sans',
               color: Colors.white,
@@ -127,7 +125,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   Future<String?> _saveCapturedFrame(Uint8List imageBytes) async {
     try {
       final tempDir = await getTemporaryDirectory();
-      final filePath = '${tempDir.path}/scanned_qr_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final filePath =
+          '${tempDir.path}/scanned_qr_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final file = File(filePath);
       await file.writeAsBytes(imageBytes, flush: true);
       return filePath;
@@ -176,7 +175,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
         filePath: imagePath,
         amount: (parsedAmount != null && parsedAmount > 0) ? parsedAmount : null,
         note: note,
-        title: 'Pay with Google Pay',
+        title: ExternalData.gPayShareTitle,
         targetPackage: QrShareService.googlePayPackage,
       );
 
@@ -211,7 +210,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text(
-                'Opening Google Pay with scanned QR image...',
+                ExternalData.openingGPayMessage,
                 style: TextStyle(
                   fontFamily: 'Google Sans',
                   color: Colors.white,
@@ -241,7 +240,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
         }
       }
     } else if (upiData != null) {
-      // Fallback: If image could not be captured, proceed to UPI flow
+      // Fallback: If image could not be captured, proceed to UPI confirmation flow
       _processPaymentFlow(upiData);
     } else {
       setState(() {
@@ -266,7 +265,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text(
-            'This is not a valid UPI payment QR.',
+            ExternalData.invalidQrMessage,
             style: TextStyle(
               fontFamily: 'Google Sans',
               color: Colors.white,
@@ -291,7 +290,6 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
 
     if (!mounted) return;
 
-    // Immediately open payment confirmation modal (0ms latency, like Google Pay)
     await _showPaymentConfirmationModal(upiData);
 
     if (mounted) {
@@ -315,15 +313,16 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     PaymentLocation? capturedLocation = initialLocationResult?.location;
     bool isLocationFetching = capturedLocation == null;
 
-    // Immediately open keyboard for typing amount after page opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (amountFocusNode.canRequestFocus) {
         amountFocusNode.requestFocus();
       }
     });
 
-    final hasPayeeName = upiData.payeeName != null && upiData.payeeName!.trim().isNotEmpty;
-    final primaryTitle = hasPayeeName ? upiData.payeeName!.trim() : upiData.upiId;
+    final hasPayeeName =
+        upiData.payeeName != null && upiData.payeeName!.trim().isNotEmpty;
+    final primaryTitle =
+        hasPayeeName ? upiData.payeeName!.trim() : upiData.upiId;
     final subtitle = hasPayeeName ? upiData.upiId : 'UPI Payee';
 
     await Navigator.of(context).push(
@@ -332,7 +331,6 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
         builder: (pageContext) {
           final colors = AppThemeManager.colors;
 
-          // Concurrent background GPS resolution without blocking UI
           if (isLocationFetching) {
             isLocationFetching = false;
             LocationService().getPaymentLocationWithStatus().then((result) {
@@ -355,7 +353,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                   border: Border.all(color: colors.border, width: 0.5),
                 ),
                 child: IconButton(
-                  icon: Icon(Icons.close_rounded, color: colors.textPrimary, size: 20),
+                  icon: Icon(Icons.close_rounded,
+                      color: colors.textPrimary, size: 20),
                   onPressed: () => Navigator.of(pageContext).pop(),
                   tooltip: 'Cancel',
                 ),
@@ -399,21 +398,23 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
               child: Center(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 420),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Centered Merchant Avatar
+                        // Merchant Avatar
                         Container(
                           width: 68,
                           height: 68,
                           decoration: BoxDecoration(
                             color: colors.surfaceSecondary,
                             shape: BoxShape.circle,
-                            border: Border.all(color: colors.border, width: 1.5),
+                            border:
+                                Border.all(color: colors.border, width: 1.5),
                           ),
                           child: Center(
                             child: Icon(
@@ -425,7 +426,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Centered Merchant Name
+                        // Merchant Name
                         Text(
                           primaryTitle,
                           textAlign: TextAlign.center,
@@ -441,7 +442,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                         ),
                         const SizedBox(height: 6),
 
-                        // Centered Subtitle & Copy Button
+                        // Subtitle & Copy
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -461,26 +462,32 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                             const SizedBox(width: 8),
                             GestureDetector(
                               onTap: () {
-                                Clipboard.setData(ClipboardData(text: upiData.upiId));
+                                Clipboard.setData(
+                                    ClipboardData(text: upiData.upiId));
                                 ScaffoldMessenger.of(pageContext).showSnackBar(
                                   SnackBar(
-                                    content: Text('UPI ID copied: ${upiData.upiId}'),
-                                    duration: const Duration(milliseconds: 1500),
+                                    content:
+                                        Text('UPI ID copied: ${upiData.upiId}'),
+                                    duration:
+                                        const Duration(milliseconds: 1500),
                                     backgroundColor: colors.surfaceSecondary,
                                   ),
                                 );
                               },
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 3),
                                 decoration: BoxDecoration(
                                   color: colors.surfaceSecondary,
                                   borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(color: colors.border, width: 0.5),
+                                  border: Border.all(
+                                      color: colors.border, width: 0.5),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.copy_rounded, size: 12, color: colors.accent),
+                                    Icon(Icons.copy_rounded,
+                                        size: 12, color: colors.accent),
                                     const SizedBox(width: 4),
                                     Text(
                                       'Copy',
@@ -499,14 +506,16 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                         ),
                         const SizedBox(height: 32),
 
-                        // Centered Amount Entry Box
+                        // Amount Entry Box
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 16),
                           decoration: BoxDecoration(
                             color: colors.surface,
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: colors.border, width: 1.2),
+                            border:
+                                Border.all(color: colors.border, width: 1.2),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -541,7 +550,9 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                                       controller: amountController,
                                       focusNode: amountFocusNode,
                                       autofocus: true,
-                                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                      keyboardType:
+                                          const TextInputType.numberWithOptions(
+                                              decimal: true),
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontFamily: 'Google Sans',
@@ -553,7 +564,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                                       decoration: InputDecoration(
                                         hintText: '0.00',
                                         hintStyle: TextStyle(
-                                          color: colors.textMuted.withValues(alpha: 0.35),
+                                          color: colors.textMuted
+                                              .withValues(alpha: 0.35),
                                         ),
                                         border: InputBorder.none,
                                         isDense: true,
@@ -568,7 +580,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Centered Note / Message Field
+                        // Note Field
                         TextField(
                           controller: noteController,
                           textInputAction: TextInputAction.done,
@@ -581,7 +593,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                           ),
                           decoration: InputDecoration(
                             hintText: 'Add a note (optional)',
-                            hintStyle: TextStyle(color: colors.textMuted, fontSize: 13),
+                            hintStyle: TextStyle(
+                                color: colors.textMuted, fontSize: 13),
                             prefixIcon: Icon(
                               Icons.edit_note_rounded,
                               color: colors.accent,
@@ -599,35 +612,43 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(color: colors.accent, width: 1.5),
+                              borderSide:
+                                  BorderSide(color: colors.accent, width: 1.5),
                             ),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 14),
                           ),
                         ),
-
-
                         const SizedBox(height: 32),
 
-                        // Button white based on theme color palette
+                        // Pay Button
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
                               foregroundColor: Colors.black,
-                              side: colors.isDark ? BorderSide.none : BorderSide(color: colors.border, width: 1.5),
+                              side: colors.isDark
+                                  ? BorderSide.none
+                                  : BorderSide(
+                                      color: colors.border, width: 1.5),
                               elevation: colors.isDark ? 2 : 0,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
                             ),
                             onPressed: () async {
                               final messenger = ScaffoldMessenger.of(context);
-                              final parsedAmount = double.tryParse(amountController.text.trim()) ?? 0.0;
+                              final parsedAmount = double.tryParse(
+                                      amountController.text.trim()) ??
+                                  0.0;
                               if (parsedAmount <= 0) {
                                 messenger.showSnackBar(
-                                  const SnackBar(content: Text('Please enter a valid amount greater than 0')),
+                                  const SnackBar(
+                                      content: Text(
+                                          'Please enter a valid amount greater than 0')),
                                 );
                                 return;
                               }
@@ -641,16 +662,20 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                                 currency: upiData.currency,
                                 transactionRef: upiData.transactionRef,
                                 transactionId: upiData.transactionId,
-                                note: updatedNote.isNotEmpty ? updatedNote : upiData.note,
+                                note: updatedNote.isNotEmpty
+                                    ? updatedNote
+                                    : upiData.note,
                                 merchantCode: upiData.merchantCode,
                               );
 
                               Navigator.of(pageContext).pop();
-                              await _startSmsVerificationWorkflow(updatedUpiData, parsedAmount, capturedLocation);
+                              await _startSmsVerificationWorkflow(
+                                  updatedUpiData, parsedAmount, capturedLocation);
                             },
                             child: Text(
                               () {
-                                final pref = UserPreferencesService().cachedDefaultPaymentApp;
+                                final pref = UserPreferencesService()
+                                    .cachedDefaultPaymentApp;
                                 final app = UpiApps.findById(pref);
                                 final target = app?.name ?? 'UPI App';
                                 return 'Pay via $target';
@@ -676,8 +701,6 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     );
   }
 
-  static const Duration paymentVerificationTimeout = Duration(minutes: 5);
-
   Future<void> _startSmsVerificationWorkflow(
     UpiPaymentData upiData,
     double parsedAmount,
@@ -685,7 +708,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   ) async {
     final bool isQuickConfirm = UserPreferencesService().cachedQuickConfirm;
 
-    // 1. Check & Request SMS Permission (Part 4) - Bypassed if Quick Confirm is active
+    // Check & Request SMS Permission if Quick Confirm is off
     if (!isQuickConfirm) {
       bool hasPermission = await GooglePayService.isSmsPermissionGranted();
       if (!hasPermission) {
@@ -698,13 +721,15 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
             context: context,
             builder: (ctx) => AlertDialog(
               backgroundColor: const Color(0xFF1E1E24),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
               title: const Row(
                 children: [
-                  Icon(Icons.sms_failed_rounded, color: Color(0xFFE5A93C), size: 24),
+                  Icon(Icons.sms_failed_rounded,
+                      color: Color(0xFFE5A93C), size: 24),
                   SizedBox(width: 10),
                   Text(
-                    'SMS Permission Required',
+                    ExternalData.smsPermissionRequiredTitle,
                     style: TextStyle(
                       fontFamily: 'Google Sans',
                       color: Colors.white,
@@ -715,27 +740,37 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 ],
               ),
               content: const Text(
-                'SMS permission is required to verify this development payment. Payment verification through SMS cannot proceed without it.',
-                style: TextStyle(fontFamily: 'Google Sans', color: Color(0xFFD0D0D5), fontSize: 14, height: 1.4),
+                ExternalData.smsPermissionRequiredContent,
+                style: TextStyle(
+                    fontFamily: 'Google Sans',
+                    color: Color(0xFFD0D0D5),
+                    fontSize: 14,
+                    height: 1.4),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('Dismiss', style: TextStyle(color: Color(0xFF8E8E93))),
+                  child: const Text('Dismiss',
+                      style: TextStyle(color: Color(0xFF8E8E93))),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF007AFF),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                   ),
                   onPressed: () async {
                     Navigator.of(ctx).pop();
-                    final retryGranted = await GooglePayService.requestSmsPermission();
+                    final retryGranted =
+                        await GooglePayService.requestSmsPermission();
                     if (retryGranted && mounted) {
-                      _startSmsVerificationWorkflow(upiData, parsedAmount, capturedLocation);
+                      _startSmsVerificationWorkflow(
+                          upiData, parsedAmount, capturedLocation);
                     }
                   },
-                  child: const Text('Grant Permission', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                  child: const Text('Grant Permission',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.w700)),
                 ),
               ],
             ),
@@ -745,8 +780,9 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       }
     }
 
-    // 2. Determine Preferred UPI Application & Check Availability
-    final preferredAppId = await UserPreferencesService().getDefaultPaymentApp();
+    // Determine Preferred UPI Application & Check Availability
+    final preferredAppId =
+        await UserPreferencesService().getDefaultPaymentApp();
     bool isAppReady = true;
     SupportedUpiApp? targetApp;
 
@@ -756,10 +792,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
         isAppReady = await UpiPaymentService.isAppInstalled(targetApp.id);
       }
     } else {
-      // For ask_every_time, check if at least one UPI app exists on Android
       final installed = await UpiPaymentService.getInstalledUpiPackages();
       if (installed.isEmpty) {
-        // Fallback: Check if Google Pay or standard intent resolves
         isAppReady = await GooglePayService.isReadyToPay();
       }
     }
@@ -771,10 +805,12 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
           context: context,
           builder: (ctx) => AlertDialog(
             backgroundColor: const Color(0xFF1E1E24),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20)),
             title: Row(
               children: [
-                const Icon(Icons.warning_amber_rounded, color: Color(0xFFE5A93C), size: 24),
+                const Icon(Icons.warning_amber_rounded,
+                    color: Color(0xFFE5A93C), size: 24),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -791,30 +827,38 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
             ),
             content: Text(
               '$missingAppName is not installed on this device. Would you like to use the Android app chooser or select another UPI application?',
-              style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFFD0D0D5), fontSize: 14, height: 1.4),
+              style: const TextStyle(
+                  fontFamily: 'Google Sans',
+                  color: Color(0xFFD0D0D5),
+                  fontSize: 14,
+                  height: 1.4),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('Cancel', style: TextStyle(color: Color(0xFF8E8E93))),
+                child: const Text('Cancel',
+                    style: TextStyle(color: Color(0xFF8E8E93))),
               ),
               TextButton(
                 onPressed: () {
                   Navigator.of(ctx).pop();
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const PaymentMethodsScreen()),
+                    MaterialPageRoute(
+                        builder: (_) => const PaymentMethodsScreen()),
                   );
                 },
-                child: const Text('Change Default App', style: TextStyle(color: Color(0xFF007AFF), fontWeight: FontWeight.w600)),
+                child: const Text('Change Default App',
+                    style: TextStyle(
+                        color: Color(0xFF007AFF), fontWeight: FontWeight.w600)),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF007AFF),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                 ),
                 onPressed: () async {
                   Navigator.of(ctx).pop();
-                  // Open available payment app standalone
                   await _launchUpiAndStartVerification(
                     upiData: upiData,
                     parsedAmount: parsedAmount,
@@ -822,7 +866,9 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                     forceAskEveryTime: true,
                   );
                 },
-                child: const Text('Open Any Payment App', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                child: const Text('Open Any Payment App',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w700)),
               ),
             ],
           ),
@@ -847,11 +893,11 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   }) async {
     final messenger = ScaffoldMessenger.of(context);
     final currentPref = await UserPreferencesService().getDefaultPaymentApp();
-    final effectiveAppId = forceAskEveryTime ? UpiApps.askEveryTime : currentPref;
+    final effectiveAppId =
+        forceAskEveryTime ? UpiApps.askEveryTime : currentPref;
     final bool isQuickConfirm = UserPreferencesService().cachedQuickConfirm;
     final String paymentStatus = isQuickConfirm ? 'CONFIRMED' : 'PENDING';
 
-    // 3. Create Payment in Spring Boot / Local DB (CONFIRMED for Quick Confirm, PENDING for SMS verification)
     final txnRef = 'HULY${DateTime.now().millisecondsSinceEpoch}';
     final nowIso = DateTime.now().toIso8601String();
     final providerName = effectiveAppId == 'google_pay'
@@ -862,26 +908,32 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 ? 'PHONEPE'
                 : (effectiveAppId == 'bhim' ? 'BHIM' : 'UPI')));
 
-    // 3a. Auto-resolve category from previously saved UPI ID / merchant mappings
+    // Auto-resolve category
     String? autoCategory;
     try {
       final cleanUpi = upiData.upiId.toLowerCase().trim();
       if (cleanUpi.isNotEmpty) {
-        autoCategory = await LocalDatabaseService().getMetadata('upi_category_$cleanUpi');
+        autoCategory =
+            await LocalDatabaseService().getMetadata('upi_category_$cleanUpi');
       }
       if ((autoCategory == null || autoCategory.isEmpty) &&
           upiData.payeeName != null &&
           upiData.payeeName!.trim().isNotEmpty) {
         final cleanMerchant = upiData.payeeName!.toLowerCase().trim();
-        autoCategory = await LocalDatabaseService().getMetadata('merchant_category_$cleanMerchant');
+        autoCategory = await LocalDatabaseService()
+            .getMetadata('merchant_category_$cleanMerchant');
       }
     } catch (_) {}
 
-    final effectivePaymentMethod = (autoCategory != null && autoCategory.isNotEmpty) ? autoCategory : 'UPI';
+    final effectivePaymentMethod =
+        (autoCategory != null && autoCategory.isNotEmpty)
+            ? autoCategory
+            : 'UPI';
 
     PaymentModel pendingPayment;
     try {
-      pendingPayment = await PaymentRepository().createPayment(CreatePaymentPayload(
+      pendingPayment =
+          await PaymentRepository().createPayment(CreatePaymentPayload(
         amount: parsedAmount,
         currency: upiData.currency,
         merchantName: upiData.payeeName,
@@ -913,13 +965,12 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       );
     }
 
-    // 3b. Persist auto-resolved category to local metadata & Supabase
     if (autoCategory != null && autoCategory.isNotEmpty) {
       try {
-        await LocalDatabaseService().setMetadata('category_${pendingPayment.id}', autoCategory);
+        await LocalDatabaseService()
+            .setMetadata('category_${pendingPayment.id}', autoCategory);
       } catch (_) {}
 
-      // Update Supabase if it's a remote payment
       try {
         final client = AuthService().client;
         if (client != null &&
@@ -942,8 +993,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       } catch (_) {}
     }
 
-    // 4. Launch Standalone External Application Separately (without pre-filled amount)
-    // User can manually add amount and pay the user directly inside their payment app
+    // Launch target app standalone
     bool launched = false;
     String? launchedAppName;
 
@@ -954,7 +1004,6 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
         launched = await UpiPaymentService.openApp(app.packageName);
       }
     } else {
-      // For ask_every_time, open first available payment app standalone
       final available = await UpiPaymentService.getAvailableSupportedApps();
       if (available.isNotEmpty) {
         launchedAppName = available.first.name;
@@ -962,9 +1011,9 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       }
     }
 
-    // Fallback: If direct package launch failed or wasn't resolved, use launchStandaloneApp
     if (!launched) {
-      launched = await UpiPaymentService.launchStandaloneApp(preferredAppId: effectiveAppId);
+      launched = await UpiPaymentService.launchStandaloneApp(
+          preferredAppId: effectiveAppId);
     }
 
     if (!launched) {
@@ -981,7 +1030,6 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       return;
     }
 
-    // 5. Open Verification Modal or Quick Confirm Dialog
     if (mounted) {
       if (isQuickConfirm) {
         _showQuickConfirmSuccessDialog(pendingPayment, upiData);
@@ -991,7 +1039,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     }
   }
 
-  void _showQuickConfirmSuccessDialog(PaymentModel payment, UpiPaymentData upiData) {
+  void _showQuickConfirmSuccessDialog(
+      PaymentModel payment, UpiPaymentData upiData) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -1047,13 +1096,17 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
             const SizedBox(height: 6),
             Text(
               'Merchant: ${payment.merchantName ?? payment.upiId ?? "UPI Merchant"}',
-              style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 13),
+              style: const TextStyle(
+                  fontFamily: 'Google Sans',
+                  color: Color(0xFF8E8E93),
+                  fontSize: 13),
             ),
             const SizedBox(height: 14),
 
             // Quick Confirm Badge
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: const Color(0xFF161619),
                 borderRadius: BorderRadius.circular(10),
@@ -1085,7 +1138,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
             ),
             const SizedBox(height: 12),
             const Text(
-              'Payment has been marked as successful and recorded in your ledger without SMS verification.',
+              ExternalData.quickConfirmSuccessBody,
               style: TextStyle(
                 fontFamily: 'Google Sans',
                 color: Color(0xFFA0A0A8),
@@ -1099,16 +1152,19 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF28A745),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             ),
             onPressed: () {
               Navigator.of(dialogCtx).pop();
-              _handleBack(0); // Return to home on success
+              _handleBack(0);
             },
             child: const Text(
               'Done',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+              style: TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.w700),
             ),
           ),
         ],
@@ -1116,10 +1172,11 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     );
   }
 
-  void _showSmsVerificationDialog(PaymentModel payment, UpiPaymentData upiData) {
-    int remainingSeconds = paymentVerificationTimeout.inSeconds;
+  void _showSmsVerificationDialog(
+      PaymentModel payment, UpiPaymentData upiData) {
+    int remainingSeconds = _paymentVerificationTimeout.inSeconds;
     Timer? timer;
-    String statusState = 'WAITING'; // 'WAITING', 'VERIFYING', 'SUCCESS', 'FAILED', 'TIMEOUT'
+    String statusState = 'WAITING';
     String? statusMessage;
     String? resolvedUpiTxnId;
 
@@ -1145,7 +1202,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 GooglePayService.stopSmsListener();
                 setDialogState(() {
                   statusState = 'TIMEOUT';
-                  statusMessage = 'Payment verification timed out after 5 minutes.';
+                  statusMessage = ExternalData.paymentVerificationTimeoutMsg;
                 });
                 PaymentRepository().reconcilePayment(payment.id, 'TIMEOUT');
               }
@@ -1157,7 +1214,6 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
               final sender = smsData['sender']?.toString();
               final timestamp = smsData['timestamp']?.toString();
 
-              // Preliminary local financial filter (Part 6)
               if (!SmsFilterService.isFinancialTransactionSms(body)) {
                 return;
               }
@@ -1165,7 +1221,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
               if (dialogCtx.mounted) {
                 setDialogState(() {
                   statusState = 'VERIFYING';
-                  statusMessage = 'Analyzing incoming bank transaction SMS...';
+                  statusMessage = ExternalData.verifyingSmsStatus;
                 });
               }
 
@@ -1179,22 +1235,26 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
 
                 final bool isVerified = result['verified'] == true;
                 final String? resultStatus = result['status']?.toString();
-                final String? upiRef = result['extractedUpiReference']?.toString();
+                final String? upiRef =
+                    result['extractedUpiReference']?.toString();
 
                 if (isVerified && dialogCtx.mounted) {
                   timer?.cancel();
                   await GooglePayService.stopSmsListener();
 
-                  if (resultStatus == 'SUCCESS' || resultStatus == 'CONFIRMED') {
+                  if (resultStatus == 'SUCCESS' ||
+                      resultStatus == 'CONFIRMED') {
                     setDialogState(() {
                       statusState = 'SUCCESS';
-                      statusMessage = result['message']?.toString() ?? 'Payment verified successfully';
+                      statusMessage = result['message']?.toString() ??
+                          ExternalData.paymentVerifiedSuccess;
                       resolvedUpiTxnId = upiRef;
                     });
                   } else if (resultStatus == 'FAILED') {
                     setDialogState(() {
                       statusState = 'FAILED';
-                      statusMessage = result['message']?.toString() ?? 'Payment failed according to bank SMS';
+                      statusMessage = result['message']?.toString() ??
+                          ExternalData.paymentFailedBankSms;
                       resolvedUpiTxnId = upiRef;
                     });
                   }
@@ -1226,7 +1286,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
 
           return AlertDialog(
             backgroundColor: const Color(0xFF1E1E24),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20)),
             title: Row(
               children: [
                 Container(
@@ -1239,7 +1300,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                             ? const Color(0xFFD93025).withValues(alpha: 0.15)
                             : (isTimeout
                                 ? const Color(0xFFE5A93C).withValues(alpha: 0.15)
-                                : const Color(0xFF007AFF).withValues(alpha: 0.15))),
+                                : const Color(0xFF007AFF)
+                                    .withValues(alpha: 0.15))),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Center(
@@ -1311,9 +1373,13 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 const SizedBox(height: 6),
                 Text(
                   'Merchant: ${payment.merchantName ?? payment.upiId ?? "UPI Merchant"}',
-                  style: const TextStyle(fontFamily: 'Google Sans', color: Color(0xFF8E8E93), fontSize: 13),
+                  style: const TextStyle(
+                      fontFamily: 'Google Sans',
+                      color: Color(0xFF8E8E93),
+                      fontSize: 13),
                 ),
-                if (resolvedUpiTxnId != null && resolvedUpiTxnId!.isNotEmpty) ...[
+                if (resolvedUpiTxnId != null &&
+                    resolvedUpiTxnId!.isNotEmpty) ...[
                   const SizedBox(height: 6),
                   Text(
                     'UPI Ref / UTR: $resolvedUpiTxnId',
@@ -1329,7 +1395,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
 
                 // Timer badge & status indicator
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: const Color(0xFF161619),
                     borderRadius: BorderRadius.circular(10),
@@ -1339,8 +1406,10 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                           : (isFailed
                               ? const Color(0xFFD93025).withValues(alpha: 0.3)
                               : (isTimeout
-                                  ? const Color(0xFFE5A93C).withValues(alpha: 0.3)
-                                  : const Color(0xFF007AFF).withValues(alpha: 0.3))),
+                                  ? const Color(0xFFE5A93C)
+                                      .withValues(alpha: 0.3)
+                                  : const Color(0xFF007AFF)
+                                      .withValues(alpha: 0.3))),
                     ),
                   ),
                   child: Row(
@@ -1348,11 +1417,15 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                       Icon(
                         isSuccess
                             ? Icons.verified_rounded
-                            : (isTimeout ? Icons.timer_off_outlined : Icons.schedule_rounded),
+                            : (isTimeout
+                                ? Icons.timer_off_outlined
+                                : Icons.schedule_rounded),
                         size: 16,
                         color: isSuccess
                             ? const Color(0xFF28A745)
-                            : (isTimeout ? const Color(0xFFE5A93C) : const Color(0xFF007AFF)),
+                            : (isTimeout
+                                ? const Color(0xFFE5A93C)
+                                : const Color(0xFF007AFF)),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
@@ -1361,14 +1434,18 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                               ? 'Verified via SMS'
                               : (isFailed
                                   ? 'Transaction Failed'
-                                  : (isTimeout ? '5-minute window expired' : 'SMS verification active • $timerText')),
+                                  : (isTimeout
+                                      ? '5-minute window expired'
+                                      : 'SMS verification active • $timerText')),
                           style: TextStyle(
                             fontFamily: 'Google Sans',
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: isSuccess
                                 ? const Color(0xFF28A745)
-                                : (isTimeout ? const Color(0xFFE5A93C) : const Color(0xFFD0D0D5)),
+                                : (isTimeout
+                                    ? const Color(0xFFE5A93C)
+                                    : const Color(0xFFD0D0D5)),
                           ),
                         ),
                       ),
@@ -1378,12 +1455,12 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 const SizedBox(height: 12),
                 Text(
                   isSuccess
-                      ? 'Payment has been confirmed via bank transaction SMS and recorded in your ledger.'
+                      ? ExternalData.smsVerifiedSuccessBody
                       : (isFailed
-                          ? (statusMessage ?? 'Payment failed according to bank SMS notification.')
+                          ? (statusMessage ?? ExternalData.paymentFailedBankSms)
                           : (isTimeout
-                              ? 'Payment verification timed out. If money was debited from your account, it will reflect upon refresh.'
-                              : 'Complete the payment in Google Pay. Huly.Pay is actively listening for your bank transaction SMS.')),
+                              ? ExternalData.paymentTimeoutBody
+                              : ExternalData.listeningForSmsBody)),
                   style: const TextStyle(
                     fontFamily: 'Google Sans',
                     color: Color(0xFFA0A0A8),
@@ -1399,32 +1476,40 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                   onPressed: () {
                     timer?.cancel();
                     GooglePayService.stopSmsListener();
-                    PaymentRepository().reconcilePayment(payment.id, 'CANCELLED');
+                    PaymentRepository()
+                        .reconcilePayment(payment.id, 'CANCELLED');
                     Navigator.of(dialogCtx).pop();
                   },
                   child: const Text(
                     'Cancel',
-                    style: TextStyle(color: Color(0xFF8E8E93), fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                        color: Color(0xFF8E8E93), fontWeight: FontWeight.w500),
                   ),
                 ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isSuccess
                       ? const Color(0xFF28A745)
-                      : (isFailed ? const Color(0xFFD93025) : const Color(0xFF007AFF)),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      : (isFailed
+                          ? const Color(0xFFD93025)
+                          : const Color(0xFF007AFF)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                 ),
                 onPressed: () {
                   timer?.cancel();
                   GooglePayService.stopSmsListener();
                   Navigator.of(dialogCtx).pop();
                   if (isSuccess) {
-                    _handleBack(0); // Return to home on success
+                    _handleBack(0);
                   }
                 },
                 child: Text(
-                  isSuccess ? 'Done' : (isFailed || isTimeout ? 'Dismiss' : 'Waiting...'),
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                  isSuccess
+                      ? 'Done'
+                      : (isFailed || isTimeout ? 'Dismiss' : 'Waiting...'),
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w700),
                 ),
               ),
             ],
@@ -1434,14 +1519,13 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF000000),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final scanBoxSize = 260.0;
+          const scanBoxSize = 260.0;
           final centerOffset = Offset(
             constraints.maxWidth / 2,
             constraints.maxHeight * 0.40,
@@ -1476,7 +1560,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 painter: ScannerOverlayPainter(
                   cutoutRect: cutoutRect,
                   cornerRadius: 20.0,
-                  overlayColor: const Color(0x99000000), // 60% semi-transparent dark surround
+                  overlayColor: const Color(0x99000000),
                 ),
               ),
 
@@ -1496,7 +1580,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                       ),
                     ),
                     child: CustomPaint(
-                      size: Size(scanBoxSize, scanBoxSize),
+                      size: const Size(scanBoxSize, scanBoxSize),
                       painter: ScannerFramePainter(
                         cornerColor: Colors.white,
                         cornerLength: 36.0,
@@ -1549,9 +1633,10 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                             SnackBar(
                               content: const Row(
                                 children: [
-                                  Icon(Icons.bolt_rounded, color: Color(0xFFFFB300), size: 18),
+                                  Icon(Icons.bolt_rounded,
+                                      color: Color(0xFFFFB300), size: 18),
                                   SizedBox(width: 8),
-                                  Text('Quick Confirm is active'),
+                                  Text(ExternalData.quickConfirmActiveTitle),
                                 ],
                               ),
                               duration: const Duration(seconds: 2),
@@ -1565,12 +1650,13 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                         },
                         behavior: HitTestBehavior.opaque,
                         child: Tooltip(
-                          message: 'Quick Confirm active',
+                          message: ExternalData.quickConfirmActiveTitle,
                           child: Container(
                             width: 44,
                             height: 44,
                             decoration: BoxDecoration(
-                              color: const Color(0xFF161619).withValues(alpha: 0.8),
+                              color: const Color(0xFF161619)
+                                  .withValues(alpha: 0.8),
                               shape: BoxShape.circle,
                               border: Border.all(
                                 color: const Color(0xFF24242A),
@@ -1601,12 +1687,15 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                   children: [
                     if (_amountController.text.trim().isNotEmpty) ...[
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 7),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF161619).withValues(alpha: 0.85),
+                          color:
+                              const Color(0xFF161619).withValues(alpha: 0.85),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: const Color(0xFF30D158).withValues(alpha: 0.4),
+                            color: const Color(0xFF30D158)
+                                .withValues(alpha: 0.4),
                             width: 1.2,
                           ),
                         ),
@@ -1646,7 +1735,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF161619).withValues(alpha: 0.85),
+                          color:
+                              const Color(0xFF161619).withValues(alpha: 0.85),
                           borderRadius: BorderRadius.circular(100),
                           border: Border.all(
                             color: const Color(0xFF2A2A30),
@@ -1668,96 +1758,96 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 ),
               ),
 
-            // Controls on right side
-            Positioned(
-              right: 34,
-              bottom: 118,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  GestureDetector(
-                    key: const Key('flash_button'),
-                    onTap: _toggleFlash,
-                    behavior: HitTestBehavior.opaque,
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: _isFlashOn
-                            ? const Color(0xFF007AFF)
-                            : const Color(0xFF161619),
-                        shape: BoxShape.circle,
-                        border: Border.all(
+              // Controls on right side
+              Positioned(
+                right: 34,
+                bottom: 118,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GestureDetector(
+                      key: const Key('flash_button'),
+                      onTap: _toggleFlash,
+                      behavior: HitTestBehavior.opaque,
+                      child: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
                           color: _isFlashOn
                               ? const Color(0xFF007AFF)
-                              : const Color(0xFF24242A),
-                          width: 1,
+                              : const Color(0xFF161619),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: _isFlashOn
+                                ? const Color(0xFF007AFF)
+                                : const Color(0xFF24242A),
+                            width: 1,
+                          ),
                         ),
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.bolt_rounded,
-                          color: Colors.white,
-                          size: 22,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  GestureDetector(
-                    key: const Key('switch_camera_button'),
-                    onTap: _toggleCamera,
-                    behavior: HitTestBehavior.opaque,
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: _isFrontCamera
-                            ? const Color(0xFF007AFF)
-                            : const Color(0xFF161619),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: _isFrontCamera
-                              ? const Color(0xFF007AFF)
-                              : const Color(0xFF24242A),
-                          width: 1,
-                        ),
-                      ),
-                      child: Center(
-                        child: SvgPicture.asset(
-                          'assets/icon/switch.svg',
-                          width: 20,
-                          height: 20,
-                          colorFilter: const ColorFilter.mode(
-                            Colors.white,
-                            BlendMode.srcIn,
+                        child: const Center(
+                          child: Icon(
+                            Icons.bolt_rounded,
+                            color: Colors.white,
+                            size: 22,
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      key: const Key('switch_camera_button'),
+                      onTap: _toggleCamera,
+                      behavior: HitTestBehavior.opaque,
+                      child: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: _isFrontCamera
+                              ? const Color(0xFF007AFF)
+                              : const Color(0xFF161619),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: _isFrontCamera
+                                ? const Color(0xFF007AFF)
+                                : const Color(0xFF24242A),
+                            width: 1,
+                          ),
+                        ),
+                        child: Center(
+                          child: SvgPicture.asset(
+                            'assets/icon/switch.svg',
+                            width: 20,
+                            height: 20,
+                            colorFilter: const ColorFilter.mode(
+                              Colors.white,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-            // Bottom Navigation Bar
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: CustomBottomNavBar(
-                selectedIndex: -1,
-                onItemSelected: (index) {
-                  _handleBack(index);
-                },
+              // Bottom Navigation Bar
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: CustomBottomNavBar(
+                  selectedIndex: -1,
+                  onItemSelected: (index) {
+                    _handleBack(index);
+                  },
+                ),
               ),
-            ),
-          ],
-        );
-      },
-    ),
-  );
-}
+            ],
+          );
+        },
+      ),
+    );
+  }
 }
 
 class ScannerFramePainter extends CustomPainter {
@@ -1836,7 +1926,7 @@ class ScannerOverlayPainter extends CustomPainter {
   ScannerOverlayPainter({
     required this.cutoutRect,
     this.cornerRadius = 20.0,
-    this.overlayColor = const Color(0xB3000000), // ~70% black semi-transparent
+    this.overlayColor = const Color(0xB3000000),
   });
 
   @override
@@ -1852,7 +1942,6 @@ class ScannerOverlayPainter extends CustomPainter {
         ),
       );
 
-    // Subtract the cutout from the full screen background
     final overlayPath = Path.combine(
       PathOperation.difference,
       backgroundPath,
@@ -1872,4 +1961,3 @@ class ScannerOverlayPainter extends CustomPainter {
       oldDelegate.cornerRadius != cornerRadius ||
       oldDelegate.overlayColor != overlayColor;
 }
-
