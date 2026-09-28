@@ -144,9 +144,9 @@
     "semantic_hash": ""
   },
   "lib/screens/privacy_security_screen.dart": {
-    "mtime": 1790586893.2949336,
-    "seen": 1790586922.5795357,
-    "ast_hash": "1a41bdf568aafb8d0a8d144c066be7c2",
+    "mtime": 1790586800.659849,
+    "seen": 1790586826.765565,
+    "ast_hash": "6de617bdfa70e2d1913a46360e5f5e20",
     "semantic_hash": ""
   },
   "lib/screens/scan_and_pay_screen.dart": {

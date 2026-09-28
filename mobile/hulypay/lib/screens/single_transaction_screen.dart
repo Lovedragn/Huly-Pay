@@ -6,12 +6,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../data/external_data.dart';
 import '../models/dashboard_data.dart';
 import '../models/payment_model.dart';
 import '../repositories/payment_repository.dart';
 import '../services/auth_service.dart';
 import '../services/local_database_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/category_picker_sheet.dart';
+import '../widgets/transaction_detail_components.dart';
 
 class SingleTransactionScreen extends StatefulWidget {
   final TransactionItem transaction;
@@ -37,29 +40,12 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
   bool _isLoading = false;
   bool _isReconciling = false;
   bool _isCancelling = false;
+  bool _isDeleting = false;
   GoogleMapController? _mapController;
   String? _customCategory;
   final ValueNotifier<double> _sheetExtentNotifier = ValueNotifier<double>(
     0.54,
   );
-
-  static const String _darkMapStyle = '''[
-  {"elementType": "geometry", "stylers": [{"color": "#181a20"}]},
-  {"elementType": "labels.icon", "stylers": [{"visibility": "off"}]},
-  {"elementType": "labels.text.fill", "stylers": [{"color": "#8c93a0"}]},
-  {"elementType": "labels.text.stroke", "stylers": [{"color": "#141416"}]},
-  {"featureType": "administrative", "elementType": "geometry", "stylers": [{"color": "#383c48"}]},
-  {"featureType": "administrative.country", "elementType": "labels.text.fill", "stylers": [{"color": "#9ca3af"}]},
-  {"featureType": "poi", "elementType": "labels.text.fill", "stylers": [{"color": "#6b7280"}]},
-  {"featureType": "poi.park", "elementType": "geometry", "stylers": [{"color": "#16221c"}]},
-  {"featureType": "road", "elementType": "geometry.fill", "stylers": [{"color": "#232630"}]},
-  {"featureType": "road", "elementType": "labels.text.fill", "stylers": [{"color": "#8a919e"}]},
-  {"featureType": "road.arterial", "elementType": "geometry", "stylers": [{"color": "#2c313d"}]},
-  {"featureType": "road.highway", "elementType": "geometry.fill", "stylers": [{"color": "#343b49"}]},
-  {"featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{"color": "#222731"}]},
-  {"featureType": "water", "elementType": "geometry", "stylers": [{"color": "#101622"}]},
-  {"featureType": "water", "elementType": "labels.text.fill", "stylers": [{"color": "#4b5563"}]}
-]''';
 
   @override
   void initState() {
@@ -383,7 +369,38 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
     );
   }
 
-  void _showReportIssueDialog(BuildContext context) {
+  Future<void> _handleDeletePayment() async {
+    final paymentId = _currentPayment?.id ?? widget.transaction.id;
+    setState(() => _isDeleting = true);
+
+    try {
+      await PaymentRepository().deletePayment(paymentId);
+      if (mounted) {
+        setState(() => _isDeleting = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Transaction deleted successfully.'),
+            backgroundColor: Color(0xFF1E1E24),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        Navigator.of(context).pop(true);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isDeleting = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Delete error: $e'),
+            backgroundColor: const Color(0xFFD93025),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext ctx) {
@@ -392,16 +409,23 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: const Text(
-            'Report an Issue',
-            style: TextStyle(
-              fontFamily: 'Google Sans',
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-            ),
+          title: const Row(
+            children: [
+              Icon(Icons.delete_outline_rounded, color: Color(0xFFFF453A), size: 22),
+              SizedBox(width: 8),
+              Text(
+                'Delete Transaction',
+                style: TextStyle(
+                  fontFamily: 'Google Sans',
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                ),
+              ),
+            ],
           ),
           content: Text(
-            'Do you want to raise a dispute for this payment of $_displayAmount to $_merchantTitle?',
+            'Are you sure you want to delete this transaction of $_displayAmount to $_merchantTitle? This action cannot be undone.',
             style: const TextStyle(
               fontFamily: 'Google Sans',
               color: Color(0xFF8E8E93),
@@ -423,25 +447,13 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
             TextButton(
               onPressed: () {
                 Navigator.of(ctx).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text(
-                      'Dispute ticket raised. Our support team will review within 24 hours.',
-                      style: TextStyle(fontFamily: 'Google Sans'),
-                    ),
-                    backgroundColor: const Color(0xFF222226),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                );
+                _handleDeletePayment();
               },
               child: const Text(
-                'Submit Dispute',
+                'Yes, Delete',
                 style: TextStyle(
                   fontFamily: 'Google Sans',
-                  color: Color(0xFF007AFF),
+                  color: Color(0xFFFF453A),
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -452,76 +464,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
     );
   }
 
-  static const List<Map<String, dynamic>> _kDefaultCategories = [
-    {
-      'name': 'Food & Dining',
-      'icon': Icons.restaurant_rounded,
-      'color': Color(0xFFFF9500),
-      'description': 'Restaurants, cafes, food delivery & groceries',
-    },
-    {
-      'name': 'Shopping',
-      'icon': Icons.shopping_bag_rounded,
-      'color': Color(0xFF007AFF),
-      'description': 'E-commerce, apparel, electronics & retail',
-    },
-    {
-      'name': 'Bills & Utilities',
-      'icon': Icons.receipt_long_rounded,
-      'color': Color(0xFFAF52DE),
-      'description': 'Electricity, water, mobile recharge & broadband',
-    },
-    {
-      'name': 'Transportation',
-      'icon': Icons.directions_car_rounded,
-      'color': Color(0xFF30D158),
-      'description': 'Cabs, fuel, tolls, train & metro tickets',
-    },
-    {
-      'name': 'Entertainment',
-      'icon': Icons.movie_outlined,
-      'color': Color(0xFFFF2D55),
-      'description': 'Movies, streaming subscriptions & events',
-    },
-    {
-      'name': 'Groceries',
-      'icon': Icons.local_grocery_store_rounded,
-      'color': Color(0xFF34C759),
-      'description': 'Supermarkets, daily essentials & produce',
-    },
-    {
-      'name': 'Health & Fitness',
-      'icon': Icons.favorite_rounded,
-      'color': Color(0xFF5AC8FA),
-      'description': 'Pharmacies, clinics, doctors & gym',
-    },
-    {
-      'name': 'Travel',
-      'icon': Icons.flight_takeoff_rounded,
-      'color': Color(0xFFFFCC00),
-      'description': 'Hotels, flights & vacations',
-    },
-    {
-      'name': 'Personal Care',
-      'icon': Icons.spa_rounded,
-      'color': Color(0xFFFF6482),
-      'description': 'Salons, grooming & self-care',
-    },
-    {
-      'name': 'Education',
-      'icon': Icons.school_rounded,
-      'color': Color(0xFF5856D6),
-      'description': 'Courses, books & tuition fees',
-    },
-    {
-      'name': 'Other',
-      'icon': Icons.category_rounded,
-      'color': Color(0xFF8E8E93),
-      'description': 'General transactions & miscellaneous',
-    },
-  ];
-
-  Future<void> _updateCategory(String newCategory, [BuildContext? targetContext]) async {
+  Future<void> _updateCategory(String newCategory) async {
     final paymentId = widget.payment?.id ?? widget.transaction.id;
     setState(() {
       _customCategory = newCategory;
@@ -588,10 +531,9 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
       }
     } catch (_) {}
 
-    final messengerContext = targetContext ?? (mounted ? context : null);
-    if (messengerContext != null && messengerContext.mounted) {
+    if (mounted) {
       try {
-        ScaffoldMessenger.of(messengerContext).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
               children: [
@@ -619,197 +561,14 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
     }
   }
 
-  void _showCategoryPickerSheet(BuildContext parentContext) {
-    showModalBottomSheet(
-      context: parentContext,
-      isScrollControlled: true,
-      backgroundColor: const Color(0xFF141416),
-      barrierColor: Colors.black.withValues(alpha: 0.65),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (BuildContext sheetCtx) {
-        return StatefulBuilder(
-          builder: (sheetInnerCtx, setSheetState) {
-            final activeCategory = _category;
-
-            return SafeArea(
-              child: Container(
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(sheetCtx).size.height * 0.75,
-                ),
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Sheet Drag Handle
-                    Center(
-                      child: Container(
-                        width: 40,
-                        height: 4.5,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF383842),
-                          borderRadius: BorderRadius.circular(3),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-
-                    // Header with title and close button
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Categorize Payment',
-                                style: TextStyle(
-                                  fontFamily: 'Google Sans',
-                                  color: Colors.white,
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                'Assign a category for budgeting and analytics',
-                                style: TextStyle(
-                                  fontFamily: 'Google Sans',
-                                  color: Color(0xFF8E8E93),
-                                  fontSize: 12.5,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close_rounded, color: Color(0xFF8E8E93), size: 22),
-                          splashRadius: 20,
-                          onPressed: () => Navigator.of(sheetCtx).pop(),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 18),
-
-                    // Category Toggle List
-                    Flexible(
-                      child: ListView.separated(
-                        shrinkWrap: true,
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: _kDefaultCategories.length,
-                        separatorBuilder: (ctx, idx) => const SizedBox(height: 8),
-                        itemBuilder: (ctx, idx) {
-                          final item = _kDefaultCategories[idx];
-                          final String catName = item['name'] as String;
-                          final IconData catIcon = item['icon'] as IconData;
-                          final Color catColor = item['color'] as Color;
-                          final String catDesc = item['description'] as String;
-                          final bool isSelected = activeCategory.toLowerCase() == catName.toLowerCase();
-
-                          return Material(
-                            color: isSelected
-                                ? catColor.withValues(alpha: 0.14)
-                                : const Color(0xFF1B1B1F),
-                            borderRadius: BorderRadius.circular(16),
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(16),
-                              onTap: () {
-                                Navigator.of(sheetCtx).pop();
-                                _updateCategory(catName, parentContext);
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    color: isSelected
-                                        ? catColor
-                                        : const Color(0xFF282830),
-                                    width: isSelected ? 1.5 : 1.0,
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 40,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        color: catColor.withValues(alpha: 0.16),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Icon(catIcon, color: catColor, size: 20),
-                                    ),
-                                    const SizedBox(width: 14),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            catName,
-                                            style: TextStyle(
-                                              fontFamily: 'Google Sans',
-                                              color: isSelected ? Colors.white : const Color(0xFFE4E4E6),
-                                              fontSize: 15,
-                                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 2),
-                                          Text(
-                                            catDesc,
-                                            style: const TextStyle(
-                                              fontFamily: 'Google Sans',
-                                              color: Color(0xFF8E8E93),
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    if (isSelected)
-                                      Container(
-                                        width: 22,
-                                        height: 22,
-                                        decoration: BoxDecoration(
-                                          color: catColor,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: const Icon(
-                                          Icons.check_rounded,
-                                          color: Colors.black,
-                                          size: 15,
-                                        ),
-                                      )
-                                    else
-                                      Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: const Color(0xFF484852),
-                                            width: 1.5,
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
+  Future<void> _showCategoryPickerSheet(BuildContext parentContext) async {
+    final selected = await CategoryPickerSheet.show(
+      parentContext,
+      activeCategory: _category,
     );
+    if (selected != null && mounted) {
+      _updateCategory(selected);
+    }
   }
 
   @override
@@ -939,8 +698,6 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
                         _buildSectionHeader('TRANSACTION DETAILS'),
                         const SizedBox(height: 12),
                         _buildDetailsCard(context),
-                        const SizedBox(height: 24),
-                        _buildSupportCard(context),
                         const SizedBox(height: 36),
                       ],
                     ),
@@ -1116,7 +873,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
         ),
         mapType: isSatellite ? MapType.satellite : MapType.normal,
         // Dark style only for normal map — satellite renders photo imagery
-        style: isSatellite ? null : _darkMapStyle,
+        style: isSatellite ? null : ExternalData.darkMapStyle,
         markers: {
           Marker(
             markerId: const MarkerId('payment_marker'),
@@ -1472,7 +1229,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
       children: [
         if (isPending) ...[
           Expanded(
-            child: _buildActionButton(
+            child: TransactionActionButton(
               icon: Icons.verified_rounded,
               label: _isReconciling ? 'Confirming...' : 'Confirm',
               isPrimary: true,
@@ -1483,7 +1240,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: _buildActionButton(
+            child: TransactionActionButton(
               icon: Icons.cancel_outlined,
               label: _isCancelling ? 'Cancelling...' : 'Cancel',
               isPrimary: false,
@@ -1499,31 +1256,21 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
           const SizedBox(width: 10),
         ] else if (!isFailed && !isCancelled) ...[
           Expanded(
-            child: _buildActionButton(
-              icon: Icons.replay_rounded,
-              label: 'Pay Again',
-              isPrimary: true,
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Initiating repeat payment to $_merchantTitle...',
-                      style: const TextStyle(fontFamily: 'Google Sans'),
-                    ),
-                    backgroundColor: const Color(0xFF1E1E24),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                );
-              },
+            child: TransactionActionButton(
+              icon: Icons.delete_outline_rounded,
+              label: _isDeleting ? 'Deleting...' : 'Delete',
+              isPrimary: false,
+              textColor: const Color(0xFFFF453A),
+              iconColor: const Color(0xFFFF453A),
+              borderColor: const Color(0x55FF453A),
+              backgroundColor: const Color(0x18FF453A),
+              onTap: _isDeleting ? () {} : () => _showDeleteConfirmationDialog(context),
             ),
           ),
           const SizedBox(width: 10),
         ] else ...[
           Expanded(
-            child: _buildActionButton(
+            child: TransactionActionButton(
               icon: Icons.refresh_rounded,
               label: 'Retry',
               isPrimary: true,
@@ -1549,7 +1296,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
         // Categorize Toggle List Button
         const SizedBox(width: 10),
         Expanded(
-          child: _buildActionButton(
+          child: TransactionActionButton(
             icon: Icons.label_outline_rounded,
             label: 'Category',
             isPrimary: false,
@@ -1559,7 +1306,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
         // Share
         const SizedBox(width: 10),
         Expanded(
-          child: _buildActionButton(
+          child: TransactionActionButton(
             icon: Icons.share_outlined,
             label: 'Share',
             isPrimary: false,
@@ -1571,66 +1318,6 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required bool isPrimary,
-    required VoidCallback onTap,
-    Color? textColor,
-    Color? iconColor,
-    Color? backgroundColor,
-    Color? borderColor,
-  }) {
-    final effectiveBgColor = backgroundColor ??
-        (isPrimary ? Colors.white : const Color(0xFF141416));
-    final effectiveFgColor = isPrimary ? Colors.black : Colors.white;
-    final effectiveTextColor = textColor ?? effectiveFgColor;
-    final effectiveIconColor = iconColor ?? effectiveFgColor;
-    final effectiveBorder = borderColor != null
-        ? Border.all(color: borderColor, width: 1)
-        : (isPrimary
-            ? null
-            : Border.all(color: AppThemeManager.colors.border, width: 1));
-
-    return Material(
-      color: effectiveBgColor,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: effectiveBorder,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                color: effectiveIconColor,
-                size: 20,
-              ),
-              const SizedBox(height: 6),
-              Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: effectiveTextColor,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
@@ -1657,7 +1344,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
       ),
       child: Column(
         children: [
-          _buildDetailRow(
+          TransactionDetailRow(
             label: 'Payment Method',
             value: _paymentMethod,
             leadingWidget: _paymentMethod.toLowerCase().contains('gpay') ||
@@ -1688,7 +1375,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
             indent: 16,
             endIndent: 16,
           ),
-          _buildDetailRow(
+          TransactionDetailRow(
             label: 'Category',
             value: _category,
             trailingWidget: const Padding(
@@ -1708,7 +1395,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
             indent: 16,
             endIndent: 16,
           ),
-          _buildDetailRow(
+          TransactionDetailRow(
             label: 'Transaction Type',
             value: widget.transaction.type,
           ),
@@ -1719,7 +1406,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
             indent: 16,
             endIndent: 16,
           ),
-          _buildDetailRow(
+          TransactionDetailRow(
             label: 'UPI Ref No.',
             value: _referenceId,
             canCopy: true,
@@ -1733,7 +1420,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
             indent: 16,
             endIndent: 16,
           ),
-          _buildDetailRow(
+          TransactionDetailRow(
             label: 'Payment Location',
             value:
                 '${_latitude.toStringAsFixed(4)}, ${_longitude.toStringAsFixed(4)} (±${_accuracy != null ? _accuracy!.toStringAsFixed(1) : "5.0"}m)',
@@ -1751,7 +1438,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
             indent: 16,
             endIndent: 16,
           ),
-          _buildDetailRow(label: 'Payment Status', value: _status),
+          TransactionDetailRow(label: 'Payment Status', value: _status),
           const Divider(
             color: Color(0xFF202024),
             height: 1,
@@ -1759,162 +1446,14 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
             indent: 16,
             endIndent: 16,
           ),
-          _buildDetailRow(label: 'Date & Time', value: widget.transaction.time),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailRow({
-    required String label,
-    required String value,
-    Widget? leadingWidget,
-    Widget? trailingWidget,
-    bool canCopy = false,
-    VoidCallback? onCopy,
-    VoidCallback? onTap,
-  }) {
-    final content = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontFamily: 'Google Sans',
-              color: Color(0xFF8E8E93),
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ?leadingWidget,
-                Flexible(
-                  child: Text(
-                    value,
-                    textAlign: TextAlign.right,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontFamily: 'Google Sans',
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                if (canCopy) ...[
-                  const SizedBox(width: 6),
-                  GestureDetector(
-                    onTap: onCopy,
-                    behavior: HitTestBehavior.opaque,
-                    child: const Icon(
-                      Icons.copy_rounded,
-                      color: Color(0xFF007AFF),
-                      size: 15,
-                    ),
-                  ),
-                ],
-                ?trailingWidget,
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-
-    if (onTap != null) {
-      return Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: content,
-        ),
-      );
-    }
-    return content;
-  }
-
-  Widget _buildSupportCard(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: const Color(0xFF141416),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppThemeManager.colors.border, width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(
-                Icons.help_outline_rounded,
-                color: Color(0xFF007AFF),
-                size: 20,
-              ),
-              SizedBox(width: 10),
-              Text(
-                'Need help with this transaction?',
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'If you suspect fraud or an incorrect amount was debited, contact 24/7 resolution support.',
-            style: TextStyle(
-              fontFamily: 'Google Sans',
-              color: Color(0xFF8E8E93),
-              fontSize: 13,
-              height: 1.4,
-            ),
-          ),
-          const SizedBox(height: 14),
-          GestureDetector(
-            onTap: () => _showReportIssueDialog(context),
-            behavior: HitTestBehavior.opaque,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1E1E24),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF2A2A30), width: 1),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.flag_outlined, color: Color(0xFFFF453A), size: 16),
-                  SizedBox(width: 8),
-                  Text(
-                    'Report an Issue',
-                    style: TextStyle(
-                      fontFamily: 'Google Sans',
-                      color: Color(0xFFFF453A),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          TransactionDetailRow(label: 'Date & Time', value: widget.transaction.time),
         ],
       ),
     );
   }
 }
+
+
 
 class _MapGridPainter extends CustomPainter {
   @override
