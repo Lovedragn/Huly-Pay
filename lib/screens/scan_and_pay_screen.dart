@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:path_provider/path_provider.dart';
 import '../models/payment_model.dart';
 import '../repositories/payment_repository.dart';
 import '../services/google_pay_service.dart';
 import '../services/location_service.dart';
+import '../services/qr_share_service.dart';
 import '../services/sms_filter_service.dart';
 import '../services/upi_payment_service.dart';
 import '../services/upi_service.dart';
@@ -18,7 +21,14 @@ import 'payment_methods_screen.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 
 class ScanAndPayScreen extends StatefulWidget {
-  const ScanAndPayScreen({super.key});
+  final double? initialAmount;
+  final String? initialNote;
+
+  const ScanAndPayScreen({
+    super.key,
+    this.initialAmount,
+    this.initialNote,
+  });
 
   @override
   State<ScanAndPayScreen> createState() => _ScanAndPayScreenState();
@@ -26,6 +36,8 @@ class ScanAndPayScreen extends StatefulWidget {
 
 class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   late final MobileScannerController _scannerController;
+  late final TextEditingController _amountController;
+  late final TextEditingController _noteController;
   bool _isFlashOn = false;
   bool _isFrontCamera = false;
   bool _isProcessing = false;
@@ -34,16 +46,27 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   @override
   void initState() {
     super.initState();
+    _amountController = TextEditingController(
+      text: widget.initialAmount != null && widget.initialAmount! > 0
+          ? widget.initialAmount!.toStringAsFixed(2)
+          : '',
+    );
+    _noteController = TextEditingController(
+      text: widget.initialNote ?? '',
+    );
     _scannerController = MobileScannerController(
       detectionSpeed: DetectionSpeed.normal,
       facing: CameraFacing.back,
       torchEnabled: false,
+      returnImage: true,
       formats: const [BarcodeFormat.qrCode],
     );
   }
 
   @override
   void dispose() {
+    _amountController.dispose();
+    _noteController.dispose();
     _scannerController.dispose();
     super.dispose();
   }
@@ -101,7 +124,20 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     }
   }
 
-  void _handleBarcodeDetected(BarcodeCapture capture) {
+  Future<String?> _saveCapturedFrame(Uint8List imageBytes) async {
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final filePath = '${tempDir.path}/scanned_qr_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final file = File(filePath);
+      await file.writeAsBytes(imageBytes, flush: true);
+      return filePath;
+    } catch (e) {
+      debugPrint('[HulyPay] Error saving captured frame: $e');
+      return null;
+    }
+  }
+
+  void _handleBarcodeDetected(BarcodeCapture capture) async {
     if (_isProcessing) return;
     final barcode = capture.barcodes.firstOrNull;
     if (barcode == null || barcode.rawValue == null) return;
@@ -109,10 +145,111 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     if (rawValue.isEmpty) return;
 
     final upiData = UpiService.parseUpiUri(rawValue);
-    if (upiData != null) {
+    if (upiData == null && !rawValue.toLowerCase().startsWith('upi:')) {
+      _handleInvalidBarcodeDetected();
+      return;
+    }
+
+    setState(() {
+      _isProcessing = true;
+    });
+
+    try {
+      await _scannerController.pause();
+    } catch (_) {}
+
+    // Save camera frame image containing the detected QR
+    String? imagePath;
+    if (capture.image != null) {
+      imagePath = await _saveCapturedFrame(capture.image!);
+    }
+
+    if (imagePath != null && mounted) {
+      final rawText = _amountController.text.trim();
+      final parsedAmount = double.tryParse(rawText) ?? upiData?.amount;
+      final note = _noteController.text.trim().isNotEmpty
+          ? _noteController.text.trim()
+          : upiData?.note;
+
+      final success = await QrShareService.shareQrImage(
+        context: context,
+        filePath: imagePath,
+        amount: (parsedAmount != null && parsedAmount > 0) ? parsedAmount : null,
+        note: note,
+        title: 'Pay with Google Pay',
+        targetPackage: QrShareService.googlePayPackage,
+      );
+
+      if (mounted) {
+        if (success) {
+          final effectiveAmount = (parsedAmount != null && parsedAmount > 0)
+              ? parsedAmount
+              : (upiData?.amount ?? 0.0);
+          if (effectiveAmount > 0) {
+            final txnRef = 'HULY${DateTime.now().millisecondsSinceEpoch}';
+            final payee = upiData?.payeeName?.trim();
+            final upi = upiData?.upiId.trim();
+            final merchant = (payee != null && payee.isNotEmpty)
+                ? payee
+                : ((upi != null && upi.isNotEmpty) ? upi : 'UPI Merchant');
+            try {
+              await PaymentRepository().createPayment(CreatePaymentPayload(
+                amount: effectiveAmount,
+                currency: upiData?.currency ?? 'INR',
+                merchantName: merchant,
+                upiId: upi ?? '',
+                paymentMethod: 'UPI',
+                transactionReference: txnRef,
+                status: 'CONFIRMED',
+                provider: 'GOOGLE_PAY',
+              ));
+            } catch (_) {}
+          }
+
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                'Opening Google Pay with scanned QR image...',
+                style: TextStyle(
+                  fontFamily: 'Google Sans',
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                ),
+              ),
+              backgroundColor: const Color(0xFF1E1E24),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          if (mounted) {
+            Navigator.of(context).pop();
+          }
+          return;
+        } else {
+          setState(() {
+            _isProcessing = false;
+          });
+          try {
+            await _scannerController.start();
+          } catch (_) {}
+        }
+      }
+    } else if (upiData != null) {
+      // Fallback: If image could not be captured, proceed to UPI flow
       _processPaymentFlow(upiData);
     } else {
-      _handleInvalidBarcodeDetected();
+      setState(() {
+        _isProcessing = false;
+      });
+      try {
+        await _scannerController.start();
+      } catch (_) {}
     }
   }
 
@@ -1371,155 +1508,163 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 ),
               ),
 
-              // 4. UI Foreground: Header, instructions, controls, and bottom navigation
-              SafeArea(
-                bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    left: 20,
-                    right: 20,
-                    top: 10,
-                    bottom: 80,
-                  ),
-                  child: Column(
-                    children: [
-                      // Top Bar (Back Button & Quick Confirm Thunder Indicator)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            key: const Key('back_button'),
-                            onTap: () => _handleBack(0),
-                            behavior: HitTestBehavior.opaque,
-                            child: Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF161619).withValues(alpha: 0.8),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: const Color(0xFF24242A),
-                                  width: 1,
-                                ),
-                              ),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.chevron_left_rounded,
-                                  color: Colors.white,
-                                  size: 26,
-                                ),
-                              ),
-                            ),
+              // 4. Top Bar (Back Button & Quick Confirm Thunder Indicator)
+              Positioned(
+                top: MediaQuery.of(context).padding.top + 10,
+                left: 20,
+                right: 20,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      key: const Key('back_button'),
+                      onTap: () => _handleBack(0),
+                      behavior: HitTestBehavior.opaque,
+                      child: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF161619).withValues(alpha: 0.8),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: const Color(0xFF24242A),
+                            width: 1,
                           ),
-                          if (UserPreferencesService().cachedQuickConfirm)
-                            GestureDetector(
-                              key: const Key('quick_confirm_indicator'),
-                              onTap: () {
-                                ScaffoldMessenger.of(context).clearSnackBars();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: const Row(
-                                      children: [
-                                        Icon(Icons.bolt_rounded, color: Color(0xFFFFB300), size: 18),
-                                        SizedBox(width: 8),
-                                        Text('Quick Confirm is active'),
-                                      ],
-                                    ),
-                                    duration: const Duration(seconds: 2),
-                                    backgroundColor: const Color(0xFF1F1F24),
-                                    behavior: SnackBarBehavior.floating,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                );
-                              },
-                              behavior: HitTestBehavior.opaque,
-                              child: Tooltip(
-                                message: 'Quick Confirm active',
-                                child: Container(
-                                  width: 44,
-                                  height: 44,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF161619).withValues(alpha: 0.8),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: const Color(0xFF24242A),
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: const Center(
-                                    child: Icon(
-                                      Icons.bolt_rounded,
-                                      color: Color(0xFFFFB300),
-                                      size: 24,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-
-                      // Spacing to align with cutout
-                      SizedBox(
-                        height: (cutoutRect.bottom - (MediaQuery.of(context).padding.top + 54)).clamp(0.0, double.infinity) + 24,
-                      ),
-
-                      const Text(
-                        'Scan any UPI QR code',
-                        style: TextStyle(
-                          fontFamily: 'Google Sans',
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: -0.2,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Align the QR code within the frame',
-                        style: TextStyle(
-                          fontFamily: 'Google Sans',
-                          color: Color(0xFFD0D0D5),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
+                        child: const Center(
+                          child: Icon(
+                            Icons.chevron_left_rounded,
+                            color: Colors.white,
+                            size: 26,
+                          ),
                         ),
-                        textAlign: TextAlign.center,
                       ),
-
-                      const SizedBox(height: 24),
-
+                    ),
+                    if (UserPreferencesService().cachedQuickConfirm)
                       GestureDetector(
-                        onTap: () => _handleBack(0),
-                        behavior: HitTestBehavior.opaque,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 28,
-                            vertical: 14,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF161619).withValues(alpha: 0.85),
-                            borderRadius: BorderRadius.circular(100),
-                            border: Border.all(
-                              color: const Color(0xFF2A2A30),
-                              width: 1,
+                        key: const Key('quick_confirm_indicator'),
+                        onTap: () {
+                          ScaffoldMessenger.of(context).clearSnackBars();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Row(
+                                children: [
+                                  Icon(Icons.bolt_rounded, color: Color(0xFFFFB300), size: 18),
+                                  SizedBox(width: 8),
+                                  Text('Quick Confirm is active'),
+                                ],
+                              ),
+                              duration: const Duration(seconds: 2),
+                              backgroundColor: const Color(0xFF1F1F24),
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                             ),
-                          ),
-                          child: const Text(
-                            'Back to Home',
-                            style: TextStyle(
-                              fontFamily: 'Google Sans',
-                              color: Colors.white,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
+                          );
+                        },
+                        behavior: HitTestBehavior.opaque,
+                        child: Tooltip(
+                          message: 'Quick Confirm active',
+                          child: Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF161619).withValues(alpha: 0.8),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xFF24242A),
+                                width: 1,
+                              ),
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                Icons.bolt_rounded,
+                                color: Color(0xFFFFB300),
+                                size: 24,
+                              ),
                             ),
                           ),
                         ),
                       ),
+                  ],
+                ),
+              ),
+
+              // 5. Actions below cutout (Paying Amount Badge & Back to Home)
+              Positioned(
+                top: cutoutRect.bottom + 20,
+                left: 20,
+                right: 20,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (_amountController.text.trim().isNotEmpty) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF161619).withValues(alpha: 0.85),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: const Color(0xFF30D158).withValues(alpha: 0.4),
+                            width: 1.2,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              'Paying:',
+                              style: TextStyle(
+                                fontFamily: 'Google Sans',
+                                color: Color(0xFFD0D0D5),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              '₹${_amountController.text.trim()}',
+                              style: const TextStyle(
+                                fontFamily: 'Google Sans',
+                                color: Color(0xFF30D158),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
                     ],
-                  ),
+                    GestureDetector(
+                      onTap: () => _handleBack(0),
+                      behavior: HitTestBehavior.opaque,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF161619).withValues(alpha: 0.85),
+                          borderRadius: BorderRadius.circular(100),
+                          border: Border.all(
+                            color: const Color(0xFF2A2A30),
+                            width: 1,
+                          ),
+                        ),
+                        child: const Text(
+                          'Back to Home',
+                          style: TextStyle(
+                            fontFamily: 'Google Sans',
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 

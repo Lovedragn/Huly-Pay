@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../data/external_data.dart';
 import '../theme/app_theme.dart';
 
 class PrivacySecurityScreen extends StatelessWidget {
@@ -28,6 +29,8 @@ class PrivacySecurityScreen extends StatelessWidget {
                     _buildSecurityProtocolsCard(colors),
                     const SizedBox(height: 20),
                     _buildDataCollectionCard(colors),
+                    const SizedBox(height: 20),
+                    _buildLegalDocumentsCard(context, colors),
                     const SizedBox(height: 40),
                   ],
                 ),
@@ -35,6 +38,60 @@ class PrivacySecurityScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showDocumentDialog(
+    BuildContext context,
+    String title,
+    String content,
+    AppThemeData colors,
+  ) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: colors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: colors.border),
+        ),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontFamily: 'Google Sans',
+            color: colors.textPrimary,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Text(
+              content,
+              style: TextStyle(
+                fontFamily: 'Google Sans',
+                color: colors.textSecondary,
+                fontSize: 13,
+                height: 1.5,
+              ),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(
+              'Close',
+              style: TextStyle(
+                fontFamily: 'Google Sans',
+                color: colors.accent,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -114,7 +171,7 @@ class PrivacySecurityScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'End-to-End Encrypted Guard',
+                  ExternalData.securityBannerTitle,
                   style: TextStyle(
                     fontFamily: 'Google Sans',
                     color: colors.textPrimary,
@@ -124,7 +181,7 @@ class PrivacySecurityScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Client-side security policies and sandboxed credential vaulting are enabled for testing.',
+                  ExternalData.securityBannerDescription,
                   style: TextStyle(
                     fontFamily: 'Google Sans',
                     color: colors.textSecondary,
@@ -163,7 +220,7 @@ class PrivacySecurityScreen extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               const Text(
-                'Test & Development Environment Scope',
+                ExternalData.devPrivacyNoticeTitle,
                 style: TextStyle(
                   fontFamily: 'Google Sans',
                   color: Color(0xFFFF9500),
@@ -175,7 +232,7 @@ class PrivacySecurityScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'HulyPay is actively undergoing rapid engineering cycles, feature experiments, and prototype iterations. Please note:',
+            ExternalData.devPrivacyNoticeIntro,
             style: TextStyle(
               fontFamily: 'Google Sans',
               color: colors.textSecondary,
@@ -184,23 +241,10 @@ class PrivacySecurityScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          _buildBulletPoint(
-            colors,
-            'No Genuine Payment Credentials:',
-            'Do NOT input live production credit/debit card numbers, actual banking PINs, or sensitive production secrets.',
-          ),
-          const SizedBox(height: 8),
-          _buildBulletPoint(
-            colors,
-            'Local Storage Sandbox:',
-            'Transactions are stored locally inside SQLite and demonstration tables. They can be purged or reset at any time during updates.',
-          ),
-          const SizedBox(height: 8),
-          _buildBulletPoint(
-            colors,
-            'Telemetry & Diagnostics:',
-            'Crash logs and network latency statistics may be collected in debug modes to improve overall UI performance.',
-          ),
+          for (final bullet in ExternalData.devPrivacyScopeBullets) ...[
+            _buildBulletPoint(colors, bullet.highlight, bullet.description),
+            const SizedBox(height: 8),
+          ],
         ],
       ),
     );
@@ -268,26 +312,15 @@ class PrivacySecurityScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _buildProtocolItem(
-            colors,
-            Icons.lock_outline_rounded,
-            'Cryptographic Hashing',
-            'All mock transaction payloads and identifiers are uniquely hashed to prevent duplicate replay attempts.',
-          ),
-          Divider(color: colors.divider, height: 24),
-          _buildProtocolItem(
-            colors,
-            Icons.camera_alt_outlined,
-            'Camera Sensor Isolation',
-            'The QR scanner only accesses camera buffers during active scanning views and never transmits footage remotely.',
-          ),
-          Divider(color: colors.divider, height: 24),
-          _buildProtocolItem(
-            colors,
-            Icons.location_off_outlined,
-            'Zero Unwanted Geo-Tracking',
-            'Location information attached to payment markers is simulated or requested strictly for local transaction mapping.',
-          ),
+          for (int i = 0; i < ExternalData.securityProtocols.length; i++) ...[
+            if (i > 0) Divider(color: colors.divider, height: 24),
+            _buildProtocolItem(
+              colors,
+              ExternalData.securityProtocols[i].icon,
+              ExternalData.securityProtocols[i].title,
+              ExternalData.securityProtocols[i].description,
+            ),
+          ],
         ],
       ),
     );
@@ -354,7 +387,7 @@ class PrivacySecurityScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'User Rights & Data Transparency',
+            ExternalData.dataTransparencyTitle,
             style: TextStyle(
               fontFamily: 'Google Sans',
               color: colors.textPrimary,
@@ -364,12 +397,110 @@ class PrivacySecurityScreen extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            'You retain full control over your local test profile. All transaction entries and category aggregates generated during test sessions can be wiped instantly from application memory and local device databases.',
+            ExternalData.dataTransparencyBody,
             style: TextStyle(
               fontFamily: 'Google Sans',
               color: colors.textSecondary,
               fontSize: 13,
               height: 1.45,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLegalDocumentsCard(BuildContext context, AppThemeData colors) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: colors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Legal Agreements & Policies',
+            style: TextStyle(
+              fontFamily: 'Google Sans',
+              color: colors.textPrimary,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 14),
+          InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: () => _showDocumentDialog(
+              context,
+              'Privacy Policy',
+              ExternalData.privacyPolicyFull,
+              colors,
+            ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: colors.surfaceSecondary,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: colors.border),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.policy_outlined, color: colors.accent, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'View Full Privacy Policy',
+                      style: TextStyle(
+                        fontFamily: 'Google Sans',
+                        color: colors.textPrimary,
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  Icon(Icons.chevron_right_rounded, color: colors.textMuted, size: 20),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: () => _showDocumentDialog(
+              context,
+              'Terms of Service',
+              ExternalData.termsOfServiceFull,
+              colors,
+            ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: colors.surfaceSecondary,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: colors.border),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.gavel_rounded, color: colors.accent, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'View Full Terms of Service',
+                      style: TextStyle(
+                        fontFamily: 'Google Sans',
+                        color: colors.textPrimary,
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  Icon(Icons.chevron_right_rounded, color: colors.textMuted, size: 20),
+                ],
+              ),
             ),
           ),
         ],

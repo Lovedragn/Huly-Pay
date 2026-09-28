@@ -44,11 +44,14 @@ class PaymentModel {
     this.updatedAt,
   });
 
-  /// Whether this payment completed successfully.
-  /// Only SUCCESS and CONFIRMED statuses count toward charts and totals.
+  /// Whether this payment completed successfully or is in an active non-failed state.
+  /// Only SUCCESS, CONFIRMED, COMPLETED, PAID, SETTLED, and active non-failed statuses count toward charts and totals.
   bool get isSuccessful {
-    final s = status.toUpperCase();
-    return s == 'SUCCESS' || s == 'CONFIRMED';
+    final s = status.toUpperCase().trim();
+    if (s == 'FAILED' || s == 'CANCELLED' || s == 'TIMEOUT' || s == 'DECLINED' || s == 'REJECTED') {
+      return false;
+    }
+    return true;
   }
 
   PaymentModel copyWith({

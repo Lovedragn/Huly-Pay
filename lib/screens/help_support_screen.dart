@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../data/external_data.dart';
 import '../theme/app_theme.dart';
 
 class HelpSupportScreen extends StatefulWidget {
@@ -12,14 +13,14 @@ class HelpSupportScreen extends StatefulWidget {
 }
 
 class _HelpSupportScreenState extends State<HelpSupportScreen> {
-  static const String _supportEmail = 'sujith.sappani@gmail.com';
-  static const String _portfolioUrl = 'https://sujithsappani.vercel.app';
+  static const String _supportEmail = ExternalData.supportEmail;
+  static const String _portfolioUrl = ExternalData.creatorWebsiteUrl;
 
   Future<void> _launchEmail(BuildContext context) async {
     final emailUri = Uri(
       scheme: 'mailto',
       path: _supportEmail,
-      queryParameters: {'subject': 'HulyPay Support & Feedback (Dev Build)'},
+      queryParameters: {'subject': ExternalData.supportSubject},
     );
 
     try {
@@ -191,7 +192,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Direct Support & Queries',
+                      ExternalData.supportDirectTitle,
                       style: TextStyle(
                         fontFamily: 'Google Sans',
                         color: colors.textPrimary,
@@ -201,7 +202,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Reach out for bugs, inquiries, or feedback',
+                      ExternalData.supportDirectSubtitle,
                       style: TextStyle(
                         fontFamily: 'Google Sans',
                         color: colors.textSecondary,
@@ -297,7 +298,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Official Developer Site',
+            ExternalData.developerWebsiteTitle,
             style: TextStyle(
               fontFamily: 'Google Sans',
               color: colors.textPrimary,
@@ -307,7 +308,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Visit the developer\'s portfolio to check out changelogs, full-stack case studies, and engineering contact channels.',
+            ExternalData.developerWebsiteDescription,
             style: TextStyle(
               fontFamily: 'Google Sans',
               color: colors.textSecondary,
@@ -332,7 +333,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'sujithsappani.vercel.app',
+                      ExternalData.creatorWebsiteDisplay,
                       style: TextStyle(
                         fontFamily: 'Google Sans',
                         color: colors.accent,
@@ -377,23 +378,14 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             ),
           ),
           const SizedBox(height: 14),
-          _buildFaqItem(
-            colors,
-            'Are these live money transactions?',
-            'No. The current build operates in development/test simulation mode. No genuine bank accounts or real funds are debited.',
-          ),
-          Divider(color: colors.divider, height: 24),
-          _buildFaqItem(
-            colors,
-            'Why does the QR code scanner fail in some environments?',
-            'The QR scanner utilizes device camera sensors and hardware decoding. In emulator or restricted environments, you can use the test QR trigger to simulate incoming payment payloads.',
-          ),
-          Divider(color: colors.divider, height: 24),
-          _buildFaqItem(
-            colors,
-            'How can I reset my offline database?',
-            'You can clear your local database session by signing out and logging back in.',
-          ),
+          for (int i = 0; i < ExternalData.helpFaqs.length; i++) ...[
+            if (i > 0) Divider(color: colors.divider, height: 24),
+            _buildFaqItem(
+              colors,
+              ExternalData.helpFaqs[i].question,
+              ExternalData.helpFaqs[i].answer,
+            ),
+          ],
         ],
       ),
     );

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../data/external_data.dart';
 import '../repositories/payment_repository.dart';
 import '../repositories/user_repository.dart';
 import '../services/auth_service.dart';
@@ -192,13 +193,19 @@ class _SignInScreenState extends State<SignInScreen> with WidgetsBindingObserver
             fontWeight: FontWeight.w700,
           ),
         ),
-        content: Text(
-          content,
-          style: const TextStyle(
-            fontFamily: 'Google Sans',
-            color: Color(0xFF8E8E93),
-            fontSize: 14,
-            height: 1.5,
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Text(
+              content,
+              style: const TextStyle(
+                fontFamily: 'Google Sans',
+                color: Color(0xFF8E8E93),
+                fontSize: 13,
+                height: 1.5,
+              ),
+            ),
           ),
         ),
         actions: [
@@ -486,7 +493,7 @@ class _SignInScreenState extends State<SignInScreen> with WidgetsBindingObserver
                           GestureDetector(
                             onTap: () => _showPolicyDialog(
                               'Terms of Service',
-                              'By accessing or using Huly Pay, you agree to comply with our user agreement and transaction terms.',
+                              ExternalData.termsOfServiceFull,
                             ),
                             child: const Text(
                               'Terms of Service',
@@ -513,7 +520,7 @@ class _SignInScreenState extends State<SignInScreen> with WidgetsBindingObserver
                           GestureDetector(
                             onTap: () => _showPolicyDialog(
                               'Privacy Policy',
-                              'Huly Pay protects your financial data using end-to-end encryption and strict zero-knowledge protocols.',
+                              ExternalData.privacyPolicyFull,
                             ),
                             child: const Text(
                               'Privacy Policy.',

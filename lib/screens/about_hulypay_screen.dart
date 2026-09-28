@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../data/external_data.dart';
 import '../theme/app_theme.dart';
 
 class AboutHulyPayScreen extends StatelessWidget {
@@ -7,7 +8,7 @@ class AboutHulyPayScreen extends StatelessWidget {
 
   const AboutHulyPayScreen({
     super.key,
-    this.appVersion = 'v1.0.0 (Build 2026.09.1)',
+    this.appVersion = ExternalData.defaultAppVersion,
   });
 
   Future<void> _launchUrl(BuildContext context, String urlString) async {
@@ -158,7 +159,7 @@ class AboutHulyPayScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'HulyPay',
+            ExternalData.appName,
             style: TextStyle(
               fontFamily: 'Google Sans',
               color: colors.textPrimary,
@@ -187,7 +188,7 @@ class AboutHulyPayScreen extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           Text(
-            'Next-generation intelligent fintech application crafted for frictionless transactions, analytical intelligence, and secure offline-first financial ledger logging.',
+            ExternalData.appDescription,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'Google Sans',
@@ -232,9 +233,9 @@ class AboutHulyPayScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Test & Development Release',
-                  style: TextStyle(
+                Text(
+                  ExternalData.aboutEnvironmentNoticeTitle,
+                  style: const TextStyle(
                     fontFamily: 'Google Sans',
                     color: Color(0xFFFF9500),
                     fontSize: 15,
@@ -243,7 +244,7 @@ class AboutHulyPayScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'This version of HulyPay is an active preview and development environment build. All payment gateways, scanner decoders, heatmaps, and simulated transfers are intended for testing, demonstration, and architectural prototyping.',
+                  ExternalData.aboutEnvironmentNoticeBody,
                   style: TextStyle(
                     fontFamily: 'Google Sans',
                     color: colors.textSecondary,
@@ -281,26 +282,15 @@ class AboutHulyPayScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _buildFeatureItem(
-            colors,
-            Icons.qr_code_scanner_rounded,
-            'Scan & Pay Scanner',
-            'Ultra-fast QR decoding with simulated camera testing and flashlight assistance.',
-          ),
-          Divider(color: colors.divider, height: 24),
-          _buildFeatureItem(
-            colors,
-            Icons.insights_rounded,
-            'Spending Insights & Heatmap',
-            'Multi-theme visual analytics with category donut charts and temporal activity matrices.',
-          ),
-          Divider(color: colors.divider, height: 24),
-          _buildFeatureItem(
-            colors,
-            Icons.sync_rounded,
-            'Offline-First Local Sync',
-            'Robust SQLite offline transaction storage backed by cloud sync engines.',
-          ),
+          for (int i = 0; i < ExternalData.aboutFeatures.length; i++) ...[
+            if (i > 0) Divider(color: colors.divider, height: 24),
+            _buildFeatureItem(
+              colors,
+              ExternalData.aboutFeatures[i].icon,
+              ExternalData.aboutFeatures[i].title,
+              ExternalData.aboutFeatures[i].subtitle,
+            ),
+          ],
         ],
       ),
     );
@@ -383,7 +373,7 @@ class AboutHulyPayScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'HulyPay is designed and developed with precision by Sujith Sappani. Learn more about the developer and explore other engineering projects below:',
+            ExternalData.creatorBio,
             style: TextStyle(
               fontFamily: 'Google Sans',
               color: colors.textSecondary,
@@ -394,7 +384,7 @@ class AboutHulyPayScreen extends StatelessWidget {
           const SizedBox(height: 16),
           InkWell(
             borderRadius: BorderRadius.circular(14),
-            onTap: () => _launchUrl(context, 'https://sujithsappani.vercel.app'),
+            onTap: () => _launchUrl(context, ExternalData.creatorWebsiteUrl),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
@@ -418,7 +408,7 @@ class AboutHulyPayScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Sujith Sappani',
+                          ExternalData.creatorName,
                           style: TextStyle(
                             fontFamily: 'Google Sans',
                             color: colors.textPrimary,
@@ -428,7 +418,7 @@ class AboutHulyPayScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'sujithsappani.vercel.app',
+                          ExternalData.creatorWebsiteDisplay,
                           style: TextStyle(
                             fontFamily: 'Google Sans',
                             color: colors.accent,
@@ -464,13 +454,10 @@ class AboutHulyPayScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildSpecRow(colors, 'Framework', 'Flutter & Dart'),
-          Divider(color: colors.divider, height: 20),
-          _buildSpecRow(colors, 'Database Engine', 'SQLite (Local) & Supabase'),
-          Divider(color: colors.divider, height: 20),
-          _buildSpecRow(colors, 'Design System', 'Huly Premium UI / Material 3'),
-          Divider(color: colors.divider, height: 20),
-          _buildSpecRow(colors, 'Environment', 'Staging / Development Build'),
+          for (int i = 0; i < ExternalData.aboutSpecs.length; i++) ...[
+            if (i > 0) Divider(color: colors.divider, height: 20),
+            _buildSpecRow(colors, ExternalData.aboutSpecs[i].label, ExternalData.aboutSpecs[i].value),
+          ],
         ],
       ),
     );

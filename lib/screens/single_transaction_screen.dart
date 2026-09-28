@@ -589,7 +589,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
     } catch (_) {}
 
     final messengerContext = targetContext ?? (mounted ? context : null);
-    if (messengerContext != null) {
+    if (messengerContext != null && messengerContext.mounted) {
       try {
         ScaffoldMessenger.of(messengerContext).showSnackBar(
           SnackBar(
@@ -1665,7 +1665,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
                 ? Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: SvgPicture.asset(
-                      'assets/icon/google-pay-icon.svg',
+                      'assets/icon/google-pay.svg',
                       width: 18,
                       height: 18,
                     ),
