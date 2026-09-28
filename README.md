@@ -1,18 +1,20 @@
-# 💳 HulyPay — Next-Gen Intelligent Fintech App
+# 💳 HulyPay — Next-Gen Intelligent Fintech Platform
 
 <p align="center">
   <img src="mobile/hulypay/assets/logo/Logo-Dark.png" alt="HulyPay Logo" width="100" height="100" />
 </p>
 
 <p align="center">
-  <b>A sleek, offline-first mobile payment and financial intelligence platform built with Flutter, SQLite, and Supabase.</b>
+  <b>A full-stack, offline-first mobile payment & financial intelligence platform — built with Flutter, Spring Boot, Next.js, and Supabase.</b>
 </p>
 
 <p align="center">
   <a href="#-quick-download--installation">Download APK</a> •
-  <a href="#-phase-1-quickstart--running-the-app">Run App</a> •
-  <a href="#-phase-2-features--tech-stack">Features & Tools</a> •
-  <a href="#-phase-3-architecture--workflows">Workflows & Diagrams</a>
+  <a href="#-phase-1-quickstart--running-the-mobile-app">Run Mobile App</a> •
+  <a href="#️-phase-2-backend--api-server-spring-boot">Backend Setup</a> •
+  <a href="#-phase-3-frontend--web-dashboard-nextjs">Web Dashboard</a> •
+  <a href="#️-phase-4-features--tech-stack">Features & Tech Stack</a> •
+  <a href="#-phase-5-architecture-workflows--diagrams">Architecture & Diagrams</a>
 </p>
 
 ---
@@ -21,11 +23,13 @@
 
 > **Note for Android users:** When installing from your device file manager or browser, make sure to allow **"Install from unknown sources"** in your device security settings.
 
+The latest release APK is available at `mobile/hulypay/Release/Hulypay.apk`.
+
 ---
 
-## 🚀 Phase 1: Quickstart — Download & Run the App
+## 🚀 Phase 1: Quickstart — Running the Mobile App
 
-Follow these steps to clone, configure, and launch the application on Android, iOS, or physical devices.
+Follow these steps to clone, configure, and launch the Flutter application on Android or iOS.
 
 ### 1. Prerequisites
 
@@ -48,16 +52,16 @@ flutter doctor
 # Clone the repository
 git clone https://github.com/Lovedragn/Huly-Pay.git
 
-# Navigate into the mobile project root
-cd Huly-Pay/mobile
+# Navigate into the mobile project directory
+cd Huly-Pay/mobile/hulypay
 
-# Install Dart & Flutter dependencies
+# Install Flutter dependencies
 flutter pub get
 ```
 
 ### 3. Environment Configuration
 
-Create a `.env` file in the `mobile/` root directory (refer to `.env.example` or configure your Supabase credentials):
+Create a `.env` file in the `mobile/hulypay/` directory:
 
 ```env
 SUPABASE_URL=https://your-project.supabase.co
@@ -70,21 +74,19 @@ SUPABASE_PUBLISHABLE_KEY=your-publishable-key-here
 # List available devices/emulators
 flutter devices
 
-# Run directly on your connected Android device / emulator
+# Run on your connected Android device / emulator
 flutter run
 
-# To build a fresh release APK:
+# Build a release APK
 flutter build apk --release
-# Output will be located in: build/app/outputs/flutter-apk/app-release.apk
+# Output: build/app/outputs/flutter-apk/app-release.apk
 ```
 
 ### 5. Run on iOS (macOS required)
 
 ```bash
-# Install iOS CocoaPods dependencies
-cd ios
-pod install
-cd ..
+# Install CocoaPods dependencies
+cd ios && pod install && cd ..
 
 # Run on iOS Simulator or connected device
 flutter run -d ios
@@ -95,68 +97,200 @@ open ios/Runner.xcworkspace
 
 ---
 
-## 🛠️ Phase 2: Features & Tech Stack
+## ⚙️ Phase 2: Backend — API Server (Spring Boot)
+
+The backend is a **Spring Boot 4** REST API with Spring Security, JPA, and PostgreSQL (via Supabase), deployable via Docker.
+
+### Prerequisites
+
+- Java 21+
+- Maven (or use the included `mvnw` wrapper)
+- PostgreSQL database (Supabase recommended)
+- Docker (optional, for containerised deployment)
+
+### Setup & Run Locally
+
+```bash
+# Navigate to the backend directory
+cd Huly-Pay/backend
+
+# Configure required environment variables:
+# SUPABASE_DB_URL, SUPABASE_DB_USERNAME, SUPABASE_DB_PASSWORD
+# SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY
+# GOOGLE_OAUTH_SECRET_ID_WEB, GITHUB_SECRET_ID
+
+# Run with Maven wrapper
+./mvnw spring-boot:run
+
+# Or build and run the JAR directly
+./mvnw clean package -DskipTests
+java -jar target/backend-0.0.1-SNAPSHOT.jar
+```
+
+### Docker Deployment
+
+```bash
+docker build -t hulypay-backend .
+docker compose up -d
+```
+
+- API base URL: `http://localhost:8080`
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- Health check: `GET /actuator/health`
+
+---
+
+## 🌐 Phase 3: Frontend — Web Dashboard (Next.js)
+
+The frontend is a **Next.js 16** web application with Tailwind CSS, GSAP animations, and Supabase authentication.
+
+### Prerequisites
+
+- Node.js 18+ and npm
+
+### Setup & Run Locally
+
+```bash
+# Navigate to the frontend directory
+cd Huly-Pay/frontend
+
+# Install dependencies
+npm install
+
+# Configure environment variables
+# Set NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, etc. in .env.local
+
+# Start the development server
+npm run dev
+```
+
+The web app will be available at `http://localhost:3000`.
+
+### Build for Production
+
+```bash
+npm run build && npm start
+```
+
+---
+
+## 🛠️ Phase 4: Features & Tech Stack
 
 ### Core Features
 
 - **⚡ Real-Time Scan & Pay:**
   - Ultra-responsive QR code scanner powered by `mobile_scanner`.
-  - Support for camera flash toggle, camera flips, barcode decoding, and simulated sandbox QR payloads for test environments.
+  - Camera flash toggle, camera flips, barcode decoding, and sandbox QR payloads for test environments.
+  - QR share & upload flow via `qr_share_service`.
 - **📊 Spending Insights & Analytics:**
-  - Multi-theme interactive donut & bar charts utilizing `fl_chart`.
-  - Temporal expense matrix, category breakdowns, and weekly/monthly trends.
+  - Multi-theme interactive donut & bar charts using `fl_chart`.
+  - Temporal spending heatmap, category breakdowns, weekly/monthly bar charts, and trend line charts.
+  - Analytics powered by a dedicated Spring Boot analytics module.
 - **💾 Offline-First Architecture:**
   - Local caching and rapid offline transaction reads/writes using `sqflite`.
-  - Automatic sync engine syncing queued offline records with cloud backends when online.
+  - Automatic background sync engine queuing offline records and pushing them to the cloud backend when online.
 - **🎨 Adaptive Theme & Dynamic Customization:**
-  - Instant, flicker-free light and dark mode switching with persistent local state.
-  - Custom theme palette support and glassmorphic UI components.
+  - Instant, flicker-free light and dark mode switching with persistent local state via `user_preferences_service`.
+  - Custom theme palette support, glassmorphic UI components, and a customization bottom sheet.
 - **🔒 Biometrics & Security:**
+  - Spring Security + OAuth2 Resource Server for JWT validation.
   - Token validation, session handling, and configurable payment authentication controls.
+  - Google OAuth & GitHub OAuth support.
 - **💳 Multi-Method Payment Management:**
-  - Virtual card cards, bank linking, and simulated payment gateways.
+  - UPI payment integration (`upi_payment_service`, `upi_service`).
+  - Google Pay service integration.
+  - Virtual cards, bank linking, and payment methods screen.
+- **📍 Location & Merchant Discovery:**
+  - GPS-based location service with `google_maps_flutter` and `geolocator`.
+  - Nearby ATM/store discovery on the map.
+- **📱 SMS Transaction Parsing:**
+  - SMS filter service for automatic bank SMS transaction detection.
+- **🌐 Web Dashboard:**
+  - Next.js admin and user dashboard with GSAP-powered animations and smooth scroll (Lenis).
+  - Full authentication flow, transaction views, analytics charts via Recharts, and Q&A / help pages.
 
 ---
 
-### Tech Stack & Tools
+### Tech Stack
 
-| Category               | Technology / Library                                                                                                   | Purpose                                             |
-| :--------------------- | :--------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------- |
-| **Framework**          | [Flutter](https://flutter.dev/) & [Dart](https://dart.dev/)                                                            | Cross-platform native mobile application            |
-| **Backend & Auth**     | [Supabase](https://supabase.com/) (`supabase_flutter`)                                                                 | Cloud auth, user data storage, and backend sync     |
-| **Local Database**     | [SQLite](https://sqlite.org/) (`sqflite`)                                                                              | Offline-first transaction persistence & caching     |
-| **Networking**         | [Dio](https://pub.dev/packages/dio)                                                                                    | RESTful API client and HTTP request interceptors    |
-| **Scanner & Camera**   | [mobile_scanner](https://pub.dev/packages/mobile_scanner)                                                              | High-performance native camera QR code scanning     |
-| **Data Visualization** | [fl_chart](https://pub.dev/packages/fl_chart)                                                                          | Dynamic financial spending graphs & pie charts      |
-| **Location & Maps**    | [google_maps_flutter](https://pub.dev/packages/google_maps_flutter), [geolocator](https://pub.dev/packages/geolocator) | Merchant geolocation and nearby ATM/store discovery |
+#### 📱 Mobile (Flutter)
+
+| Category               | Technology / Library                                                                                                   | Purpose                                              |
+| :--------------------- | :--------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------- |
+| **Framework**          | [Flutter](https://flutter.dev/) & [Dart](https://dart.dev/)                                                            | Cross-platform native mobile application             |
+| **Backend & Auth**     | [Supabase](https://supabase.com/) (`supabase_flutter`)                                                                 | Cloud auth, user data storage, and backend sync      |
+| **Local Database**     | [SQLite](https://sqlite.org/) (`sqflite`)                                                                              | Offline-first transaction persistence & caching      |
+| **Networking**         | [Dio](https://pub.dev/packages/dio)                                                                                    | RESTful API client and HTTP request interceptors     |
+| **Scanner & Camera**   | [mobile_scanner](https://pub.dev/packages/mobile_scanner)                                                              | High-performance native camera QR code scanning      |
+| **Data Visualization** | [fl_chart](https://pub.dev/packages/fl_chart)                                                                          | Dynamic financial spending graphs & pie charts       |
+| **Location & Maps**    | [google_maps_flutter](https://pub.dev/packages/google_maps_flutter), [geolocator](https://pub.dev/packages/geolocator) | Merchant geolocation and nearby ATM/store discovery  |
+| **Payments**           | `upi_india`, `pay`                                                                                                     | UPI & Google Pay payment integration                 |
+
+#### ⚙️ Backend (Spring Boot)
+
+| Category             | Technology                                                                       | Purpose                                       |
+| :------------------- | :------------------------------------------------------------------------------- | :-------------------------------------------- |
+| **Framework**        | [Spring Boot 4](https://spring.io/projects/spring-boot) (Java 21)                | REST API server                               |
+| **Security**         | Spring Security + OAuth2 Resource Server                                         | JWT auth, Google & GitHub OAuth               |
+| **Database**         | [PostgreSQL](https://www.postgresql.org/) via [Supabase](https://supabase.com/)  | Persistent relational data store              |
+| **ORM**              | Spring Data JPA + Hibernate                                                      | Data access layer                             |
+| **Validation**       | Spring Boot Validation (`jakarta.validation`)                                    | Request body validation                       |
+| **API Docs**         | [SpringDoc OpenAPI](https://springdoc.org/) (Swagger UI)                         | Auto-generated REST API documentation         |
+| **Containerisation** | Docker + Docker Compose                                                          | Containerised local & cloud deployment        |
+| **Cloud Deploy**     | [Render](https://render.com/) (Singapore region)                                 | Hosted backend via `render.yaml` blueprint    |
+
+#### 🌐 Frontend (Next.js)
+
+| Category       | Technology                                                                   | Purpose                              |
+| :------------- | :--------------------------------------------------------------------------- | :----------------------------------- |
+| **Framework**  | [Next.js 16](https://nextjs.org/) + [React 19](https://react.dev/)          | Server-side rendered web application |
+| **Styling**    | [Tailwind CSS 4](https://tailwindcss.com/)                                   | Utility-first CSS framework          |
+| **Animations** | [GSAP](https://gsap.com/) + [Lenis](https://lenis.darkroom.engineering/)     | Scroll-driven & micro animations     |
+| **Charts**     | [Recharts](https://recharts.org/)                                            | Analytics data visualisation         |
+| **Auth**       | [Supabase JS](https://supabase.com/docs/reference/javascript/)               | Authentication & data queries        |
+| **Icons**      | [Lucide React](https://lucide.dev/)                                          | Icon library                         |
 
 ---
 
-## 📐 Phase 3: Architecture, Workflows & Diagrams
+## 📐 Phase 5: Architecture, Workflows & Diagrams
 
 ### System Architecture Overview
 
 ```mermaid
 graph TD
-    subgraph UI_Layer ["📱 UI & Presentation Layer"]
+    subgraph Mobile ["📱 Flutter Mobile App"]
         A[Home Dashboard] --> B[Scan & Pay Screen]
         A --> C[Analytics Screen]
-        A --> D[Payment Methods & Cards]
-        A --> E[Settings & Theme Manager]
+        A --> D[Payment Methods]
+        A --> E[Settings / Theme]
+        A --> F[Transactions Screen]
     end
 
-    subgraph Service_Layer ["⚙️ Service & Repository Layer"]
-        B --> F[Scanner & Payment Controller]
-        C --> G[Analytics Engine]
-        F --> H[Transaction Repository]
-        D --> H
+    subgraph Services ["⚙️ Mobile Service & Repository Layer"]
+        B --> G[Scanner & UPI Service]
+        C --> H[Analytics Engine]
+        G --> I[Transaction Repository]
+        D --> I
+        I --> J[(SQLite Local DB)]
+        I --> K[API Client / Dio]
     end
 
-    subgraph Data_Layer ["💾 Data Persistence Layer"]
-        H -->|1. Fast Local Write| I[(SQLite Local DB)]
-        H -->|2. Sync Engine| J[Network Check / Dio]
-        J -->|3. Remote Sync| K[(Supabase Cloud Backend)]
+    subgraph Backend ["🖥️ Spring Boot API Server"]
+        K --> L[REST Controllers]
+        L --> M[Service Layer]
+        M --> N[JPA Repositories]
+        N --> O[(Supabase PostgreSQL)]
+        L --> P[Spring Security / JWT]
     end
+
+    subgraph Web ["🌐 Next.js Web Dashboard"]
+        Q[Landing Page] --> R[Auth / Login]
+        R --> S[User Dashboard]
+        S --> T[Analytics & Charts]
+        S --> U[Transactions View]
+    end
+
+    O --> T
 ```
 
 ---
@@ -171,7 +305,8 @@ sequenceDiagram
     participant Validator as 🛡️ Token Validator
     participant Repo as 💾 Transaction Repo
     participant SQLite as 📁 Local SQLite DB
-    participant Cloud as ☁️ Supabase Cloud
+    participant API as ⚙️ Spring Boot API
+    participant Cloud as ☁️ Supabase PostgreSQL
 
     User->>Scanner: Opens Camera & Scans QR
     Scanner->>Validator: Decode payload & validate merchant/amount
@@ -183,8 +318,10 @@ sequenceDiagram
     Scanner-->>User: Display Payment Confirmation Screen
     rect rgb(30, 40, 55)
     Note over Repo,Cloud: Background Sync Execution
-    Repo->>Cloud: Push transaction record to remote DB
-    Cloud-->>Repo: Acknowledge & update synced status
+    Repo->>API: POST /payments — push transaction record
+    API->>Cloud: Persist via JPA repository
+    Cloud-->>API: Acknowledge
+    API-->>Repo: 200 OK
     Repo->>SQLite: Mark Synced = true
     end
 ```
@@ -194,22 +331,98 @@ sequenceDiagram
 ### Folder Structure
 
 ```text
-mobile/
-├── mobile/hulypay/assets/              # Image mobile/hulypay/assets, brand logos, custom icons
-├── android/              # Native Android configuration & Gradle files
-├── ios/                  # Native iOS Xcode workspace & Podfiles
-├── lib/
-│   ├── main.dart         # App entrypoint & theme binding
-│   ├── models/           # Data models (Transaction, User, Card, Category)
-│   ├── repositories/     # Data abstraction layer (Transaction repository)
-│   ├── screens/          # Application views (Dashboard, Scanner, Analytics, etc.)
-│   ├── services/         # Services (Auth, SQLite DB, Preferences, Sync)
-│   ├── theme/            # Design tokens, color palettes, typography
-│   └── widgets/          # Reusable UI widgets and custom buttons
-├── Release/
-│   └── Hulypay.apk       # Direct installable test APK
-├── pubspec.yaml          # Project dependencies and asset definitions
-└── README.md             # Project documentation
+Huly-Pay/
+├── mobile/
+│   └── hulypay/
+│       ├── assets/               # Images, logos, custom icons
+│       ├── android/              # Native Android Gradle config
+│       ├── ios/                  # Native iOS Xcode workspace & Podfile
+│       ├── Release/
+│       │   └── Hulypay.apk       # Latest installable release APK
+│       ├── lib/
+│       │   ├── main.dart         # App entrypoint & theme binding
+│       │   ├── data/             # Local data sources
+│       │   ├── models/           # Data models (Transaction, User, Card, Category, Expense)
+│       │   ├── repositories/     # Data abstraction layer
+│       │   ├── screens/          # App views:
+│       │   │   ├── home_dashboard_screen.dart
+│       │   │   ├── scan_and_pay_screen.dart
+│       │   │   ├── scan_amount_screen.dart
+│       │   │   ├── upload_qr_screen.dart
+│       │   │   ├── analysis_screen.dart
+│       │   │   ├── transactions_screen.dart
+│       │   │   ├── single_transaction_screen.dart
+│       │   │   ├── payment_methods_screen.dart
+│       │   │   ├── settings_screen.dart
+│       │   │   ├── notifications_screen.dart
+│       │   │   ├── privacy_security_screen.dart
+│       │   │   ├── help_support_screen.dart
+│       │   │   ├── about_hulypay_screen.dart
+│       │   │   ├── sign_in_screen.dart
+│       │   │   └── splash_screen.dart
+│       │   ├── services/         # Business logic services:
+│       │   │   ├── api_client.dart
+│       │   │   ├── auth_service.dart
+│       │   │   ├── google_pay_service.dart
+│       │   │   ├── local_database_service.dart
+│       │   │   ├── location_service.dart
+│       │   │   ├── qr_share_service.dart
+│       │   │   ├── sms_filter_service.dart
+│       │   │   ├── token_validator.dart
+│       │   │   ├── upi_payment_service.dart
+│       │   │   ├── upi_service.dart
+│       │   │   └── user_preferences_service.dart
+│       │   ├── theme/            # Design tokens, color palettes, typography
+│       │   └── widgets/          # Reusable UI components:
+│       │       ├── analysis_category_pie_chart.dart
+│       │       ├── category_picker_sheet.dart
+│       │       ├── custom_bottom_nav_bar.dart
+│       │       ├── customization_bottom_sheet.dart
+│       │       ├── home_spend_trend_line_chart.dart
+│       │       ├── home_today_spend_gauge.dart
+│       │       ├── home_weekly_bar_chart.dart
+│       │       ├── spending_heatmap.dart
+│       │       ├── transaction_detail_components.dart
+│       │       └── transaction_tile.dart
+│       └── pubspec.yaml
+│
+├── backend/                      # Spring Boot 4 REST API (Java 21)
+│   ├── src/main/java/com/hulypay/backend/
+│   │   ├── analytics/            # Analytics endpoints & service
+│   │   ├── categories/           # Category management
+│   │   ├── common/               # Shared utilities & base classes
+│   │   ├── config/               # Security, CORS, JWT, Swagger config
+│   │   ├── expenses/             # Expense CRUD
+│   │   ├── payments/             # Payment processing
+│   │   └── users/                # User registration & profile
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   ├── pom.xml
+│   └── render.yaml
+│
+├── frontend/                     # Next.js 16 Web Dashboard
+│   ├── src/
+│   │   ├── app/                  # Next.js App Router pages:
+│   │   │   ├── dashboard/        # User dashboard
+│   │   │   ├── design/           # Design system showcase
+│   │   │   ├── features/         # Features page
+│   │   │   ├── login/            # Auth flow
+│   │   │   ├── privacy-terms/    # Legal pages
+│   │   │   ├── qna/              # Q&A / Help
+│   │   │   └── tools/            # Financial tools
+│   │   ├── components/           # Reusable React components:
+│   │   │   ├── landing/          # Landing page sections
+│   │   │   ├── dashboard/        # Dashboard-specific components
+│   │   │   ├── common/           # Shared UI components
+│   │   │   ├── ui/               # Primitive UI elements
+│   │   │   └── transitions/      # Page transition components
+│   │   ├── context/              # React context providers
+│   │   └── lib/                  # Utilities & Supabase client
+│   ├── Dockerfile
+│   └── package.json
+│
+├── render.yaml                   # Render deployment blueprint
+└── README.md
 ```
 
 ---
@@ -229,3 +442,4 @@ Created & maintained by **Sujith Sappani** ([sujithsappani.vercel.app](https://s
 ## 📄 License
 
 This project is for demonstration and development purposes. Check [LICENSE](LICENSE) for more details.
+
