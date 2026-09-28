@@ -36,6 +36,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _avatarUrl = '';
   bool _quickConfirm = false;
   bool _quickScan = false;
+  bool _pushNotifications = true;
+  bool _dailyBudgetWarnings = false;
 
   @override
   void initState() {
@@ -604,6 +606,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           const SizedBox(height: 16),
                           _buildPreferencesSection(),
                           const SizedBox(height: 16),
+                          _buildNotificationsSection(),
+                          const SizedBox(height: 16),
                           _buildSupportSection(),
                           const SizedBox(height: 16),
                           _buildLogoutCard(),
@@ -824,9 +828,81 @@ class _SettingsScreenState extends State<SettingsScreen> {
         },
       ),
       Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
+      // Customization option with both transferred Themes and Chart Colors presets
+      _buildSettingRow(
+        icon: Icons.tune_rounded,
+        title: 'Customization',
+        trailingText: '${AppThemeManager.theme} • ${AppThemeManager.chartPalette}',
+        onTap: _showCustomizationModal,
+      ),
+    ]);
+  }
+
+  Widget _buildNotificationsSection() {
+    return _buildGroupCard([
+      _buildSwitchSettingRow(
+        icon: Icons.notifications_active_rounded,
+        iconColor: const Color(0xFF0A84FF),
+        title: 'Push Notifications',
+        subtitle: 'Enable system alerts for payments and receipts',
+        value: _pushNotifications,
+        onChanged: (bool value) {
+          setState(() {
+            _pushNotifications = value;
+          });
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                value
+                    ? 'Push notifications enabled'
+                    : 'Push notifications disabled',
+                style: const TextStyle(fontFamily: 'Google Sans'),
+              ),
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 2),
+              backgroundColor: const Color(0xFF222226),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          );
+        },
+      ),
+      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
+      _buildSwitchSettingRow(
+        icon: Icons.track_changes_rounded,
+        iconColor: const Color(0xFFFF9500),
+        title: 'Daily Budget Warnings',
+        subtitle: 'Alert when approaching 90% of daily limit',
+        value: _dailyBudgetWarnings,
+        onChanged: (bool value) {
+          setState(() {
+            _dailyBudgetWarnings = value;
+          });
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                value
+                    ? 'Daily budget warnings enabled'
+                    : 'Daily budget warnings disabled',
+                style: const TextStyle(fontFamily: 'Google Sans'),
+              ),
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 2),
+              backgroundColor: const Color(0xFF222226),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          );
+        },
+      ),
+      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
       _buildSettingRow(
         icon: Icons.notifications_none_rounded,
-        title: 'Notifications',
+        title: 'Notification Center',
         trailingText: 'In Dev',
         onTap: () {
           Navigator.of(context).push(
@@ -835,14 +911,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           );
         },
-      ),
-      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
-      // Customization option with both transferred Themes and Chart Colors presets
-      _buildSettingRow(
-        icon: Icons.tune_rounded,
-        title: 'Customization',
-        trailingText: '${AppThemeManager.theme} • ${AppThemeManager.chartPalette}',
-        onTap: _showCustomizationModal,
       ),
     ]);
   }

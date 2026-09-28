@@ -62,6 +62,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     'Personal Care': Color(0xFFFF6482),
     'Education': Color(0xFF5856D6),
     'Other': Color(0xFF8E8E93),
+    'Others': Color(0xFF8E8E93),
   };
 
   @override
@@ -76,17 +77,16 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     _loadSavedPeriod();
     _loadCategoryOverrides();
     if (widget.initialPayments != null && widget.initialPayments!.isNotEmpty) {
-      _allPayments = List.from(widget.initialPayments!);
-      _filterAndRecalculate();
+      _setAllPayments(widget.initialPayments!);
     } else if (widget.initialCategories != null) {
       _categories = widget.initialCategories!;
       _totalSpent = widget.totalSpent ?? '₹0';
-      _loadData();
     } else {
       _categories = [];
       _totalSpent = widget.totalSpent ?? '₹0';
-      _loadData();
     }
+    // Always trigger background sync from SQLite and backend
+    _loadData();
   }
 
   void _onThemeOrPaletteChanged() {
@@ -119,11 +119,10 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   @override
   void didUpdateWidget(covariant AnalysisScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.initialPayments != null &&
-        widget.initialPayments != oldWidget.initialPayments) {
-      _allPayments = List.from(widget.initialPayments!);
-      _filterAndRecalculate();
+    if (widget.initialPayments != null) {
+      _setAllPayments(widget.initialPayments!);
     }
+    _loadData();
   }
 
   Future<void> _loadSavedPeriod() async {
@@ -150,16 +149,20 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     // 2. Read SQLite cached payments first
     try {
       final cached = await PaymentRepository().getCachedPayments();
-      if (mounted && cached.isNotEmpty) {
-        _setAllPayments(cached);
+      if (mounted) {
+        if (cached.isNotEmpty || _allPayments.isEmpty) {
+          _setAllPayments(cached);
+        }
       }
     } catch (_) {}
 
     // 3. Fetch fresh payments from backend and update SQLite
     try {
       final payments = await PaymentRepository().getPayments(forceRefresh: true);
-      if (mounted && payments.isNotEmpty) {
-        _setAllPayments(payments);
+      if (mounted) {
+        if (payments.isNotEmpty || _allPayments.isEmpty) {
+          _setAllPayments(payments);
+        }
       }
     } catch (_) {}
   }
@@ -275,13 +278,12 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
         tLower.contains('tuition') ||
         tLower.contains('education')) {
       return 'Education';
+    } else {
+      if (pm != null && pm.isNotEmpty && pm.toUpperCase() != 'UPI') {
+        return pm;
+      }
+      return 'Others';
     }
-
-    if (pm != null && pm.isNotEmpty && pm.toUpperCase() != 'UPI') {
-      return pm;
-    }
-
-    return 'Other';
   }
 
   DateTime _getCutoffForPeriod(String period) {
@@ -320,12 +322,10 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   void _filterAndRecalculate() {
     if (!mounted) return;
     if (_allPayments.isEmpty) {
-      if (widget.initialCategories != null) {
-        setState(() {
-          _categories = widget.initialCategories!;
-          _totalSpent = widget.totalSpent ?? (_categories.isEmpty ? '₹0' : '₹12,480');
-        });
-      }
+      setState(() {
+        _categories = widget.initialCategories ?? [];
+        _totalSpent = widget.totalSpent ?? '₹0';
+      });
       return;
     }
 
@@ -333,12 +333,12 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     final filtered = _allPayments.where((p) {
       if (!p.isSuccessful) return false;
       final dateStr = p.createdAt ?? p.paymentDate;
-      if (dateStr == null) return false;
+      if (dateStr == null || dateStr.trim().isEmpty) return true;
       try {
         final dt = DateTime.parse(dateStr).toLocal();
         return dt.isAfter(cutoff.subtract(const Duration(seconds: 1)));
       } catch (_) {
-        return false;
+        return true;
       }
     }).toList();
 
@@ -509,7 +509,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Spending Insights',
+          'Analyze',
           style: TextStyle(
             fontFamily: 'Google Sans',
             color: colors.textPrimary,

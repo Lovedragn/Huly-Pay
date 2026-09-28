@@ -1032,9 +1032,9 @@
     "semantic_hash": ""
   },
   "mobile/hulypay/lib/screens/notifications_screen.dart": {
-    "mtime": 1790583212.0876393,
-    "seen": 1790583244.4248013,
-    "ast_hash": "e10ade4b2fb10c4c3529936b0127aacd",
+    "mtime": 1790583155.4456532,
+    "seen": 1790583189.3145292,
+    "ast_hash": "521569536255f0f0766c11b11f28aec1",
     "semantic_hash": ""
   },
   "mobile/hulypay/lib/screens/payment_methods_screen.dart": {

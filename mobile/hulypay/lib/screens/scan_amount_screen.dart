@@ -1,32 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
-import '../models/payment_model.dart';
-import '../repositories/payment_repository.dart';
-import '../services/qr_share_service.dart';
-import '../services/upi_service.dart';
 import '../theme/app_theme.dart';
+import 'scan_and_pay_screen.dart';
 
-class UploadQrScreen extends StatefulWidget {
+class ScanAmountScreen extends StatefulWidget {
   final double? initialAmount;
 
-  const UploadQrScreen({
+  const ScanAmountScreen({
     super.key,
     this.initialAmount,
   });
 
   @override
-  State<UploadQrScreen> createState() => _UploadQrScreenState();
+  State<ScanAmountScreen> createState() => _ScanAmountScreenState();
 }
 
-class _UploadQrScreenState extends State<UploadQrScreen> {
+class _ScanAmountScreenState extends State<ScanAmountScreen> {
   late final TextEditingController _amountController;
   final TextEditingController _noteController = TextEditingController();
   final FocusNode _amountFocusNode = FocusNode();
-
-  XFile? _selectedImage;
-  bool _isSharing = false;
 
   @override
   void initState() {
@@ -53,129 +45,37 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
     super.dispose();
   }
 
-  Future<void> _shareImageToGooglePay(XFile image) async {
+  Future<void> _handleScanButton() async {
     final rawText = _amountController.text.trim();
     final parsedAmount = double.tryParse(rawText);
-    final note = _noteController.text.trim();
 
-    setState(() {
-      _isSharing = true;
-    });
-
-    try {
-      final success = await QrShareService.shareQrImage(
-        context: context,
-        filePath: image.path,
-        amount: (parsedAmount != null && parsedAmount > 0) ? parsedAmount : null,
-        note: note.isNotEmpty ? note : null,
-        title: 'Pay with Google Pay',
-        targetPackage: QrShareService.googlePayPackage,
+    if (rawText.isNotEmpty && (parsedAmount == null || parsedAmount <= 0)) {
+      _showFeedbackSnackBar(
+        'Please enter a valid amount greater than 0',
+        isError: true,
       );
-
-      if (mounted) {
-        if (success) {
-          final effectiveAmount = (parsedAmount != null && parsedAmount > 0) ? parsedAmount : 0.0;
-          if (effectiveAmount > 0) {
-            String? merchantName = note.isNotEmpty ? note : null;
-            String? upiId;
-
-            try {
-              final capture = await MobileScannerController().analyzeImage(image.path);
-              if (capture != null && capture.barcodes.isNotEmpty) {
-                final raw = capture.barcodes.first.rawValue;
-                if (raw != null) {
-                  final upiData = UpiService.parseUpiUri(raw);
-                  if (upiData != null) {
-                    merchantName ??= upiData.payeeName ?? upiData.upiId;
-                    upiId = upiData.upiId;
-                  }
-                }
-              }
-            } catch (_) {}
-
-            final txnRef = 'HULY${DateTime.now().millisecondsSinceEpoch}';
-            try {
-              await PaymentRepository().createPayment(CreatePaymentPayload(
-                amount: effectiveAmount,
-                currency: 'INR',
-                merchantName: merchantName ?? 'QR Payment',
-                upiId: upiId ?? '',
-                paymentMethod: 'UPI',
-                transactionReference: txnRef,
-                status: 'CONFIRMED',
-                provider: 'GOOGLE_PAY',
-              ));
-            } catch (_) {}
-          }
-
-          _showFeedbackSnackBar(
-            'Opening Google Pay with QR image...',
-            isError: false,
-          );
-        }
+      if (_amountFocusNode.canRequestFocus) {
+        _amountFocusNode.requestFocus();
       }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isSharing = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _pickImage() async {
-    final rawText = _amountController.text.trim();
-    if (rawText.isNotEmpty) {
-      final parsedAmount = double.tryParse(rawText);
-      if (parsedAmount == null || parsedAmount <= 0) {
-        _showFeedbackSnackBar(
-          'Please enter a valid amount greater than 0',
-          isError: true,
-        );
-        if (_amountFocusNode.canRequestFocus) {
-          _amountFocusNode.requestFocus();
-        }
-        return;
-      }
-    }
-
-    final picked = await QrShareService.pickQrImage(context);
-    if (picked != null && mounted) {
-      setState(() {
-        _selectedImage = picked;
-      });
-      // Automatically launch Google Pay with the selected QR screenshot
-      await _shareImageToGooglePay(picked);
-    }
-  }
-
-  Future<void> _handleUploadButton() async {
-    if (_isSharing) return;
-
-    final rawText = _amountController.text.trim();
-    if (rawText.isNotEmpty) {
-      final parsedAmount = double.tryParse(rawText);
-      if (parsedAmount == null || parsedAmount <= 0) {
-        _showFeedbackSnackBar(
-          'Please enter a valid amount greater than 0',
-          isError: true,
-        );
-        if (_amountFocusNode.canRequestFocus) {
-          _amountFocusNode.requestFocus();
-        }
-        return;
-      }
-    }
-
-    // Step 1: If no image is selected yet, open gallery picker.
-    // As soon as the user selects the screenshot and presses done, it auto-shares to Google Pay.
-    if (_selectedImage == null) {
-      await _pickImage();
       return;
     }
 
-    // Step 2: Once image is selected, directly upload/share into Google Pay
-    await _shareImageToGooglePay(_selectedImage!);
+    final note = _noteController.text.trim();
+
+    // Open scanner with entered amount
+    final result = await Navigator.of(context).push<int>(
+      MaterialPageRoute(
+        builder: (_) => ScanAndPayScreen(
+          initialAmount: (parsedAmount != null && parsedAmount > 0) ? parsedAmount : null,
+          initialNote: note.isNotEmpty ? note : null,
+        ),
+      ),
+    );
+
+    // If payment/scan was launched or back returned with a target index, pop back to dashboard
+    if (result != null && mounted) {
+      Navigator.of(context).pop(result);
+    }
   }
 
   void _showFeedbackSnackBar(String message, {bool isError = false}) {
@@ -216,7 +116,7 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          'Upload QR',
+          'Scan & Pay',
           style: TextStyle(
             fontFamily: 'Google Sans',
             color: colors.textPrimary,
@@ -229,7 +129,6 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Center the amount text area in available vertical and horizontal space
             Expanded(
               child: Center(
                 child: SingleChildScrollView(
@@ -347,54 +246,6 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
                             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                           ),
                         ),
-
-                        // Compact badge when image is attached
-                        if (_selectedImage != null) ...[
-                          const SizedBox(height: 16),
-                          GestureDetector(
-                            onTap: _pickImage,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF30D158).withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: const Color(0xFF30D158).withValues(alpha: 0.35),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.check_circle_rounded,
-                                    color: Color(0xFF30D158),
-                                    size: 16,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Flexible(
-                                    child: Text(
-                                      _selectedImage!.name,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        fontFamily: 'Google Sans',
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xFF30D158),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Icon(
-                                    Icons.refresh_rounded,
-                                    color: colors.accent,
-                                    size: 14,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
                       ],
                     ),
                   ),
@@ -402,7 +253,7 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
               ),
             ),
 
-            // Bottom Sticky Upload Button
+            // Bottom Sticky Scan Button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               child: SizedBox(
@@ -417,40 +268,31 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  onPressed: _isSharing ? null : _handleUploadButton,
-                  child: _isSharing
-                      ? SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            color: colors.isDark ? Colors.black : Colors.white,
-                          ),
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              'assets/icon/upload.svg',
-                              width: 18,
-                              height: 18,
-                              colorFilter: ColorFilter.mode(
-                                colors.isDark ? Colors.black : Colors.white,
-                                BlendMode.srcIn,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              _selectedImage != null ? 'Pay with Google Pay' : 'Upload',
-                              style: TextStyle(
-                                fontFamily: 'Google Sans',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: colors.isDark ? Colors.black : Colors.white,
-                              ),
-                            ),
-                          ],
+                  onPressed: _handleScanButton,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/icon/qr.svg',
+                        width: 20,
+                        height: 20,
+                        colorFilter: ColorFilter.mode(
+                          colors.isDark ? Colors.black : Colors.white,
+                          BlendMode.srcIn,
                         ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Scan QR Code',
+                        style: TextStyle(
+                          fontFamily: 'Google Sans',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: colors.isDark ? Colors.black : Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
