@@ -6041,7 +6041,7 @@
       "file_type": "code",
       "norm_label": "_buildcurrentlyindevelopmentcard",
       "source_file": "mobile/hulypay/lib/screens/notifications_screen.dart",
-      "source_location": "L111"
+      "source_location": "L77"
     },
     {
       "id": "mobile_hulypay_lib_screens_privacy_security_screen",
@@ -43533,17 +43533,6 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_notifications_screen",
-      "target": "mobile_hulypay_lib_screens_notifications_screen_buildcurrentlyindevelopmentcard",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "mobile/hulypay/lib/screens/notifications_screen.dart",
-      "source_location": "L111",
-      "weight": 1.0
-    },
-    {
-      "source": "mobile_hulypay_lib_screens_notifications_screen",
       "target": "mobile_hulypay_lib_screens_notifications_screen_buildappbar",
       "relation": "defines",
       "_origin": "ast",
@@ -43562,6 +43551,17 @@
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/notifications_screen.dart",
       "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "mobile_hulypay_lib_screens_notifications_screen",
+      "target": "mobile_hulypay_lib_screens_notifications_screen_buildcurrentlyindevelopmentcard",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "mobile/hulypay/lib/screens/notifications_screen.dart",
+      "source_location": "L77",
       "weight": 1.0
     },
     {

@@ -18,20 +18,14 @@ class TechSpecItem {
   final String label;
   final String value;
 
-  const TechSpecItem({
-    required this.label,
-    required this.value,
-  });
+  const TechSpecItem({required this.label, required this.value});
 }
 
 class ScopeBulletItem {
   final String highlight;
   final String description;
 
-  const ScopeBulletItem({
-    required this.highlight,
-    required this.description,
-  });
+  const ScopeBulletItem({required this.highlight, required this.description});
 }
 
 class SecurityProtocolItem {
@@ -50,10 +44,7 @@ class FaqItem {
   final String question;
   final String answer;
 
-  const FaqItem({
-    required this.question,
-    required this.answer,
-  });
+  const FaqItem({required this.question, required this.answer});
 }
 
 class AppNotificationItem {
@@ -131,8 +122,9 @@ class ExternalData {
   // App Branding & General Metadata
   // ---------------------------------------------------------------------------
   static const String appName = 'HulyPay';
-  static const String appTagline = 'Next-Generation Intelligent Fintech Experience';
-  static const String defaultAppVersion = 'v1.0.0 (Build 2026.09.1)';
+  static const String appTagline =
+      'Next-Generation Intelligent Fintech Experience';
+  static const String defaultAppVersion = 'v2.7.0';
   static const String appDescription =
       'Next-generation intelligent fintech application crafted for frictionless '
       'transactions, analytical intelligence, and secure offline-first financial '
@@ -150,12 +142,13 @@ class ExternalData {
       'Learn more about the developer and explore other engineering projects below:';
 
   static const String supportEmail = 'sujith.sappani@gmail.com';
-  static const String supportSubject = 'HulyPay Support & Feedback (Dev Build)';
+  static const String supportSubject = 'HulyPay Support & Feedback';
 
   // ---------------------------------------------------------------------------
   // About Page Data
   // ---------------------------------------------------------------------------
-  static const String aboutEnvironmentNoticeTitle = 'Test & Development Release';
+  static const String aboutEnvironmentNoticeTitle =
+      'Test & Development Release';
   static const String aboutEnvironmentNoticeBody =
       'This version of HulyPay is an active preview and development environment build. '
       'All payment gateways, scanner decoders, heatmaps, and simulated transfers are '
@@ -165,35 +158,30 @@ class ExternalData {
     FeatureHighlightItem(
       icon: Icons.qr_code_scanner_rounded,
       title: 'Scan & Pay Scanner',
-      subtitle:
-          'Ultra-fast QR decoding with simulated camera testing and flashlight assistance.',
+      subtitle: 'Ultra-fast QR decoding with simulated camera testing and flashlight assistance.',
     ),
     FeatureHighlightItem(
       icon: Icons.insights_rounded,
       title: 'Analyze & Spending Heatmap',
-      subtitle:
-          'Multi-theme visual analytics with category donut charts and temporal activity matrices.',
+      subtitle: 'Multi-theme visual analytics with category donut charts and temporal activity matrices.',
     ),
     FeatureHighlightItem(
       icon: Icons.sync_rounded,
       title: 'Offline-First Local Sync',
-      subtitle:
-          'Robust SQLite offline transaction storage backed by cloud sync engines.',
+      subtitle: 'Robust offline transaction storage backed by cloud sync engines.',
     ),
     FeatureHighlightItem(
       icon: Icons.security_rounded,
       title: 'Sandboxed Client Security',
-      subtitle:
-          'Local hardware biometric locking and isolated session authorization.',
+      subtitle: 'Local hardware biometric locking and isolated session authorization.',
     ),
   ];
 
   static const List<TechSpecItem> aboutSpecs = [
-    TechSpecItem(label: 'Framework', value: 'Flutter & Dart'),
-    TechSpecItem(label: 'Database Engine', value: 'SQLite (Local) & Supabase'),
-    TechSpecItem(label: 'Design System', value: 'Huly Premium UI / Material 3'),
-    TechSpecItem(label: 'Environment', value: 'Staging / Development Build'),
-    TechSpecItem(label: 'Architecture', value: 'Offline-First Clean Architecture'),
+    TechSpecItem(label: 'Application', value: 'HulyPay'),
+    TechSpecItem(label: 'Category', value: 'Personal Finance & Analytics'),
+    TechSpecItem(label: 'Platform', value: 'Android & iOS'),
+    TechSpecItem(label: 'Data Protection', value: 'Encrypted Device Storage'),
   ];
 
   // ---------------------------------------------------------------------------
@@ -207,23 +195,19 @@ class ExternalData {
   static const List<ScopeBulletItem> dataStoredItems = [
     ScopeBulletItem(
       highlight: 'Transaction Records:',
-      description:
-          'Payment amount, merchant name, UPI ID, note, timestamp, transaction reference (UTR), status, and assigned spending category.',
+      description: 'Payment amount, merchant name, UPI ID, note, timestamp, transaction reference (UTR), status, and assigned spending category.',
     ),
     ScopeBulletItem(
       highlight: 'User Profile & Preferences:',
-      description:
-          'Display name, email address, avatar initials, default UPI app preference, quick confirm setting, and custom UI themes.',
+      description: 'Display name, email address, avatar initials, default UPI app preference, quick confirm setting, and custom UI themes.',
     ),
     ScopeBulletItem(
       highlight: 'Optional Geo-Location:',
-      description:
-          'Latitude and longitude coordinates only when a transaction is explicitly authorized with location permission enabled.',
+      description: 'Latitude and longitude coordinates only when a transaction is explicitly authorized with location permission enabled.',
     ),
     ScopeBulletItem(
       highlight: 'What We NEVER Store:',
-      description:
-          'We do not store UPI PINs, banking passwords, debit/credit card CVVs, or full bank account numbers.',
+      description: 'We do not store UPI PINs, banking passwords, debit/credit card CVVs, or full bank account numbers.',
     ),
   ];
 
@@ -231,42 +215,36 @@ class ExternalData {
   static const List<ScopeBulletItem> databasesUsedItems = [
     ScopeBulletItem(
       highlight: 'Local SQLite Engine (sqflite):',
-      description:
-          'Transactions and metadata are saved locally on your device in an offline-first SQLite database (`hulypay.db`). This allows full ledger functionality even without internet connectivity.',
+      description: 'Transactions and metadata are saved locally on your device in an offline-first SQLite database (`hulypay.db`). This allows full ledger functionality even without internet connectivity.',
     ),
     ScopeBulletItem(
       highlight: 'Encrypted Device Preferences (SharedPreferences):',
-      description:
-          'Local user settings, app biometric flags, selected chart themes, and cached quick-confirm toggles are preserved in private app storage sandbox.',
+      description: 'Local user settings, app biometric flags, selected chart themes, and cached quick-confirm toggles are preserved in private app storage sandbox.',
     ),
     ScopeBulletItem(
       highlight: 'Supabase Cloud Database (PostgreSQL):',
-      description:
-          'When signed in, transactions and profile records sync with a secure remote PostgreSQL database on Supabase using encrypted Row Level Security (RLS) policies.',
+      description: 'When signed in, transactions and profile records sync with a secure remote PostgreSQL database on Supabase using encrypted Row Level Security (RLS) policies.',
     ),
   ];
 
-  static const String dataRetrievalTitle = 'How Data is Retrieved & Synchronized';
+  static const String dataRetrievalTitle =
+      'How Data is Retrieved & Synchronized';
   static const List<ScopeBulletItem> dataRetrievalItems = [
     ScopeBulletItem(
       highlight: 'Offline-First Fetching:',
-      description:
-          'The application immediately reads cached ledger entries from local SQLite upon opening for 0ms lag.',
+      description: 'The application immediately reads cached ledger entries from local SQLite upon opening for 0ms lag.',
     ),
     ScopeBulletItem(
       highlight: 'Real-Time Remote Sync:',
-      description:
-          'When online and authenticated, background synchronization fetches updated records from Supabase and reconciles pending offline entries.',
+      description: 'When online and authenticated, background synchronization fetches updated records from Supabase and reconciles pending offline entries.',
     ),
     ScopeBulletItem(
       highlight: 'SMS & Sensor Decoding:',
-      description:
-          'The QR scanner accesses camera frames strictly in transient memory. Bank SMS verification parses incoming transaction SMS locally without uploading personal messages.',
+      description: 'The QR scanner accesses camera frames strictly in transient memory. Bank SMS verification parses incoming transaction SMS locally without uploading personal messages.',
     ),
     ScopeBulletItem(
       highlight: 'Complete Data Eradication:',
-      description:
-          'You can reset or wipe all local SQLite tables and stored preferences at any time by signing out or clearing application data.',
+      description: 'You can reset or wipe all local SQLite tables and stored preferences at any time by signing out or clearing application data.',
     ),
   ];
 
@@ -278,7 +256,8 @@ class ExternalData {
   static const String securityBannerTitle = 'End-to-End Encrypted Guard';
   static const String securityBannerDescription =
       'Client-side security policies and sandboxed credential vaulting are enabled for testing.';
-  static const String devPrivacyNoticeTitle = 'Test & Development Environment Scope';
+  static const String devPrivacyNoticeTitle =
+      'Test & Development Environment Scope';
   static const String devPrivacyNoticeIntro =
       'HulyPay is actively undergoing rapid engineering cycles, feature experiments, and prototype iterations.';
   static const List<ScopeBulletItem> devPrivacyScopeBullets = [];
@@ -313,7 +292,8 @@ We reserve the right to revise or update these Terms of Service at any time. Con
   static const String privacySummary =
       'HulyPay protects your financial data using end-to-end encryption and strict zero-knowledge protocols.';
 
-  static const String privacyPolicyFull = '''
+  static const String privacyPolicyFull =
+      '''
 1. Information We Collect
 In this development build, HulyPay stores user profile handles, simulated transaction histories, and local preferences on your device using encrypted SQLite storage. No actual payment card numbers, CVVs, or bank secrets are ever requested or stored.
 
@@ -339,7 +319,8 @@ Website: $creatorWebsiteUrl
   // Help & Support Page Data
   // ---------------------------------------------------------------------------
   static const String supportDirectTitle = 'Direct Support & Queries';
-  static const String supportDirectSubtitle = 'Reach out for bugs, inquiries, or feedback';
+  static const String supportDirectSubtitle =
+      'Reach out for bugs, inquiries, or feedback';
 
   static const String developerWebsiteTitle = 'Official Developer Site';
   static const String developerWebsiteDescription =
@@ -348,28 +329,23 @@ Website: $creatorWebsiteUrl
   static const List<FaqItem> helpFaqs = [
     FaqItem(
       question: 'Are these live money transactions?',
-      answer:
-          'No. The current build operates in development/test simulation mode. No genuine bank accounts or real funds are debited.',
+      answer: 'No. HulyPay operates in demonstration and simulation mode. No genuine bank accounts or real funds are debited.',
     ),
     FaqItem(
       question: 'Why does the QR code scanner fail in some environments?',
-      answer:
-          'The QR scanner utilizes device camera sensors and hardware decoding. In emulator or restricted environments, you can use the test QR trigger to simulate incoming payment payloads.',
+      answer: 'The QR scanner utilizes device camera sensors and hardware decoding. In emulator or restricted environments, you can use the test QR trigger to simulate incoming payment payloads.',
     ),
     FaqItem(
       question: 'How can I reset my offline database?',
-      answer:
-          'You can clear your local database session by signing out and logging back in.',
+      answer: 'You can clear your local database session by signing out and logging back in.',
     ),
     FaqItem(
       question: 'Where is my transaction data stored?',
-      answer:
-          'Transaction records are persisted locally inside an offline SQLite database on your device and automatically synced with your cloud profile when online.',
+      answer: 'Transaction records are persisted securely on your device and automatically synced with your cloud profile when online.',
     ),
     FaqItem(
       question: 'Can I customize the application theme and chart colors?',
-      answer:
-          'Yes! Visit the Settings screen and tap Customization to choose between multiple dark themes (Onyx, Carbon, Emerald, Violet, Midnight Blue) and dynamic chart color palettes.',
+      answer: 'Yes! Visit the Settings screen and tap Customization to choose between multiple dark themes (Onyx, Carbon, Emerald, Violet, Midnight Blue) and dynamic chart color palettes.',
     ),
   ];
 
@@ -380,16 +356,19 @@ Website: $creatorWebsiteUrl
   /// or live production mode.
   static const bool isNotificationServiceInDev = true;
 
-  static const String notificationEnvironmentBadgeDev = 'Preview / Dev Prototype';
+  static const String notificationEnvironmentBadgeDev =
+      'Preview / Dev Prototype';
   static const String notificationEnvironmentBadgeLive = 'Live Dispatch Active';
 
-  static const String notificationDevNoticeTitle = 'Notification Service In Development';
+  static const String notificationDevNoticeTitle =
+      'Notification Service In Development';
   static const String notificationDevNoticeBody =
       'Push notification dispatchers and WebSocket real-time triggers are currently being '
       'integrated with our cloud backends. Sample alerts shown below illustrate upcoming '
       'ledger events, new feature releases, and developer broadcasts.';
 
-  static const String notificationLiveNoticeTitle = 'Notification Center Active';
+  static const String notificationLiveNoticeTitle =
+      'Notification Center Active';
   static const String notificationLiveNoticeBody =
       'Real-time push delivery and security activity logging are operational. '
       'Review your recent payment receipts, security audits, and new feature updates below.';
@@ -592,7 +571,8 @@ Website: $creatorWebsiteUrl
   /// Scan & Pay Screen static copy and configuration messages
   static const String scanQrTitle = 'Scan & Pay';
   static const String invalidQrMessage = 'This is not a valid UPI payment QR.';
-  static const String openingGPayMessage = 'Opening Google Pay with scanned QR image...';
+  static const String openingGPayMessage =
+      'Opening Google Pay with scanned QR image...';
   static const String gPayShareTitle = 'Pay with Google Pay';
   static const String quickConfirmActiveTitle = 'Quick Confirm is active';
   static const String switchedToFrontCamera = 'Switched to Front Camera';
@@ -600,10 +580,13 @@ Website: $creatorWebsiteUrl
   static const String smsPermissionRequiredTitle = 'SMS Permission Required';
   static const String smsPermissionRequiredContent =
       'SMS permission is required to verify this development payment. Payment verification through SMS cannot proceed without it.';
-  static const String paymentVerificationTimeoutMsg = 'Payment verification timed out after 5 minutes.';
-  static const String verifyingSmsStatus = 'Analyzing incoming bank transaction SMS...';
+  static const String paymentVerificationTimeoutMsg =
+      'Payment verification timed out after 5 minutes.';
+  static const String verifyingSmsStatus =
+      'Analyzing incoming bank transaction SMS...';
   static const String paymentVerifiedSuccess = 'Payment verified successfully';
-  static const String paymentFailedBankSms = 'Payment failed according to bank SMS';
+  static const String paymentFailedBankSms =
+      'Payment failed according to bank SMS';
   static const String quickConfirmSuccessBody =
       'Payment has been marked as successful and recorded in your ledger without SMS verification.';
   static const String smsVerifiedSuccessBody =
@@ -627,4 +610,3 @@ class TransactionCategoryItem {
     required this.description,
   });
 }
-

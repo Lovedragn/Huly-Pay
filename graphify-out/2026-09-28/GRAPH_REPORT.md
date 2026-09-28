@@ -1,7 +1,7 @@
 # Graph Report - Huly.pay  (2026-09-28)
 
 ## Corpus Check
-- 178 files · ~133,431 words
+- 178 files · ~133,363 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary

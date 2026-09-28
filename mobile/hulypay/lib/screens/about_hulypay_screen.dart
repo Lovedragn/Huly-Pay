@@ -54,10 +54,6 @@ class AboutHulyPayScreen extends StatelessWidget {
                   children: [
                     _buildHeroBrandCard(colors),
                     const SizedBox(height: 20),
-                    _buildEnvironmentNoticeCard(colors),
-                    const SizedBox(height: 20),
-                    _buildFeatureHighlights(colors),
-                    const SizedBox(height: 20),
                     _buildCreatorSection(context, colors),
                     const SizedBox(height: 20),
                     _buildSpecsCard(colors),
@@ -202,148 +198,6 @@ class AboutHulyPayScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildEnvironmentNoticeCard(AppThemeData colors) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFF9500).withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: const Color(0xFFFF9500).withValues(alpha: 0.3),
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFF9500).withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(
-              Icons.science_outlined,
-              color: Color(0xFFFF9500),
-              size: 22,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  ExternalData.aboutEnvironmentNoticeTitle,
-                  style: const TextStyle(
-                    fontFamily: 'Google Sans',
-                    color: Color(0xFFFF9500),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  ExternalData.aboutEnvironmentNoticeBody,
-                  style: TextStyle(
-                    fontFamily: 'Google Sans',
-                    color: colors.textSecondary,
-                    fontSize: 13,
-                    height: 1.45,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFeatureHighlights(AppThemeData colors) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Core Highlights',
-            style: TextStyle(
-              fontFamily: 'Google Sans',
-              color: colors.textPrimary,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 16),
-          for (int i = 0; i < ExternalData.aboutFeatures.length; i++) ...[
-            if (i > 0) Divider(color: colors.divider, height: 24),
-            _buildFeatureItem(
-              colors,
-              ExternalData.aboutFeatures[i].icon,
-              ExternalData.aboutFeatures[i].title,
-              ExternalData.aboutFeatures[i].subtitle,
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFeatureItem(
-    AppThemeData colors,
-    IconData icon,
-    String title,
-    String subtitle,
-  ) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: colors.accent.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(icon, color: colors.accent, size: 20),
-        ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: colors.textPrimary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: colors.textSecondary,
-                  fontSize: 12.5,
-                  height: 1.4,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildCreatorSection(BuildContext context, AppThemeData colors) {
     return Container(
       width: double.infinity,
@@ -444,6 +298,14 @@ class AboutHulyPayScreen extends StatelessWidget {
   }
 
   Widget _buildSpecsCard(AppThemeData colors) {
+    final specs = [
+      const TechSpecItem(label: 'Application', value: ExternalData.appName),
+      TechSpecItem(label: 'Version', value: appVersion),
+      const TechSpecItem(label: 'Category', value: 'Personal Finance & Analytics'),
+      const TechSpecItem(label: 'Platform', value: 'Android & iOS'),
+      const TechSpecItem(label: 'Data Protection', value: 'Encrypted Device Storage'),
+    ];
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
@@ -454,9 +316,9 @@ class AboutHulyPayScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          for (int i = 0; i < ExternalData.aboutSpecs.length; i++) ...[
+          for (int i = 0; i < specs.length; i++) ...[
             if (i > 0) Divider(color: colors.divider, height: 20),
-            _buildSpecRow(colors, ExternalData.aboutSpecs[i].label, ExternalData.aboutSpecs[i].value),
+            _buildSpecRow(colors, specs[i].label, specs[i].value),
           ],
         ],
       ),
