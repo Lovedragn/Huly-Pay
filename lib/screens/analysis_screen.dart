@@ -42,6 +42,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   Map<String, String> _categoryOverrides = {};
   SpendingClassificationMode _classificationMode = SpendingClassificationMode.byMerchant;
   String _selectedPeriod = 'Month';
+  bool _isLoading = false;
   final List<String> _periodOptions = const [
     'Day',
     'Week',
@@ -119,10 +120,11 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   @override
   void didUpdateWidget(covariant AnalysisScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.initialPayments != null) {
+    // Only re-render if the initial payments list actually changed
+    if (widget.initialPayments != null &&
+        widget.initialPayments != oldWidget.initialPayments) {
       _setAllPayments(widget.initialPayments!);
     }
-    _loadData();
   }
 
   Future<void> _loadSavedPeriod() async {
@@ -138,6 +140,9 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   }
 
   Future<void> _loadData() async {
+    if (!mounted) return;
+    setState(() => _isLoading = true);
+
     // 1. Read category overrides
     try {
       final overrides = await LocalDatabaseService().getAllCategoryMetadata();
@@ -146,26 +151,32 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
       }
     } catch (_) {}
 
-    // 2. Read SQLite cached payments first
+    // 2. Read SQLite cached payments first for instant display
     try {
       final cached = await PaymentRepository().getCachedPayments();
+      if (mounted && cached.isNotEmpty) {
+        _setAllPayments(cached);
+      }
+    } catch (_) {}
+
+    // 3. Fetch fresh payments from backend/Supabase
+    // Only overwrite cached data if remote actually returned results.
+    // If remote is empty (network down / no data yet), keep showing cache.
+    try {
+      final payments = await PaymentRepository().getPayments(forceRefresh: true);
       if (mounted) {
-        if (cached.isNotEmpty || _allPayments.isEmpty) {
-          _setAllPayments(cached);
+        if (payments.isNotEmpty) {
+          _setAllPayments(payments);
+        } else if (_allPayments.isEmpty) {
+          // Nothing cached and nothing remote — show empty state
+          _setAllPayments([]);
         }
       }
     } catch (_) {}
 
-    // 3. Fetch fresh payments from backend and update SQLite
-    try {
-      final payments = await PaymentRepository().getPayments(forceRefresh: true);
-      if (mounted) {
-        if (payments.isNotEmpty || _allPayments.isEmpty) {
-          _setAllPayments(payments);
-        }
-      }
-    } catch (_) {}
+    if (mounted) setState(() => _isLoading = false);
   }
+
 
   void _setAllPayments(List<PaymentModel> payments) {
     _allPayments = payments.where((p) => p.isSuccessful).toList();
@@ -508,15 +519,31 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          'Analyze',
-          style: TextStyle(
-            fontFamily: 'Google Sans',
-            color: colors.textPrimary,
-            fontSize: 24,
-            fontWeight: FontWeight.w800,
-            letterSpacing: -0.4,
-          ),
+        Row(
+          children: [
+            Text(
+              'Analyze',
+              style: TextStyle(
+                fontFamily: 'Google Sans',
+                color: colors.textPrimary,
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.4,
+              ),
+            ),
+            if (_isLoading) ...
+              [
+                const SizedBox(width: 10),
+                SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ],
+          ],
         ),
         PopupMenuButton<String>(
           onSelected: (val) {

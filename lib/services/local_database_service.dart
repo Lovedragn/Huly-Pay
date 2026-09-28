@@ -2,7 +2,10 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+// sqflite: native platform-channel driver for Android/iOS
+import 'package:sqflite/sqflite.dart';
+// sqflite_common_ffi: FFI-backed driver, used ONLY for Desktop/Test init
+import 'package:sqflite_common_ffi/sqflite_ffi.dart' as sqffi;
 import '../models/category_model.dart';
 import '../models/payment_model.dart';
 import '../models/user_profile.dart';
@@ -23,23 +26,37 @@ class LocalDatabaseService {
   /// Check if the database instance is open
   bool get isOpen => _db != null && _db!.isOpen;
 
-  /// Ensure FFI is initialized for Desktop and Test environments
+
+  /// Ensure the correct database factory is set for the current platform.
+  ///
+  /// On Android / iOS the sqflite plugin registers its own native factory
+  /// automatically during plugin registration — we must NOT override it.
+  ///
+  /// On Windows / Linux / macOS and test environments there is no native
+  /// plugin, so we must explicitly activate sqflite_common_ffi's factory.
   void _ensureFfiInitialized() {
     if (_isFfiInitialized) return;
 
-    bool needsFfi = kIsWeb ? false : (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
-    try {
-      if (Platform.environment.containsKey('FLUTTER_TEST')) {
-        needsFfi = true;
-      }
-    } catch (_) {}
+    if (!kIsWeb) {
+      bool isDesktop = false;
+      bool isTest = false;
+      try {
+        isDesktop = Platform.isWindows || Platform.isLinux || Platform.isMacOS;
+        isTest = Platform.environment.containsKey('FLUTTER_TEST');
+      } catch (_) {}
 
-    if (needsFfi) {
-      sqfliteFfiInit();
-      databaseFactory = databaseFactoryFfi;
+      if (isDesktop || isTest) {
+        // Desktop & test: must use FFI-backed factory (no native plugin)
+        sqffi.sqfliteFfiInit();
+        databaseFactory = sqffi.databaseFactoryFfi;
+      }
+      // Android / iOS: sqflite plugin already set the native factory at engine
+      // startup via GeneratedPluginRegistrant. Leaving it untouched.
     }
+
     _isFfiInitialized = true;
   }
+
 
   /// Initialize and open the SQLite database
   Future<Database> get database async {
@@ -56,7 +73,7 @@ class LocalDatabaseService {
 
     String path;
     if (inMemory) {
-      path = inMemoryDatabasePath;
+      path = sqffi.inMemoryDatabasePath;
     } else if (customPath != null && customPath.isNotEmpty) {
       path = customPath;
     } else {
@@ -94,7 +111,7 @@ class LocalDatabaseService {
 
   Future<String> _resolveDefaultDbPath() async {
     if (_isTest) {
-      return inMemoryDatabasePath;
+      return sqffi.inMemoryDatabasePath;
     }
     String targetPath;
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
