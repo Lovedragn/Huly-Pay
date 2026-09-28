@@ -100,9 +100,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 ),
                 child: Column(
                   children: [
-                    _buildEmailContactCard(context, colors),
-                    const SizedBox(height: 20),
-                    _buildDeveloperWebsiteCard(context, colors),
+                    _buildContactCard(context, colors),
                     const SizedBox(height: 20),
                     _buildFaqSection(colors),
                     const SizedBox(height: 40),
@@ -155,7 +153,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     );
   }
 
-  Widget _buildEmailContactCard(BuildContext context, AppThemeData colors) {
+  Widget _buildContactCard(BuildContext context, AppThemeData colors) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(22),
@@ -166,7 +164,10 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [colors.surface, colors.surfaceSecondary.withValues(alpha: 0.4)],
+          colors: [
+            colors.surface,
+            colors.surfaceSecondary.withValues(alpha: 0.4),
+          ],
         ),
       ),
       child: Column(
@@ -181,7 +182,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
-                  Icons.mail_outline_rounded,
+                  Icons.support_agent_rounded,
                   color: colors.accent,
                   size: 24,
                 ),
@@ -219,7 +220,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             borderRadius: BorderRadius.circular(14),
             onTap: () => _launchEmail(context),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
               decoration: BoxDecoration(
                 color: colors.surfaceSecondary,
                 borderRadius: BorderRadius.circular(14),
@@ -241,17 +242,32 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      _supportEmail,
-                      style: TextStyle(
-                        fontFamily: 'Google Sans',
-                        color: colors.accent,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        decoration: TextDecoration.underline,
-                        decorationColor: colors.accent,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Email Support',
+                          style: TextStyle(
+                            fontFamily: 'Google Sans',
+                            color: colors.textSecondary,
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _supportEmail,
+                          style: TextStyle(
+                            fontFamily: 'Google Sans',
+                            color: colors.accent,
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w600,
+                            decoration: TextDecoration.underline,
+                            decorationColor: colors.accent,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(width: 6),
@@ -280,48 +296,12 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDeveloperWebsiteCard(BuildContext context, AppThemeData colors) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            ExternalData.developerWebsiteTitle,
-            style: TextStyle(
-              fontFamily: 'Google Sans',
-              color: colors.textPrimary,
-              fontSize: 15.5,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            ExternalData.developerWebsiteDescription,
-            style: TextStyle(
-              fontFamily: 'Google Sans',
-              color: colors.textSecondary,
-              fontSize: 13,
-              height: 1.4,
-            ),
-          ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           InkWell(
             borderRadius: BorderRadius.circular(14),
             onTap: () => _launchWeb(context, _portfolioUrl),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
               decoration: BoxDecoration(
                 color: colors.surfaceSecondary,
                 borderRadius: BorderRadius.circular(14),
@@ -329,17 +309,44 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.public_rounded, color: colors.accent, size: 20),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: colors.accent.withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.public_rounded,
+                      color: colors.accent,
+                      size: 18,
+                    ),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      ExternalData.creatorWebsiteDisplay,
-                      style: TextStyle(
-                        fontFamily: 'Google Sans',
-                        color: colors.accent,
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Official Developer Site',
+                          style: TextStyle(
+                            fontFamily: 'Google Sans',
+                            color: colors.textSecondary,
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          ExternalData.creatorWebsiteDisplay,
+                          style: TextStyle(
+                            fontFamily: 'Google Sans',
+                            color: colors.accent,
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
                   ),
                   Icon(
