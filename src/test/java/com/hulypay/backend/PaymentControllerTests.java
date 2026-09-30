@@ -25,7 +25,7 @@ class PaymentControllerTests {
     private MockMvc mockMvc;
 
     @Test
-    void createPaymentWithLocationAndVerifyScoping() throws Exception {
+    void createTransactionWithLocationAndVerifyScoping() throws Exception {
         UUID userA = UUID.randomUUID();
         UUID userB = UUID.randomUUID();
         String emailA = "payA-" + userA + "@hulypay.com";
@@ -43,6 +43,7 @@ class PaymentControllerTests {
                                   "paymentMethod": "GPAY",
                                   "transactionReference": "TXN_REF_9988",
                                   "provider": "GOOGLE_PAY",
+                                  "status": "PENDING",
                                   "upiTransactionId": "UPI1234567890",
                                   "latitude": 12.9716,
                                   "longitude": 77.5946,
@@ -60,24 +61,24 @@ class PaymentControllerTests {
                 .andExpect(jsonPath("$.locationAccuracyMeters").value(4.5))
                 .andReturn();
 
-        String paymentId = JsonPath.read(result.getResponse().getContentAsString(), "$.id");
+        String transactionId = JsonPath.read(result.getResponse().getContentAsString(), "$.id");
 
         // User A retrieves it
-        mockMvc.perform(get("/api/v1/payments/" + paymentId)
+        mockMvc.perform(get("/api/v1/payments/" + transactionId)
                         .with(jwt().jwt(jwt -> jwt.subject(userA.toString()).claim("email", emailA))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(paymentId))
+                .andExpect(jsonPath("$.id").value(transactionId))
                 .andExpect(jsonPath("$.latitude").value(12.9716))
                 .andExpect(jsonPath("$.longitude").value(77.5946));
 
-        // User B cannot access User A's payment
-        mockMvc.perform(get("/api/v1/payments/" + paymentId)
+        // User B cannot access User A's transaction
+        mockMvc.perform(get("/api/v1/payments/" + transactionId)
                         .with(jwt().jwt(jwt -> jwt.subject(userB.toString()).claim("email", emailB))))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    void createPaymentValidatesAmount() throws Exception {
+    void createTransactionValidatesAmount() throws Exception {
         UUID userId = UUID.randomUUID();
         String email = "val-" + userId + "@hulypay.com";
 
@@ -95,7 +96,7 @@ class PaymentControllerTests {
     }
 
     @Test
-    void reconcilePaymentLifecycleAndVerifyExpenseLinking() throws Exception {
+    void reconcileTransactionLifecycle() throws Exception {
         UUID userId = UUID.randomUUID();
         String email = "reconcile-" + userId + "@hulypay.com";
 
@@ -109,6 +110,7 @@ class PaymentControllerTests {
                                   "merchantName": "ABC Store",
                                   "upiId": "abcstore@upi",
                                   "paymentMethod": "GOOGLE_PAY",
+                                  "status": "INITIATED",
                                   "latitude": 13.082680,
                                   "longitude": 80.270718,
                                   "locationAccuracyMeters": 8.5
@@ -118,10 +120,10 @@ class PaymentControllerTests {
                 .andExpect(jsonPath("$.status").value("INITIATED"))
                 .andReturn();
 
-        String paymentId = JsonPath.read(createResult.getResponse().getContentAsString(), "$.id");
+        String transactionId = JsonPath.read(createResult.getResponse().getContentAsString(), "$.id");
 
         // Reconcile to CONFIRMED
-        mockMvc.perform(put("/api/v1/payments/" + paymentId + "/reconcile")
+        mockMvc.perform(put("/api/v1/payments/" + transactionId + "/reconcile")
                         .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -132,16 +134,15 @@ class PaymentControllerTests {
                                 }
                                 """))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(paymentId))
+                .andExpect(jsonPath("$.id").value(transactionId))
                 .andExpect(jsonPath("$.status").value("CONFIRMED"))
                 .andExpect(jsonPath("$.paymentStatus").value("CONFIRMED"))
-                .andExpect(jsonPath("$.expenseId").isNotEmpty())
                 .andExpect(jsonPath("$.upiTransactionId").value("UPI_CONFIRMED_9988"))
                 .andExpect(jsonPath("$.latitude").value(13.082680))
                 .andExpect(jsonPath("$.longitude").value(80.270718));
 
         // Verify GET /api/v1/payments/{id} returns matching details
-        mockMvc.perform(get("/api/v1/payments/" + paymentId)
+        mockMvc.perform(get("/api/v1/payments/" + transactionId)
                         .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.paymentStatus").value("CONFIRMED"))
@@ -149,7 +150,7 @@ class PaymentControllerTests {
     }
 
     @Test
-    void createDirectConfirmedPaymentAutoLinksExpense() throws Exception {
+    void createDirectConfirmedTransaction() throws Exception {
         UUID userId = UUID.randomUUID();
         String email = "direct-confirmed-" + userId + "@hulypay.com";
 
@@ -171,7 +172,6 @@ class PaymentControllerTests {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value("CONFIRMED"))
                 .andExpect(jsonPath("$.paymentStatus").value("CONFIRMED"))
-                .andExpect(jsonPath("$.expenseId").isNotEmpty())
                 .andExpect(jsonPath("$.upiTransactionId").value("UPI_DIRECT_12345"));
     }
 
@@ -180,7 +180,7 @@ class PaymentControllerTests {
         UUID userId = UUID.randomUUID();
         String email = "sms-" + userId + "@hulypay.com";
 
-        // 1. Create a PENDING payment
+        // 1. Create a PENDING transaction
         MvcResult createResult = mockMvc.perform(post("/api/v1/payments")
                         .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -199,11 +199,11 @@ class PaymentControllerTests {
                 .andExpect(jsonPath("$.status").value("PENDING"))
                 .andReturn();
 
-        String paymentId = JsonPath.read(createResult.getResponse().getContentAsString(), "$.id");
+        String transactionId = JsonPath.read(createResult.getResponse().getContentAsString(), "$.id");
 
         // 2. Post matching SMS
         String smsBody = "Dear Customer, Rs.420.00 debited from A/C **9999 to ccd@okhdfcbank. UPI Ref: 425611223344.";
-        mockMvc.perform(post("/api/v1/payments/" + paymentId + "/sms-verification")
+        mockMvc.perform(post("/api/v1/payments/" + transactionId + "/sms-verification")
                         .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(String.format("""
@@ -216,11 +216,10 @@ class PaymentControllerTests {
                 .andExpect(jsonPath("$.verified").value(true))
                 .andExpect(jsonPath("$.status").value("SUCCESS"))
                 .andExpect(jsonPath("$.extractedAmount").value(420.00))
-                .andExpect(jsonPath("$.extractedUpiReference").value("425611223344"))
-                .andExpect(jsonPath("$.payment.expenseId").isNotEmpty());
+                .andExpect(jsonPath("$.extractedUpiReference").value("425611223344"));
 
         // 3. Idempotent call with duplicate SMS
-        mockMvc.perform(post("/api/v1/payments/" + paymentId + "/sms-verification")
+        mockMvc.perform(post("/api/v1/payments/" + transactionId + "/sms-verification")
                         .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(String.format("""
@@ -255,10 +254,10 @@ class PaymentControllerTests {
                 .andExpect(status().isCreated())
                 .andReturn();
 
-        String paymentId = JsonPath.read(createResult.getResponse().getContentAsString(), "$.id");
+        String transactionId = JsonPath.read(createResult.getResponse().getContentAsString(), "$.id");
 
         String failSms = "UPI payment of Rs.199.00 to grocer@upi failed due to network timeout.";
-        mockMvc.perform(post("/api/v1/payments/" + paymentId + "/sms-verification")
+        mockMvc.perform(post("/api/v1/payments/" + transactionId + "/sms-verification")
                         .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(String.format("""
@@ -272,3 +271,5 @@ class PaymentControllerTests {
                 .andExpect(jsonPath("$.status").value("FAILED"));
     }
 }
+
+

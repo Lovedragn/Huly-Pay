@@ -1,7 +1,5 @@
 package com.hulypay.backend;
 
-import com.hulypay.backend.categories.Category;
-import com.hulypay.backend.categories.CategoryRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,47 +21,38 @@ class AnalyticsControllerTests {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
-
     @Test
     void analyticsCalculatesDatabaseAggregationsAccurately() throws Exception {
         UUID user = UUID.randomUUID();
         String userEmail = "analytics-" + user + "@hulypay.com";
-        Category food = categoryRepository.findByIsDefaultTrue().stream()
-                .filter(c -> "Food".equalsIgnoreCase(c.getName()))
-                .findFirst()
-                .orElseThrow();
-        Category travel = categoryRepository.findByIsDefaultTrue().stream()
-                .filter(c -> "Travel".equalsIgnoreCase(c.getName()))
-                .findFirst()
-                .orElseThrow();
 
-        // 1. User records Expense 1: 100.00 (Food)
-        mockMvc.perform(post("/api/v1/expenses")
+        // 1. User records Transaction 1: 100.00 (Food)
+        mockMvc.perform(post("/api/v1/transactions")
                 .with(jwt().jwt(jwt -> jwt.subject(user.toString()).claim("email", userEmail)))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(String.format("""
+                .content("""
                         {
                           "amount": 100.00,
                           "currency": "INR",
                           "merchantName": "Cafe",
-                          "categoryId": "%s"
+                          "category": "Food"
                         }
-                        """, food.getId())));
+                        """))
+                .andExpect(status().isCreated());
 
-        // 2. User records Expense 2: 200.00 (Travel)
-        mockMvc.perform(post("/api/v1/expenses")
+        // 2. User records Transaction 2: 200.00 (Travel)
+        mockMvc.perform(post("/api/v1/transactions")
                 .with(jwt().jwt(jwt -> jwt.subject(user.toString()).claim("email", userEmail)))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(String.format("""
+                .content("""
                         {
                           "amount": 200.00,
                           "currency": "INR",
                           "merchantName": "Metro",
-                          "categoryId": "%s"
+                          "category": "Travel"
                         }
-                        """, travel.getId())));
+                        """))
+                .andExpect(status().isCreated());
 
         // Verify summary: totalSpent = 300.00, count = 2, avg = 150.00
         mockMvc.perform(get("/api/v1/analytics/summary")
@@ -91,3 +80,5 @@ class AnalyticsControllerTests {
                 .andExpect(jsonPath("$.transactionCount").value(0));
     }
 }
+
+
