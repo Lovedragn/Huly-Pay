@@ -142,38 +142,19 @@ export async function syncActualDataFromSupabase(userId = null) {
       };
     }
 
-    const [paymentsRes, expensesRes, categoriesRes] = await Promise.all([
-      supabase
-        .from("payments")
-        .select("*")
-        .eq("user_id", targetUserId)
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("expenses")
-        .select("*")
-        .eq("user_id", targetUserId)
-        .order("created_at", { ascending: false }),
-      supabase.from("categories").select("*"),
-    ]);
+    const txRes = await supabase
+      .from("transactions")
+      .select("*")
+      .eq("user_id", targetUserId)
+      .order("transaction_time", { ascending: false });
 
-    if (paymentsRes.error) {
-      console.warn("Supabase payments fetch error for user:", paymentsRes.error);
-    }
-    if (expensesRes.error) {
-      console.warn("Supabase expenses fetch error for user:", expensesRes.error);
+    if (txRes.error) {
+      console.warn("Supabase transactions fetch error for user:", txRes.error);
     }
 
-    const rawPayments = paymentsRes.data || [];
-    const rawExpenses = expensesRes.data || [];
-    const rawCategories = categoriesRes.data || [];
+    const rawTransactions = txRes.data || [];
 
-    // Category name map
-    const catMap = {};
-    rawCategories.forEach((c) => {
-      catMap[c.id] = c.name;
-    });
-
-    if (rawPayments.length === 0 && rawExpenses.length === 0) {
+    if (rawTransactions.length === 0) {
       return {
         summary: {
           totalSpent: 0,
@@ -202,80 +183,40 @@ export async function syncActualDataFromSupabase(userId = null) {
       };
     }
 
-    // Standardize payments into normalized transactions
-    const normalizedTransactions = rawPayments.map((p) => {
-      const amount = Number(p.amount) || 0;
-      const rawDate = p.created_at || p.payment_date || new Date().toISOString();
+    // Standardize transactions into normalized format
+    const normalizedTransactions = rawTransactions.map((t) => {
+      const amount = Number(t.amount) || 0;
+      const rawDate = t.transaction_time || t.created_at || new Date().toISOString();
       const dateStr = rawDate.split("T")[0];
-      const categoryName = p.payment_method || p.provider || "UPI Payment";
+      const categoryName = t.category || "Others";
 
       return {
-        id: p.id,
-        expenseId: p.expense_id || null,
-        paymentId: p.id,
-        merchantName: p.merchant_name || p.provider || "UPI Merchant",
-        description: p.transaction_reference
-          ? `Ref: ${p.transaction_reference}`
-          : `Payment via ${categoryName}`,
+        id: t.id,
+        expenseId: t.id,
+        paymentId: t.id,
+        merchantName: t.merchant_name || t.provider || "Merchant",
+        description: t.description || `Transaction for ${categoryName}`,
         amount,
-        currency: p.currency || "INR",
-        originalCurrency: p.currency || "INR",
-        status: p.status || "CONFIRMED",
+        currency: t.currency || "INR",
+        originalCurrency: t.currency || "INR",
+        status: t.status || "SUCCESS",
         upiTransactionId:
-          p.upi_transaction_id ||
-          p.transaction_reference ||
-          `UPI_${p.id.slice(0, 8).toUpperCase()}`,
-        upiId: p.upi_id || "payee@upi",
-        paymentMethod: categoryName,
-        provider: p.provider || "UPI",
+          t.upi_transaction_id ||
+          t.transaction_reference ||
+          `UPI_${t.id.slice(0, 8).toUpperCase()}`,
+        upiId: t.upi_id || "payee@upi",
+        paymentMethod: t.payment_method || "UPI",
+        provider: t.provider || "UPI",
         createdAt: rawDate,
         date: dateStr,
-        latitude: p.latitude,
-        longitude: p.longitude,
-        locationAccuracyMeters: p.location_accuracy_meters,
+        latitude: t.latitude,
+        longitude: t.longitude,
+        locationAccuracyMeters: t.location_accuracy_meters,
         category: {
-          id: p.expense_id,
+          id: t.id,
           name: categoryName,
         },
       };
-    });
-
-    // Also include any unique expenses not already in payments
-    const paymentExpenseIds = new Set(
-      rawPayments.map((p) => p.expense_id).filter(Boolean)
-    );
-    rawExpenses.forEach((e) => {
-      if (!paymentExpenseIds.has(e.id)) {
-        const amount = Number(e.amount) || 0;
-        const rawDate =
-          e.transaction_time || e.created_at || new Date().toISOString();
-        const categoryName =
-          catMap[e.category_id] || e.payment_method || "General Expense";
-        normalizedTransactions.push({
-          id: e.id,
-          expenseId: e.id,
-          paymentId: null,
-          merchantName: e.merchant_name || "Merchant",
-          description: e.description || `Expense for ${categoryName}`,
-          amount,
-          currency: e.currency || "INR",
-          originalCurrency: e.currency || "INR",
-          status: e.status || "COMPLETED",
-          upiTransactionId:
-            e.upi_transaction_id || `UPI_${e.id.slice(0, 8).toUpperCase()}`,
-          upiId: "merchant@upi",
-          paymentMethod: categoryName,
-          provider: "UPI",
-          createdAt: rawDate,
-          date: rawDate.split("T")[0],
-          latitude: e.latitude,
-          longitude: e.longitude,
-          category: {
-            id: e.category_id,
-            name: categoryName,
-          },
-        });
-      }
     });
 
     // 1. Calculate Summary from actual database data
@@ -406,7 +347,7 @@ export async function syncActualDataFromSupabase(userId = null) {
 
     const catAggregate = {};
     normalizedTransactions.forEach((t) => {
-      const cName = t.paymentMethod || "Other";
+      const cName = t.category?.name || "Others";
       if (!catAggregate[cName]) {
         catAggregate[cName] = { category: cName, totalAmount: 0, count: 0 };
       }
@@ -654,14 +595,14 @@ export async function getMonthlySpending(authToken = null, userId = null) {
 }
 
 /**
- * Fetch user expenses from /api/v1/expenses
+ * Fetch user transactions from /api/v1/transactions
  */
 export async function getExpenses(authToken = null, userId = null) {
   try {
     const headers = { Accept: "application/json" };
     if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/expenses`, {
+    const res = await fetch(`${API_BASE_URL}/api/v1/transactions`, {
       headers,
       cache: "no-store",
     });
@@ -709,65 +650,39 @@ export async function getCurrentUserProfile(authToken = null) {
 export async function deleteTransaction(txOrId, authToken = null, extraExpenseId = null) {
   const transactionId =
     typeof txOrId === "object" && txOrId !== null ? txOrId.id : txOrId;
-  const expenseId =
-    typeof txOrId === "object" && txOrId !== null
-      ? txOrId.expenseId || txOrId.category?.id || extraExpenseId
-      : extraExpenseId;
+  const targetId = transactionId || extraExpenseId;
 
-  if (!transactionId && !expenseId) {
+  if (!targetId) {
     throw new Error("Transaction ID is required to delete.");
   }
 
-  // 1. Delete from Supabase `payments` table first to prevent foreign key issues
+  // 1. Delete from Supabase `transactions` table
   try {
-    if (transactionId) {
-      await supabase.from("payments").delete().eq("id", transactionId);
-      await supabase.from("payments").delete().eq("expense_id", transactionId);
-    }
-    if (expenseId && expenseId !== transactionId) {
-      await supabase.from("payments").delete().eq("expense_id", expenseId);
-      await supabase.from("payments").delete().eq("id", expenseId);
-    }
+    await supabase.from("transactions").delete().eq("id", targetId);
   } catch (err) {
-    console.warn("Supabase payments delete warning:", err);
+    console.warn("Supabase transactions delete warning:", err);
   }
 
-  // 2. Delete from Supabase `expenses` table
+  // 2. Notify Spring Boot backend if running (non-blocking, best-effort)
   try {
-    if (transactionId) {
-      await supabase.from("expenses").delete().eq("id", transactionId);
-    }
-    if (expenseId && expenseId !== transactionId) {
-      await supabase.from("expenses").delete().eq("id", expenseId);
-    }
-  } catch (err) {
-    console.warn("Supabase expenses delete warning:", err);
-  }
+    const headers = { Accept: "application/json" };
+    if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
 
-  // 3. Notify Spring Boot backend if running (non-blocking, best-effort)
-  try {
-    const targetId = expenseId || transactionId;
-    if (targetId) {
-      const headers = { Accept: "application/json" };
-      if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
-
-      const res = await fetch(`${API_BASE_URL}/api/v1/expenses/${targetId}`, {
-        method: "DELETE",
-        headers,
-      });
-      // Silently ignore 404 (record not in backend) and other non-2xx responses
-      if (!res.ok && res.status !== 404) {
-        console.warn(`Backend DELETE returned ${res.status} for expense ${targetId}`);
-      }
+    const res = await fetch(`${API_BASE_URL}/api/v1/transactions/${targetId}`, {
+      method: "DELETE",
+      headers,
+    });
+    // Silently ignore 404 (record not in backend) and other non-2xx responses
+    if (!res.ok && res.status !== 404) {
+      console.warn(`Backend DELETE returned ${res.status} for transaction ${targetId}`);
     }
   } catch {
     // Backend may not be reachable or direct-to-Supabase mode; non-blocking
   }
 
-  // 4. Update in-memory mock data (for demo mode / fallback)
-  const targetId = transactionId || expenseId;
+  // 3. Update in-memory mock data (for demo mode / fallback)
   const mockIndex = MOCK_EXPENSES.findIndex(
-    (item) => item.id === targetId || (expenseId && item.id === expenseId)
+    (item) => item.id === targetId
   );
   if (mockIndex !== -1) {
     MOCK_EXPENSES.splice(mockIndex, 1);
