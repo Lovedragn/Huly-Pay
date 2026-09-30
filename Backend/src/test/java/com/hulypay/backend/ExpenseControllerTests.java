@@ -1,7 +1,5 @@
 package com.hulypay.backend;
 
-import com.hulypay.backend.categories.Category;
-import com.hulypay.backend.categories.CategoryRepository;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +22,12 @@ class ExpenseControllerTests {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
-
     @Test
-    void createExpenseValidatesAmountGreaterThanZero() throws Exception {
+    void createTransactionValidatesAmountGreaterThanZero() throws Exception {
         UUID userId = UUID.randomUUID();
 
         // Amount zero or negative
-        mockMvc.perform(post("/api/v1/expenses")
+        mockMvc.perform(post("/api/v1/transactions")
                         .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", "val-" + userId + "@hulypay.com")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -49,59 +44,55 @@ class ExpenseControllerTests {
     }
 
     @Test
-    void expenseCrudAndUserIsolation() throws Exception {
+    void transactionCrudAndUserIsolation() throws Exception {
         UUID userA = UUID.randomUUID();
         UUID userB = UUID.randomUUID();
         String emailA = "userA-" + userA + "@hulypay.com";
         String emailB = "userB-" + userB + "@hulypay.com";
-        Category foodCategory = categoryRepository.findByIsDefaultTrue().stream()
-                .filter(c -> "Food".equalsIgnoreCase(c.getName()))
-                .findFirst()
-                .orElseThrow();
 
-        // 1. User A creates an expense
-        MvcResult postResult = mockMvc.perform(post("/api/v1/expenses")
+        // 1. User A creates a transaction
+        MvcResult postResult = mockMvc.perform(post("/api/v1/transactions")
                         .with(jwt().jwt(jwt -> jwt.subject(userA.toString()).claim("email", emailA)))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(String.format("""
+                        .content("""
                                 {
                                   "amount": 250.50,
                                   "currency": "INR",
                                   "merchantName": "ABC Grocery Store",
-                                  "categoryId": "%s",
+                                  "category": "Food",
                                   "description": "Weekly grocery run",
                                   "paymentMethod": "UPI"
                                 }
-                                """, foodCategory.getId())))
+                                """))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.amount").value(250.50))
                 .andExpect(jsonPath("$.merchantName").value("ABC Grocery Store"))
-                .andExpect(jsonPath("$.category.name").value("Food"))
+                .andExpect(jsonPath("$.category").value("Food"))
                 .andReturn();
 
         String responseContent = postResult.getResponse().getContentAsString();
-        String expenseAId = JsonPath.read(responseContent, "$.id");
+        String transactionAId = JsonPath.read(responseContent, "$.id");
 
-        // 2. User A retrieves expense by ID
-        mockMvc.perform(get("/api/v1/expenses/" + expenseAId)
+        // 2. User A retrieves transaction by ID
+        mockMvc.perform(get("/api/v1/transactions/" + transactionAId)
                         .with(jwt().jwt(jwt -> jwt.subject(userA.toString()).claim("email", emailA))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(expenseAId))
+                .andExpect(jsonPath("$.id").value(transactionAId))
                 .andExpect(jsonPath("$.amount").value(250.50));
 
-        // 3. User B tries to view User A's expense by ID -> 404 (isolation)
-        mockMvc.perform(get("/api/v1/expenses/" + expenseAId)
+        // 3. User B tries to view User A's transaction by ID -> 404 (isolation)
+        mockMvc.perform(get("/api/v1/transactions/" + transactionAId)
                         .with(jwt().jwt(jwt -> jwt.subject(userB.toString()).claim("email", emailB))))
                 .andExpect(status().isNotFound());
 
-        // 4. User B lists their expenses -> User A's expense is NOT present
-        mockMvc.perform(get("/api/v1/expenses")
+        // 4. User B lists their transactions -> User A's transaction is NOT present
+        mockMvc.perform(get("/api/v1/transactions")
                         .with(jwt().jwt(jwt -> jwt.subject(userB.toString()).claim("email", emailB))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[?(@.id == '" + expenseAId + "')]").doesNotExist());
+                .andExpect(jsonPath("$[?(@.id == '" + transactionAId + "')]").doesNotExist());
 
-        // 5. User B tries to update User A's expense -> 404
-        mockMvc.perform(put("/api/v1/expenses/" + expenseAId)
+        // 5. User B tries to update User A's transaction -> 404
+        mockMvc.perform(put("/api/v1/transactions/" + transactionAId)
                         .with(jwt().jwt(jwt -> jwt.subject(userB.toString()).claim("email", emailB)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -111,8 +102,8 @@ class ExpenseControllerTests {
                                 """))
                 .andExpect(status().isNotFound());
 
-        // 6. User A updates their expense
-        mockMvc.perform(put("/api/v1/expenses/" + expenseAId)
+        // 6. User A updates their transaction
+        mockMvc.perform(put("/api/v1/transactions/" + transactionAId)
                         .with(jwt().jwt(jwt -> jwt.subject(userA.toString()).claim("email", emailA)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -125,14 +116,16 @@ class ExpenseControllerTests {
                 .andExpect(jsonPath("$.amount").value(300.00))
                 .andExpect(jsonPath("$.merchantName").value("Updated ABC Store"));
 
-        // 7. User A deletes their expense
-        mockMvc.perform(delete("/api/v1/expenses/" + expenseAId)
+        // 7. User A deletes their transaction
+        mockMvc.perform(delete("/api/v1/transactions/" + transactionAId)
                         .with(jwt().jwt(jwt -> jwt.subject(userA.toString()).claim("email", emailA))))
                 .andExpect(status().isNoContent());
 
-        // 8. User A verifies expense is deleted
-        mockMvc.perform(get("/api/v1/expenses/" + expenseAId)
+        // 8. User A verifies transaction is deleted
+        mockMvc.perform(get("/api/v1/transactions/" + transactionAId)
                         .with(jwt().jwt(jwt -> jwt.subject(userA.toString()).claim("email", emailA))))
                 .andExpect(status().isNotFound());
     }
 }
+
+

@@ -111,9 +111,9 @@ class _SignInScreenState extends State<SignInScreen> with WidgetsBindingObserver
       await PaymentRepository().getPayments(forceRefresh: true);
     } catch (_) {}
 
-    // 4. Sync user theme and chart color presets from Supabase users_preference
+    // 4. Load user theme and chart color presets from local SQLite storage
     try {
-      await UserPreferencesService().loadRemotePreferences();
+      await UserPreferencesService().loadPreferences();
     } catch (_) {}
   }
 

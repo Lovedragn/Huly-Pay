@@ -2,8 +2,6 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../models/category_model.dart';
-import '../models/expense_model.dart';
 import '../models/payment_model.dart';
 import '../models/user_profile.dart';
 import 'auth_service.dart';
@@ -141,12 +139,12 @@ class ApiClient {
     }
   }
 
-  // --- Payment Endpoints ---
+  // --- Transaction Endpoints ---
 
   Future<PaymentModel> createPayment(CreatePaymentPayload payload) async {
     try {
       final response = await dio.post(
-        '/api/v1/payments',
+        '/api/v1/transactions',
         data: payload.toJson(),
       );
       return PaymentModel.fromJson(Map<String, dynamic>.from(response.data as Map));
@@ -157,7 +155,7 @@ class ApiClient {
 
   Future<List<PaymentModel>> getPayments() async {
     try {
-      final response = await dio.get('/api/v1/payments');
+      final response = await dio.get('/api/v1/transactions');
       final list = response.data as List;
       return list
           .map((item) => PaymentModel.fromJson(Map<String, dynamic>.from(item as Map)))
@@ -169,7 +167,7 @@ class ApiClient {
 
   Future<PaymentModel> getPaymentById(String id) async {
     try {
-      final response = await dio.get('/api/v1/payments/$id');
+      final response = await dio.get('/api/v1/transactions/$id');
       return PaymentModel.fromJson(Map<String, dynamic>.from(response.data as Map));
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -189,7 +187,7 @@ class ApiClient {
         transactionReference: transactionReference,
       );
       final response = await dio.put(
-        '/api/v1/payments/$id/reconcile',
+        '/api/v1/transactions/$id/reconcile',
         data: payload.toJson(),
       );
       return PaymentModel.fromJson(Map<String, dynamic>.from(response.data as Map));
@@ -206,7 +204,7 @@ class ApiClient {
   }) async {
     try {
       final response = await dio.post(
-        '/api/v1/payments/$paymentId/sms-verification',
+        '/api/v1/transactions/$paymentId/sms-verification',
         data: {
           'smsBody': smsBody,
           'sender': ?sender,
@@ -214,75 +212,6 @@ class ApiClient {
         },
       );
       return Map<String, dynamic>.from(response.data as Map);
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    }
-  }
-
-  // --- Category Endpoints ---
-
-  Future<List<CategoryModel>> getCategories() async {
-    try {
-      final response = await dio.get('/api/v1/categories');
-      final list = response.data as List;
-      return list
-          .map((item) => CategoryModel.fromJson(Map<String, dynamic>.from(item as Map)))
-          .toList();
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    }
-  }
-
-  Future<CategoryModel> createCategory({
-    required String name,
-    String? icon,
-    String? color,
-  }) async {
-    try {
-      final response = await dio.post(
-        '/api/v1/categories',
-        data: {
-          'name': name,
-          'icon': ?icon,
-          'color': ?color,
-        },
-      );
-      return CategoryModel.fromJson(Map<String, dynamic>.from(response.data as Map));
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    }
-  }
-
-  // --- Expense Endpoints ---
-
-  Future<List<ExpenseModel>> getExpenses() async {
-    try {
-      final response = await dio.get('/api/v1/expenses');
-      final list = response.data as List;
-      return list
-          .map((item) => ExpenseModel.fromJson(Map<String, dynamic>.from(item as Map)))
-          .toList();
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    }
-  }
-
-  Future<ExpenseModel> createExpense(CreateExpensePayload payload) async {
-    try {
-      final response = await dio.post(
-        '/api/v1/expenses',
-        data: payload.toJson(),
-      );
-      return ExpenseModel.fromJson(Map<String, dynamic>.from(response.data as Map));
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    }
-  }
-
-  Future<ExpenseModel> getExpenseById(String id) async {
-    try {
-      final response = await dio.get('/api/v1/expenses/$id');
-      return ExpenseModel.fromJson(Map<String, dynamic>.from(response.data as Map));
     } on DioException catch (e) {
       throw _handleDioError(e);
     }

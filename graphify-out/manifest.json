@@ -18,129 +18,9 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/com/hulypay/backend/BackendApplication.java": {
-    "mtime": 1790318337.1996222,
-    "seen": 1790328021.595811,
-    "ast_hash": "97265da799e2252a49bdc9cb87286d8d",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsController.java": {
-    "mtime": 1790318337.2011313,
-    "seen": 1790328021.5958123,
-    "ast_hash": "add9bc066412be7a5e464d27297e6173",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/analytics/AnalyticsService.java": {
-    "mtime": 1790318337.2021413,
-    "seen": 1790328021.595814,
-    "ast_hash": "614fc15dfb1fd4eac0bde5ee4c5b6250",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/analytics/dto/CategoryBreakdownResponse.java": {
-    "mtime": 1790318337.2031481,
-    "seen": 1790328021.5958152,
-    "ast_hash": "48bef7d4a6aa67e2d0f5f1f6220a431c",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/analytics/dto/DailySpendingResponse.java": {
-    "mtime": 1790318337.2031481,
-    "seen": 1790328021.5958166,
-    "ast_hash": "22e844e32d59fc5c2b90e0b9646d914d",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/analytics/dto/MonthlySpendingResponse.java": {
-    "mtime": 1790318337.2031481,
-    "seen": 1790328021.5958185,
-    "ast_hash": "9d21e7bb6589a42babcedd13d201cecf",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/analytics/dto/SpendingSummaryResponse.java": {
-    "mtime": 1790318337.2043207,
-    "seen": 1790328021.5958197,
-    "ast_hash": "f44ab33d8f0b9e21d4bf62cf96723129",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/analytics/package-info.java": {
-    "mtime": 1790318337.2043207,
-    "seen": 1790328021.5958214,
-    "ast_hash": "3cb1fa12ee6ca75f54cd4f2c5b6807dc",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/categories/Category.java": {
-    "mtime": 1790318337.2055469,
-    "seen": 1790328021.5958223,
-    "ast_hash": "6c3e25b0a6be82b6857cd2101d5ebdc0",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/categories/CategoryController.java": {
-    "mtime": 1790318337.2055469,
-    "seen": 1790328021.5958235,
-    "ast_hash": "73c7a79078eb2a3b5af7f31dc8945b17",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/categories/CategoryRepository.java": {
-    "mtime": 1790318337.2065487,
-    "seen": 1790328021.595825,
-    "ast_hash": "442f79b2de9e9ac2dfb8f8efbda70bd9",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/categories/CategoryService.java": {
-    "mtime": 1790318337.2065487,
-    "seen": 1790328021.5958261,
-    "ast_hash": "f8bc2f74b84cfd48bb191a3380f2a13a",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/categories/dto/CategoryRequest.java": {
-    "mtime": 1790318337.2075472,
-    "seen": 1790328021.5958273,
-    "ast_hash": "105b1b430db6541aea5936b8d86daa86",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/categories/dto/CategoryResponse.java": {
-    "mtime": 1790318337.2075472,
-    "seen": 1790328021.5958288,
-    "ast_hash": "38c0cb3c2bb676ea3b2c3d06d5a16db8",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/categories/package-info.java": {
-    "mtime": 1790318337.2085476,
-    "seen": 1790328021.59583,
-    "ast_hash": "fc4e3f658c870f5356c7d09c3b09b964",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/common/DatabaseHealthController.java": {
-    "mtime": 1790318337.2095504,
-    "seen": 1790328021.5958312,
-    "ast_hash": "75895808243a439b07d96dfb2b0629b1",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/common/HealthController.java": {
-    "mtime": 1790318337.2095504,
-    "seen": 1790328021.595832,
-    "ast_hash": "e2b81535b7515ca9a7ab5390c67a299f",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/common/exception/BadRequestException.java": {
-    "mtime": 1790318337.211064,
-    "seen": 1790328021.595833,
-    "ast_hash": "5638227e99a3d8d9baa1377af5b54950",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/common/exception/ErrorResponse.java": {
-    "mtime": 1790318337.211064,
-    "seen": 1790328021.5958343,
-    "ast_hash": "f1a909124fb4af79f6ae0bde89a73770",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/common/exception/GlobalExceptionHandler.java": {
-    "mtime": 1790318337.2120802,
-    "seen": 1790328021.595836,
-    "ast_hash": "91fcbca990f8bb78c0c834fe0aae6220",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/common/exception/ResourceNotFoundException.java": {
-    "mtime": 1790318337.2130773,
-    "seen": 1790328021.5958369,
-    "ast_hash": "0ad7d525c5fac99cd987502d2568b2f7",
+    "mtime": 1790789214.3067734,
+    "seen": 1790789295.5136967,
+    "ast_hash": "e61ccbb4d2d65e7302517fa26a2b36fa",
     "semantic_hash": ""
   },
   "backend/src/main/java/com/hulypay/backend/config/OpenApiConfig.java": {
@@ -155,190 +35,46 @@
     "ast_hash": "ea5a4063b2ddf684de8def994753208f",
     "semantic_hash": ""
   },
-  "backend/src/main/java/com/hulypay/backend/expenses/Expense.java": {
-    "mtime": 1790318337.2150881,
-    "seen": 1790328021.5958405,
-    "ast_hash": "8cfb1ec6101ebf054d9fc0b50a8f9589",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/expenses/ExpenseController.java": {
-    "mtime": 1790318337.2150881,
-    "seen": 1790328021.5958416,
-    "ast_hash": "8dd201da5c4623919c8ba2821acdf4fb",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/expenses/ExpenseRepository.java": {
-    "mtime": 1790318337.2160873,
-    "seen": 1790328021.595843,
-    "ast_hash": "66940f2754e5003c0fe8e254a48a6f7b",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/expenses/ExpenseService.java": {
-    "mtime": 1790318337.2160873,
-    "seen": 1790328021.5958445,
-    "ast_hash": "3061cff875c65db1517bbbe03142843e",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/expenses/dto/CreateExpenseRequest.java": {
-    "mtime": 1790318337.2170868,
-    "seen": 1790328021.5958457,
-    "ast_hash": "6e3edc315ee59a8c85c6dce9938856fc",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/expenses/dto/ExpenseResponse.java": {
-    "mtime": 1790318337.218089,
-    "seen": 1790328021.5958467,
-    "ast_hash": "26b0bc52b95fefaada8bed720c2ba2fe",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/expenses/dto/UpdateExpenseRequest.java": {
-    "mtime": 1790318337.219092,
-    "seen": 1790328021.5958476,
-    "ast_hash": "86e86c8b2112a16f0bc3fe397aaa98c4",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/expenses/package-info.java": {
-    "mtime": 1790318337.219092,
-    "seen": 1790328021.595849,
-    "ast_hash": "cbee9427119fe0d8c22ff30c171b0582",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/payments/Payment.java": {
-    "mtime": 1790318337.2203395,
-    "seen": 1790328021.5958502,
-    "ast_hash": "5ae20097e43a5ab53a36f2fdefb5d51a",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/payments/PaymentController.java": {
-    "mtime": 1790318337.2203395,
-    "seen": 1790328021.5958512,
-    "ast_hash": "ce73b4a1f8e65da0edcdcec3f678f5e6",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/payments/PaymentRepository.java": {
-    "mtime": 1790318337.2213435,
-    "seen": 1790328021.5958524,
-    "ast_hash": "8d3fcc5819780c500ab1adabe5f2ee75",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/payments/PaymentService.java": {
-    "mtime": 1790318337.2218497,
-    "seen": 1790328021.5958533,
-    "ast_hash": "9c399df15b3073ce1606e08d704a05bb",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/payments/PaymentStatus.java": {
-    "mtime": 1790318337.2218497,
-    "seen": 1790328021.5958545,
-    "ast_hash": "729e9984ae70bb0632b79f2d564caa42",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/payments/dto/CreatePaymentRequest.java": {
-    "mtime": 1790318337.2231555,
-    "seen": 1790328021.595856,
-    "ast_hash": "53cbf170cbb6542c7b759817a3e8ed0b",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/payments/dto/PaymentResponse.java": {
-    "mtime": 1790318337.2231555,
-    "seen": 1790328021.595857,
-    "ast_hash": "7edff5fc43be0a71295719de8d346179",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/payments/package-info.java": {
-    "mtime": 1790318337.2255826,
-    "seen": 1790328021.5958626,
-    "ast_hash": "9de7b5f8b8c4295acf615f33f7c44abb",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/users/User.java": {
-    "mtime": 1790318337.2275846,
-    "seen": 1790328021.5958662,
-    "ast_hash": "d1f06e7c700a3640e38de91ea4c173e7",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/users/UserController.java": {
-    "mtime": 1790318337.2285843,
-    "seen": 1790328021.5958672,
-    "ast_hash": "86e65a178316a53f833e1307166ba488",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/users/UserRepository.java": {
-    "mtime": 1790318337.2285843,
-    "seen": 1790328021.595868,
-    "ast_hash": "f71dd1698da12f157ae35dbff4d1e0b1",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/users/UserService.java": {
-    "mtime": 1790318337.229581,
-    "seen": 1790328021.5958698,
-    "ast_hash": "7f73177ac4c4be3164488af76ba98109",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/users/dto/UpdateUserRequest.java": {
-    "mtime": 1790318337.229581,
-    "seen": 1790328021.5958705,
-    "ast_hash": "33ce0f98454dae023d91a7207dda13e7",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/users/dto/UserResponse.java": {
-    "mtime": 1790318337.229581,
-    "seen": 1790328021.5958714,
-    "ast_hash": "649507b9f2fc4b5c76b4770fd19902b5",
-    "semantic_hash": ""
-  },
   "backend/src/test/java/com/hulypay/backend/AnalyticsControllerTests.java": {
-    "mtime": 1790318337.2326765,
-    "seen": 1790328021.5958729,
-    "ast_hash": "35a5aa2d3bada076870369b9e75e9779",
+    "mtime": 1790787667.7904139,
+    "seen": 1790787743.0386817,
+    "ast_hash": "c2009d4febd364b7bacf3b1ce41fb7f7",
     "semantic_hash": ""
   },
   "backend/src/test/java/com/hulypay/backend/BackendApplicationTests.java": {
-    "mtime": 1790318337.2336736,
-    "seen": 1790328021.5958738,
-    "ast_hash": "b06306416071d1fd4fc818c9ee14ef7c",
-    "semantic_hash": ""
-  },
-  "backend/src/test/java/com/hulypay/backend/CategoryControllerTests.java": {
-    "mtime": 1790318337.2336736,
-    "seen": 1790328021.5958748,
-    "ast_hash": "ef55390ba11c211cf355ed08ec50fe78",
+    "mtime": 1790787667.7949662,
+    "seen": 1790787743.0386832,
+    "ast_hash": "5b1e946f94ed199f18d82c92ffea6622",
     "semantic_hash": ""
   },
   "backend/src/test/java/com/hulypay/backend/ExpenseControllerTests.java": {
-    "mtime": 1790318337.2346828,
-    "seen": 1790328021.5958757,
-    "ast_hash": "77e179ba049eec7ac0463c7b70291006",
+    "mtime": 1790787667.7997816,
+    "seen": 1790787743.0386841,
+    "ast_hash": "211e58f2619674c7e9c23ab9ac6a0e2e",
     "semantic_hash": ""
   },
   "backend/src/test/java/com/hulypay/backend/HealthControllerTests.java": {
-    "mtime": 1790318337.2356813,
-    "seen": 1790328021.595877,
-    "ast_hash": "f664f627bde0b99b257891377dd649d7",
+    "mtime": 1790787667.8045435,
+    "seen": 1790787743.038685,
+    "ast_hash": "807c9a7f4c240284a1bd6fa77d69f0ba",
     "semantic_hash": ""
   },
   "backend/src/test/java/com/hulypay/backend/PaymentControllerTests.java": {
-    "mtime": 1790318337.2356813,
-    "seen": 1790328021.5958781,
-    "ast_hash": "3e5b2637f3de06599b2af11c0cf9b44d",
+    "mtime": 1790787667.810241,
+    "seen": 1790787743.0386868,
+    "ast_hash": "9ddbace63b510c372afd31308a1706f4",
     "semantic_hash": ""
   },
   "backend/src/test/java/com/hulypay/backend/SecurityAndUserTests.java": {
-    "mtime": 1790318337.2356813,
-    "seen": 1790328021.595879,
-    "ast_hash": "2ce60823142795999e5a78bcac54c105",
+    "mtime": 1790787667.8158338,
+    "seen": 1790787743.0386877,
+    "ast_hash": "3f33fff978080b655456f0e66cd67aba",
     "semantic_hash": ""
   },
   "backend/docker-compose.yml": {
     "mtime": 1790318337.196049,
     "seen": 1790328021.596064,
     "ast_hash": "b0f460041e2b335c578c1080943c6555",
-    "semantic_hash": ""
-  },
-  "backend/src/main/resources/application.yml": {
-    "mtime": 1790318337.2310915,
-    "seen": 1790328021.5960667,
-    "ast_hash": "45e85be082c5688378c3cf9eaa1b2d7d",
     "semantic_hash": ""
   },
   ".vscode/launch.json": {
@@ -359,40 +95,10 @@
     "ast_hash": "a831cf3669f1e6ab85d8a80ebe655f99",
     "semantic_hash": ""
   },
-  "backend/src/main/java/com/hulypay/backend/payments/dto/ReconcilePaymentRequest.java": {
-    "mtime": 1790318337.224583,
-    "seen": 1790328021.5958583,
-    "ast_hash": "e89f2fc32cb7083d102039c119b08ca4",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/payments/dto/SmsVerificationRequest.java": {
-    "mtime": 1790318337.224583,
-    "seen": 1790328021.5958602,
-    "ast_hash": "a47932adbb2f75242532013d572b13a8",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/payments/dto/SmsVerificationResponse.java": {
-    "mtime": 1790318337.2255826,
-    "seen": 1790328021.5958614,
-    "ast_hash": "45f98fc58b3009b8a9cd19c839da7dd8",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/payments/sms/ParsedSmsResult.java": {
-    "mtime": 1790318337.226583,
-    "seen": 1790328021.5958638,
-    "ast_hash": "b5bf4d048837718235296bd070185f23",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/com/hulypay/backend/payments/sms/SmsParserService.java": {
-    "mtime": 1790318337.2275846,
-    "seen": 1790328021.5958648,
-    "ast_hash": "c850b899a8f8dbfc3e306e9ef4240ea1",
-    "semantic_hash": ""
-  },
   "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java": {
-    "mtime": 1790318337.2366815,
-    "seen": 1790328021.5958805,
-    "ast_hash": "e742810b27f8166505392d7f35fabe80",
+    "mtime": 1790787667.8198566,
+    "seen": 1790787743.0386891,
+    "ast_hash": "9bc649932ad4323d62aa5c8f43db2a3f",
     "semantic_hash": ""
   },
   "backend/render.yaml": {
@@ -420,9 +126,9 @@
     "semantic_hash": ""
   },
   "frontend/next.config.mjs": {
-    "mtime": 1790318337.526465,
-    "seen": 1790328021.5958846,
-    "ast_hash": "b48d8b9a141dabbb2daac8a2e38d7bf5",
+    "mtime": 1790604734.570936,
+    "seen": 1790777582.6065583,
+    "ast_hash": "2aa00a6b78427a960c7dd6178fee3b25",
     "semantic_hash": ""
   },
   "frontend/package.json": {
@@ -468,9 +174,9 @@
     "semantic_hash": ""
   },
   "frontend/src/app/dashboard/page.js": {
-    "mtime": 1790434743.2796752,
-    "seen": 1790436942.8851075,
-    "ast_hash": "4aeca455ffca7954b8b106e646fcac60",
+    "mtime": 1790786829.4585905,
+    "seen": 1790787335.7105453,
+    "ast_hash": "a956c6a31c643d4729f769cb52eba7c9",
     "semantic_hash": ""
   },
   "frontend/src/components/landing/CardDownload.js": {
@@ -642,9 +348,9 @@
     "semantic_hash": ""
   },
   "frontend/src/assets/external_data.js": {
-    "mtime": 1790441681.7790146,
-    "seen": 1790576302.3571453,
-    "ast_hash": "1dc94db92bd6473358155c8d0fdfd832",
+    "mtime": 1790591674.8730042,
+    "seen": 1790777582.6066294,
+    "ast_hash": "e0076ac644b4d27cc38c197e6e754407",
     "semantic_hash": ""
   },
   "frontend/src/assets/index.js": {
@@ -840,9 +546,9 @@
     "semantic_hash": ""
   },
   "frontend/src/lib/api.js": {
-    "mtime": 1790318337.6328804,
-    "seen": 1790328021.595939,
-    "ast_hash": "70243e474e3ee7a6416dbafe93cb96b0",
+    "mtime": 1790786202.7352946,
+    "seen": 1790786477.2826316,
+    "ast_hash": "b4cc9859add33f0e8a860f78bb0d6565",
     "semantic_hash": ""
   },
   "frontend/src/lib/supabase.js": {
@@ -965,28 +671,16 @@
     "ast_hash": "9e7cd6bac6c4c5b22f5d92b952b16f76",
     "semantic_hash": ""
   },
-  "mobile/hulypay/lib/models/category_model.dart": {
-    "mtime": 1790318341.8838694,
-    "seen": 1790328021.595966,
-    "ast_hash": "aca814e53ff0ed40697b83688ea389b0",
-    "semantic_hash": ""
-  },
   "mobile/hulypay/lib/models/dashboard_data.dart": {
     "mtime": 1790318341.8838694,
     "seen": 1790328021.595968,
     "ast_hash": "0446b54174d8f4a4885e080e3a651849",
     "semantic_hash": ""
   },
-  "mobile/hulypay/lib/models/expense_model.dart": {
-    "mtime": 1790318341.8846364,
-    "seen": 1790328021.5959697,
-    "ast_hash": "6e68e3f5cad6723f374aa221a5642aa7",
-    "semantic_hash": ""
-  },
   "mobile/hulypay/lib/models/payment_model.dart": {
-    "mtime": 1790579223.9378285,
-    "seen": 1790579466.6127524,
-    "ast_hash": "b16b05ab88d8143ca252723d1e524799",
+    "mtime": 1790786253.0856688,
+    "seen": 1790786477.2866955,
+    "ast_hash": "5d5b9bfc9aacf6713870fe6f99f6f388",
     "semantic_hash": ""
   },
   "mobile/hulypay/lib/models/user_profile.dart": {
@@ -1014,9 +708,9 @@
     "semantic_hash": ""
   },
   "mobile/hulypay/lib/screens/analysis_screen.dart": {
-    "mtime": 1790581666.641475,
-    "seen": 1790581695.9248168,
-    "ast_hash": "7b949dad8cc7207eee91d65b95c5fc36",
+    "mtime": 1790590249.1547136,
+    "seen": 1790777582.6068482,
+    "ast_hash": "33e927a31a4b87622e29f931ea8170f8",
     "semantic_hash": ""
   },
   "mobile/hulypay/lib/screens/help_support_screen.dart": {
@@ -1062,21 +756,21 @@
     "semantic_hash": ""
   },
   "mobile/hulypay/lib/screens/sign_in_screen.dart": {
-    "mtime": 1790581122.0994782,
-    "seen": 1790581154.5913758,
-    "ast_hash": "2b78ef619cf045fb1b10cdd99322dd9c",
+    "mtime": 1790777534.5060506,
+    "seen": 1790777582.6068857,
+    "ast_hash": "49e6b610808ea2c5f25576356ef16dab",
     "semantic_hash": ""
   },
   "mobile/hulypay/lib/screens/single_transaction_screen.dart": {
-    "mtime": 1790585018.183136,
-    "seen": 1790588908.7108035,
+    "mtime": 1790589342.601782,
+    "seen": 1790777582.6068897,
     "ast_hash": "a869da350909e512ee0893d38c7046d4",
     "semantic_hash": ""
   },
   "mobile/hulypay/lib/screens/splash_screen.dart": {
-    "mtime": 1790579882.6214418,
-    "seen": 1790579912.9952118,
-    "ast_hash": "a938f1eb896b156201d97d55baa08efb",
+    "mtime": 1790777520.6522522,
+    "seen": 1790777582.6068945,
+    "ast_hash": "fb20e39d79fb448ea7728b0d056d12db",
     "semantic_hash": ""
   },
   "mobile/hulypay/lib/screens/transactions_screen.dart": {
@@ -1086,9 +780,9 @@
     "semantic_hash": ""
   },
   "mobile/hulypay/lib/services/api_client.dart": {
-    "mtime": 1790318341.900938,
-    "seen": 1790328021.596011,
-    "ast_hash": "70ebeafe516b280ff2772c3e73de8e80",
+    "mtime": 1790786766.120537,
+    "seen": 1790787335.7253702,
+    "ast_hash": "5061ef711d6310b242681317b2c8b3d8",
     "semantic_hash": ""
   },
   "mobile/hulypay/lib/services/auth_service.dart": {
@@ -1098,15 +792,15 @@
     "semantic_hash": ""
   },
   "mobile/hulypay/lib/services/google_pay_service.dart": {
-    "mtime": 1790318341.902056,
-    "seen": 1790328021.5960152,
+    "mtime": 1790589347.3030443,
+    "seen": 1790777582.606915,
     "ast_hash": "29c8875ac97264f0665a1b80547a7be1",
     "semantic_hash": ""
   },
   "mobile/hulypay/lib/services/local_database_service.dart": {
-    "mtime": 1790318341.9032679,
-    "seen": 1790328021.5960174,
-    "ast_hash": "5751e9c5dc5842c301b6c3e919de7976",
+    "mtime": 1790786695.5486836,
+    "seen": 1790787335.7257652,
+    "ast_hash": "d37963ad02e926d81f75b9ff5ed41cb2",
     "semantic_hash": ""
   },
   "mobile/hulypay/lib/services/location_service.dart": {
@@ -1140,9 +834,9 @@
     "semantic_hash": ""
   },
   "mobile/hulypay/lib/services/user_preferences_service.dart": {
-    "mtime": 1790318341.9070668,
-    "seen": 1790328021.5960305,
-    "ast_hash": "7046e5975b1c3882aa77f9ad4938fd3a",
+    "mtime": 1790777503.8763044,
+    "seen": 1790777582.6069481,
+    "ast_hash": "7156f0562e2840859fc4cb485ace2db4",
     "semantic_hash": ""
   },
   "mobile/hulypay/lib/theme/app_theme.dart": {
@@ -1206,9 +900,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1790318337.2376823,
-    "seen": 1790328021.5960627,
-    "ast_hash": "576de19b55393c9df771d2ac3df702b6",
+    "mtime": 1790614422.1165483,
+    "seen": 1790777582.607016,
+    "ast_hash": "4185c2abe82f638be9bd91015b4a2faa",
     "semantic_hash": ""
   },
   "mobile/hulypay/analysis_options.yaml": {
@@ -1236,9 +930,9 @@
     "semantic_hash": ""
   },
   "mobile/hulypay/pubspec.yaml": {
-    "mtime": 1790362501.3917909,
-    "seen": 1790436942.8852527,
-    "ast_hash": "c71ab851d7f6a36eee77c5cc6757f12f",
+    "mtime": 1790590946.3892348,
+    "seen": 1790777582.6070638,
+    "ast_hash": "b814977e56bcb8ac2805ae1178dad5a7",
     "semantic_hash": ""
   },
   "mobile/hulypay/android/app/src/main/res/drawable-hdpi/ic_launcher_foreground.png": {
@@ -1641,6 +1335,324 @@
     "mtime": 1790584856.8603978,
     "seen": 1790588908.710887,
     "ast_hash": "9212bc4b5f4b5853683a0621c4321c3a",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/controllers/AnalyticsController.java": {
+    "mtime": 1790787168.9579544,
+    "seen": 1790787335.7072766,
+    "ast_hash": "e368fd5483234bf2329035dc2c787c61",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/controllers/DatabaseHealthController.java": {
+    "mtime": 1790787190.121397,
+    "seen": 1790787335.7072797,
+    "ast_hash": "aff6b5e4f14f272b2abc1bf91fcb1eea",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/controllers/HealthController.java": {
+    "mtime": 1790787182.4160962,
+    "seen": 1790787335.707281,
+    "ast_hash": "096348fc435eb275e16501f33a01ac83",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/controllers/TransactionController.java": {
+    "mtime": 1790787160.3468726,
+    "seen": 1790787335.7072825,
+    "ast_hash": "5ee0dabed7c6523c3da8b736df247730",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/controllers/UserController.java": {
+    "mtime": 1790787151.5177076,
+    "seen": 1790787335.707284,
+    "ast_hash": "48bb817be857ec4acafd5eb3ea7d0aad",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/exceptions/BadRequestException.java": {
+    "mtime": 1790787048.3401601,
+    "seen": 1790787335.707298,
+    "ast_hash": "fd5fdf33b955a9dc294d39fdd2306492",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/exceptions/ErrorResponse.java": {
+    "mtime": 1790787048.3441608,
+    "seen": 1790787335.707299,
+    "ast_hash": "262d05da29eb7908f87917ce3d52a648",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/exceptions/GlobalExceptionHandler.java": {
+    "mtime": 1790787048.349734,
+    "seen": 1790787335.7073002,
+    "ast_hash": "7881fa8ec53d1380754108c805395196",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/exceptions/ResourceNotFoundException.java": {
+    "mtime": 1790787048.3538795,
+    "seen": 1790787335.7073011,
+    "ast_hash": "2cb27d46bd3f49e0b71d1e04e4972d83",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/models/Transaction.java": {
+    "mtime": 1790787035.1946595,
+    "seen": 1790787335.7073019,
+    "ast_hash": "6426f9d2314663faa6e0725e279becd3",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/models/User.java": {
+    "mtime": 1790787028.476871,
+    "seen": 1790787335.7073028,
+    "ast_hash": "23ae3f457cf0895443dfabf853a1428a",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/repositories/TransactionRepository.java": {
+    "mtime": 1790787088.3467784,
+    "seen": 1790787335.707304,
+    "ast_hash": "f6eadf0ff858efd55e77dc623876a7dd",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/repositories/UserRepository.java": {
+    "mtime": 1790787082.4290283,
+    "seen": 1790787335.707305,
+    "ast_hash": "a5fc90a33f79e01d05f241c8114fa4b2",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/services/AnalyticsService.java": {
+    "mtime": 1790787142.9241953,
+    "seen": 1790787335.707306,
+    "ast_hash": "9ec184055267493b4a7756a8fd30c51f",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/services/TransactionService.java": {
+    "mtime": 1790787128.5335944,
+    "seen": 1790787335.7073069,
+    "ast_hash": "33a654f533f954769b78be9729911429",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/services/UserService.java": {
+    "mtime": 1790787107.0595088,
+    "seen": 1790787335.7073078,
+    "ast_hash": "6420176c4a3075b7050534ff0fcd0ee8",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/services/sms/ParsedTransactionSms.java": {
+    "mtime": 1790787069.2598145,
+    "seen": 1790787335.7073088,
+    "ast_hash": "c54841386c845e158a7854ba7acd22d9",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/services/sms/TransactionSmsParserService.java": {
+    "mtime": 1790787069.2649264,
+    "seen": 1790787335.7073097,
+    "ast_hash": "9837d66922b03466b033c11c3d3d9076",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Config/OpenApiConfig.java": {
+    "mtime": 1790787955.5967288,
+    "seen": 1790788405.9241068,
+    "ast_hash": "b74696316d40c33057a4e4b4a3d803e0",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Config/SecurityConfig.java": {
+    "mtime": 1790788516.0784478,
+    "seen": 1790788564.3734365,
+    "ast_hash": "5e0585f211cb633516c1b1805de47263",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Controllers/AnalyticsController.java": {
+    "mtime": 1790787667.639507,
+    "seen": 1790787743.0386434,
+    "ast_hash": "8f91f159c0da07ef74da1a9ec633edff",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Controllers/DatabaseHealthController.java": {
+    "mtime": 1790787667.645048,
+    "seen": 1790787743.0386448,
+    "ast_hash": "4c250ec2f0ff4d45428ec6d764b55077",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Controllers/HealthController.java": {
+    "mtime": 1790787667.650094,
+    "seen": 1790787743.038646,
+    "ast_hash": "ae574afb04194d766401cb9c931fa7a8",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Controllers/TransactionController.java": {
+    "mtime": 1790787667.6545255,
+    "seen": 1790787743.038647,
+    "ast_hash": "8c3b9a1a20a533c8fe6f50c7ee29feaf",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Controllers/UserController.java": {
+    "mtime": 1790787667.661131,
+    "seen": 1790787743.0386486,
+    "ast_hash": "d80f48884bc22b038b1d2d542aa77905",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Exceptions/BadRequestException.java": {
+    "mtime": 1790787667.6657982,
+    "seen": 1790787743.0386505,
+    "ast_hash": "5f7d02ee14b02f0e99cfee05bc649f5e",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Exceptions/ErrorResponse.java": {
+    "mtime": 1790787667.6705077,
+    "seen": 1790787743.0386524,
+    "ast_hash": "5d405e1dd241cd9a69346515a4072b5a",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Exceptions/GlobalExceptionHandler.java": {
+    "mtime": 1790789173.287893,
+    "seen": 1790789295.51571,
+    "ast_hash": "a17d5d258ae5b4e59c0de2afd5af5d25",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Exceptions/ResourceNotFoundException.java": {
+    "mtime": 1790787667.6793225,
+    "seen": 1790787743.038655,
+    "ast_hash": "4215e42dfa79c6964bd7626ae193e184",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Models/Transaction.java": {
+    "mtime": 1790788991.755752,
+    "seen": 1790789295.5159266,
+    "ast_hash": "0ff7daf05288da66e1a45f5c94fd7977",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Models/User.java": {
+    "mtime": 1790788981.1134205,
+    "seen": 1790789295.5159283,
+    "ast_hash": "be2635329b0cfb740e45d2e385bd28b8",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Repositories/TransactionRepository.java": {
+    "mtime": 1790787667.697127,
+    "seen": 1790787743.0386589,
+    "ast_hash": "6b1e9219beedb1efa91591357ee6d0f7",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Repositories/UserRepository.java": {
+    "mtime": 1790787667.702142,
+    "seen": 1790787743.03866,
+    "ast_hash": "5d97d81d50a2bae1d10a792cb4c66e78",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Services/AnalyticsService.java": {
+    "mtime": 1790787667.766055,
+    "seen": 1790787743.0386753,
+    "ast_hash": "237a0e12ffe9a41f99dc5524c75687e9",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Services/Sms/ParsedTransactionSms.java": {
+    "mtime": 1790787667.781937,
+    "seen": 1790787743.0386765,
+    "ast_hash": "6ec4dc02ee6048ed4b8afd8dc3beb489",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Services/Sms/TransactionSmsParserService.java": {
+    "mtime": 1790787667.7855966,
+    "seen": 1790787743.038678,
+    "ast_hash": "62a9645906bd383c31e24909af16635e",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Services/TransactionService.java": {
+    "mtime": 1790787667.7704651,
+    "seen": 1790787743.0386794,
+    "ast_hash": "51cebb250deb3c4f53deed63917f61ba",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Services/UserService.java": {
+    "mtime": 1790787667.7763681,
+    "seen": 1790787743.0386803,
+    "ast_hash": "5b9694bbb6acbad09af21d818610b1e5",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/RequestDto/CreateTransactionRequest.java": {
+    "mtime": 1790787667.7068293,
+    "seen": 1790787743.0386615,
+    "ast_hash": "23d0dcb817eef25a9d154fc552e75c8b",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/RequestDto/TransactionReconcileRequest.java": {
+    "mtime": 1790787667.7118816,
+    "seen": 1790787743.038663,
+    "ast_hash": "ee48340161bb15899960bcade978d952",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/RequestDto/TransactionSmsVerificationRequest.java": {
+    "mtime": 1790787667.717979,
+    "seen": 1790787743.0386639,
+    "ast_hash": "8197918dd133e1a82aed33a436a695e5",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/RequestDto/UpdateTransactionRequest.java": {
+    "mtime": 1790787667.7237499,
+    "seen": 1790787743.0386653,
+    "ast_hash": "f2f0d1841aa91a369bcb18c10610c5ac",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/RequestDto/UpdateUserRequest.java": {
+    "mtime": 1790787667.7281168,
+    "seen": 1790787743.038666,
+    "ast_hash": "6631ee0277062a7bf1e580cf6e23b557",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/ResponseDto/CategoryBreakdownResponse.java": {
+    "mtime": 1790787667.7329032,
+    "seen": 1790787743.0386672,
+    "ast_hash": "740371668da34defe7bb23842e131bdc",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/ResponseDto/DailySpendingResponse.java": {
+    "mtime": 1790787667.7370162,
+    "seen": 1790787743.0386684,
+    "ast_hash": "22dfd08aa57d86031d34bf93fc7ef002",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/ResponseDto/MonthlySpendingResponse.java": {
+    "mtime": 1790787667.742261,
+    "seen": 1790787743.0386693,
+    "ast_hash": "85fef86033f827780a6a37ef810c6100",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/ResponseDto/SpendingSummaryResponse.java": {
+    "mtime": 1790787667.7458744,
+    "seen": 1790787743.0386703,
+    "ast_hash": "c83b10dde2cad54b3fd4c88aed3fb9dd",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/ResponseDto/TransactionResponse.java": {
+    "mtime": 1790787667.7510326,
+    "seen": 1790787743.0386713,
+    "ast_hash": "4d54361461160d2d8e5d4927db227062",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/ResponseDto/TransactionSmsVerificationResponse.java": {
+    "mtime": 1790787667.75613,
+    "seen": 1790787743.0386724,
+    "ast_hash": "924538ae70d9f97e4adff94dc5bc2131",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/ResponseDto/UserResponse.java": {
+    "mtime": 1790787667.7619443,
+    "seen": 1790787743.0386736,
+    "ast_hash": "cca2c869d2222be956c68a5cea6b2029",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Security/EncryptedStringConverter.java": {
+    "mtime": 1790788971.2692902,
+    "seen": 1790789295.5189557,
+    "ast_hash": "834a94a15739118343bab72bdc225300",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/com/hulypay/backend/Security/EnvelopeEncryptionService.java": {
+    "mtime": 1790789107.8751419,
+    "seen": 1790789295.518958,
+    "ast_hash": "3bb9be45c6d423d4daa57cbcd9228adf",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/com/hulypay/backend/EnvelopeEncryptionServiceTests.java": {
+    "mtime": 1790789094.5965228,
+    "seen": 1790789295.520515,
+    "ast_hash": "3b21842cbf7f3cc836f38159d210d4ea",
     "semantic_hash": ""
   }
 }

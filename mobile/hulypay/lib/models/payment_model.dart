@@ -10,6 +10,7 @@ class PaymentModel {
   final String? upiTransactionId;
   final String? upiId;
   final String? merchantName;
+  final String? category;
   final String? paymentMethod;
   final String? transactionReference;
   final String status;
@@ -31,6 +32,7 @@ class PaymentModel {
     this.upiTransactionId,
     this.upiId,
     this.merchantName,
+    this.category,
     this.paymentMethod,
     this.transactionReference,
     required this.status,
@@ -63,6 +65,7 @@ class PaymentModel {
     String? upiTransactionId,
     String? upiId,
     String? merchantName,
+    String? category,
     String? paymentMethod,
     String? transactionReference,
     String? status,
@@ -84,6 +87,7 @@ class PaymentModel {
       upiTransactionId: upiTransactionId ?? this.upiTransactionId,
       upiId: upiId ?? this.upiId,
       merchantName: merchantName ?? this.merchantName,
+      category: category ?? this.category,
       paymentMethod: paymentMethod ?? this.paymentMethod,
       transactionReference: transactionReference ?? this.transactionReference,
       status: status ?? this.status,
@@ -108,9 +112,10 @@ class PaymentModel {
       upiTransactionId: (json['upiTransactionId'] ?? json['upi_transaction_id']) as String?,
       upiId: (json['upiId'] ?? json['upi_id']) as String?,
       merchantName: (json['merchantName'] ?? json['merchant_name']) as String?,
+      category: (json['category'] as String?) ?? 'Others',
       paymentMethod: (json['paymentMethod'] ?? json['payment_method']) as String?,
       transactionReference: (json['transactionReference'] ?? json['transaction_reference']) as String?,
-      status: (json['paymentStatus'] ?? json['status'] ?? 'INITIATED') as String,
+      status: (json['paymentStatus'] ?? json['status'] ?? 'SUCCESS') as String,
       provider: json['provider'] as String?,
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
@@ -132,6 +137,7 @@ class PaymentModel {
       'upiTransactionId': upiTransactionId,
       'upiId': upiId,
       'merchantName': merchantName,
+      'category': category ?? 'Others',
       'paymentMethod': paymentMethod,
       'transactionReference': transactionReference,
       'status': status,
@@ -156,7 +162,7 @@ class PaymentModel {
     final bool isFailedStatus = sUpper == 'FAILED' || sUpper == 'CANCELLED';
     final bool isPendingStatus = sUpper == 'PENDING' || sUpper == 'INITIATED' || sUpper == 'PAYMENT_INITIATED';
     final categoryText = customCategory ??
-        (isFailedStatus ? 'Failed' : (isPendingStatus ? 'Pending' : (paymentMethod ?? 'UPI')));
+        (isFailedStatus ? 'Failed' : (isPendingStatus ? 'Pending' : (category != null && category!.trim().isNotEmpty ? category! : (paymentMethod ?? 'Others'))));
 
     final amountText =
         '₹${amount.toStringAsFixed(amount.truncateToDouble() == amount ? 0 : 2)}';
@@ -288,6 +294,7 @@ class CreatePaymentPayload {
   final double amount;
   final String currency;
   final String? merchantName;
+  final String? category;
   final String? upiId;
   final String? paymentMethod;
   final String? transactionReference;
@@ -303,6 +310,7 @@ class CreatePaymentPayload {
     required this.amount,
     this.currency = 'INR',
     this.merchantName,
+    this.category,
     this.upiId,
     this.paymentMethod = 'UPI',
     this.transactionReference,
@@ -321,6 +329,11 @@ class CreatePaymentPayload {
       'currency': currency,
     };
     if (merchantName != null) map['merchantName'] = merchantName;
+    if (category != null) {
+      map['category'] = category;
+    } else {
+      map['category'] = 'Others';
+    }
     if (upiId != null) map['upiId'] = upiId;
     if (paymentMethod != null) map['paymentMethod'] = paymentMethod;
     if (transactionReference != null) map['transactionReference'] = transactionReference;

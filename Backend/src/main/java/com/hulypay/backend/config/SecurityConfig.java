@@ -1,4 +1,4 @@
-package com.hulypay.backend.config;
+package com.hulypay.backend.Config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +19,7 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:5173,http://localhost:8080,https://app.hulypay.com,https://huly-pay.vercel.app,https://*.vercel.app}")
+    @Value("${app.cors.allowed-origins}")
     private String allowedOrigins;
 
     @Bean
@@ -48,7 +48,7 @@ public class SecurityConfig {
 
     @Bean
     public org.springframework.security.oauth2.jwt.JwtDecoder jwtDecoder(
-            @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri:https://aszhhxnbzstzemyhcjvi.supabase.co/auth/v1}") String issuerUri
+            @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}") String issuerUri
     ) {
         org.springframework.security.oauth2.jwt.NimbusJwtDecoder jwtDecoder =
                 org.springframework.security.oauth2.jwt.NimbusJwtDecoder.withIssuerLocation(issuerUri)
@@ -86,3 +86,4 @@ public class SecurityConfig {
         return source;
     }
 }
+

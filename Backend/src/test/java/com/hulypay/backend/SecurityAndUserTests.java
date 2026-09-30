@@ -1,7 +1,7 @@
 package com.hulypay.backend;
 
-import com.hulypay.backend.users.User;
-import com.hulypay.backend.users.UserRepository;
+import com.hulypay.backend.Models.User;
+import com.hulypay.backend.Repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -87,3 +87,5 @@ class SecurityAndUserTests {
         assertThat(user.getLastName()).isEqualTo("UpdatedLast");
     }
 }
+
+

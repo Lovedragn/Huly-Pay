@@ -120,7 +120,7 @@ class _SplashScreenState extends State<SplashScreen>
       } catch (_) {}
     }
 
-    // --- STEP 3: Load Presets from Local Cache & Supabase users_preference ---
+    // --- STEP 3: Load Presets from Local SQLite Storage ---
     try {
       await UserPreferencesService().loadPreferences();
     } catch (_) {}

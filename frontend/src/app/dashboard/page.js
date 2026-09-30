@@ -20,11 +20,6 @@ import {
 import {
   syncAllDashboardData,
   deleteTransaction,
-  getSpendingSummary,
-  getCategoryBreakdown,
-  getDailySpending,
-  getMonthlySpending,
-  getExpenses,
   MOCK_RADAR_METRICS,
 } from "@/lib/api";
 import { download_version } from "@/assets/external_data";
