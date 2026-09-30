@@ -6,7 +6,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 // sqflite_common_ffi: FFI-backed driver, used ONLY for Desktop/Test init
 import 'package:sqflite_common_ffi/sqflite_ffi.dart' as sqffi;
-import '../models/category_model.dart';
 import '../models/payment_model.dart';
 import '../models/user_profile.dart';
 
@@ -156,6 +155,7 @@ class LocalDatabaseService {
         amount REAL NOT NULL,
         currency TEXT NOT NULL,
         merchant_name TEXT,
+        category TEXT DEFAULT 'Others',
         upi_id TEXT,
         payment_method TEXT,
         transaction_reference TEXT,
@@ -199,18 +199,7 @@ class LocalDatabaseService {
       )
     ''');
 
-    // 3. Cached Categories Table
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS cached_categories (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        icon TEXT,
-        color TEXT,
-        is_default INTEGER DEFAULT 0
-      )
-    ''');
-
-    // 4. Cache Metadata Table
+    // 3. Cache Metadata Table
     await db.execute('''
       CREATE TABLE IF NOT EXISTS cache_metadata (
         key TEXT PRIMARY KEY,
@@ -234,6 +223,7 @@ class LocalDatabaseService {
         'amount': payment.amount,
         'currency': payment.currency,
         'merchant_name': payment.merchantName,
+        'category': payment.category ?? 'Others',
         'upi_id': payment.upiId,
         'payment_method': payment.paymentMethod,
         'transaction_reference': payment.transactionReference,
@@ -267,6 +257,7 @@ class LocalDatabaseService {
           'amount': payment.amount,
           'currency': payment.currency,
           'merchant_name': payment.merchantName,
+          'category': payment.category ?? 'Others',
           'upi_id': payment.upiId,
           'payment_method': payment.paymentMethod,
           'transaction_reference': payment.transactionReference,
@@ -396,6 +387,7 @@ class LocalDatabaseService {
       amount: (row['amount'] as num).toDouble(),
       currency: row['currency'] as String? ?? 'INR',
       merchantName: row['merchant_name'] as String?,
+      category: (row['category'] as String?) ?? 'Others',
       upiId: row['upi_id'] as String?,
       paymentMethod: row['payment_method'] as String?,
       transactionReference: row['transaction_reference'] as String?,
@@ -462,47 +454,6 @@ class LocalDatabaseService {
   Future<int> clearUserProfile() async {
     final db = await database;
     return await db.delete('cached_user_profile');
-  }
-
-  // ==========================================
-  // CATEGORIES OPERATIONS
-  // ==========================================
-
-  Future<void> saveCategories(List<CategoryModel> categories) async {
-    if (categories.isEmpty) return;
-    final db = await database;
-    final batch = db.batch();
-
-    for (final cat in categories) {
-      batch.insert(
-        'cached_categories',
-        {
-          'id': cat.id,
-          'name': cat.name,
-          'icon': cat.icon,
-          'color': cat.color,
-          'is_default': cat.isDefault ? 1 : 0,
-        },
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
-    }
-
-    await batch.commit(noResult: true);
-  }
-
-  Future<List<CategoryModel>> getCategories() async {
-    final db = await database;
-    final rows = await db.query('cached_categories', orderBy: 'name ASC');
-
-    return rows.map((row) {
-      return CategoryModel(
-        id: row['id'] as String,
-        name: row['name'] as String,
-        icon: row['icon'] as String?,
-        color: row['color'] as String?,
-        isDefault: (row['is_default'] as int? ?? 0) == 1,
-      );
-    }).toList();
   }
 
   // ==========================================
@@ -602,7 +553,6 @@ class LocalDatabaseService {
     final db = await database;
     await db.delete('cached_payments');
     await db.delete('cached_user_profile');
-    await db.delete('cached_categories');
     await db.delete('cache_metadata');
   }
 
