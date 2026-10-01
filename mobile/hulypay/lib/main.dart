@@ -73,7 +73,7 @@ class HulyPayApp extends StatelessWidget {
               theme: materialTheme,
               darkTheme: materialTheme,
               themeMode: activeThemeColors.isDark ? ThemeMode.dark : ThemeMode.light,
-              home: home ??
+              home: home ??   
                   (showSplash
                       ? SplashScreen(
                           initializeAuth: initializeAuth,

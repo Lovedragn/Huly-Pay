@@ -27,6 +27,8 @@ dependencies:
   fl_chart: ^1.2.0
   flutter_native_splash: ^2.4.4
   image_picker: ^1.2.3
+  share_plus: ^13.3.0
+  pdf: ^3.13.1
 
 dev_dependencies:
   flutter_test:

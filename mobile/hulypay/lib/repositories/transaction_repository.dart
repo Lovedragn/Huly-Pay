@@ -115,7 +115,7 @@ class TransactionRepository {
             'currency': p.currency,
             'merchant_name': p.merchantName,
             'category': (p.category != null && p.category!.isNotEmpty) ? p.category : 'Others',
-            'description': p.merchantName != null ? 'Payment to ${p.merchantName}' : 'Payment via ${p.paymentMethod ?? "UPI"}',
+            'description': p.merchantName ?? (p.paymentMethod ?? 'UPI'),
             'upi_id': p.upiId,
             'payment_method': p.paymentMethod,
             'transaction_reference': p.transactionReference,
@@ -233,7 +233,7 @@ class TransactionRepository {
           'currency': payload.currency,
           'merchant_name': payload.merchantName,
           'category': (payload.category != null && payload.category!.isNotEmpty) ? payload.category : 'Others',
-          'description': payload.merchantName != null ? 'Payment to ${payload.merchantName}' : 'Payment via ${payload.paymentMethod}',
+          'description': payload.merchantName ?? payload.paymentMethod,
           'upi_id': payload.upiId,
           'payment_method': payload.paymentMethod,
           'transaction_reference': payload.transactionReference,
@@ -377,6 +377,15 @@ class TransactionRepository {
         final paymentMap = Map<String, dynamic>.from(res['payment'] as Map);
         final payment = PaymentModel.fromJson(paymentMap);
         await _localDb.upsertPayment(payment, syncStatus: 'SYNCED');
+      } else if (res['verified'] == true) {
+        final newStatus = (res['status']?.toString().toUpperCase() == 'FAILED') ? 'FAILED' : 'CONFIRMED';
+        try {
+          await reconcileTransaction(
+            paymentId,
+            newStatus,
+            upiTransactionId: res['extractedUpiReference']?.toString(),
+          );
+        } catch (_) {}
       }
       return res;
     } catch (_) {

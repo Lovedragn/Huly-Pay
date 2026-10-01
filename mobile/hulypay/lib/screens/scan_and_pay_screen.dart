@@ -199,7 +199,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 upiId: upi ?? '',
                 paymentMethod: 'UPI',
                 transactionReference: txnRef,
-                status: 'CONFIRMED',
+                status: UserPreferencesService().cachedQuickConfirm ? 'CONFIRMED' : 'PENDING',
                 provider: 'GOOGLE_PAY',
               ));
             } catch (_) {}
@@ -1237,6 +1237,13 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
 
                   if (resultStatus == 'SUCCESS' ||
                       resultStatus == 'CONFIRMED') {
+                    try {
+                      await TransactionRepository().reconcileTransaction(
+                        payment.id,
+                        'CONFIRMED',
+                        upiTransactionId: upiRef,
+                      );
+                    } catch (_) {}
                     setDialogState(() {
                       statusState = 'SUCCESS';
                       statusMessage = result['message']?.toString() ??
@@ -1244,6 +1251,13 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                       resolvedUpiTxnId = upiRef;
                     });
                   } else if (resultStatus == 'FAILED') {
+                    try {
+                      await TransactionRepository().reconcileTransaction(
+                        payment.id,
+                        'FAILED',
+                        upiTransactionId: upiRef,
+                      );
+                    } catch (_) {}
                     setDialogState(() {
                       statusState = 'FAILED';
                       statusMessage = result['message']?.toString() ??
