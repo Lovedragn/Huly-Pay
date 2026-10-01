@@ -81,6 +81,21 @@ class HulyPayApp extends StatelessWidget {
                           isAuthenticated: isAuthenticated,
                         )
                       : const HomeDashboardScreen()),
+              onGenerateRoute: (settings) {
+                // Gracefully handle incoming deep links (e.g. Supabase OAuth callback /?code=...)
+                // without throwing 'Could not find a generator for route' exceptions.
+                return MaterialPageRoute(
+                  settings: settings,
+                  builder: (_) => home ??
+                      (showSplash
+                          ? SplashScreen(
+                              initializeAuth: initializeAuth,
+                              nextScreen: nextScreen,
+                              isAuthenticated: isAuthenticated,
+                            )
+                          : const HomeDashboardScreen()),
+                );
+              },
             );
           },
         );

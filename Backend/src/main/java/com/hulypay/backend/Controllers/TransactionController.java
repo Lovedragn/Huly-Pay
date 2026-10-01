@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping({"/api/v1/transactions", "/api/v1/expenses", "/api/v1/payments"})
+@RequestMapping("/api/v1/transactions")
 @RequiredArgsConstructor
 public class TransactionController {
 

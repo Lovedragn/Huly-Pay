@@ -31,7 +31,7 @@ class PaymentControllerTests {
         String emailA = "payA-" + userA + "@hulypay.com";
         String emailB = "payB-" + userB + "@hulypay.com";
 
-        MvcResult result = mockMvc.perform(post("/api/v1/payments")
+        MvcResult result = mockMvc.perform(post("/api/v1/transactions")
                         .with(jwt().jwt(jwt -> jwt.subject(userA.toString()).claim("email", emailA)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -64,7 +64,7 @@ class PaymentControllerTests {
         String transactionId = JsonPath.read(result.getResponse().getContentAsString(), "$.id");
 
         // User A retrieves it
-        mockMvc.perform(get("/api/v1/payments/" + transactionId)
+        mockMvc.perform(get("/api/v1/transactions/" + transactionId)
                         .with(jwt().jwt(jwt -> jwt.subject(userA.toString()).claim("email", emailA))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(transactionId))
@@ -72,7 +72,7 @@ class PaymentControllerTests {
                 .andExpect(jsonPath("$.longitude").value(77.5946));
 
         // User B cannot access User A's transaction
-        mockMvc.perform(get("/api/v1/payments/" + transactionId)
+        mockMvc.perform(get("/api/v1/transactions/" + transactionId)
                         .with(jwt().jwt(jwt -> jwt.subject(userB.toString()).claim("email", emailB))))
                 .andExpect(status().isNotFound());
     }
@@ -82,7 +82,7 @@ class PaymentControllerTests {
         UUID userId = UUID.randomUUID();
         String email = "val-" + userId + "@hulypay.com";
 
-        mockMvc.perform(post("/api/v1/payments")
+        mockMvc.perform(post("/api/v1/transactions")
                         .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -100,7 +100,7 @@ class PaymentControllerTests {
         UUID userId = UUID.randomUUID();
         String email = "reconcile-" + userId + "@hulypay.com";
 
-        MvcResult createResult = mockMvc.perform(post("/api/v1/payments")
+        MvcResult createResult = mockMvc.perform(post("/api/v1/transactions")
                         .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -123,7 +123,7 @@ class PaymentControllerTests {
         String transactionId = JsonPath.read(createResult.getResponse().getContentAsString(), "$.id");
 
         // Reconcile to CONFIRMED
-        mockMvc.perform(put("/api/v1/payments/" + transactionId + "/reconcile")
+        mockMvc.perform(put("/api/v1/transactions/" + transactionId + "/reconcile")
                         .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -141,8 +141,8 @@ class PaymentControllerTests {
                 .andExpect(jsonPath("$.latitude").value(13.082680))
                 .andExpect(jsonPath("$.longitude").value(80.270718));
 
-        // Verify GET /api/v1/payments/{id} returns matching details
-        mockMvc.perform(get("/api/v1/payments/" + transactionId)
+        // Verify GET /api/v1/transactions/{id} returns matching details
+        mockMvc.perform(get("/api/v1/transactions/" + transactionId)
                         .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.paymentStatus").value("CONFIRMED"))
@@ -154,7 +154,7 @@ class PaymentControllerTests {
         UUID userId = UUID.randomUUID();
         String email = "direct-confirmed-" + userId + "@hulypay.com";
 
-        mockMvc.perform(post("/api/v1/payments")
+        mockMvc.perform(post("/api/v1/transactions")
                         .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -181,7 +181,7 @@ class PaymentControllerTests {
         String email = "sms-" + userId + "@hulypay.com";
 
         // 1. Create a PENDING transaction
-        MvcResult createResult = mockMvc.perform(post("/api/v1/payments")
+        MvcResult createResult = mockMvc.perform(post("/api/v1/transactions")
                         .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -203,7 +203,7 @@ class PaymentControllerTests {
 
         // 2. Post matching SMS
         String smsBody = "Dear Customer, Rs.420.00 debited from A/C **9999 to ccd@okhdfcbank. UPI Ref: 425611223344.";
-        mockMvc.perform(post("/api/v1/payments/" + transactionId + "/sms-verification")
+        mockMvc.perform(post("/api/v1/transactions/" + transactionId + "/sms-verification")
                         .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(String.format("""
@@ -219,7 +219,7 @@ class PaymentControllerTests {
                 .andExpect(jsonPath("$.extractedUpiReference").value("425611223344"));
 
         // 3. Idempotent call with duplicate SMS
-        mockMvc.perform(post("/api/v1/payments/" + transactionId + "/sms-verification")
+        mockMvc.perform(post("/api/v1/transactions/" + transactionId + "/sms-verification")
                         .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(String.format("""
@@ -239,7 +239,7 @@ class PaymentControllerTests {
         UUID userId = UUID.randomUUID();
         String email = "sms-fail-" + userId + "@hulypay.com";
 
-        MvcResult createResult = mockMvc.perform(post("/api/v1/payments")
+        MvcResult createResult = mockMvc.perform(post("/api/v1/transactions")
                         .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -257,7 +257,7 @@ class PaymentControllerTests {
         String transactionId = JsonPath.read(createResult.getResponse().getContentAsString(), "$.id");
 
         String failSms = "UPI payment of Rs.199.00 to grocer@upi failed due to network timeout.";
-        mockMvc.perform(post("/api/v1/payments/" + transactionId + "/sms-verification")
+        mockMvc.perform(post("/api/v1/transactions/" + transactionId + "/sms-verification")
                         .with(jwt().jwt(jwt -> jwt.subject(userId.toString()).claim("email", email)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(String.format("""
