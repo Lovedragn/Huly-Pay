@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import '../models/payment_model.dart';
-import '../repositories/payment_repository.dart';
+import '../models/transaction_model.dart';
+import '../repositories/transaction_repository.dart';
 import '../services/qr_share_service.dart';
 import '../services/upi_service.dart';
 import '../theme/app_theme.dart';
@@ -95,7 +95,7 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
 
             final txnRef = 'HULY${DateTime.now().millisecondsSinceEpoch}';
             try {
-              await PaymentRepository().createPayment(CreatePaymentPayload(
+              await TransactionRepository().createTransaction(CreatePaymentPayload(
                 amount: effectiveAmount,
                 currency: 'INR',
                 merchantName: merchantName ?? 'QR Payment',

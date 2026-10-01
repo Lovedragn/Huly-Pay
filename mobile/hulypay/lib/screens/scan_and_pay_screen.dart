@@ -7,8 +7,8 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../data/external_data.dart';
-import '../models/payment_model.dart';
-import '../repositories/payment_repository.dart';
+import '../models/transaction_model.dart';
+import '../repositories/transaction_repository.dart';
 import '../services/auth_service.dart';
 import '../services/google_pay_service.dart';
 import '../services/local_database_service.dart';
@@ -192,7 +192,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 ? payee
                 : ((upi != null && upi.isNotEmpty) ? upi : 'UPI Merchant');
             try {
-              await PaymentRepository().createPayment(CreatePaymentPayload(
+              await TransactionRepository().createTransaction(CreatePaymentPayload(
                 amount: effectiveAmount,
                 currency: upiData?.currency ?? 'INR',
                 merchantName: merchant,
@@ -933,7 +933,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     PaymentModel pendingPayment;
     try {
       pendingPayment =
-          await PaymentRepository().createPayment(CreatePaymentPayload(
+          await TransactionRepository().createTransaction(CreatePaymentPayload(
         amount: parsedAmount,
         currency: upiData.currency,
         merchantName: upiData.payeeName,
@@ -977,18 +977,11 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
             !pendingPayment.id.startsWith('local_') &&
             !pendingPayment.id.startsWith('tx_')) {
           try {
-            await client.from('payments').update({
+            await client.from('transactions').update({
               'category': autoCategory,
               'updated_at': DateTime.now().toUtc().toIso8601String(),
             }).eq('id', pendingPayment.id);
-          } catch (_) {
-            try {
-              await client.from('payments').update({
-                'payment_method': autoCategory,
-                'updated_at': DateTime.now().toUtc().toIso8601String(),
-              }).eq('id', pendingPayment.id);
-            } catch (_) {}
-          }
+          } catch (_) {}
         }
       } catch (_) {}
     }
@@ -1204,7 +1197,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                   statusState = 'TIMEOUT';
                   statusMessage = ExternalData.paymentVerificationTimeoutMsg;
                 });
-                PaymentRepository().reconcilePayment(payment.id, 'TIMEOUT');
+                TransactionRepository().reconcileTransaction(payment.id, 'TIMEOUT');
               }
             });
 
@@ -1226,7 +1219,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
               }
 
               try {
-                final result = await PaymentRepository().verifyPaymentSms(
+                final result = await TransactionRepository().verifyTransactionSms(
                   paymentId: payment.id,
                   smsBody: body,
                   sender: sender,
@@ -1476,8 +1469,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                   onPressed: () {
                     timer?.cancel();
                     GooglePayService.stopSmsListener();
-                    PaymentRepository()
-                        .reconcilePayment(payment.id, 'CANCELLED');
+                    TransactionRepository()
+                        .reconcileTransaction(payment.id, 'CANCELLED');
                     Navigator.of(dialogCtx).pop();
                   },
                   child: const Text(

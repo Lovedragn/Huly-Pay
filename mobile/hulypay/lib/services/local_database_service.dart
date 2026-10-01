@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 // sqflite_common_ffi: FFI-backed driver, used ONLY for Desktop/Test init
 import 'package:sqflite_common_ffi/sqflite_ffi.dart' as sqffi;
-import '../models/payment_model.dart';
+import '../models/transaction_model.dart';
 import '../models/user_profile.dart';
 
 class LocalDatabaseService {

@@ -1,20 +1,20 @@
-import '../models/payment_model.dart';
+import '../models/transaction_model.dart';
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
 import '../services/local_database_service.dart';
 
-class PaymentRepository {
-  static final PaymentRepository _instance = PaymentRepository._internal();
-  factory PaymentRepository() => _instance;
-  PaymentRepository._internal();
+class TransactionRepository {
+  static final TransactionRepository _instance = TransactionRepository._internal();
+  factory TransactionRepository() => _instance;
+  TransactionRepository._internal();
 
   final LocalDatabaseService _localDb = LocalDatabaseService();
   final ApiClient _apiClient = ApiClient();
 
-  /// Retrieve payments with offline-first SQLite cache
-  /// 1. Immediately returns cached payments from SQLite if available and not forced to refresh
-  /// 2. Fetches fresh payments from Spring Boot backend and syncs with SQLite
-  Future<List<PaymentModel>> getPayments({bool forceRefresh = false}) async {
+  /// Retrieve transactions with offline-first SQLite cache
+  /// 1. Immediately returns cached transactions from SQLite if available and not forced to refresh
+  /// 2. Fetches fresh transactions from Spring Boot backend and syncs with SQLite
+  Future<List<PaymentModel>> getTransactions({bool forceRefresh = false}) async {
     // 1. Check local SQLite cache
     List<PaymentModel> cached = [];
     try {
@@ -26,7 +26,7 @@ class PaymentRepository {
       return cached;
     }
 
-    // 2. Fetch fresh payments from Spring Boot backend
+    // 2. Fetch fresh transactions from Spring Boot backend
     try {
       final remote = await _apiClient.getPayments();
       if (remote.isNotEmpty) {
@@ -35,15 +35,15 @@ class PaymentRepository {
       }
     } catch (_) {}
 
-    // 3. Auto-sync pending local payments to Supabase & query fresh cloud payments
+    // 3. Auto-sync pending local transactions to Supabase & query fresh cloud transactions
     try {
       final client = AuthService().client;
       final user = AuthService().currentUser;
       if (client != null && user != null) {
-        await syncLocalPaymentsToSupabase();
+        await syncLocalTransactionsToSupabase();
 
         final data = await client
-            .from('payments')
+            .from('transactions')
             .select()
             .order('created_at', ascending: false);
 
@@ -65,8 +65,12 @@ class PaymentRepository {
     return cached;
   }
 
-  /// Sync all pending/unsynced local SQLite payments to Supabase & Spring Boot
-  Future<int> syncLocalPaymentsToSupabase() async {
+  // Alias for backward compatibility
+  Future<List<PaymentModel>> getPayments({bool forceRefresh = false}) =>
+      getTransactions(forceRefresh: forceRefresh);
+
+  /// Sync all pending/unsynced local SQLite transactions to Supabase & Spring Boot
+  Future<int> syncLocalTransactionsToSupabase() async {
     final unsynced = await _localDb.getUnsyncedPayments();
     if (unsynced.isEmpty) return 0;
 
@@ -105,11 +109,13 @@ class PaymentRepository {
       if (!synced && client != null && user != null) {
         try {
           final nowStr = p.createdAt ?? DateTime.now().toUtc().toIso8601String();
-          final res = await client.from('payments').insert({
+          final res = await client.from('transactions').insert({
             'user_id': user.id,
             'amount': p.amount,
             'currency': p.currency,
             'merchant_name': p.merchantName,
+            'category': (p.category != null && p.category!.isNotEmpty) ? p.category : 'Others',
+            'description': p.merchantName != null ? 'Payment to ${p.merchantName}' : 'Payment via ${p.paymentMethod ?? "UPI"}',
             'upi_id': p.upiId,
             'payment_method': p.paymentMethod,
             'transaction_reference': p.transactionReference,
@@ -119,8 +125,7 @@ class PaymentRepository {
             'latitude': p.latitude,
             'longitude': p.longitude,
             'location_accuracy_meters': p.locationAccuracyMeters,
-            'payment_date': p.paymentDate,
-            'payment_time': p.paymentTime,
+            'transaction_time': nowStr,
             'created_at': nowStr,
             'updated_at': nowStr,
           }).select().single();
@@ -137,8 +142,11 @@ class PaymentRepository {
     return syncedCount;
   }
 
-  /// Get cached payments directly from SQLite without network call
-  Future<List<PaymentModel>> getCachedPayments() async {
+  // Alias for backward compatibility
+  Future<int> syncLocalPaymentsToSupabase() => syncLocalTransactionsToSupabase();
+
+  /// Get cached transactions directly from SQLite without network call
+  Future<List<PaymentModel>> getCachedTransactions() async {
     try {
       return await _localDb.getPayments();
     } catch (_) {
@@ -146,8 +154,11 @@ class PaymentRepository {
     }
   }
 
-  /// Purges failed/cancelled payments and pending payments older than 1 day
-  Future<int> cleanupStalePayments() async {
+  // Alias for backward compatibility
+  Future<List<PaymentModel>> getCachedPayments() => getCachedTransactions();
+
+  /// Purges failed/cancelled transactions and pending transactions older than 1 day
+  Future<int> cleanupStaleTransactions() async {
     try {
       return await _localDb.cleanupStalePayments();
     } catch (_) {
@@ -155,8 +166,11 @@ class PaymentRepository {
     }
   }
 
-  /// Retrieve payment by ID with cache fallback
-  Future<PaymentModel> getPaymentById(String id) async {
+  // Alias for backward compatibility
+  Future<int> cleanupStalePayments() => cleanupStaleTransactions();
+
+  /// Retrieve transaction by ID with cache fallback
+  Future<PaymentModel> getTransactionById(String id) async {
     PaymentModel? local;
     try {
       local = await _localDb.getPaymentById(id);
@@ -173,7 +187,7 @@ class PaymentRepository {
       final client = AuthService().client;
       if (client != null) {
         final data = await client
-            .from('payments')
+            .from('transactions')
             .select()
             .eq('id', id)
             .maybeSingle();
@@ -188,11 +202,14 @@ class PaymentRepository {
     if (local != null) {
       return local;
     }
-    throw Exception('Payment not found');
+    throw Exception('Transaction not found');
   }
 
-  /// Create a payment and immediately persist to local SQLite and Supabase
-  Future<PaymentModel> createPayment(CreatePaymentPayload payload) async {
+  // Alias for backward compatibility
+  Future<PaymentModel> getPaymentById(String id) => getTransactionById(id);
+
+  /// Create a transaction and immediately persist to local SQLite and Supabase
+  Future<PaymentModel> createTransaction(CreatePaymentPayload payload) async {
     // Only attempt remote API if user has a valid active token
     if (AuthService().hasValidActiveToken) {
       try {
@@ -203,63 +220,71 @@ class PaymentRepository {
         return payment;
       } catch (_) {}
     }
-      // Direct Supabase sync if backend is offline or unreachable
-      try {
-        final client = AuthService().client;
-        final user = AuthService().currentUser;
-        if (client != null && user != null) {
-          final now = DateTime.now().toUtc().toIso8601String();
-          final response = await client.from('payments').insert({
-            'user_id': user.id,
-            'amount': payload.amount,
-            'currency': payload.currency,
-            'merchant_name': payload.merchantName,
-            'upi_id': payload.upiId,
-            'payment_method': payload.paymentMethod,
-            'transaction_reference': payload.transactionReference,
-            'upi_transaction_id': payload.upiTransactionId,
-            'status': payload.status ?? 'CONFIRMED',
-            'provider': payload.provider ?? 'GOOGLE_PAY',
-            'latitude': payload.latitude,
-            'longitude': payload.longitude,
-            'location_accuracy_meters': payload.locationAccuracyMeters,
-            'created_at': now,
-            'updated_at': now,
-          }).select().single();
-          final payment = PaymentModel.fromJson(Map<String, dynamic>.from(response as Map));
-          await _localDb.upsertPayment(payment, syncStatus: 'SYNCED');
-          return payment;
-        }
-      } catch (_) {}
 
-      // Offline / connection fallback: save locally so the user payment flow is never blocked
-      final localPayment = PaymentModel(
-        id: 'local_${DateTime.now().millisecondsSinceEpoch}',
-        amount: payload.amount,
-        currency: payload.currency,
-        merchantName: payload.merchantName,
-        upiId: payload.upiId,
-        paymentMethod: payload.paymentMethod,
-        transactionReference: payload.transactionReference,
-        upiTransactionId: payload.upiTransactionId,
-        status: payload.status ?? 'CONFIRMED',
-        provider: payload.provider ?? 'GOOGLE_PAY',
-        latitude: payload.latitude,
-        longitude: payload.longitude,
-        locationAccuracyMeters: payload.locationAccuracyMeters,
-        createdAt: DateTime.now().toIso8601String(),
-        updatedAt: DateTime.now().toIso8601String(),
-      );
-      try {
-        await _localDb.upsertPayment(localPayment, syncStatus: 'PENDING');
-        return localPayment;
-      } catch (_) {
-        rethrow;
+    // Direct Supabase sync if backend is offline or unreachable
+    try {
+      final client = AuthService().client;
+      final user = AuthService().currentUser;
+      if (client != null && user != null) {
+        final now = DateTime.now().toUtc().toIso8601String();
+        final response = await client.from('transactions').insert({
+          'user_id': user.id,
+          'amount': payload.amount,
+          'currency': payload.currency,
+          'merchant_name': payload.merchantName,
+          'category': (payload.category != null && payload.category!.isNotEmpty) ? payload.category : 'Others',
+          'description': payload.merchantName != null ? 'Payment to ${payload.merchantName}' : 'Payment via ${payload.paymentMethod}',
+          'upi_id': payload.upiId,
+          'payment_method': payload.paymentMethod,
+          'transaction_reference': payload.transactionReference,
+          'upi_transaction_id': payload.upiTransactionId,
+          'status': payload.status ?? 'CONFIRMED',
+          'provider': payload.provider ?? 'GOOGLE_PAY',
+          'latitude': payload.latitude,
+          'longitude': payload.longitude,
+          'location_accuracy_meters': payload.locationAccuracyMeters,
+          'transaction_time': now,
+          'created_at': now,
+          'updated_at': now,
+        }).select().single();
+        final payment = PaymentModel.fromJson(Map<String, dynamic>.from(response as Map));
+        await _localDb.upsertPayment(payment, syncStatus: 'SYNCED');
+        return payment;
       }
-    }
+    } catch (_) {}
 
-  /// Reconcile payment status and update SQLite cache and Supabase
-  Future<PaymentModel> reconcilePayment(
+    // Offline / connection fallback: save locally so the user payment flow is never blocked
+    final localPayment = PaymentModel(
+      id: 'local_${DateTime.now().millisecondsSinceEpoch}',
+      amount: payload.amount,
+      currency: payload.currency,
+      merchantName: payload.merchantName,
+      upiId: payload.upiId,
+      paymentMethod: payload.paymentMethod,
+      transactionReference: payload.transactionReference,
+      upiTransactionId: payload.upiTransactionId,
+      status: payload.status ?? 'CONFIRMED',
+      provider: payload.provider ?? 'GOOGLE_PAY',
+      latitude: payload.latitude,
+      longitude: payload.longitude,
+      locationAccuracyMeters: payload.locationAccuracyMeters,
+      createdAt: DateTime.now().toIso8601String(),
+      updatedAt: DateTime.now().toIso8601String(),
+    );
+    try {
+      await _localDb.upsertPayment(localPayment, syncStatus: 'PENDING');
+      return localPayment;
+    } catch (_) {
+      rethrow;
+    }
+  }
+
+  // Alias for backward compatibility
+  Future<PaymentModel> createPayment(CreatePaymentPayload payload) =>
+      createTransaction(payload);
+
+  /// Reconcile transaction status and update SQLite cache and Supabase
+  Future<PaymentModel> reconcileTransaction(
     String id,
     String status, {
     String? upiTransactionId,
@@ -292,7 +317,7 @@ class PaymentRepository {
           if (transactionReference != null) {
             updateFields['transaction_reference'] = transactionReference;
           }
-          final res = await client.from('payments').update(updateFields).eq('id', id).select().maybeSingle();
+          final res = await client.from('transactions').update(updateFields).eq('id', id).select().maybeSingle();
 
           if (res != null) {
             final updatedSupabase = PaymentModel.fromJson(Map<String, dynamic>.from(res as Map));
@@ -319,8 +344,22 @@ class PaymentRepository {
     }
   }
 
-  /// Verify an incoming transaction SMS against a pending payment with Spring Boot
-  Future<Map<String, dynamic>> verifyPaymentSms({
+  // Alias for backward compatibility
+  Future<PaymentModel> reconcilePayment(
+    String id,
+    String status, {
+    String? upiTransactionId,
+    String? transactionReference,
+  }) =>
+      reconcileTransaction(
+        id,
+        status,
+        upiTransactionId: upiTransactionId,
+        transactionReference: transactionReference,
+      );
+
+  /// Verify an incoming transaction SMS against a pending transaction with Spring Boot
+  Future<Map<String, dynamic>> verifyTransactionSms({
     required String paymentId,
     required String smsBody,
     String? sender,
@@ -345,8 +384,22 @@ class PaymentRepository {
     }
   }
 
-  /// Delete a payment from local SQLite and Supabase
-  Future<void> deletePayment(String id) async {
+  // Alias for backward compatibility
+  Future<Map<String, dynamic>> verifyPaymentSms({
+    required String paymentId,
+    required String smsBody,
+    String? sender,
+    String? receivedAt,
+  }) =>
+      verifyTransactionSms(
+        paymentId: paymentId,
+        smsBody: smsBody,
+        sender: sender,
+        receivedAt: receivedAt,
+      );
+
+  /// Delete a transaction from local SQLite and Supabase
+  Future<void> deleteTransaction(String id) async {
     // 1. Delete from local SQLite cache
     try {
       await _localDb.deletePayment(id);
@@ -356,9 +409,14 @@ class PaymentRepository {
     try {
       final client = AuthService().client;
       if (client != null && !id.startsWith('local_')) {
-        await client.from('payments').delete().eq('id', id);
+        await client.from('transactions').delete().eq('id', id);
       }
     } catch (_) {}
   }
+
+  // Alias for backward compatibility
+  Future<void> deletePayment(String id) => deleteTransaction(id);
 }
 
+// Global alias for compatibility
+typedef PaymentRepository = TransactionRepository;

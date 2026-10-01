@@ -126,8 +126,8 @@ class ExternalData {
       'Next-Generation Intelligent Fintech Experience';
   static const String defaultAppVersion = 'v2.8.0';
   static const String apkDownloadUrl =
-      'https://github.com/Lovedragn/Huly-Pay/releases/download/v2.8.0/hulypay_v2.8.0.apk';
-  static const String apkFilename = 'hulypay_v2.8.0.apk';
+      'https://github.com/Lovedragn/Huly-Pay/releases/download/${defaultAppVersion}/hulypay_${defaultAppVersion}.apk';
+  static const String apkFilename = 'hulypay_${defaultAppVersion}.apk';
   static const String appDescription =
       'Next-generation intelligent fintech application crafted for frictionless '
       'transactions, analytical intelligence, and secure offline-first financial '

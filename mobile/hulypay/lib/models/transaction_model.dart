@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dashboard_data.dart';
 
-class PaymentModel {
+class TransactionModel {
   final String id;
   final String? userId;
   final String? expenseId;
@@ -23,7 +23,7 @@ class PaymentModel {
   final String? createdAt;
   final String? updatedAt;
 
-  PaymentModel({
+  TransactionModel({
     required this.id,
     this.userId,
     this.expenseId,
@@ -46,7 +46,7 @@ class PaymentModel {
     this.updatedAt,
   });
 
-  /// Whether this payment completed successfully or is in an active non-failed state.
+  /// Whether this transaction completed successfully or is in an active non-failed state.
   /// Only SUCCESS, CONFIRMED, COMPLETED, PAID, SETTLED, and active non-failed statuses count toward charts and totals.
   bool get isSuccessful {
     final s = status.toUpperCase().trim();
@@ -56,7 +56,7 @@ class PaymentModel {
     return true;
   }
 
-  PaymentModel copyWith({
+  TransactionModel copyWith({
     String? id,
     String? userId,
     String? expenseId,
@@ -78,7 +78,7 @@ class PaymentModel {
     String? createdAt,
     String? updatedAt,
   }) {
-    return PaymentModel(
+    return TransactionModel(
       id: id ?? this.id,
       userId: userId ?? this.userId,
       expenseId: expenseId ?? this.expenseId,
@@ -102,8 +102,8 @@ class PaymentModel {
     );
   }
 
-  factory PaymentModel.fromJson(Map<String, dynamic> json) {
-    return PaymentModel(
+  factory TransactionModel.fromJson(Map<String, dynamic> json) {
+    return TransactionModel(
       id: (json['id'] ?? '').toString(),
       userId: (json['userId'] ?? json['user_id']) as String?,
       expenseId: (json['expenseId'] ?? json['expense_id']) as String?,
@@ -164,119 +164,136 @@ class PaymentModel {
     final categoryText = customCategory ??
         (isFailedStatus ? 'Failed' : (isPendingStatus ? 'Pending' : (category != null && category!.trim().isNotEmpty ? category! : (paymentMethod ?? 'Others'))));
 
-    final amountText =
-        '₹${amount.toStringAsFixed(amount.truncateToDouble() == amount ? 0 : 2)}';
-
-    String timeText = 'Today';
-    if (paymentTime != null && paymentTime!.isNotEmpty) {
-      timeText = paymentTime!;
-    } else if (createdAt != null && createdAt!.isNotEmpty) {
-      try {
-        final dt = DateTime.parse(createdAt!).toLocal();
-        final hour = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
-        final minute = dt.minute.toString().padLeft(2, '0');
-        final ampm = dt.hour >= 12 ? 'PM' : 'AM';
-        timeText = '$hour:$minute $ampm';
-      } catch (_) {
-        timeText = createdAt!;
-      }
-    }
-
-    // Determine icon based on merchant or category
-    IconData icon = Icons.receipt_long_rounded;
-    Color iconColor = const Color(0xFF007AFF);
-    Color iconBgColor = const Color(0xFF14243B);
-
-    final titleLower = title.toLowerCase();
-    final catLower = categoryText.toLowerCase();
-
-    if (isFailedStatus) {
-      icon = Icons.error_outline_rounded;
-      iconColor = const Color(0xFFFF453A);
-      iconBgColor = const Color(0xFF2C1517);
-    } else if (isPendingStatus) {
-      icon = Icons.hourglass_top_rounded;
-      iconColor = const Color(0xFFFF9F0A);
-      iconBgColor = const Color(0xFF2C2210);
-    } else if (catLower.contains('food') || catLower.contains('dining') || titleLower.contains('swiggy') || titleLower.contains('zomato')) {
-      icon = Icons.restaurant_rounded;
-      iconColor = const Color(0xFFFF9500);
-      iconBgColor = const Color(0xFF2C2014);
-    } else if (catLower.contains('shopping') || titleLower.contains('amazon') || titleLower.contains('flipkart') || titleLower.contains('store')) {
-      icon = Icons.shopping_bag_rounded;
-      iconColor = const Color(0xFF007AFF);
-      iconBgColor = const Color(0xFF14243B);
-    } else if (catLower.contains('transport') || catLower.contains('travel') || titleLower.contains('uber') || titleLower.contains('ola') || titleLower.contains('fuel')) {
-      icon = Icons.directions_car_rounded;
-      iconColor = const Color(0xFF30D158);
-      iconBgColor = const Color(0xFF142A1E);
-    } else if (catLower.contains('bill') || catLower.contains('utilit')) {
-      icon = Icons.receipt_long_rounded;
-      iconColor = const Color(0xFFAF52DE);
-      iconBgColor = const Color(0xFF271B33);
-    } else if (catLower.contains('grocer')) {
-      icon = Icons.local_grocery_store_rounded;
-      iconColor = const Color(0xFF34C759);
-      iconBgColor = const Color(0xFF142A1E);
-    } else if (catLower.contains('entertain')) {
-      icon = Icons.movie_outlined;
-      iconColor = const Color(0xFFFF2D55);
-      iconBgColor = const Color(0xFF2C151F);
-    } else if (catLower.contains('health') || catLower.contains('fitness')) {
-      icon = Icons.favorite_rounded;
-      iconColor = const Color(0xFF5AC8FA);
-      iconBgColor = const Color(0xFF142533);
-    }
+    final bool isIncomePayment = category?.toLowerCase() == 'income';
+    final String amountText = '${isIncomePayment ? '+' : '-'} ₹${amount.toStringAsFixed(2)}';
 
     return TransactionItem(
       id: id,
       title: title,
       category: categoryText,
       amount: amountText,
-      time: timeText,
-      icon: icon,
-      iconColor: iconColor,
-      iconBgColor: iconBgColor,
-      isIncome: false,
-      type: 'UPI',
+      time: formattedTime,
+      icon: _getCategoryIcon(categoryText),
+      iconColor: _getCategoryIconColor(categoryText),
+      iconBgColor: _getCategoryIconBgColor(categoryText),
+      isIncome: isIncomePayment,
+      type: paymentMethod ?? 'UPI',
       payment: this,
     );
   }
 
-  static List<TransactionGroup> groupPayments(
-    List<PaymentModel> payments, [
-    Map<String, String>? categoryOverrides,
-  ]) {
-    if (payments.isEmpty) return [];
+  String get formattedTime {
+    if (paymentTime != null && paymentTime!.isNotEmpty) {
+      return paymentTime!;
+    }
+    if (createdAt != null && createdAt!.isNotEmpty) {
+      try {
+        final dt = DateTime.parse(createdAt!).toLocal();
+        final hour = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
+        final minute = dt.minute.toString().padLeft(2, '0');
+        final period = dt.hour >= 12 ? 'PM' : 'AM';
+        return '$hour:$minute $period';
+      } catch (_) {}
+    }
+    return 'Just now';
+  }
 
+  static IconData _getCategoryIcon(String category) {
+    switch (category.toLowerCase()) {
+      case 'food':
+      case 'food & dining':
+      case 'dining':
+        return Icons.restaurant_rounded;
+      case 'internet':
+      case 'bills':
+      case 'utilities':
+        return Icons.wifi_rounded;
+      case 'shopping':
+        return Icons.shopping_bag_rounded;
+      case 'groceries':
+        return Icons.local_grocery_store_rounded;
+      case 'travel':
+      case 'transport':
+        return Icons.directions_car_rounded;
+      case 'entertainment':
+        return Icons.movie_rounded;
+      case 'health':
+      case 'medical':
+        return Icons.medical_services_rounded;
+      case 'pending':
+        return Icons.hourglass_top_rounded;
+      case 'failed':
+        return Icons.error_outline_rounded;
+      default:
+        return Icons.payments_rounded;
+    }
+  }
+
+  static Color _getCategoryIconColor(String category) {
+    switch (category.toLowerCase()) {
+      case 'food':
+      case 'food & dining':
+      case 'dining':
+        return const Color(0xFFFF9500);
+      case 'internet':
+      case 'bills':
+      case 'utilities':
+        return const Color(0xFF007AFF);
+      case 'shopping':
+        return const Color(0xFFAF52DE);
+      case 'groceries':
+        return const Color(0xFF34C759);
+      case 'travel':
+      case 'transport':
+        return const Color(0xFFFF2D55);
+      case 'pending':
+        return const Color(0xFFFF9500);
+      case 'failed':
+        return const Color(0xFFFF3B30);
+      default:
+        return const Color(0xFF5856D6);
+    }
+  }
+
+  static Color _getCategoryIconBgColor(String category) {
+    return _getCategoryIconColor(category).withValues(alpha: 0.15);
+  }
+
+  static List<TransactionGroup> groupPayments(List<TransactionModel> payments, [Map<String, String>? categoryOverrides]) {
     final now = DateTime.now();
-    final todayStart = DateTime(now.year, now.month, now.day);
-    final yesterdayStart = todayStart.subtract(const Duration(days: 1));
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
 
-    final todayList = <TransactionItem>[];
-    final yesterdayList = <TransactionItem>[];
-    final earlierList = <TransactionItem>[];
+    final List<TransactionItem> todayList = [];
+    final List<TransactionItem> yesterdayList = [];
+    final List<TransactionItem> earlierList = [];
 
     for (final p in payments) {
-      DateTime? dt;
-      if (p.createdAt != null) {
+      DateTime? pDate;
+      if (p.createdAt != null && p.createdAt!.isNotEmpty) {
         try {
-          dt = DateTime.parse(p.createdAt!).toLocal();
+          pDate = DateTime.parse(p.createdAt!).toLocal();
+        } catch (_) {}
+      } else if (p.paymentDate != null && p.paymentDate!.isNotEmpty) {
+        try {
+          pDate = DateTime.parse(p.paymentDate!).toLocal();
         } catch (_) {}
       }
-      final overrideCat = categoryOverrides?[p.id] ??
-          (categoryOverrides?['category_${p.id}']);
-      final item = p.toTransactionItem(customCategory: overrideCat);
-      if (dt == null || dt.isAfter(todayStart)) {
+
+      final dateOnly = pDate != null ? DateTime(pDate.year, pDate.month, pDate.day) : today;
+      final customCategory = categoryOverrides?[p.id];
+      final item = p.toTransactionItem(customCategory: customCategory);
+
+      if (dateOnly.isAtSameMomentAs(today)) {
         todayList.add(item);
-      } else if (dt.isAfter(yesterdayStart)) {
+      } else if (dateOnly.isAtSameMomentAs(yesterday)) {
         yesterdayList.add(item);
       } else {
         earlierList.add(item);
       }
     }
 
-    final groups = <TransactionGroup>[];
+    final List<TransactionGroup> groups = [];
     if (todayList.isNotEmpty) {
       groups.add(TransactionGroup(title: 'Today', transactions: todayList));
     }
@@ -289,6 +306,9 @@ class PaymentModel {
     return groups;
   }
 }
+
+// Backward-compatibility alias
+typedef PaymentModel = TransactionModel;
 
 class CreatePaymentPayload {
   final double amount;
@@ -351,6 +371,9 @@ class CreatePaymentPayload {
   }
 }
 
+// Transaction alias
+typedef CreateTransactionPayload = CreatePaymentPayload;
+
 class ReconcilePaymentPayload {
   final String status;
   final String? upiTransactionId;
@@ -372,3 +395,5 @@ class ReconcilePaymentPayload {
   }
 }
 
+// Transaction alias
+typedef ReconcileTransactionPayload = ReconcilePaymentPayload;

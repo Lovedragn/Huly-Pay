@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/dashboard_data.dart';
-import '../models/payment_model.dart';
-import '../repositories/payment_repository.dart';
+import '../models/transaction_model.dart';
+import '../repositories/transaction_repository.dart';
 import '../services/local_database_service.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import '../widgets/transaction_tile.dart';
@@ -75,7 +75,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   Future<void> _loadPayments() async {
     // Run cleanup on local database to auto-delete stale pending (> 1 day) and failed payments
     try {
-      await PaymentRepository().cleanupStalePayments();
+      await TransactionRepository().cleanupStaleTransactions();
     } catch (_) {}
 
     // Load category metadata overrides
@@ -86,7 +86,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
 
     // 1. Instantly display cached payments from SQLite
     try {
-      final cached = await PaymentRepository().getCachedPayments();
+      final cached = await TransactionRepository().getCachedTransactions();
       if (mounted) {
         final activeList = _filterActivePayments(cached);
         final sorted = List<PaymentModel>.from(activeList)
@@ -103,7 +103,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
 
     // 2. Fetch fresh payments from backend and update SQLite cache
     try {
-      final payments = await PaymentRepository().getPayments(forceRefresh: true);
+      final payments = await TransactionRepository().getTransactions(forceRefresh: true);
       if (!mounted) return;
       final activeList = _filterActivePayments(payments);
       final sorted = List<PaymentModel>.from(activeList)
