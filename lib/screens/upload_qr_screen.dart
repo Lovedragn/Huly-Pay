@@ -6,6 +6,7 @@ import '../models/transaction_model.dart';
 import '../repositories/transaction_repository.dart';
 import '../services/qr_share_service.dart';
 import '../services/upi_service.dart';
+import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
 
 class UploadQrScreen extends StatefulWidget {
@@ -102,7 +103,7 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
                 upiId: upiId ?? '',
                 paymentMethod: 'UPI',
                 transactionReference: txnRef,
-                status: 'CONFIRMED',
+                status: UserPreferencesService().cachedQuickConfirm ? 'CONFIRMED' : 'PENDING',
                 provider: 'GOOGLE_PAY',
               ));
             } catch (_) {}
