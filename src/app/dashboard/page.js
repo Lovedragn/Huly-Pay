@@ -13,9 +13,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import {
   getUserPreferences,
-  saveUserPreferences,
   updateUserPreference,
-  USER_PREFERENCE_WEBSITE_KEY,
 } from "@/lib/userPreferences";
 import {
   syncAllDashboardData,
