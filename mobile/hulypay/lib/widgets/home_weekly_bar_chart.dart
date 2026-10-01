@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../models/transaction_model.dart';
 import '../theme/app_theme.dart';
-import '../theme/chart_colors.dart';
 
 /// Weekly Spending Bar Chart inspired by bar_chart_sample1.dart
 /// Features interactive touch tooltips, touched rod highlights,

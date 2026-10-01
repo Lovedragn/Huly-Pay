@@ -126,8 +126,8 @@ class ExternalData {
       'Next-Generation Intelligent Fintech Experience';
   static const String defaultAppVersion = 'v2.8.0';
   static const String apkDownloadUrl =
-      'https://github.com/Lovedragn/Huly-Pay/releases/download/${defaultAppVersion}/hulypay_${defaultAppVersion}.apk';
-  static const String apkFilename = 'hulypay_${defaultAppVersion}.apk';
+      'https://github.com/Lovedragn/Huly-Pay/releases/download/$defaultAppVersion/hulypay_$defaultAppVersion.apk';
+  static const String apkFilename = 'hulypay_$defaultAppVersion.apk';
   static const String appDescription =
       'Next-generation intelligent fintech application crafted for frictionless '
       'transactions, analytical intelligence, and secure offline-first financial '
@@ -523,33 +523,31 @@ Website: $creatorWebsiteUrl
   /// App Theme presets available for Customization
   static const List<Map<String, String>> themePresets = [
     {
-      'id': 'Black',
-      'name': 'OLED Black',
-      'label': 'Black',
-      'description': 'Pure black for AMOLED displays (Default)',
+      'id': 'Oled black',
+      'name': 'Oled black',
+      'label': 'OLED',
+      'description': 'Pure black for AMOLED displays with neon accents (Default)',
     },
     {
-      'id': 'White',
-      'name': 'Clean White',
-      'label': 'White',
-      'description': 'Crisp daytime light mode with high clarity',
+      'id': 'Milk white',
+      'name': 'Milk white',
+      'label': 'Milk',
+      'description': 'Clean ivory daytime theme with high clarity and royal accents',
     },
     {
-      'id': 'Blue',
-      'name': 'Midnight Dark',
-      'label': 'Blue',
-      'description': 'Deep navy and titanium tones (Blue aesthetic)',
+      'id': 'Red velvet',
+      'name': 'Red velvet',
+      'label': 'Red',
+      'description': 'White background, signature red big amount, red bottom nav & red accents',
     },
   ];
 
-  /// Short descriptions for each chart color palette
+  /// Descriptions for unified theme chart color palettes
   static const Map<String, String> chartPaletteDescriptions = {
-    'Default': 'Electric Blue, vibrant Cyan, Mint, Amber & Rose (Default)',
-    'Emerald Mint': 'Mint and emerald accents for growth and tracking',
-    'Emerald Slate': 'Mint and emerald accents for growth and tracking',
-    'Cyber Purple': 'Neon violet highlights and cyberpunk glow',
-    'Sunset Gold': 'Warm amber, golden orange and coral radiant gradients',
-    'Ocean Blue': 'Sky cyan, electric blue and sapphire marine curves',
+    'Oled black': 'Electric Blue, vibrant Cyan, Mint, Amber & Rose',
+    'Milk white': 'Royal Blue, Ocean Cyan, Fresh Mint, Warm Gold & Rose',
+    'Red velvet': 'Bright Yellow, Golden Amber, Radiant Orange & Crimson Red',
+    'OnePlus red': 'Bright Yellow, Golden Amber, Radiant Orange & Crimson Red',
   };
 
   /// Dark theme style json for embedded Google Maps

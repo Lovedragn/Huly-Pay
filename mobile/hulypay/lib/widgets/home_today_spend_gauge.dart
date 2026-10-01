@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import '../models/transaction_model.dart';
 import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
-import '../theme/chart_colors.dart';
 
 /// Speedometer-style gauge chart inspired by gauge_chart_sample3.dart
 /// Combines two rings:

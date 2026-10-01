@@ -415,6 +415,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return _buildGroupCard([
       _buildSettingRow(
         icon: Icons.credit_card_rounded,
+        iconColor: const Color(0xFF0A84FF),
         title: 'Payment Methods',
         trailingText: () {
           final pref = UserPreferencesService().cachedDefaultPaymentApp;
@@ -458,7 +459,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           await UserPreferencesService().setQuickConfirm(value);
         },
       ),
-      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
+      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 66),
       _buildSwitchSettingRow(
         icon: Icons.qr_code_scanner_rounded,
         iconColor: const Color(0xFF00C076),
@@ -472,12 +473,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           await UserPreferencesService().setQuickScan(value);
         },
       ),
-      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
-      // Customization option with both transferred Themes and Chart Colors presets
+      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 66),
+      // Customization option with unified theme
       _buildSettingRow(
-        icon: Icons.tune_rounded,
-        title: 'Customization',
-        trailingText: '${AppThemeManager.theme} • ${AppThemeManager.chartPalette}',
+        icon: Icons.palette_outlined,
+        iconColor: const Color(0xFFAF52DE),
+        title: 'Theme & Style',
+        trailingText: AppThemeManager.theme,
         onTap: _showCustomizationModal,
       ),
     ]);
@@ -514,7 +516,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           );
         },
       ),
-      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
+      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 66),
       _buildSwitchSettingRow(
         icon: Icons.track_changes_rounded,
         iconColor: const Color(0xFFFF9500),
@@ -544,9 +546,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           );
         },
       ),
-      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
+      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 66),
       _buildSettingRow(
         icon: Icons.notifications_none_rounded,
+        iconColor: const Color(0xFF5856D6),
         title: 'Notification Center',
         trailingText: 'In Dev',
         onTap: () {
@@ -564,6 +567,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return _buildGroupCard([
       _buildSettingRow(
         icon: Icons.shield_outlined,
+        iconColor: const Color(0xFF34C759),
         title: 'Privacy & Security',
         onTap: () {
           Navigator.of(context).push(
@@ -573,9 +577,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           );
         },
       ),
-      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
+      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 66),
       _buildSettingRow(
         icon: Icons.help_outline_rounded,
+        iconColor: const Color(0xFFFF9500),
         title: 'Help & Support',
         onTap: () {
           Navigator.of(context).push(
@@ -585,9 +590,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           );
         },
       ),
-      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 52),
+      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 66),
       _buildSettingRow(
         icon: Icons.info_outline_rounded,
+        iconColor: const Color(0xFF64D2FF),
         title: 'About Hulypay',
         trailingText: widget.appVersion,
         onTap: () {
@@ -622,13 +628,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
           borderRadius: BorderRadius.circular(20),
           onTap: _showLogoutDialog,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
-                const Icon(
-                  Icons.logout_rounded,
-                  color: Color(0xFFFF453A),
-                  size: 22,
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFF453A).withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.logout_rounded,
+                      color: Color(0xFFFF453A),
+                      size: 20,
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 14),
                 const Text(
@@ -713,6 +729,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildSettingRow({
     required IconData icon,
+    Color? iconColor,
     required String title,
     String? trailingText,
     required VoidCallback onTap,
@@ -725,13 +742,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
         borderRadius: BorderRadius.circular(20),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             children: [
-              Icon(
-                icon,
-                color: colors.textPrimary,
-                size: 22,
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: (iconColor ?? colors.textPrimary).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Icon(
+                    icon,
+                    color: iconColor ?? colors.textPrimary,
+                    size: 20,
+                  ),
+                ),
               ),
               const SizedBox(width: 14),
               Text(
@@ -740,7 +767,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   fontFamily: 'Google Sans',
                   color: colors.textPrimary,
                   fontSize: 15,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               const Spacer(),
@@ -833,8 +860,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Switch.adaptive(
                 value: value,
                 onChanged: onChanged,
-                activeThumbColor: colors.accent,
-                activeTrackColor: colors.accent.withValues(alpha: 0.4),
+                activeThumbColor: Colors.white,
+                activeTrackColor: () {
+                  final theme = AppThemeManager.theme;
+                  if (theme == 'Red velvet') {
+                    return const Color(0xFFEB0029); // Red
+                  } else if (theme == 'Milk white') {
+                    return const Color(0xFF007AFF); // Blue
+                  } else {
+                    return const Color(0xFF34C759); // Green (Oled black default)
+                  }
+                }(),
               ),
             ],
           ),

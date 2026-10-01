@@ -558,7 +558,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
             _data.totalSpentFormatted,
             style: TextStyle(
               fontFamily: 'Google Sans',
-              color: colors.textPrimary,
+              color: (colors.name == 'Red velvet' || colors.name == 'OnePlus red')
+                  ? const Color(0xFFEB0029)
+                  : colors.textPrimary,
               fontSize: 50,
               fontWeight: FontWeight.w800,
               letterSpacing: -1.0,

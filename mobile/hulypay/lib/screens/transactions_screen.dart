@@ -29,16 +29,38 @@ class TransactionsScreen extends StatefulWidget {
 class _TransactionsScreenState extends State<TransactionsScreen> {
   final TextEditingController _searchController = TextEditingController();
   int _selectedFilterIndex = 0;
-  final List<String> _filters = const [
-    'All',
-    'Pending',
-    'Food',
-    'Internet',
-    'Shopping',
-    'Bills',
-  ];
   late List<TransactionGroup> _allGroups;
   String _searchQuery = '';
+
+  List<String> get _filters {
+    final Set<String> categories = {};
+    bool hasPending = false;
+
+    for (final group in _allGroups) {
+      for (final tx in group.transactions) {
+        if (tx.isFailed) continue;
+        if (tx.isPending) {
+          hasPending = true;
+        }
+        final cat = tx.category.trim();
+        if (cat.isNotEmpty &&
+            cat.toLowerCase() != 'failed' &&
+            cat.toLowerCase() != 'pending') {
+          // Normalize capitalization (e.g. "food" -> "Food")
+          final formatted = cat.substring(0, 1).toUpperCase() + cat.substring(1);
+          categories.add(formatted);
+        }
+      }
+    }
+
+    final List<String> list = ['All'];
+    if (hasPending) {
+      list.add('Pending');
+    }
+    final sortedCategories = categories.toList()..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    list.addAll(sortedCategories);
+    return list;
+  }
 
   @override
   void initState() {
@@ -97,6 +119,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           });
         setState(() {
           _allGroups = PaymentModel.groupPayments(sorted, categoryOverrides);
+          if (_selectedFilterIndex >= _filters.length) {
+            _selectedFilterIndex = 0;
+          }
         });
       }
     } catch (_) {}
@@ -114,6 +139,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         });
       setState(() {
         _allGroups = PaymentModel.groupPayments(sorted, categoryOverrides);
+        if (_selectedFilterIndex >= _filters.length) {
+          _selectedFilterIndex = 0;
+        }
       });
     } catch (_) {
       // Graceful fallback to cached groups
@@ -127,7 +155,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   }
 
   List<TransactionGroup> get _filteredGroups {
-    final selectedFilter = _filters[_selectedFilterIndex];
+    final filterList = _filters;
+    final selectedFilter = (_selectedFilterIndex >= 0 && _selectedFilterIndex < filterList.length)
+        ? filterList[_selectedFilterIndex]
+        : 'All';
     final query = _searchQuery.trim().toLowerCase();
 
     List<TransactionGroup> result = [];
@@ -141,19 +172,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         bool matchesType = true;
         if (selectedFilter == 'Pending') {
           matchesType = tx.isPending;
-        } else if (selectedFilter == 'Food') {
-          matchesType = tx.category.toLowerCase().contains('food');
-        } else if (selectedFilter == 'Internet') {
-          matchesType = tx.category.toLowerCase().contains('internet') ||
-              tx.title.toLowerCase().contains('fiber') ||
-              tx.title.toLowerCase().contains('broadband') ||
-              tx.title.toLowerCase().contains('wifi');
-        } else if (selectedFilter == 'Shopping') {
-          matchesType = tx.category.toLowerCase().contains('shopping');
-        } else if (selectedFilter == 'Bills') {
-          matchesType = tx.category.toLowerCase().contains('bill');
         } else if (selectedFilter != 'All') {
-          matchesType = tx.category.toLowerCase().contains(selectedFilter.toLowerCase());
+          matchesType = tx.category.toLowerCase() == selectedFilter.toLowerCase() ||
+              tx.category.toLowerCase().contains(selectedFilter.toLowerCase());
         }
 
         // Filter by search query

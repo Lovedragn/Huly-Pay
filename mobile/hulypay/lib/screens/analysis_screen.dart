@@ -5,7 +5,6 @@ import '../repositories/transaction_repository.dart';
 import '../services/local_database_service.dart';
 import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
-import '../theme/chart_colors.dart';
 import '../widgets/analysis_category_pie_chart.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import '../widgets/spending_heatmap.dart';

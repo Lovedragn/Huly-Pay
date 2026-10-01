@@ -6,17 +6,15 @@ import 'package:flutter/material.dart';
 /// ---------------------------------------------------------------------------
 
 const List<String> kAppThemeNames = [
-  'Black', // Default (OLED Dark)
-  'White', // Clean White (Light Mode)
-  'Blue',  // Deep Blue (Oceanic Midnight)
+  'Oled black',
+  'Milk white',
+  'Red velvet',
 ];
 
 const List<String> kChartPaletteNames = [
-  'Default',       // Current chart colors (Electric Blue, Cyan, Mint, Amber, Rose)
-  'Emerald Mint',  // Mint, Emerald, Lime, Teal, Jade
-  'Cyber Purple',  // Electric Purple, Violet, Neon Pink, Indigo, Cyan
-  'Sunset Gold',   // Sunset Orange, Amber Gold, Coral, Peach, Crimson
-  'Ocean Blue',    // Electric Blue, Sky Cyan, Marine Azure, Deep Sapphire
+  'Oled black',
+  'Milk white',
+  'Red velvet',
 ];
 
 /// Named Cloud White tint for Clean White mode icon backgrounds and elevated surfaces
@@ -127,9 +125,9 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
     );
   }
 
-  /// 1. Black (Default OLED Scheme)
-  static const AppThemeData black = AppThemeData(
-    name: 'Black',
+  /// 1. Oled black (Default Pure Black AMOLED Scheme)
+  static const AppThemeData oledBlack = AppThemeData(
+    name: 'Oled black',
     isDark: true,
     background: Color(0xFF000000),
     surface: Color(0xFF141416),
@@ -139,56 +137,62 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
     textPrimary: Color(0xFFFFFFFF),
     textSecondary: Color(0xFF8E8E93),
     textMuted: Color(0xFF6B6B70),
-    accent: Color(0xFF007AFF),
+    accent: Color(0xFF30D158), // Dominant Emerald/Mint Green
     navBarBackground: Color(0xFF000000),
-    navBarActive: Color(0xFFFFFFFF),
+    navBarActive: Color(0xFFFFFFFF), // Crisp White active bottom nav icon
     navBarInactive: Color(0xFF8E8E93),
     iconDefault: Color(0xFF8E8E93),
     iconBackground: Color(0xFF1C1C20),
     brightness: Brightness.dark,
   );
 
-  /// 2. White (Clean Light Mode Scheme)
-  static const AppThemeData white = AppThemeData(
-    name: 'White',
+  /// 2. Milk white (Clean Ivory/Milk Light Mode Scheme)
+  static const AppThemeData milkWhite = AppThemeData(
+    name: 'Milk white',
     isDark: false,
-    background: Color(0xFFF6F8FA),
+    background: Color(0xFFF7F8FA),
     surface: Color(0xFFFFFFFF),
-    surfaceSecondary: kCloudWhite,
+    surfaceSecondary: Color(0xFFEFF2F6),
     border: Color(0xFFE2E6EE),
     divider: Color(0xFFE8ECF2),
-    textPrimary: Color(0xFF000000),
-    textSecondary: Color(0xFF222226),
-    textMuted: Color(0xFF4B5563),
+    textPrimary: Color(0xFF111827),
+    textSecondary: Color(0xFF4B5563),
+    textMuted: Color(0xFF6B7280),
     accent: Color(0xFF007AFF),
     navBarBackground: Color(0xFFFFFFFF),
-    navBarActive: Color(0xFF000000),
-    navBarInactive: Color(0xFF6B7280),
-    iconDefault: Color(0xFF000000),
-    iconBackground: kCloudWhite,
+    navBarActive: Color(0xFF111827), // Crisp Dark active bottom nav icon
+    navBarInactive: Color(0xFF9CA3AF),
+    iconDefault: Color(0xFF111827),
+    iconBackground: Color(0xFFEFF2F6),
     brightness: Brightness.light,
   );
 
-  /// 3. Blue (Deep Oceanic Midnight Scheme)
-  static const AppThemeData blue = AppThemeData(
-    name: 'Blue',
-    isDark: true,
-    background: Color(0xFF060B18),
-    surface: Color(0xFF0C1630),
-    surfaceSecondary: Color(0xFF132042),
-    border: Color(0x33FFFFFF), // Light white border for cards
-    divider: Color(0x24FFFFFF),
-    textPrimary: Color(0xFFFFFFFF),
-    textSecondary: Color(0xFF8CA5C8),
-    textMuted: Color(0xFF5B759C),
-    accent: Color(0xFF388BFD),
-    navBarBackground: Color(0xFF060B18),
-    navBarActive: Color(0xFF58A6FF),
-    navBarInactive: Color(0xFF6A85AC),
-    iconDefault: Color(0xFF8CA5C8),
-    iconBackground: Color(0xFF132042),
-    brightness: Brightness.dark,
+  /// 3. Red velvet (Clean White background, crisp dark typography, signature Red big amount)
+  static const AppThemeData redVelvet = AppThemeData(
+    name: 'Red velvet',
+    isDark: false,
+    background: Color(0xFFFFFFFF),
+    surface: Color(0xFFFFFFFF),
+    surfaceSecondary: Color(0xFFF7F8FA),
+    border: Color(0xFFE5E7EB),
+    divider: Color(0xFFEEEEEE),
+    textPrimary: Color(0xFF111827), // Crisp readable dark text
+    textSecondary: Color(0xFF4B5563),
+    textMuted: Color(0xFF9CA3AF),
+    accent: Color(0xFFEB0029), // Signature Red Velvet
+    navBarBackground: Color(0xFFFFFFFF),
+    navBarActive: Color(0xFF111827), // Like Milk White: crisp Dark active bottom nav icon
+    navBarInactive: Color(0xFF9CA3AF),
+    iconDefault: Color(0xFF111827),
+    iconBackground: Color(0xFFF7F8FA),
+    brightness: Brightness.light,
   );
+
+  /// Backward compatibility aliases
+  static const AppThemeData black = oledBlack;
+  static const AppThemeData white = milkWhite;
+  static const AppThemeData blue = oledBlack;
+  static const AppThemeData oneplusRed = redVelvet;
 }
 
 /// Global Theme State Manager
@@ -196,10 +200,10 @@ class AppThemeManager {
   AppThemeManager._();
 
   /// Global reactive theme notifier
-  static final ValueNotifier<String> currentTheme = ValueNotifier<String>('Black');
+  static final ValueNotifier<String> currentTheme = ValueNotifier<String>('Oled black');
 
-  /// Global reactive chart palette notifier
-  static final ValueNotifier<String> currentChartPalette = ValueNotifier<String>('Default');
+  /// Global reactive chart palette notifier (auto-synced to currentTheme)
+  static final ValueNotifier<String> currentChartPalette = ValueNotifier<String>('Oled black');
 
   /// Active theme data
   static AppThemeData get colors => getThemeColors(currentTheme.value);
@@ -210,29 +214,37 @@ class AppThemeManager {
   /// Active chart palette name
   static String get chartPalette => currentChartPalette.value;
 
-  /// Normalize theme names to handle aliases like 'OLED Black' or 'Midnight Dark'
+  /// Normalize theme names to handle aliases like 'Black', 'White', 'Blue', etc.
   static String normalizeTheme(String themeName) {
     final lower = themeName.toLowerCase().trim();
-    if (lower.contains('white') || lower.contains('light')) {
-      return 'White';
-    } else if (lower.contains('blue') || lower.contains('midnight')) {
-      return 'Blue';
+    if (lower.contains('red') || lower.contains('velvet') || lower.contains('oneplus')) {
+      return 'Red velvet';
+    } else if (lower.contains('milk') || lower.contains('white') || lower.contains('light')) {
+      return 'Milk white';
     }
-    return 'Black';
+    return 'Oled black';
   }
 
-  /// Change active app theme globally
+  /// Change active app theme globally (automatically synchronizes chart palette)
   static void setTheme(String themeName) {
     final resolved = normalizeTheme(themeName);
     if (currentTheme.value != resolved) {
       currentTheme.value = resolved;
     }
+    // Keep chart palette directly unified with app theme
+    if (currentChartPalette.value != resolved) {
+      currentChartPalette.value = resolved;
+    }
   }
 
-  /// Change active chart color palette globally
+  /// Change active chart color palette globally (unified to theme)
   static void setChartPalette(String paletteName) {
-    if (kChartPaletteNames.contains(paletteName) && currentChartPalette.value != paletteName) {
-      currentChartPalette.value = paletteName;
+    final resolved = normalizeTheme(paletteName);
+    if (currentChartPalette.value != resolved) {
+      currentChartPalette.value = resolved;
+    }
+    if (currentTheme.value != resolved) {
+      currentTheme.value = resolved;
     }
   }
 
@@ -240,13 +252,13 @@ class AppThemeManager {
   static AppThemeData getThemeColors(String themeName) {
     final resolved = normalizeTheme(themeName);
     switch (resolved) {
-      case 'White':
-        return AppThemeData.white;
-      case 'Blue':
-        return AppThemeData.blue;
-      case 'Black':
+      case 'Milk white':
+        return AppThemeData.milkWhite;
+      case 'Red velvet':
+        return AppThemeData.redVelvet;
+      case 'Oled black':
       default:
-        return AppThemeData.black;
+        return AppThemeData.oledBlack;
     }
   }
 
@@ -329,5 +341,203 @@ extension AppThemeContextExtension on BuildContext {
   ThemeData get theme => Theme.of(this);
   ColorScheme get colorScheme => Theme.of(this).colorScheme;
   TextTheme get textTheme => Theme.of(this).textTheme;
+}
+
+/// ---------------------------------------------------------------------------
+/// Unified App Chart Colors (Merged from chart_colors.dart)
+/// Automatically tied to active theme: Oled black, Milk white, Red velvet
+/// ---------------------------------------------------------------------------
+
+class AppChartColors {
+  AppChartColors._();
+
+  // ---------------------------------------------------------------------------
+  // 1. Static Reference Colors (for backward compatibility & baseline definitions)
+  // ---------------------------------------------------------------------------
+
+  static const Color blue = Color(0xFF007AFF); // 0: Electric Blue (Primary)
+  static const Color cyan = Color(0xFF00E5FF); // 1: Vibrant Cyan (Highlight / Active)
+  static const Color green = Color(0xFF30D158); // 2: Mint / Emerald Green (Safe / Growth)
+  static const Color amber = Color(0xFFFFD60A); // 3: Radiant Gold / Amber (Warning / Medium)
+  static const Color rose = Color(0xFFFF375F); // 4: Crimson Rose / Coral Red (High / Peak)
+  static const Color purple = Color(0xFFAF52DE); // 5: Electric Purple
+  static const Color indigo = Color(0xFF5856D6); // 6: Deep Royal Indigo
+
+  // ---------------------------------------------------------------------------
+  // 2. Pre-defined Chart Color Palettes corresponding to kAppThemeNames
+  // ---------------------------------------------------------------------------
+
+  /// 1. Oled Black Palette (Luminous OLED Accents with dominant Emerald/Mint Green)
+  static const List<Color> oledBlackPalette = [
+    Color(0xFF30D158), // 0: Mint / Emerald Green (Dominant Primary)
+    Color(0xFF00E5FF), // 1: Vibrant Cyan (Highlight)
+    Color(0xFF007AFF), // 2: Electric Blue
+    Color(0xFFFFD60A), // 3: Radiant Amber Gold
+    Color(0xFFFF375F), // 4: Crimson Rose
+    Color(0xFFAF52DE), // 5: Electric Purple
+    Color(0xFF5856D6), // 6: Deep Royal Indigo
+  ];
+
+  /// 2. Milk White Palette (Fresh, clean, high-clarity professional accents)
+  static const List<Color> milkWhitePalette = [
+    Color(0xFF0066FF), // 0: Pure Royal Blue
+    Color(0xFF00B4D8), // 1: Clean Ocean Cyan
+    Color(0xFF10B981), // 2: Fresh Mint Green
+    Color(0xFFF59E0B), // 3: Warm Amber Gold
+    Color(0xFFEF4444), // 4: Soft Rose Red
+    Color(0xFF8B5CF6), // 5: Soft Lavender Purple
+    Color(0xFF3B82F6), // 6: Sky Blue
+  ];
+
+  /// 3. Red Velvet Palette (Bright Yellow to Radiant Red Gradient Palette)
+  static const List<Color> redVelvetPalette = [
+    Color(0xFFFFD600), // 0: Bright Neon Yellow
+    Color(0xFFFFAB00), // 1: Warm Golden Amber
+    Color(0xFFFF6D00), // 2: Radiant Orange
+    Color(0xFFFF3D00), // 3: Bright Coral Scarlet
+    Color(0xFFEB0029), // 4: Signature OnePlus / Velvet Red
+    Color(0xFFFF1744), // 5: Electric Crimson Red
+    Color(0xFFC00021), // 6: Deep Ruby Red
+  ];
+
+  /// Backward compatibility aliases
+  static const List<Color> defaultPalette = oledBlackPalette;
+  static const List<Color> oneplusRedPalette = redVelvetPalette;
+
+  /// Palette lookup map
+  static const Map<String, List<Color>> allPalettes = {
+    'Oled black': oledBlackPalette,
+    'Milk white': milkWhitePalette,
+    'Red velvet': redVelvetPalette,
+    // Aliases
+    'OnePlus red': redVelvetPalette,
+    'Black': oledBlackPalette,
+    'White': milkWhitePalette,
+    'Red': redVelvetPalette,
+    'Default': oledBlackPalette,
+  };
+
+  /// The active global list of colors controlling all charts across the app.
+  static List<Color> get globalPalette {
+    final activeTheme = AppThemeManager.normalizeTheme(AppThemeManager.currentTheme.value);
+    switch (activeTheme) {
+      case 'Milk white':
+        return milkWhitePalette;
+      case 'Red velvet':
+        return redVelvetPalette;
+      case 'Oled black':
+      default:
+        return oledBlackPalette;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // 3. Semantic Palette Aliases & Derived Sets (Dynamically driven by active palette)
+  // ---------------------------------------------------------------------------
+
+  /// Primary gradient pair for curves and flow lines
+  static List<Color> get primaryGradient {
+    final activeTheme = AppThemeManager.normalizeTheme(AppThemeManager.currentTheme.value);
+    if (activeTheme == 'Red velvet') {
+      // Red velvet style: sleek solid black trend line
+      return const [Color(0xFF111827), Color(0xFF111827)];
+    }
+    final p = globalPalette;
+    return [p[1], p[0]];
+  }
+
+  /// Dot color for Spend Trend chart points
+  static Color get trendDotColor {
+    final activeTheme = AppThemeManager.normalizeTheme(AppThemeManager.currentTheme.value);
+    if (activeTheme == 'Red velvet') {
+      // Red velvet style: signature red dots
+      return const Color(0xFFEB0029);
+    }
+    return globalPalette[1]; // Vibrant Cyan or highlight
+  }
+
+  /// Dual-zone / Range threshold colors (Line chart)
+  static Color get thresholdMain => globalPalette[3];
+  static Color get thresholdBelow => globalPalette[2];
+  static Color get thresholdAbove => globalPalette[4];
+
+  /// Gauge threshold zone colors (Safe, Moderate, High)
+  static Color get gaugeSafe => globalPalette[2];
+  static Color get gaugeModerate => globalPalette[3];
+  static Color get gaugeHigh => globalPalette[4];
+
+  /// Bar chart state colors driven by active chart palette
+  static Color get barTouched => globalPalette[1];
+  static Color get barToday => globalPalette[0];
+  static Color get barDefault => globalPalette[0].withValues(alpha: 0.45);
+
+  static Color get barTrack => AppThemeManager.colors.isDark
+      ? const Color(0xFF1C1C20)
+      : const Color(0xFFE5E7EB);
+
+  // ---------------------------------------------------------------------------
+  // Heatmap Palettes (Specific monochromatic gradient ramps per theme)
+  // ---------------------------------------------------------------------------
+
+  /// Dedicated 5-level Heatmap Palette per theme:
+  /// - Oled black: Black bg -> Light mint/green -> Medium bright green -> Bright neon green -> Deep vibrant emerald
+  /// - Red velvet: Light gray bg -> Soft light coral/red -> Warm bright red -> Vivid red -> Signature deep velvet red
+  /// - Milk white: Soft gray bg -> Pale sky blue -> Vibrant royal blue -> Deep cobalt -> Midnight navy blue
+  static List<Color> get heatmapPalette {
+    final activeTheme = AppThemeManager.normalizeTheme(AppThemeManager.currentTheme.value);
+
+    if (activeTheme == 'Oled black') {
+      // Oled black: Pure green gradation (Level 0: dark cell -> Level 1: soft mint green -> Level 4: luminous bright green)
+      return const [
+        Color(0xFF141715), // Level 0: Inactive cell
+        Color(0xFF1E3A27), // Level 1: Low spend (deep subtle green)
+        Color(0xFF236838), // Level 2: Moderate low (medium forest green)
+        Color(0xFF2BB653), // Level 3: High spend (bright emerald green)
+        Color(0xFF34E869), // Level 4: Highest spend (electric bright neon green)
+      ];
+    } else if (activeTheme == 'Red velvet') {
+      // Red velvet: Clean monochromatic red gradation (Level 0: clean surface -> Level 4: intense signature velvet red)
+      return const [
+        Color(0xFFF3F4F6), // Level 0: Inactive cell
+        Color(0xFFFFCDD2), // Level 1: Low spend (light rose / soft blush)
+        Color(0xFFEF5350), // Level 2: Moderate low (medium coral red)
+        Color(0xFFE53935), // Level 3: High spend (vibrant crimson red)
+        Color(0xFFB71C1C), // Level 4: Highest spend (deep radiant velvet red)
+      ];
+    } else {
+      // Milk white: Clean monochromatic blue gradation (Level 0: clean surface -> Level 4: deep royal blue)
+      return const [
+        Color(0xFFEFF2F6), // Level 0: Inactive cell
+        Color(0xFFBAE6FD), // Level 1: Low spend (light sky blue)
+        Color(0xFF60A5FA), // Level 2: Moderate low (clear azure blue)
+        Color(0xFF2563EB), // Level 3: High spend (vibrant royal blue)
+        Color(0xFF1E40AF), // Level 4: Highest spend (deep cobalt navy)
+      ];
+    }
+  }
+
+  /// Heatmap selected cell highlight color
+  static Color get heatmapSelected {
+    final activeTheme = AppThemeManager.normalizeTheme(AppThemeManager.currentTheme.value);
+    if (activeTheme == 'Oled black') {
+      return const Color(0xFF34E869);
+    } else if (activeTheme == 'Red velvet') {
+      return const Color(0xFFEB0029);
+    } else {
+      return const Color(0xFF007AFF);
+    }
+  }
+
+  /// Heatmap active inspector chip border/accent
+  static Color get heatmapChipBorder {
+    final activeTheme = AppThemeManager.normalizeTheme(AppThemeManager.currentTheme.value);
+    if (activeTheme == 'Oled black') {
+      return const Color(0xFF30D158);
+    } else if (activeTheme == 'Red velvet') {
+      return const Color(0xFFEB0029);
+    } else {
+      return const Color(0xFF007AFF);
+    }
+  }
 }
 

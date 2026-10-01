@@ -398,6 +398,49 @@ class TransactionRepository {
         receivedAt: receivedAt,
       );
 
+  /// Update transaction amount in local SQLite and Supabase
+  Future<PaymentModel?> updateTransactionAmount(String id, double newAmount) async {
+    // 1. Update local SQLite cache
+    PaymentModel? updatedPayment;
+    try {
+      final existing = await _localDb.getPaymentById(id);
+      if (existing != null) {
+        updatedPayment = existing.copyWith(
+          amount: newAmount,
+          updatedAt: DateTime.now().toUtc().toIso8601String(),
+        );
+        await _localDb.upsertPayment(
+          updatedPayment,
+          syncStatus: id.startsWith('local_') ? 'PENDING' : 'SYNCED',
+        );
+      }
+    } catch (_) {}
+
+    // 2. Update Supabase if connected
+    try {
+      final client = AuthService().client;
+      if (client != null && !id.startsWith('local_') && !id.startsWith('tx_')) {
+        final res = await client
+            .from('transactions')
+            .update({
+              'amount': newAmount,
+              'updated_at': DateTime.now().toUtc().toIso8601String(),
+            })
+            .eq('id', id)
+            .select()
+            .maybeSingle();
+
+        if (res != null) {
+          final synced = PaymentModel.fromJson(Map<String, dynamic>.from(res as Map));
+          await _localDb.upsertPayment(synced, syncStatus: 'SYNCED');
+          return synced;
+        }
+      }
+    } catch (_) {}
+
+    return updatedPayment;
+  }
+
   /// Delete a transaction from local SQLite and Supabase
   Future<void> deleteTransaction(String id) async {
     // 1. Delete from local SQLite cache
