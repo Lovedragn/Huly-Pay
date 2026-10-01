@@ -6,7 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../repositories/payment_repository.dart';
+import '../repositories/transaction_repository.dart';
 import '../repositories/user_repository.dart';
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
@@ -116,7 +116,7 @@ class _SplashScreenState extends State<SplashScreen>
     if (AuthService().hasValidActiveToken) {
       try {
         UserRepository().getUserProfile(forceRefresh: true);
-        PaymentRepository().getPayments(forceRefresh: true);
+        TransactionRepository().getTransactions(forceRefresh: true);
       } catch (_) {}
     }
 

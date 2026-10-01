@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'payment_model.dart';
+import 'transaction_model.dart';
 
 class TransactionItem {
   final String id;

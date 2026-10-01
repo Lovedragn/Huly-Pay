@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-import '../models/payment_model.dart';
+import '../models/transaction_model.dart';
 import '../theme/app_theme.dart';
 import '../theme/chart_colors.dart';
 

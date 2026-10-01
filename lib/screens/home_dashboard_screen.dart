@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/dashboard_data.dart';
-import '../models/payment_model.dart';
+import '../models/transaction_model.dart';
 import '../models/user_profile.dart';
-import '../repositories/payment_repository.dart';
+import '../repositories/transaction_repository.dart';
 import '../repositories/user_repository.dart';
 import '../services/auth_service.dart';
 import '../widgets/action_button.dart';
@@ -127,7 +127,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
   Future<void> _loadRealData() async {
     // 1. Immediately render cached data from SQLite if available
     try {
-      final cachedPayments = await PaymentRepository().getCachedPayments();
+      final cachedPayments = await TransactionRepository().getCachedTransactions();
       final cachedUser = await UserRepository().getCachedUserProfile();
       if (mounted) {
         _applyData(cachedUser, cachedPayments);
@@ -137,7 +137,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
     // 2. Fetch fresh data from backend & sync SQLite cache
     try {
       final user = await UserRepository().getUserProfile(forceRefresh: true).catchError((_) => null);
-      final payments = await PaymentRepository().getPayments(forceRefresh: true).catchError((_) => <PaymentModel>[]);
+      final payments = await TransactionRepository().getTransactions(forceRefresh: true).catchError((_) => <PaymentModel>[]);
       if (mounted) {
         if (payments.isNotEmpty || _payments.isEmpty) {
           _applyData(user, payments);

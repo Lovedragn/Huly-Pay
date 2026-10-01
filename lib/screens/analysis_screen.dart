@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/dashboard_data.dart';
-import '../models/payment_model.dart';
-import '../repositories/payment_repository.dart';
+import '../models/transaction_model.dart';
+import '../repositories/transaction_repository.dart';
 import '../services/local_database_service.dart';
 import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
@@ -153,7 +153,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 
     // 2. Read SQLite cached payments first for instant display
     try {
-      final cached = await PaymentRepository().getCachedPayments();
+      final cached = await TransactionRepository().getCachedTransactions();
       if (mounted && cached.isNotEmpty) {
         _setAllPayments(cached);
       }
@@ -163,7 +163,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     // Only overwrite cached data if remote actually returned results.
     // If remote is empty (network down / no data yet), keep showing cache.
     try {
-      final payments = await PaymentRepository().getPayments(forceRefresh: true);
+      final payments = await TransactionRepository().getTransactions(forceRefresh: true);
       if (mounted) {
         if (payments.isNotEmpty) {
           _setAllPayments(payments);

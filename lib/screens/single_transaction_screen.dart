@@ -8,8 +8,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../data/external_data.dart';
 import '../models/dashboard_data.dart';
-import '../models/payment_model.dart';
-import '../repositories/payment_repository.dart';
+import '../models/transaction_model.dart';
+import '../repositories/transaction_repository.dart';
 import '../services/auth_service.dart';
 import '../services/local_database_service.dart';
 import '../theme/app_theme.dart';
@@ -79,7 +79,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
 
     try {
       setState(() => _isLoading = true);
-      final payment = await PaymentRepository().getPaymentById(idToFetch);
+      final payment = await TransactionRepository().getTransactionById(idToFetch);
       if (mounted) {
         setState(() {
           _currentPayment = payment;
@@ -224,7 +224,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
     setState(() => _isReconciling = true);
 
     try {
-      final updated = await PaymentRepository().reconcilePayment(
+      final updated = await TransactionRepository().reconcileTransaction(
         paymentId,
         'CONFIRMED',
         upiTransactionId: 'UPI_${DateTime.now().millisecondsSinceEpoch}',
@@ -274,7 +274,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
     setState(() => _isCancelling = true);
 
     try {
-      final updated = await PaymentRepository().reconcilePayment(
+      final updated = await TransactionRepository().reconcileTransaction(
         paymentId,
         'CANCELLED',
       );
@@ -374,7 +374,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
     setState(() => _isDeleting = true);
 
     try {
-      await PaymentRepository().deletePayment(paymentId);
+      await TransactionRepository().deleteTransaction(paymentId);
       if (mounted) {
         setState(() => _isDeleting = false);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -509,25 +509,16 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
       }
     } catch (_) {}
 
-    // 3. Update Supabase payments table
+    // 3. Update Supabase transactions table
     try {
       final client = AuthService().client;
       if (client != null && !paymentId.startsWith('tx_') && !paymentId.startsWith('local_')) {
-        // Attempt updating category_name / category if column exists, fallback to payment_method
         try {
-          await client.from('payments').update({
+          await client.from('transactions').update({
             'category': newCategory,
             'updated_at': DateTime.now().toUtc().toIso8601String(),
           }).eq('id', paymentId);
-        } catch (_) {
-          // If 'category' column does not exist in payments table, update 'payment_method'
-          try {
-            await client.from('payments').update({
-              'payment_method': newCategory,
-              'updated_at': DateTime.now().toUtc().toIso8601String(),
-            }).eq('id', paymentId);
-          } catch (_) {}
-        }
+        } catch (_) {}
       }
     } catch (_) {}
 

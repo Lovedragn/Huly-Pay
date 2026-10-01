@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../data/external_data.dart';
-import '../repositories/payment_repository.dart';
+import '../repositories/transaction_repository.dart';
 import '../repositories/user_repository.dart';
 import '../services/auth_service.dart';
 import '../services/user_preferences_service.dart';
@@ -108,7 +108,7 @@ class _SignInScreenState extends State<SignInScreen> with WidgetsBindingObserver
 
     // 3. Pre-fetch payments from backend and cache in SQLite
     try {
-      await PaymentRepository().getPayments(forceRefresh: true);
+      await TransactionRepository().getTransactions(forceRefresh: true);
     } catch (_) {}
 
     // 4. Load user theme and chart color presets from local SQLite storage

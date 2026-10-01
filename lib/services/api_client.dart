@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../models/payment_model.dart';
+import '../models/transaction_model.dart';
 import '../models/user_profile.dart';
 import 'auth_service.dart';
 
