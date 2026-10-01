@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
-/// Clean reusable action button used in transaction screens and detail dialogs
 class TransactionActionButton extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
+  final Widget? customIcon;
   final String label;
   final bool isPrimary;
   final VoidCallback onTap;
@@ -14,7 +14,8 @@ class TransactionActionButton extends StatelessWidget {
 
   const TransactionActionButton({
     super.key,
-    required this.icon,
+    this.icon,
+    this.customIcon,
     required this.label,
     required this.isPrimary,
     required this.onTap,
@@ -22,7 +23,7 @@ class TransactionActionButton extends StatelessWidget {
     this.iconColor,
     this.backgroundColor,
     this.borderColor,
-  });
+  }) : assert(icon != null || customIcon != null, 'Either icon or customIcon must be provided');
 
   @override
   Widget build(BuildContext context) {
@@ -52,11 +53,12 @@ class TransactionActionButton extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                icon,
-                color: effectiveIconColor,
-                size: 20,
-              ),
+              customIcon ??
+                  Icon(
+                    icon,
+                    color: effectiveIconColor,
+                    size: 20,
+                  ),
               const SizedBox(height: 6),
               Text(
                 label,

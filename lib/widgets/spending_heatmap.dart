@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../models/transaction_model.dart';
 import '../theme/app_theme.dart';
-import '../theme/chart_colors.dart';
 
 enum HeatmapPeriod { days, weeks, month, threeMonths, sixMonths, oneYear }
 
@@ -191,7 +190,7 @@ class _SpendingHeatmapState extends State<SpendingHeatmap> {
             decoration: BoxDecoration(
               color: color,
               borderRadius: BorderRadius.circular(2),
-              border: Border.all(color: const Color(0xFF2E2E36), width: 0.5),
+              border: Border.all(color: AppThemeManager.colors.border, width: 0.5),
             ),
           ),
       ],
@@ -648,7 +647,7 @@ class _HeatmapGridWidget extends StatelessWidget {
                           border: Border.all(
                             color: isSelected
                                 ? selectedColor
-                                : const Color(0xFF26262E),
+                                : AppThemeManager.colors.border,
                             width: isSelected ? 1.5 : 0.5,
                           ),
                         ),

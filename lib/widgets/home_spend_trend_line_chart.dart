@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../models/transaction_model.dart';
 import '../theme/app_theme.dart';
-import '../theme/chart_colors.dart';
 
 enum SpendChartStyle {
   curvedGradient, // Inspired by line_chart_sample2.dart
@@ -149,6 +148,7 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
 
   /// LineChartSample2 Implementation: Smooth cubic curve with gradient & underfill
   LineChartData _buildCurvedGradientData(List<_TrendPoint> points) {
+    final colors = AppThemeManager.colors;
     final spots = List.generate(points.length, (i) {
       return FlSpot(i.toDouble(), points[i].amount);
     });
@@ -209,7 +209,7 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
                     text: '₹${spot.y.toStringAsFixed(0)}',
                     style: TextStyle(
                       fontFamily: 'Google Sans',
-                      color: AppChartColors.cyan,
+                      color: AppChartColors.trendDotColor,
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
                     ),
@@ -232,10 +232,10 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
             show: true,
             getDotPainter: (spot, percent, barData, index) {
               return FlDotCirclePainter(
-                radius: 3,
-                color: AppChartColors.cyan,
+                radius: 3.5,
+                color: AppChartColors.trendDotColor,
                 strokeWidth: 1.5,
-                strokeColor: const Color(0xFF141416),
+                strokeColor: colors.isDark ? const Color(0xFF141416) : Colors.white,
               );
             },
           ),
