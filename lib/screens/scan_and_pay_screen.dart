@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import '../data/external_data.dart';
 import '../models/transaction_model.dart';
 import '../repositories/transaction_repository.dart';
+import '../services/api_client.dart';
 import '../services/auth_service.dart';
 import '../services/google_pay_service.dart';
 import '../services/local_database_service.dart';
@@ -21,6 +22,7 @@ import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import 'payment_methods_screen.dart';
+import 'upload_qr_screen.dart';
 
 class ScanAndPayScreen extends StatefulWidget {
   final double? initialAmount;
@@ -122,17 +124,22 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     }
   }
 
-  Future<String?> _saveCapturedFrame(Uint8List imageBytes) async {
+
+
+  Future<void> _openUploadFromScanner() async {
     try {
-      final tempDir = await getTemporaryDirectory();
-      final filePath =
-          '${tempDir.path}/scanned_qr_${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final file = File(filePath);
-      await file.writeAsBytes(imageBytes, flush: true);
-      return filePath;
-    } catch (e) {
-      debugPrint('[HulyPay] Error saving captured frame: $e');
-      return null;
+      await _scannerController.pause();
+    } catch (_) {}
+    if (!mounted) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const UploadQrScreen(),
+      ),
+    );
+    if (mounted) {
+      try {
+        await _scannerController.start();
+      } catch (_) {}
     }
   }
 
@@ -157,90 +164,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       await _scannerController.pause();
     } catch (_) {}
 
-    // Save camera frame image containing the detected QR
-    String? imagePath;
-    if (capture.image != null) {
-      imagePath = await _saveCapturedFrame(capture.image!);
-    }
-
-    if (imagePath != null && mounted) {
-      final rawText = _amountController.text.trim();
-      final parsedAmount = double.tryParse(rawText) ?? upiData?.amount;
-      final note = _noteController.text.trim().isNotEmpty
-          ? _noteController.text.trim()
-          : upiData?.note;
-
-      final success = await QrShareService.shareQrImage(
-        context: context,
-        filePath: imagePath,
-        amount: (parsedAmount != null && parsedAmount > 0) ? parsedAmount : null,
-        note: note,
-        title: ExternalData.gPayShareTitle,
-        targetPackage: QrShareService.googlePayPackage,
-      );
-
-      if (mounted) {
-        if (success) {
-          final effectiveAmount = (parsedAmount != null && parsedAmount > 0)
-              ? parsedAmount
-              : (upiData?.amount ?? 0.0);
-          if (effectiveAmount > 0) {
-            final txnRef = 'HULY${DateTime.now().millisecondsSinceEpoch}';
-            final payee = upiData?.payeeName?.trim();
-            final upi = upiData?.upiId.trim();
-            final merchant = (payee != null && payee.isNotEmpty)
-                ? payee
-                : ((upi != null && upi.isNotEmpty) ? upi : 'UPI Merchant');
-            try {
-              await TransactionRepository().createTransaction(CreatePaymentPayload(
-                amount: effectiveAmount,
-                currency: upiData?.currency ?? 'INR',
-                merchantName: merchant,
-                upiId: upi ?? '',
-                paymentMethod: 'UPI',
-                transactionReference: txnRef,
-                status: UserPreferencesService().cachedQuickConfirm ? 'CONFIRMED' : 'PENDING',
-                provider: 'GOOGLE_PAY',
-              ));
-            } catch (_) {}
-          }
-
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text(
-                ExternalData.openingGPayMessage,
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-              ),
-              backgroundColor: const Color(0xFF1E1E24),
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-          if (mounted) {
-            Navigator.of(context).pop();
-          }
-          return;
-        } else {
-          setState(() {
-            _isProcessing = false;
-          });
-          try {
-            await _scannerController.start();
-          } catch (_) {}
-        }
-      }
-    } else if (upiData != null) {
-      // Fallback: If image could not be captured, proceed to UPI confirmation flow
+    if (upiData != null) {
       _processPaymentFlow(upiData);
     } else {
       setState(() {
@@ -668,9 +592,86 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                                 merchantCode: upiData.merchantCode,
                               );
 
+                              final navigator = Navigator.of(context);
                               Navigator.of(pageContext).pop();
-                              await _startSmsVerificationWorkflow(
-                                  updatedUpiData, parsedAmount, capturedLocation);
+
+                              // Flow: Generate backend QR with am=(user entered amount) -> share image to default UPI app
+                              try {
+                                final preferredAppId = await UserPreferencesService().getDefaultPaymentApp();
+                                final targetApp = UpiApps.findById(preferredAppId);
+                                final String? targetPackage = (targetApp != null && targetApp.id != UpiApps.askEveryTime)
+                                    ? targetApp.packageName
+                                    : null;
+                                final String appName = targetApp?.name ?? 'Payment App';
+
+                                String shareFilePath = '';
+                                try {
+                                  final imageBytes = await ApiClient().generateQrCode(
+                                    uri: upiData.rawUri,
+                                    amount: parsedAmount,
+                                    size: 512,
+                                  );
+
+                                  if (imageBytes.isNotEmpty) {
+                                    final tempDir = await getTemporaryDirectory();
+                                    final newQrFile = File('${tempDir.path}/qr_scan_${DateTime.now().millisecondsSinceEpoch}.png');
+                                    await newQrFile.writeAsBytes(imageBytes, flush: true);
+                                    shareFilePath = newQrFile.path;
+                                  }
+                                } catch (e) {
+                                  debugPrint('[ScanAndPay] Backend QR generation fallback: $e');
+                                }
+
+                                if (shareFilePath.isNotEmpty && mounted) {
+                                  final success = await QrShareService.shareQrImage(
+                                    context: context,
+                                    filePath: shareFilePath,
+                                    amount: parsedAmount,
+                                    note: updatedNote.isNotEmpty ? updatedNote : null,
+                                    title: 'Pay with $appName',
+                                    targetPackage: targetPackage,
+                                  );
+
+                                  if (success && mounted) {
+                                    final txnRef = 'HULY${DateTime.now().millisecondsSinceEpoch}';
+                                    final payee = upiData.payeeName?.trim();
+                                    final upi = upiData.upiId.trim();
+                                    final merchant = (payee != null && payee.isNotEmpty)
+                                        ? payee
+                                        : ((upi.isNotEmpty) ? upi : 'UPI Merchant');
+
+                                    try {
+                                      await TransactionRepository().createTransaction(CreatePaymentPayload(
+                                        amount: parsedAmount,
+                                        currency: upiData.currency,
+                                        merchantName: merchant,
+                                        upiId: upi,
+                                        paymentMethod: 'UPI',
+                                        transactionReference: txnRef,
+                                        status: UserPreferencesService().cachedQuickConfirm ? 'CONFIRMED' : 'PENDING',
+                                        provider: targetApp?.name.toUpperCase().replaceAll(' ', '_') ?? 'UPI',
+                                      ));
+                                    } catch (_) {}
+
+                                    messenger.showSnackBar(
+                                      SnackBar(
+                                        content: Text('Opening $appName with QR code...'),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                    navigator.pop();
+                                    return;
+                                  }
+                                }
+                              } catch (e) {
+                                debugPrint('[ScanAndPay] Error in QR share flow: $e');
+                              }
+
+                              // Fallback to direct intent flow if image generation/sharing is unsupported
+                              if (mounted) {
+                                await _startSmsVerificationWorkflow(
+                                    updatedUpiData, parsedAmount, capturedLocation);
+                              }
                             },
                             child: Text(
                               () {
@@ -1531,7 +1532,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF000000),
       body: LayoutBuilder(
-        builder: (context, constraints) {
+        builder: (layoutContext, constraints) {
           const scanBoxSize = 260.0;
           final centerOffset = Offset(
             constraints.maxWidth / 2,
@@ -1829,6 +1830,31 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                               Colors.white,
                               BlendMode.srcIn,
                             ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      key: const Key('upload_gallery_button'),
+                      onTap: _openUploadFromScanner,
+                      behavior: HitTestBehavior.opaque,
+                      child: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF161619),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: const Color(0xFF24242A),
+                            width: 1,
+                          ),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.photo_library_rounded,
+                            color: Colors.white,
+                            size: 20,
                           ),
                         ),
                       ),

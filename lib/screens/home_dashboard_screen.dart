@@ -561,7 +561,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
               color: (colors.name == 'Red velvet' || colors.name == 'OnePlus red')
                   ? const Color(0xFFEB0029)
                   : colors.textPrimary,
-              fontSize: 50,
+              fontSize: 52,
               fontWeight: FontWeight.w800,
               letterSpacing: -1.0,
             ),

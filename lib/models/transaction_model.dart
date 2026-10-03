@@ -46,11 +46,24 @@ class TransactionModel {
     this.updatedAt,
   });
 
-  /// Whether this transaction completed successfully or is in an active non-failed state.
-  /// Only SUCCESS, CONFIRMED, COMPLETED, PAID, SETTLED, and active non-failed statuses count toward charts and totals.
+  /// Whether this transaction is currently pending/initiated.
+  bool get isPending {
+    final s = status.toUpperCase().trim();
+    return s == 'PENDING' || s == 'INITIATED' || s == 'PAYMENT_INITIATED';
+  }
+
+  /// Whether this transaction completed successfully.
+  /// Only completed / confirmed / paid / settled statuses count as successful.
   bool get isSuccessful {
     final s = status.toUpperCase().trim();
-    if (s == 'FAILED' || s == 'CANCELLED' || s == 'TIMEOUT' || s == 'DECLINED' || s == 'REJECTED') {
+    if (s == 'FAILED' ||
+        s == 'CANCELLED' ||
+        s == 'TIMEOUT' ||
+        s == 'DECLINED' ||
+        s == 'REJECTED' ||
+        s == 'PENDING' ||
+        s == 'INITIATED' ||
+        s == 'PAYMENT_INITIATED') {
       return false;
     }
     return true;
@@ -160,9 +173,8 @@ class TransactionModel {
 
     final sUpper = status.toUpperCase();
     final bool isFailedStatus = sUpper == 'FAILED' || sUpper == 'CANCELLED';
-    final bool isPendingStatus = sUpper == 'PENDING' || sUpper == 'INITIATED' || sUpper == 'PAYMENT_INITIATED';
     final categoryText = customCategory ??
-        (isFailedStatus ? 'Failed' : (isPendingStatus ? 'Pending' : (category != null && category!.trim().isNotEmpty ? category! : (paymentMethod ?? 'Others'))));
+        (isFailedStatus ? 'Failed' : (isPending ? 'Pending' : (category != null && category!.trim().isNotEmpty ? category! : (paymentMethod ?? 'Others'))));
 
     final bool isIncomePayment = category?.toLowerCase() == 'income';
     final String amountText = '${isIncomePayment ? '+' : '-'} ₹${amount.toStringAsFixed(2)}';
