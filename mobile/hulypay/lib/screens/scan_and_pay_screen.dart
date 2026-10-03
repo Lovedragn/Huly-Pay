@@ -598,11 +598,11 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                               // Flow: Generate backend QR with am=(user entered amount) -> share image to default UPI app from settings
                               try {
                                 final preferredAppId = await UserPreferencesService().getDefaultPaymentApp();
-                                final targetApp = UpiApps.findById(preferredAppId);
-                                final String? targetPackage = (targetApp != null && targetApp.id != UpiApps.askEveryTime)
-                                    ? targetApp.packageName
-                                    : null;
-                                final String appName = targetApp?.name ?? 'Payment App';
+                                final targetApp = (preferredAppId != UpiApps.askEveryTime)
+                                    ? UpiApps.findById(preferredAppId)
+                                    : UpiApps.gpay;
+                                final String? targetPackage = targetApp?.packageName ?? UpiApps.gpay.packageName;
+                                final String appName = targetApp?.name ?? 'Google Pay';
 
                                 String shareFilePath = '';
                                 try {
@@ -617,6 +617,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                                     final newQrFile = File('${tempDir.path}/qr_scan_${DateTime.now().millisecondsSinceEpoch}.png');
                                     await newQrFile.writeAsBytes(imageBytes, flush: true);
                                     shareFilePath = newQrFile.path;
+                                    debugPrint('[ScanAndPay] Generated amount-injected QR image at: $shareFilePath');
                                   }
                                 } catch (e) {
                                   debugPrint('[ScanAndPay] Backend QR generation fallback: $e');
