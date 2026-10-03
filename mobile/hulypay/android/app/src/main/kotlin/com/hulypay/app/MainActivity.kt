@@ -235,12 +235,9 @@ class MainActivity : FlutterActivity() {
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
-            // If a specific target package (such as Google Pay) is requested and installed, launch directly into it
-            val resolvedTargetPackage = if (!targetPackage.isNullOrBlank() && checkPackageInstalled(targetPackage)) {
+            // If a specific target package is requested and installed/available, launch directly into it
+            val resolvedTargetPackage = if (!targetPackage.isNullOrBlank() && checkAppCanReceiveImage(targetPackage)) {
                 targetPackage
-            } else if (targetPackage == null && checkPackageInstalled(googlePayPackageName)) {
-                // If targetPackage is omitted but Google Pay is installed, check if preferred
-                null
             } else {
                 null
             }
@@ -397,6 +394,23 @@ class MainActivity : FlutterActivity() {
             val testIntent = Intent(Intent.ACTION_VIEW, Uri.parse("upi://pay"))
             testIntent.setPackage(pkg)
             val activities = packageManager.queryIntentActivities(testIntent, 0)
+            activities.isNotEmpty()
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    private fun checkAppCanReceiveImage(pkg: String): Boolean {
+        return try {
+            // First check if the package is installed at all
+            if (checkPackageInstalled(pkg)) return true
+
+            // Next check if package handles ACTION_SEND for image/*
+            val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "image/*"
+                setPackage(pkg)
+            }
+            val activities = packageManager.queryIntentActivities(sendIntent, 0)
             activities.isNotEmpty()
         } catch (e: Exception) {
             false
