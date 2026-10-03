@@ -248,7 +248,6 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     final primaryTitle =
         hasPayeeName ? upiData.payeeName!.trim() : upiData.upiId;
     final subtitle = hasPayeeName ? upiData.upiId : 'UPI Payee';
-    String selectedAppId = UserPreferencesService().cachedDefaultPaymentApp;
 
     await Navigator.of(context).push(
       MaterialPageRoute(
@@ -265,9 +264,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
             });
           }
 
-          return StatefulBuilder(
-            builder: (modalContext, setModalState) {
-              return Scaffold(
+          return Scaffold(
             backgroundColor: colors.background,
             appBar: AppBar(
               backgroundColor: colors.background,
@@ -546,60 +543,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                                 horizontal: 16, vertical: 14),
                           ),
                         ),
-                        const SizedBox(height: 20),
-
-                        // UPI App Selector
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'SHARE & PAY VIA',
-                            style: TextStyle(
-                              fontFamily: 'Google Sans',
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1.1,
-                              color: colors.textSecondary,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          physics: const BouncingScrollPhysics(),
-                          child: Row(
-                            children: [
-                              _buildModalAppChip(
-                                id: UpiApps.askEveryTime,
-                                name: 'Any App',
-                                icon: Icons.alt_route_rounded,
-                                isSelected: selectedAppId == UpiApps.askEveryTime,
-                                colors: colors,
-                                onTap: () {
-                                  setModalState(() {
-                                    selectedAppId = UpiApps.askEveryTime;
-                                  });
-                                },
-                              ),
-                              ...UpiApps.allApps.map((app) => _buildModalAppChip(
-                                    id: app.id,
-                                    name: app.name,
-                                    icon: app.id == 'whatsapp'
-                                        ? Icons.chat_rounded
-                                        : (app.id == 'paytm'
-                                            ? Icons.account_balance_wallet_rounded
-                                            : Icons.payment_rounded),
-                                    isSelected: selectedAppId == app.id,
-                                    colors: colors,
-                                    onTap: () {
-                                      setModalState(() {
-                                        selectedAppId = app.id;
-                                      });
-                                    },
-                                  )),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 28),
+                        const SizedBox(height: 32),
 
                         // Pay Button
                         SizedBox(
@@ -651,13 +595,14 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                               final navigator = Navigator.of(context);
                               Navigator.of(pageContext).pop();
 
-                              // Flow: Generate backend QR with am=(user entered amount) -> share image to selected UPI app
+                              // Flow: Generate backend QR with am=(user entered amount) -> share image to default UPI app from settings
                               try {
-                                final targetApp = UpiApps.findById(selectedAppId);
+                                final preferredAppId = await UserPreferencesService().getDefaultPaymentApp();
+                                final targetApp = UpiApps.findById(preferredAppId);
                                 final String? targetPackage = (targetApp != null && targetApp.id != UpiApps.askEveryTime)
                                     ? targetApp.packageName
                                     : null;
-                                final String appName = targetApp?.name ?? 'UPI App';
+                                final String appName = targetApp?.name ?? 'Payment App';
 
                                 String shareFilePath = '';
                                 try {
@@ -730,8 +675,10 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                             },
                             child: Text(
                               () {
-                                final app = UpiApps.findById(selectedAppId);
-                                final target = app?.name ?? (selectedAppId == UpiApps.askEveryTime ? 'Any App' : 'UPI App');
+                                final pref = UserPreferencesService()
+                                    .cachedDefaultPaymentApp;
+                                final app = UpiApps.findById(pref);
+                                final target = app?.name ?? (pref == UpiApps.askEveryTime ? 'Any App' : 'UPI App');
                                 return 'Pay via $target';
                               }(),
                               style: const TextStyle(
@@ -751,61 +698,6 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
             ),
           );
         },
-      );
-    },
-  ),
-);
-  }
-
-  Widget _buildModalAppChip({
-    required String id,
-    required String name,
-    required IconData icon,
-    required bool isSelected,
-    required AppThemeData colors,
-    required VoidCallback onTap,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected ? colors.textPrimary : colors.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected ? colors.textPrimary : colors.border,
-              width: isSelected ? 1.5 : 1.0,
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: 16,
-                color: isSelected
-                    ? (colors.isDark ? Colors.black : Colors.white)
-                    : colors.textPrimary,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                name,
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  fontSize: 13,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  color: isSelected
-                      ? (colors.isDark ? Colors.black : Colors.white)
-                      : colors.textPrimary,
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

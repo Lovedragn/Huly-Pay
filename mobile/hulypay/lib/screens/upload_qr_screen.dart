@@ -37,7 +37,6 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
   String? _scannedQrUri;
   UpiPaymentData? _parsedUpiData;
   bool _isProcessing = false;
-  String? _selectedAppId;
 
   @override
   void initState() {
@@ -56,8 +55,6 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
       _parsedUpiData = UpiService.parseUpiUri(widget.preScannedRawUri!);
     }
 
-    _loadDefaultApp();
-
     // Auto-focus amount textfield once screen renders
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && _amountFocusNode.canRequestFocus) {
@@ -67,15 +64,6 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
         _pickImage();
       }
     });
-  }
-
-  Future<void> _loadDefaultApp() async {
-    final defaultApp = await UserPreferencesService().getDefaultPaymentApp();
-    if (mounted) {
-      setState(() {
-        _selectedAppId = defaultApp;
-      });
-    }
   }
 
   @override
@@ -177,13 +165,13 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
         return;
       }
 
-      // 2. Determine target UPI app (use explicitly selected app or default from preferences)
-      String effectiveAppId = _selectedAppId ?? await UserPreferencesService().getDefaultPaymentApp();
-      final targetApp = UpiApps.findById(effectiveAppId);
+      // 2. Determine target UPI app from user preferences / settings
+      final preferredAppId = await UserPreferencesService().getDefaultPaymentApp();
+      final targetApp = UpiApps.findById(preferredAppId);
       final String? targetPackage = (targetApp != null && targetApp.id != UpiApps.askEveryTime)
           ? targetApp.packageName
           : null;
-      final String appName = targetApp?.name ?? 'UPI App';
+      final String appName = targetApp?.name ?? 'Payment App';
 
       // 3. Request backend to generate new QR PNG image containing uri with am=parsedAmount
       String shareFilePath = _selectedImage?.path ?? '';
@@ -435,48 +423,6 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
                           ),
                         ),
 
-                        const SizedBox(height: 20),
-
-                        // UPI App Selector
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'SHARE & PAY VIA',
-                            style: TextStyle(
-                              fontFamily: 'Google Sans',
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1.1,
-                              color: colors.textSecondary,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          physics: const BouncingScrollPhysics(),
-                          child: Row(
-                            children: [
-                              _buildAppChoiceChip(
-                                id: UpiApps.askEveryTime,
-                                name: 'Any App',
-                                icon: Icons.alt_route_rounded,
-                                colors: colors,
-                              ),
-                              ...UpiApps.allApps.map((app) => _buildAppChoiceChip(
-                                    id: app.id,
-                                    name: app.name,
-                                    icon: app.id == 'whatsapp'
-                                        ? Icons.chat_rounded
-                                        : (app.id == 'paytm'
-                                            ? Icons.account_balance_wallet_rounded
-                                            : Icons.payment_rounded),
-                                    colors: colors,
-                                  )),
-                            ],
-                          ),
-                        ),
-
                         // Compact badge when image is attached
                         if (_selectedImage != null) ...[
                           const SizedBox(height: 16),
@@ -565,21 +511,24 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
                               color: colors.isDark ? Colors.black : Colors.white,
                             ),
                             const SizedBox(width: 10),
-                            Text(
-                              () {
-                                if (_selectedImage == null && _scannedQrUri == null) {
-                                  return 'Select QR & Pay';
-                                }
-                                final app = _selectedAppId != null ? UpiApps.findById(_selectedAppId!) : null;
-                                final appName = app?.name ?? (_selectedAppId == UpiApps.askEveryTime ? 'Any App' : 'UPI App');
-                                return 'Pay via $appName';
-                              }(),
-                              style: TextStyle(
-                                fontFamily: 'Google Sans',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: colors.isDark ? Colors.black : Colors.white,
-                              ),
+                            FutureBuilder<String>(
+                              future: UserPreferencesService().getDefaultPaymentApp(),
+                              builder: (context, snapshot) {
+                                final defaultAppId = snapshot.data ?? UserPreferencesService().cachedDefaultPaymentApp;
+                                final app = UpiApps.findById(defaultAppId);
+                                final appName = app?.name ?? (defaultAppId == UpiApps.askEveryTime ? 'Any App' : 'UPI App');
+                                return Text(
+                                  _selectedImage != null || _scannedQrUri != null
+                                      ? 'Pay via $appName'
+                                      : 'Select QR & Pay',
+                                  style: TextStyle(
+                                    fontFamily: 'Google Sans',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: colors.isDark ? Colors.black : Colors.white,
+                                  ),
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -587,62 +536,6 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAppChoiceChip({
-    required String id,
-    required String name,
-    required IconData icon,
-    required AppThemeData colors,
-  }) {
-    final isSelected = (_selectedAppId ?? UpiApps.askEveryTime) == id;
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () {
-          setState(() {
-            _selectedAppId = id;
-          });
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected ? colors.textPrimary : colors.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected ? colors.textPrimary : colors.border,
-              width: isSelected ? 1.5 : 1.0,
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: 16,
-                color: isSelected
-                    ? (colors.isDark ? Colors.black : Colors.white)
-                    : colors.textPrimary,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                name,
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  fontSize: 13,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  color: isSelected
-                      ? (colors.isDark ? Colors.black : Colors.white)
-                      : colors.textPrimary,
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );
