@@ -1,20 +1,27 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:path_provider/path_provider.dart';
 import '../models/transaction_model.dart';
 import '../repositories/transaction_repository.dart';
+import '../services/api_client.dart';
 import '../services/qr_share_service.dart';
+import '../services/upi_payment_service.dart';
 import '../services/upi_service.dart';
 import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
 
 class UploadQrScreen extends StatefulWidget {
   final double? initialAmount;
+  final XFile? preselectedImage;
+  final String? preScannedRawUri;
 
   const UploadQrScreen({
     super.key,
     this.initialAmount,
+    this.preselectedImage,
+    this.preScannedRawUri,
   });
 
   @override
@@ -27,7 +34,9 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
   final FocusNode _amountFocusNode = FocusNode();
 
   XFile? _selectedImage;
-  bool _isSharing = false;
+  String? _scannedQrUri;
+  UpiPaymentData? _parsedUpiData;
+  bool _isProcessing = false;
 
   @override
   void initState() {
@@ -38,10 +47,21 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
           : '',
     );
 
+    if (widget.preselectedImage != null) {
+      _selectedImage = widget.preselectedImage;
+    }
+    if (widget.preScannedRawUri != null) {
+      _scannedQrUri = widget.preScannedRawUri;
+      _parsedUpiData = UpiService.parseUpiUri(widget.preScannedRawUri!);
+    }
+
     // Auto-focus amount textfield once screen renders
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && _amountFocusNode.canRequestFocus) {
         _amountFocusNode.requestFocus();
+      }
+      if (_selectedImage == null && _scannedQrUri == null) {
+        _pickImage();
       }
     });
   }
@@ -54,63 +74,172 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
     super.dispose();
   }
 
-  Future<void> _shareImageToGooglePay(XFile image) async {
+  Future<void> _pickImage() async {
+    final picked = await QrShareService.pickQrImage(context);
+    if (picked != null && mounted) {
+      setState(() {
+        _selectedImage = picked;
+      });
+
+      // Analyze image to decode QR URI
+      try {
+        final capture = await MobileScannerController().analyzeImage(picked.path);
+        if (capture != null && capture.barcodes.isNotEmpty) {
+          final raw = capture.barcodes.first.rawValue?.trim();
+          if (raw != null && raw.isNotEmpty) {
+            final upiData = UpiService.parseUpiUri(raw);
+            if (upiData != null) {
+              setState(() {
+                _scannedQrUri = raw;
+                _parsedUpiData = upiData;
+                if (upiData.amount != null && upiData.amount! > 0 && _amountController.text.trim().isEmpty) {
+                  _amountController.text = upiData.amount!.toStringAsFixed(2);
+                }
+                if (upiData.note != null && upiData.note!.isNotEmpty && _noteController.text.trim().isEmpty) {
+                  _noteController.text = upiData.note!;
+                }
+              });
+            } else {
+              _scannedQrUri = raw;
+            }
+          }
+        }
+      } catch (e) {
+        debugPrint('[UploadQrScreen] Analyze QR error: $e');
+      }
+
+      if (_amountFocusNode.canRequestFocus) {
+        _amountFocusNode.requestFocus();
+      }
+    }
+  }
+
+  Future<void> _handlePayButton() async {
+    if (_isProcessing) return;
+
+    if (_selectedImage == null && _scannedQrUri == null) {
+      _showFeedbackSnackBar(
+        'Please select a QR image first',
+        isError: true,
+      );
+      await _pickImage();
+      return;
+    }
+
     final rawText = _amountController.text.trim();
     final parsedAmount = double.tryParse(rawText);
-    final note = _noteController.text.trim();
+    if (parsedAmount == null || parsedAmount <= 0) {
+      _showFeedbackSnackBar(
+        'Please enter a valid amount greater than 0',
+        isError: true,
+      );
+      if (_amountFocusNode.canRequestFocus) {
+        _amountFocusNode.requestFocus();
+      }
+      return;
+    }
 
     setState(() {
-      _isSharing = true;
+      _isProcessing = true;
     });
 
     try {
+      // 1. Decode QR if not decoded yet
+      String? rawUri = _scannedQrUri;
+      if (rawUri == null && _selectedImage != null) {
+        try {
+          final capture = await MobileScannerController().analyzeImage(_selectedImage!.path);
+          if (capture != null && capture.barcodes.isNotEmpty) {
+            rawUri = capture.barcodes.first.rawValue?.trim();
+            _scannedQrUri = rawUri;
+          }
+        } catch (_) {}
+      }
+
+      if (rawUri == null || rawUri.isEmpty) {
+        _showFeedbackSnackBar(
+          'Could not detect a valid QR code in the image',
+          isError: true,
+        );
+        setState(() => _isProcessing = false);
+        return;
+      }
+
+      // 2. Determine target UPI app
+      final preferredAppId = await UserPreferencesService().getDefaultPaymentApp();
+      final targetApp = UpiApps.findById(preferredAppId);
+      final String? targetPackage = (targetApp != null && targetApp.id != UpiApps.askEveryTime)
+          ? targetApp.packageName
+          : null;
+      final String appName = targetApp?.name ?? 'Payment App';
+
+      // 3. Request backend to generate new QR PNG image containing uri with am=parsedAmount
+      String shareFilePath = _selectedImage?.path ?? '';
+      try {
+        final imageBytes = await ApiClient().generateQrCode(
+          uri: rawUri,
+          amount: parsedAmount,
+          size: 512,
+        );
+
+        if (imageBytes.isNotEmpty) {
+          final tempDir = await getTemporaryDirectory();
+          final newQrFile = File('${tempDir.path}/qr_generated_${DateTime.now().millisecondsSinceEpoch}.png');
+          await newQrFile.writeAsBytes(imageBytes, flush: true);
+          shareFilePath = newQrFile.path;
+        }
+      } catch (backendErr) {
+        debugPrint('[UploadQrScreen] Backend QR generation fallback: $backendErr');
+        // If backend fails or offline, fallback to existing image
+        if (shareFilePath.isEmpty && _selectedImage != null) {
+          shareFilePath = _selectedImage!.path;
+        }
+      }
+
+      if (shareFilePath.isEmpty) {
+        _showFeedbackSnackBar('Failed to prepare QR image for payment', isError: true);
+        setState(() => _isProcessing = false);
+        return;
+      }
+
+      if (!mounted) return;
+
+      // 4. Send newly generated QR image to selected UPI application
+      final note = _noteController.text.trim();
       final success = await QrShareService.shareQrImage(
         context: context,
-        filePath: image.path,
-        amount: (parsedAmount != null && parsedAmount > 0) ? parsedAmount : null,
+        filePath: shareFilePath,
+        amount: parsedAmount,
         note: note.isNotEmpty ? note : null,
-        title: 'Pay with Google Pay',
-        targetPackage: QrShareService.googlePayPackage,
+        title: 'Pay with $appName',
+        targetPackage: targetPackage,
       );
 
       if (mounted) {
         if (success) {
-          final effectiveAmount = (parsedAmount != null && parsedAmount > 0) ? parsedAmount : 0.0;
-          if (effectiveAmount > 0) {
-            String? merchantName = note.isNotEmpty ? note : null;
-            String? upiId;
+          final upiData = _parsedUpiData ?? UpiService.parseUpiUri(rawUri);
+          final txnRef = 'HULY${DateTime.now().millisecondsSinceEpoch}';
+          final payee = upiData?.payeeName?.trim();
+          final upi = upiData?.upiId.trim();
+          final merchant = (payee != null && payee.isNotEmpty)
+              ? payee
+              : ((upi != null && upi.isNotEmpty) ? upi : (note.isNotEmpty ? note : 'QR Payment'));
 
-            try {
-              final capture = await MobileScannerController().analyzeImage(image.path);
-              if (capture != null && capture.barcodes.isNotEmpty) {
-                final raw = capture.barcodes.first.rawValue;
-                if (raw != null) {
-                  final upiData = UpiService.parseUpiUri(raw);
-                  if (upiData != null) {
-                    merchantName ??= upiData.payeeName ?? upiData.upiId;
-                    upiId = upiData.upiId;
-                  }
-                }
-              }
-            } catch (_) {}
-
-            final txnRef = 'HULY${DateTime.now().millisecondsSinceEpoch}';
-            try {
-              await TransactionRepository().createTransaction(CreatePaymentPayload(
-                amount: effectiveAmount,
-                currency: 'INR',
-                merchantName: merchantName ?? 'QR Payment',
-                upiId: upiId ?? '',
-                paymentMethod: 'UPI',
-                transactionReference: txnRef,
-                status: UserPreferencesService().cachedQuickConfirm ? 'CONFIRMED' : 'PENDING',
-                provider: 'GOOGLE_PAY',
-              ));
-            } catch (_) {}
-          }
+          try {
+            await TransactionRepository().createTransaction(CreatePaymentPayload(
+              amount: parsedAmount,
+              currency: upiData?.currency ?? 'INR',
+              merchantName: merchant,
+              upiId: upi ?? '',
+              paymentMethod: 'UPI',
+              transactionReference: txnRef,
+              status: UserPreferencesService().cachedQuickConfirm ? 'CONFIRMED' : 'PENDING',
+              provider: targetApp?.name.toUpperCase().replaceAll(' ', '_') ?? 'UPI',
+            ));
+          } catch (_) {}
 
           _showFeedbackSnackBar(
-            'Opening Google Pay with QR image...',
+            'Opening $appName with QR code...',
             isError: false,
           );
         }
@@ -118,65 +247,10 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
     } finally {
       if (mounted) {
         setState(() {
-          _isSharing = false;
+          _isProcessing = false;
         });
       }
     }
-  }
-
-  Future<void> _pickImage() async {
-    final rawText = _amountController.text.trim();
-    if (rawText.isNotEmpty) {
-      final parsedAmount = double.tryParse(rawText);
-      if (parsedAmount == null || parsedAmount <= 0) {
-        _showFeedbackSnackBar(
-          'Please enter a valid amount greater than 0',
-          isError: true,
-        );
-        if (_amountFocusNode.canRequestFocus) {
-          _amountFocusNode.requestFocus();
-        }
-        return;
-      }
-    }
-
-    final picked = await QrShareService.pickQrImage(context);
-    if (picked != null && mounted) {
-      setState(() {
-        _selectedImage = picked;
-      });
-      // Automatically launch Google Pay with the selected QR screenshot
-      await _shareImageToGooglePay(picked);
-    }
-  }
-
-  Future<void> _handleUploadButton() async {
-    if (_isSharing) return;
-
-    final rawText = _amountController.text.trim();
-    if (rawText.isNotEmpty) {
-      final parsedAmount = double.tryParse(rawText);
-      if (parsedAmount == null || parsedAmount <= 0) {
-        _showFeedbackSnackBar(
-          'Please enter a valid amount greater than 0',
-          isError: true,
-        );
-        if (_amountFocusNode.canRequestFocus) {
-          _amountFocusNode.requestFocus();
-        }
-        return;
-      }
-    }
-
-    // Step 1: If no image is selected yet, open gallery picker.
-    // As soon as the user selects the screenshot and presses done, it auto-shares to Google Pay.
-    if (_selectedImage == null) {
-      await _pickImage();
-      return;
-    }
-
-    // Step 2: Once image is selected, directly upload/share into Google Pay
-    await _shareImageToGooglePay(_selectedImage!);
   }
 
   void _showFeedbackSnackBar(String message, {bool isError = false}) {
@@ -403,7 +477,7 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
               ),
             ),
 
-            // Bottom Sticky Upload Button
+            // Bottom Sticky Upload & Pay Button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               child: SizedBox(
@@ -418,8 +492,8 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  onPressed: _isSharing ? null : _handleUploadButton,
-                  child: _isSharing
+                  onPressed: _isProcessing ? null : _handlePayButton,
+                  child: _isProcessing
                       ? SizedBox(
                           width: 22,
                           height: 22,
@@ -431,24 +505,30 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SvgPicture.asset(
-                              'assets/icon/upload.svg',
-                              width: 18,
-                              height: 18,
-                              colorFilter: ColorFilter.mode(
-                                colors.isDark ? Colors.black : Colors.white,
-                                BlendMode.srcIn,
-                              ),
+                            Icon(
+                              Icons.payment_rounded,
+                              size: 20,
+                              color: colors.isDark ? Colors.black : Colors.white,
                             ),
                             const SizedBox(width: 10),
-                            Text(
-                              _selectedImage != null ? 'Pay with Google Pay' : 'Upload',
-                              style: TextStyle(
-                                fontFamily: 'Google Sans',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: colors.isDark ? Colors.black : Colors.white,
-                              ),
+                            FutureBuilder<String>(
+                              future: UserPreferencesService().getDefaultPaymentApp(),
+                              builder: (context, snapshot) {
+                                final defaultAppId = snapshot.data ?? UserPreferencesService().cachedDefaultPaymentApp;
+                                final app = UpiApps.findById(defaultAppId);
+                                final appName = app?.name ?? 'UPI App';
+                                return Text(
+                                  _selectedImage != null || _scannedQrUri != null
+                                      ? 'Pay via $appName'
+                                      : 'Select QR & Pay',
+                                  style: TextStyle(
+                                    fontFamily: 'Google Sans',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: colors.isDark ? Colors.black : Colors.white,
+                                  ),
+                                );
+                              },
                             ),
                           ],
                         ),
