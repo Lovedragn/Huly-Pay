@@ -88,7 +88,7 @@ class QrShareService {
     double? amount,
     String? note,
     String? title,
-    String? targetPackage,
+    String? targetPackage = googlePayPackage,
   }) async {
     if (!kIsWeb && defaultTargetPlatform != TargetPlatform.android) {
       if (context.mounted) {

@@ -233,6 +233,9 @@ class ApiClient {
         },
         options: Options(
           responseType: ResponseType.bytes,
+          headers: {
+            'Accept': 'image/png',
+          },
         ),
       );
       return response.data ?? <int>[];

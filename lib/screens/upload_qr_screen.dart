@@ -165,13 +165,13 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
         return;
       }
 
-      // 2. Determine target UPI app from user preferences / settings
+      // 2. Determine target UPI app from user preferences / settings (defaulting directly to Google Pay)
       final preferredAppId = await UserPreferencesService().getDefaultPaymentApp();
-      final targetApp = UpiApps.findById(preferredAppId);
-      final String? targetPackage = (targetApp != null && targetApp.id != UpiApps.askEveryTime)
-          ? targetApp.packageName
-          : null;
-      final String appName = targetApp?.name ?? 'Payment App';
+      final targetApp = (preferredAppId != UpiApps.askEveryTime)
+          ? UpiApps.findById(preferredAppId)
+          : UpiApps.gpay;
+      final String? targetPackage = targetApp?.packageName ?? UpiApps.gpay.packageName;
+      final String appName = targetApp?.name ?? 'Google Pay';
 
       // 3. Request backend to generate new QR PNG image containing uri with am=parsedAmount
       String shareFilePath = _selectedImage?.path ?? '';

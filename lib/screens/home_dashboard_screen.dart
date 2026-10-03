@@ -11,7 +11,7 @@ import '../widgets/custom_bottom_nav_bar.dart';
 import '../widgets/home_spend_trend_line_chart.dart';
 import '../widgets/home_today_spend_gauge.dart';
 import 'analysis_screen.dart';
-import 'scan_amount_screen.dart';
+import 'scan_and_pay_screen.dart';
 import 'settings_screen.dart';
 import 'transactions_screen.dart';
 import 'notifications_screen.dart';
@@ -403,7 +403,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
   Future<void> _openScanAndPay() async {
     final targetIndex = await Navigator.of(context).push<int>(
       MaterialPageRoute(
-        builder: (_) => const ScanAmountScreen(),
+        builder: (_) => const ScanAndPayScreen(),
       ),
     );
     if (targetIndex != null && mounted) {
