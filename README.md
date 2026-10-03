@@ -10,6 +10,7 @@
 
 <p align="center">
   <a href="#-quick-download--installation">Download APK</a> •
+  <a href="RELEASE_v3.0.0.md">Release Notes (v3.0.0)</a> •
   <a href="#-phase-1-quickstart--running-the-mobile-app">Run Mobile App</a> •
   <a href="#️-phase-2-backend--api-server-spring-boot">Backend Setup</a> •
   <a href="#-phase-3-frontend--web-dashboard-nextjs">Web Dashboard</a> •
@@ -23,7 +24,7 @@
 
 > **Note for Android users:** When installing from your device file manager or browser, make sure to allow **"Install from unknown sources"** in your device security settings.
 
-The latest release APK is available at `mobile/hulypay/Release/Hulypay.apk`.
+The latest release APK is available at `mobile/hulypay/Release/Hulypay.apk` (Version `v3.0.0` with Faster Upload & Direct Gateway Dispatch). Check out [RELEASE_v3.0.0.md](RELEASE_v3.0.0.md) for full architectural specifications.
 
 ---
 
@@ -178,10 +179,12 @@ npm run build && npm start
 
 ### Core Features
 
-- **⚡ Real-Time Scan & Pay:**
+- **⚡ Real-Time Scan & Pay & Faster Upload Gateway (v3.0.0):**
   - Ultra-responsive QR code scanner powered by `mobile_scanner`.
+  - **Dynamic Amount-Injected QR Gateway**: Automatically sends scanned UPI URIs and entered amounts to the Spring Boot backend (`/api/v1/qr/generate`), generating crisp amount-prefilled QR codes in real-time.
+  - **Zero-Friction Direct-to-App Gateway Dispatch**: Bypasses the clunky Android system Sharesheet to launch directly into Google Pay (or the user's preferred UPI app from settings) with full payload parameters (`am`, `pa`, `pn`) pre-filled!
   - Camera flash toggle, camera flips, barcode decoding, and sandbox QR payloads for test environments.
-  - QR share & upload flow via `qr_share_service`.
+  - QR gallery import & upload flow via `qr_share_service`.
 - **📊 Spending Insights & Analytics:**
   - Multi-theme interactive donut & bar charts using `fl_chart`.
   - Temporal spending heatmap, category breakdowns, weekly/monthly bar charts, and trend line charts.
@@ -324,6 +327,32 @@ sequenceDiagram
     API-->>Repo: 200 OK
     Repo->>SQLite: Mark Synced = true
     end
+```
+
+---
+
+### Dynamic Amount-Injected QR & Direct Dispatch Workflow (v3.0.0)
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as 👤 User
+    participant App as 📱 Mobile App (Flutter)
+    participant Backend as ⚙️ Spring Boot API (/api/v1/qr)
+    participant Native as 🤖 Android Native Layer
+    participant UPI as 💳 Preferred UPI App (e.g. Google Pay)
+
+    User->>App: Scans/Uploads QR & Enters Amount (₹)
+    App->>Backend: POST /api/v1/qr/generate {uri, amount, size}
+    Note over Backend: Injects 'am=XX.XX' into upi://pay URI
+    Note over Backend: Generates 512x512 PNG QR via Google ZXing
+    Backend-->>App: Binary image/png stream (200 OK)
+    App->>App: Saves PNG to private cache (FileProvider)
+    App->>Native: MethodChannel.invoke('shareImage', targetPackage)
+    Note over Native: Resolves content:// URI & sets FLAG_ACTIVITY_NEW_TASK
+    Native->>UPI: Direct Intent (ACTION_SEND, image/png)
+    Note over UPI: Google Pay scanner parses QR & pre-fills amount!
+    UPI-->>User: Payment screen opens with merchant + ₹ Amount pre-filled!
 ```
 
 ---
