@@ -14,6 +14,8 @@ import 'help_support_screen.dart';
 import 'privacy_security_screen.dart';
 import 'notifications_screen.dart';
 import 'payment_methods_screen.dart';
+import '../services/app_update_service.dart';
+import '../widgets/app_update_dialog.dart';
 
 class SettingsScreen extends StatefulWidget {
   final String? userName;
@@ -588,6 +590,48 @@ class _SettingsScreenState extends State<SettingsScreen> {
               builder: (_) => const HelpSupportScreen(),
             ),
           );
+        },
+      ),
+      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 66),
+      _buildSettingRow(
+        icon: Icons.system_update_alt_rounded,
+        iconColor: const Color(0xFF00C076),
+        title: 'Check for Updates',
+        trailingText: 'v${widget.appVersion}',
+        onTap: () async {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Checking for updates...', style: TextStyle(fontFamily: 'Google Sans')),
+              duration: Duration(seconds: 1),
+            ),
+          );
+          final updateInfo = await AppUpdateService().checkAppVersion();
+          if (!mounted) return;
+          if (updateInfo != null) {
+            if (updateInfo.updateAvailable) {
+              AppUpdateDialog.show(context, updateInfo);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'You are using the latest version (${updateInfo.currentVersion}).',
+                    style: const TextStyle(fontFamily: 'Google Sans'),
+                  ),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Could not check for updates. Please try again later.',
+                  style: TextStyle(fontFamily: 'Google Sans'),
+                ),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
         },
       ),
       Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 66),

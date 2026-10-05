@@ -101,6 +101,28 @@ class ApiClient {
     }
   }
 
+  Future<Map<String, dynamic>> checkAppVersion({
+    required String platform,
+    required String installedVersion,
+  }) async {
+    try {
+      final response = await dio.get(
+        '/api/app/version',
+        queryParameters: {
+          'platform': platform,
+        },
+        options: Options(
+          headers: {
+            'X-App-Version': installedVersion,
+          },
+        ),
+      );
+      return Map<String, dynamic>.from(response.data as Map);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
   Future<Map<String, dynamic>> getDatabaseHealth() async {
     try {
       final response = await dio.get('/api/health/database');
