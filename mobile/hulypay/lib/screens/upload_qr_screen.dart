@@ -11,6 +11,7 @@ import '../services/upi_payment_service.dart';
 import '../services/upi_service.dart';
 import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_back_button.dart';
 
 class UploadQrScreen extends StatefulWidget {
   final double? initialAmount;
@@ -170,11 +171,11 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
       final targetApp = (preferredAppId != UpiApps.askEveryTime)
           ? UpiApps.findById(preferredAppId)
           : UpiApps.gpay;
-      final String? targetPackage = targetApp?.packageName ?? UpiApps.gpay.packageName;
+      final String targetPackage = targetApp?.packageName ?? UpiApps.gpay.packageName;
       final String appName = targetApp?.name ?? 'Google Pay';
 
       // 3. Request backend to generate new QR PNG image containing uri with am=parsedAmount
-      String shareFilePath = _selectedImage?.path ?? '';
+      String shareFilePath = '';
       try {
         final imageBytes = await ApiClient().generateQrCode(
           uri: rawUri,
@@ -189,11 +190,7 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
           shareFilePath = newQrFile.path;
         }
       } catch (backendErr) {
-        debugPrint('[UploadQrScreen] Backend QR generation fallback: $backendErr');
-        // If backend fails or offline, fallback to existing image
-        if (shareFilePath.isEmpty && _selectedImage != null) {
-          shareFilePath = _selectedImage!.path;
-        }
+        debugPrint('[UploadQrScreen] Backend QR generation failed: $backendErr');
       }
 
       if (shareFilePath.isEmpty) {
@@ -286,9 +283,8 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: colors.textPrimary, size: 20),
-          onPressed: () => Navigator.of(context).pop(),
+        leading: const Center(
+          child: AppBackButton(),
         ),
         title: Text(
           'Upload QR',

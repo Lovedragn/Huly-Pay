@@ -33,12 +33,14 @@ class TransactionDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeManager.colors;
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color(0xFF141416),
+        color: colors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppThemeManager.colors.border, width: 1),
+        border: Border.all(color: colors.border, width: 1),
       ),
       child: Column(
         children: [
@@ -66,8 +68,8 @@ class TransactionDetailsCard extends StatelessWidget {
                       )
                     : null),
           ),
-          const Divider(
-            color: Color(0xFF202024),
+          Divider(
+            color: colors.divider,
             height: 1,
             thickness: 1,
             indent: 16,
@@ -76,18 +78,18 @@ class TransactionDetailsCard extends StatelessWidget {
           TransactionDetailRow(
             label: 'Category',
             value: category,
-            trailingWidget: const Padding(
-              padding: EdgeInsets.only(left: 6),
+            trailingWidget: Padding(
+              padding: const EdgeInsets.only(left: 6),
               child: Icon(
                 Icons.edit_outlined,
-                color: Color(0xFF007AFF),
+                color: colors.accent,
                 size: 14,
               ),
             ),
             onTap: onCategoryTap,
           ),
-          const Divider(
-            color: Color(0xFF202024),
+          Divider(
+            color: colors.divider,
             height: 1,
             thickness: 1,
             indent: 16,
@@ -97,8 +99,8 @@ class TransactionDetailsCard extends StatelessWidget {
             label: 'Transaction Type',
             value: transactionType,
           ),
-          const Divider(
-            color: Color(0xFF202024),
+          Divider(
+            color: colors.divider,
             height: 1,
             thickness: 1,
             indent: 16,
@@ -110,8 +112,8 @@ class TransactionDetailsCard extends StatelessWidget {
             canCopy: true,
             onCopy: () => onCopy(referenceId, 'UPI Reference No.'),
           ),
-          const Divider(
-            color: Color(0xFF202024),
+          Divider(
+            color: colors.divider,
             height: 1,
             thickness: 1,
             indent: 16,
@@ -127,16 +129,16 @@ class TransactionDetailsCard extends StatelessWidget {
               'Coordinates',
             ),
           ),
-          const Divider(
-            color: Color(0xFF202024),
+          Divider(
+            color: colors.divider,
             height: 1,
             thickness: 1,
             indent: 16,
             endIndent: 16,
           ),
           TransactionDetailRow(label: 'Payment Status', value: status),
-          const Divider(
-            color: Color(0xFF202024),
+          Divider(
+            color: colors.divider,
             height: 1,
             thickness: 1,
             indent: 16,

@@ -15,6 +15,7 @@ import 'privacy_security_screen.dart';
 import 'notifications_screen.dart';
 import 'payment_methods_screen.dart';
 import '../services/app_update_service.dart';
+import '../widgets/app_back_button.dart';
 import '../widgets/app_update_dialog.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -289,22 +290,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final colors = AppThemeManager.colors;
     return Row(
       children: [
-        Container(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            shape: BoxShape.circle,
-            border: Border.all(color: colors.border),
-          ),
-          child: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: colors.textPrimary,
-              size: 18,
-            ),
-            onPressed: () => _handleBack(),
-            tooltip: 'Back',
-          ),
-        ),
+        AppBackButton(onPressed: () => _handleBack()),
         const SizedBox(width: 14),
         Expanded(
           child: Text(

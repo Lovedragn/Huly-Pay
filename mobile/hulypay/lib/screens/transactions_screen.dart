@@ -3,6 +3,7 @@ import '../models/dashboard_data.dart';
 import '../models/transaction_model.dart';
 import '../repositories/transaction_repository.dart';
 import '../services/local_database_service.dart';
+import '../widgets/app_back_button.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import '../widgets/transaction_tile.dart';
 import 'analysis_screen.dart';
@@ -298,21 +299,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   Widget _buildHeader() {
     final colors = AppThemeManager.colors;
 
-    return Row(
-      children: [
-        if (Navigator.canPop(context) || widget.isEmbedded) ...[
-          Container(
-            decoration: BoxDecoration(
-              color: colors.surface,
-              shape: BoxShape.circle,
-              border: Border.all(color: colors.border, width: 1.5),
-            ),
-            child: IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: colors.textPrimary,
-                size: 18,
-              ),
+    return SizedBox(
+      height: 44,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          if (Navigator.canPop(context) || widget.isEmbedded) ...[
+            AppBackButton(
               onPressed: () {
                 if (Navigator.canPop(context)) {
                   Navigator.pop(context);
@@ -320,100 +313,117 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   _openHome();
                 }
               },
-              tooltip: 'Back',
             ),
-          ),
-          const SizedBox(width: 14),
-        ],
-        Expanded(
-          child: Text(
-            'Transactions',
-            style: TextStyle(
-              fontFamily: 'Google Sans',
-              color: colors.textPrimary,
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.5,
-            ),
-          ),
-        ),
-        Tooltip(
-          message: 'Notifications',
-          child: GestureDetector(
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const NotificationsScreen(),
-                ),
-              );
-            },
-            child: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: colors.surface,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: colors.border,
-                  width: 1.5,
-                ),
+            const SizedBox(width: 14),
+          ],
+          Expanded(
+            child: Text(
+              'Transactions',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontFamily: 'Google Sans',
+                color: colors.textPrimary,
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
               ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Icon(
-                    Icons.notifications_outlined,
-                    color: colors.textPrimary,
-                    size: 22,
-                  ),
-                  Positioned(
-                    top: 10,
-                    right: 11,
+            ),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Tooltip(
+                message: 'Notifications (In Dev)',
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const NotificationsScreen(),
+                      ),
+                    );
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
                     child: Container(
-                      width: 7,
-                      height: 7,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFFF9500),
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: colors.surface,
                         shape: BoxShape.circle,
+                        border: Border.all(
+                          color: colors.border,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Icon(
+                            Icons.notifications_outlined,
+                            color: colors.textPrimary,
+                            size: 22,
+                          ),
+                          Positioned(
+                            top: 10,
+                            right: 11,
+                            child: Container(
+                              width: 7,
+                              height: 7,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFFF9500),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 10),
-        Tooltip(
-          message: 'Settings',
-          child: GestureDetector(
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const SettingsScreen(),
-                ),
-              );
-            },
-            child: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: colors.surface,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: colors.border,
-                  width: 1.5,
                 ),
               ),
-              child: Icon(
-                Icons.settings_outlined,
-                color: colors.textPrimary,
-                size: 22,
+              const SizedBox(width: 10),
+              Tooltip(
+                message: 'Settings',
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const SettingsScreen(),
+                      ),
+                    );
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: colors.surface,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: colors.border,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Center(
+                        child: Icon(
+                          Icons.settings_outlined,
+                          color: colors.textPrimary,
+                          size: 22,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

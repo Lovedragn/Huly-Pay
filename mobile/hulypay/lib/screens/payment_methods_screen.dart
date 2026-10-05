@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../services/upi_payment_service.dart';
 import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_back_button.dart';
 
 class PaymentMethodsScreen extends StatefulWidget {
   const PaymentMethodsScreen({super.key});
@@ -376,22 +377,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              color: colors.surface,
-              shape: BoxShape.circle,
-              border: Border.all(color: colors.border),
-            ),
-            child: IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: colors.textPrimary,
-                size: 18,
-              ),
-              onPressed: () => Navigator.of(context).pop(),
-              tooltip: 'Back',
-            ),
-          ),
+          const AppBackButton(),
           const SizedBox(width: 14),
           Expanded(
             child: Text(

@@ -6,6 +6,7 @@ import '../services/local_database_service.dart';
 import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/analysis_category_pie_chart.dart';
+import '../widgets/app_back_button.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import '../widgets/spending_heatmap.dart';
 import 'home_dashboard_screen.dart';
@@ -515,100 +516,118 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   Widget _buildHeader() {
     final colors = AppThemeManager.colors;
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            Text(
-              'Analyze',
-              style: TextStyle(
-                fontFamily: 'Google Sans',
-                color: colors.textPrimary,
-                fontSize: 24,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.4,
-              ),
-            ),
-            if (_isLoading) ...
-              [
-                const SizedBox(width: 10),
-                SizedBox(
-                  width: 14,
-                  height: 14,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: colors.textSecondary,
-                  ),
+    return SizedBox(
+      height: 44,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              if (Navigator.canPop(context) || widget.isEmbedded) ...[
+                AppBackButton(
+                  onPressed: () {
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    } else {
+                      _openHome();
+                    }
+                  },
                 ),
+                const SizedBox(width: 14),
               ],
-          ],
-        ),
-        PopupMenuButton<String>(
-          onSelected: (val) {
-            setState(() {
-              _selectedPeriod = val;
-            });
-            UserPreferencesService().saveAnalysisPeriod(val);
-            _filterAndRecalculate();
-          },
-          color: colors.surfaceSecondary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-          itemBuilder: (context) {
-            return _periodOptions.map((period) {
-              return PopupMenuItem<String>(
-                value: period,
-                child: Text(
-                  period,
-                  style: TextStyle(
-                    fontFamily: 'Google Sans',
-                    color: period == _selectedPeriod
-                        ? colors.accent
-                        : colors.textSecondary,
-                    fontSize: 14,
-                    fontWeight: period == _selectedPeriod
-                        ? FontWeight.w700
-                        : FontWeight.w400,
-                  ),
-                ),
-              );
-            }).toList();
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(
-              color: colors.surface,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: colors.border,
-                width: 1,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  _selectedPeriod,
-                  style: TextStyle(
-                    fontFamily: 'Google Sans',
-                    color: colors.textPrimary,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                Icon(
-                  Icons.keyboard_arrow_down_rounded,
+              Text(
+                'Analyze',
+                style: TextStyle(
+                  fontFamily: 'Google Sans',
                   color: colors.textPrimary,
-                  size: 18,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.4,
                 ),
-              ],
+              ),
+              if (_isLoading) ...
+                [
+                  const SizedBox(width: 10),
+                  SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                ],
+            ],
+          ),
+          PopupMenuButton<String>(
+            onSelected: (val) {
+              setState(() {
+                _selectedPeriod = val;
+              });
+              UserPreferencesService().saveAnalysisPeriod(val);
+              _filterAndRecalculate();
+            },
+            color: colors.surfaceSecondary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            itemBuilder: (context) {
+              return _periodOptions.map((period) {
+                return PopupMenuItem<String>(
+                  value: period,
+                  child: Text(
+                    period,
+                    style: TextStyle(
+                      fontFamily: 'Google Sans',
+                      color: period == _selectedPeriod
+                          ? colors.accent
+                          : colors.textSecondary,
+                      fontSize: 14,
+                      fontWeight: period == _selectedPeriod
+                          ? FontWeight.w700
+                          : FontWeight.w400,
+                    ),
+                  ),
+                );
+              }).toList();
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: colors.border,
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _selectedPeriod,
+                    style: TextStyle(
+                      fontFamily: 'Google Sans',
+                      color: colors.textPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: colors.textPrimary,
+                    size: 18,
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -645,13 +664,6 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                   : colors.border,
               width: 1.2,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.3),
-                blurRadius: 8,
-                offset: const Offset(0, 3),
-              ),
-            ],
           ),
           child: Center(
             child: Icon(

@@ -561,12 +561,31 @@ Website: $creatorWebsiteUrl
   {"featureType": "poi", "elementType": "labels.text.fill", "stylers": [{"color": "#6b7280"}]},
   {"featureType": "poi.park", "elementType": "geometry", "stylers": [{"color": "#16221c"}]},
   {"featureType": "road", "elementType": "geometry.fill", "stylers": [{"color": "#232630"}]},
-  {"featureType": "road", "elementType": "labels.text.fill", "stylers": [{"color": "#8a919e"}]},
+  {"featureType": "road.labels.text.fill", "stylers": [{"color": "#8a919e"}]},
   {"featureType": "road.arterial", "elementType": "geometry", "stylers": [{"color": "#2c313d"}]},
   {"featureType": "road.highway", "elementType": "geometry.fill", "stylers": [{"color": "#343b49"}]},
   {"featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{"color": "#222731"}]},
   {"featureType": "water", "elementType": "geometry", "stylers": [{"color": "#101622"}]},
   {"featureType": "water", "elementType": "labels.text.fill", "stylers": [{"color": "#4b5563"}]}
+]''';
+
+  /// Light theme style json for embedded Google Maps (Clean, minimal, no POI clutter)
+  static const String lightMapStyle = '''[
+  {"elementType": "geometry", "stylers": [{"color": "#f8f9fb"}]},
+  {"elementType": "labels.icon", "stylers": [{"visibility": "off"}]},
+  {"elementType": "labels.text.fill", "stylers": [{"color": "#616874"}]},
+  {"elementType": "labels.text.stroke", "stylers": [{"color": "#ffffff"}]},
+  {"featureType": "administrative", "elementType": "geometry", "stylers": [{"color": "#d8dde6"}]},
+  {"featureType": "administrative.country", "elementType": "labels.text.fill", "stylers": [{"color": "#4b5563"}]},
+  {"featureType": "poi", "elementType": "labels.text.fill", "stylers": [{"color": "#6b7280"}]},
+  {"featureType": "poi.park", "elementType": "geometry", "stylers": [{"color": "#e8f2ea"}]},
+  {"featureType": "road", "elementType": "geometry.fill", "stylers": [{"color": "#ffffff"}]},
+  {"featureType": "road", "elementType": "labels.text.fill", "stylers": [{"color": "#6b7280"}]},
+  {"featureType": "road.arterial", "elementType": "geometry", "stylers": [{"color": "#edf0f5"}]},
+  {"featureType": "road.highway", "elementType": "geometry.fill", "stylers": [{"color": "#e2e7ef"}]},
+  {"featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{"color": "#d0d7e3"}]},
+  {"featureType": "water", "elementType": "geometry", "stylers": [{"color": "#d6e5f7"}]},
+  {"featureType": "water", "elementType": "labels.text.fill", "stylers": [{"color": "#5b7a9c"}]}
 ]''';
 
   /// Scan & Pay Screen static copy and configuration messages

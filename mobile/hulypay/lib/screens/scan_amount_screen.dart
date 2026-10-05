@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_back_button.dart';
 import 'scan_and_pay_screen.dart';
 
 class ScanAmountScreen extends StatefulWidget {
@@ -111,9 +112,8 @@ class _ScanAmountScreenState extends State<ScanAmountScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: colors.textPrimary, size: 20),
-          onPressed: () => Navigator.of(context).pop(),
+        leading: const Center(
+          child: AppBackButton(),
         ),
         title: Text(
           'Scan & Pay',

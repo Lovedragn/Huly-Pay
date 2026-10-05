@@ -56,12 +56,14 @@ class _TransactionMapSectionState extends State<TransactionMapSection> {
     if (kIsWeb ||
         (defaultTargetPlatform != TargetPlatform.android &&
             defaultTargetPlatform != TargetPlatform.iOS)) {
-      return _buildDarkMapFallbackCanvas();
+      return _buildMapFallbackCanvas();
     }
 
     final targetPos = LatLng(widget.latitude, widget.longitude);
     final isSatellite = widget.mapViewMode == 'satellite';
     final double sheetHeight = widget.screenHeight * 0.54;
+    final colors = AppThemeManager.colors;
+    final isDark = colors.isDark;
 
     try {
       return GoogleMap(
@@ -71,7 +73,9 @@ class _TransactionMapSectionState extends State<TransactionMapSection> {
           tilt: isSatellite ? 45.0 : 0.0,
         ),
         mapType: isSatellite ? MapType.satellite : MapType.normal,
-        style: isSatellite ? null : ExternalData.darkMapStyle,
+        style: isSatellite
+            ? null
+            : (isDark ? ExternalData.darkMapStyle : ExternalData.lightMapStyle),
         markers: {
           Marker(
             markerId: const MarkerId('payment_marker'),
@@ -97,10 +101,10 @@ class _TransactionMapSectionState extends State<TransactionMapSection> {
                 : 20.0,
             fillColor: isSatellite
                 ? const Color(0x30FFCC00)
-                : const Color(0x28007AFF),
+                : colors.accent.withValues(alpha: 0.15),
             strokeColor: isSatellite
                 ? const Color(0x90FFCC00)
-                : const Color(0x80007AFF),
+                : colors.accent.withValues(alpha: 0.5),
             strokeWidth: 1,
           ),
         },
@@ -131,17 +135,36 @@ class _TransactionMapSectionState extends State<TransactionMapSection> {
         },
       );
     } catch (_) {
-      return _buildDarkMapFallbackCanvas();
+      return _buildMapFallbackCanvas();
     }
   }
 
-  Widget _buildDarkMapFallbackCanvas() {
+  Widget _buildMapFallbackCanvas() {
+    final colors = AppThemeManager.colors;
+    final isDark = colors.isDark;
+
     return Container(
-      color: const Color(0xFF181A20),
+      color: isDark
+          ? const Color(0xFF181A20)
+          : (colors.name == 'Milk white'
+              ? const Color(0xFFEFF2F6)
+              : const Color(0xFFF7F8FA)),
       child: Stack(
         fit: StackFit.expand,
         children: [
-          CustomPaint(painter: MapGridPainter()),
+          CustomPaint(
+            painter: MapGridPainter(
+              gridColor: isDark
+                  ? const Color(0xFF222630)
+                  : const Color(0xFFE2E6EE),
+              roadColor: isDark
+                  ? const Color(0xFF2A3040)
+                  : const Color(0xFFD6DBE5),
+              highlightRoadColor: isDark
+                  ? const Color(0xFF333B4D)
+                  : const Color(0xFFCAD1DE),
+            ),
+          ),
           Align(
             alignment: const Alignment(0, -0.42),
             child: Column(
@@ -150,31 +173,40 @@ class _TransactionMapSectionState extends State<TransactionMapSection> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFF453A).withValues(alpha: 0.2),
+                    color: colors.accent.withValues(alpha: 0.18),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.location_on,
-                    color: Color(0xFFFF453A),
+                    color: colors.accent,
                     size: 32,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
+                    horizontal: 10,
+                    vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF141416),
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: const Color(0xFF2A2A30)),
+                    color: colors.surface,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: colors.border, width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: isDark
+                            ? Colors.black45
+                            : Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: Text(
                     widget.merchantTitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Google Sans',
-                      color: Colors.white,
+                      color: colors.textPrimary,
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                     ),
@@ -189,8 +221,11 @@ class _TransactionMapSectionState extends State<TransactionMapSection> {
   }
 
   Widget _buildStreetViewContent() {
+    final colors = AppThemeManager.colors;
+    final isDark = colors.isDark;
+
     return Container(
-      color: const Color(0xFF121215),
+      color: isDark ? const Color(0xFF121215) : colors.background,
       alignment: const Alignment(0, -0.42),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -201,34 +236,36 @@ class _TransactionMapSectionState extends State<TransactionMapSection> {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF1C2A3A), Color(0xFF1E1E28)],
+                gradient: LinearGradient(
+                  colors: isDark
+                      ? const [Color(0xFF1C2A3A), Color(0xFF1E1E28)]
+                      : [colors.surfaceSecondary, colors.surface],
                 ),
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFF2A2A3A), width: 1.5),
-                boxShadow: const [
+                border: Border.all(color: colors.border, width: 1.5),
+                boxShadow: [
                   BoxShadow(
-                    color: Color(0x40007AFF),
+                    color: colors.accent.withValues(alpha: 0.25),
                     blurRadius: 16,
                     spreadRadius: 0,
                   ),
                 ],
               ),
-              child: const Center(
+              child: Center(
                 child: Icon(
                   Icons.streetview_rounded,
-                  color: Color(0xFF007AFF),
+                  color: colors.accent,
                   size: 28,
                 ),
               ),
             ),
             const SizedBox(height: 14),
-            const Text(
+            Text(
               'Street View opens in Google Maps',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Google Sans',
-                color: Colors.white,
+                color: colors.textPrimary,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
@@ -237,9 +274,9 @@ class _TransactionMapSectionState extends State<TransactionMapSection> {
             Text(
               'Tap below to view 360° panorama\nat ${widget.latitude.toStringAsFixed(4)}, ${widget.longitude.toStringAsFixed(4)}',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Google Sans',
-                color: Color(0xFF6B6B70),
+                color: colors.textSecondary,
                 fontSize: 11.5,
                 height: 1.5,
               ),
@@ -254,15 +291,13 @@ class _TransactionMapSectionState extends State<TransactionMapSection> {
                   vertical: 10,
                 ),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF0062CC), Color(0xFF007AFF)],
-                  ),
+                  color: colors.accent,
                   borderRadius: BorderRadius.circular(14),
-                  boxShadow: const [
+                  boxShadow: [
                     BoxShadow(
-                      color: Color(0x50007AFF),
+                      color: colors.accent.withValues(alpha: 0.35),
                       blurRadius: 10,
-                      offset: Offset(0, 3),
+                      offset: const Offset(0, 3),
                     ),
                   ],
                 ),
@@ -312,15 +347,18 @@ class TransactionMapControlBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeManager.colors;
+    final isDark = colors.isDark;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         // Mode Switch: MAP ↔ SATELLITE ↔ 360°
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF1B1B20),
+            color: isDark ? const Color(0xFF1B1B20) : colors.surfaceSecondary,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppThemeManager.colors.border, width: 1),
+            border: Border.all(color: colors.border, width: 1),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -330,12 +368,14 @@ class TransactionMapControlBar extends StatelessWidget {
                 label: 'MAP',
                 isActive: mapViewMode == 'map',
                 onTap: () => onModeChanged('map'),
+                colors: colors,
               ),
               _buildTab(
                 key: const Key('satellite_mode_button'),
                 label: 'SATELLITE',
                 isActive: mapViewMode == 'satellite',
                 onTap: () => onModeChanged('satellite'),
+                colors: colors,
               ),
               _buildTab(
                 key: const Key('street_view_toggle'),
@@ -345,6 +385,7 @@ class TransactionMapControlBar extends StatelessWidget {
                   onModeChanged('street');
                   onOpenStreetView();
                 },
+                colors: colors,
               ),
             ],
           ),
@@ -358,11 +399,11 @@ class TransactionMapControlBar extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF),
+              color: colors.accent,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF007AFF).withValues(alpha: 0.4),
+                  color: colors.accent.withValues(alpha: 0.35),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -395,6 +436,7 @@ class TransactionMapControlBar extends StatelessWidget {
     required String label,
     required bool isActive,
     required VoidCallback onTap,
+    required AppThemeData colors,
   }) {
     return GestureDetector(
       key: key,
@@ -404,7 +446,7 @@ class TransactionMapControlBar extends StatelessWidget {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
         decoration: BoxDecoration(
-          color: isActive ? const Color(0xFF007AFF) : Colors.transparent,
+          color: isActive ? colors.accent : Colors.transparent,
           borderRadius: BorderRadius.circular(18),
         ),
         child: Text(
@@ -413,7 +455,7 @@ class TransactionMapControlBar extends StatelessWidget {
             fontFamily: 'Google Sans',
             fontSize: 11,
             fontWeight: FontWeight.w700,
-            color: isActive ? Colors.white : const Color(0xFF8E8E93),
+            color: isActive ? Colors.white : colors.textSecondary,
           ),
         ),
       ),
@@ -422,15 +464,25 @@ class TransactionMapControlBar extends StatelessWidget {
 }
 
 class MapGridPainter extends CustomPainter {
+  final Color gridColor;
+  final Color roadColor;
+  final Color highlightRoadColor;
+
+  MapGridPainter({
+    this.gridColor = const Color(0xFF222630),
+    this.roadColor = const Color(0xFF2A3040),
+    this.highlightRoadColor = const Color(0xFF333B4D),
+  });
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0xFF222630)
+      ..color = gridColor
       ..strokeWidth = 0.8
       ..style = PaintingStyle.stroke;
 
     final roadPaint = Paint()
-      ..color = const Color(0xFF2A3040)
+      ..color = roadColor
       ..strokeWidth = 4.0
       ..style = PaintingStyle.stroke;
 
@@ -456,5 +508,8 @@ class MapGridPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant MapGridPainter oldDelegate) =>
+      oldDelegate.gridColor != gridColor ||
+      oldDelegate.roadColor != roadColor ||
+      oldDelegate.highlightRoadColor != highlightRoadColor;
 }

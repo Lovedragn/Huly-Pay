@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/external_data.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_back_button.dart';
 
 class PrivacySecurityScreen extends StatelessWidget {
   const PrivacySecurityScreen({super.key});
@@ -75,19 +76,7 @@ class PrivacySecurityScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              color: colors.surface,
-              shape: BoxShape.circle,
-              border: Border.all(color: colors.border),
-            ),
-            child: IconButton(
-              icon: Icon(Icons.arrow_back_ios_new_rounded,
-                  color: colors.textPrimary, size: 18),
-              onPressed: () => Navigator.of(context).pop(),
-              tooltip: 'Back',
-            ),
-          ),
+          const AppBackButton(),
           const SizedBox(width: 14),
           Expanded(
             child: Text(

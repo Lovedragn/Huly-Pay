@@ -27,16 +27,20 @@ class TransactionActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeManager.colors;
+    final isDark = colors.isDark;
+
     final effectiveBgColor = backgroundColor ??
-        (isPrimary ? Colors.white : const Color(0xFF141416));
-    final effectiveFgColor = isPrimary ? Colors.black : Colors.white;
+        (isPrimary ? (isDark ? Colors.white : colors.accent) : colors.surface);
+    final effectiveFgColor =
+        isPrimary ? (isDark ? Colors.black : Colors.white) : colors.textPrimary;
     final effectiveTextColor = textColor ?? effectiveFgColor;
     final effectiveIconColor = iconColor ?? effectiveFgColor;
     final effectiveBorder = borderColor != null
         ? Border.all(color: borderColor!, width: 1)
         : (isPrimary
             ? null
-            : Border.all(color: AppThemeManager.colors.border, width: 1));
+            : Border.all(color: colors.border, width: 1));
 
     return Material(
       color: effectiveBgColor,
@@ -102,6 +106,8 @@ class TransactionDetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeManager.colors;
+
     final content = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
@@ -109,9 +115,9 @@ class TransactionDetailRow extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Google Sans',
-              color: Color(0xFF8E8E93),
+              color: colors.textSecondary,
               fontSize: 14,
               fontWeight: FontWeight.w400,
             ),
@@ -127,9 +133,9 @@ class TransactionDetailRow extends StatelessWidget {
                     value,
                     textAlign: TextAlign.right,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Google Sans',
-                      color: Colors.white,
+                      color: colors.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
@@ -140,9 +146,9 @@ class TransactionDetailRow extends StatelessWidget {
                   GestureDetector(
                     onTap: onCopy,
                     behavior: HitTestBehavior.opaque,
-                    child: const Icon(
+                    child: Icon(
                       Icons.copy_rounded,
-                      color: Color(0xFF007AFF),
+                      color: colors.accent,
                       size: 15,
                     ),
                   ),

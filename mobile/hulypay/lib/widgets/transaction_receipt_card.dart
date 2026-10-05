@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 
 class TransactionReceiptCard extends StatelessWidget {
   final String status;
@@ -18,6 +19,9 @@ class TransactionReceiptCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeManager.colors;
+    final isDark = colors.isDark;
+
     final s = status.toUpperCase();
     final isFailed = s == 'FAILED';
     final isCancelled = s == 'CANCELLED';
@@ -29,17 +33,21 @@ class TransactionReceiptCard extends StatelessWidget {
             ? const Color(0xFFFF453A)
             : (isPending ? const Color(0xFFE5A93C) : const Color(0xFF30D158)));
 
-    final Color statusBg = isCancelled
-        ? const Color(0xFF2C2210)
-        : (isFailed
-            ? const Color(0xFF2C1517)
-            : (isPending ? const Color(0xFF2A2210) : const Color(0xFF10281B)));
+    final Color statusBg = isDark
+        ? (isCancelled
+            ? const Color(0xFF2C2210)
+            : (isFailed
+                ? const Color(0xFF2C1517)
+                : (isPending ? const Color(0xFF2A2210) : const Color(0xFF10281B))))
+        : statusColor.withValues(alpha: 0.12);
 
-    final Color statusBorder = isCancelled
-        ? const Color(0xFF5A441C)
-        : (isFailed
-            ? const Color(0xFF5A1C22)
-            : (isPending ? const Color(0xFF554117) : const Color(0xFF1B4D2E)));
+    final Color statusBorder = isDark
+        ? (isCancelled
+            ? const Color(0xFF5A441C)
+            : (isFailed
+                ? const Color(0xFF5A1C22)
+                : (isPending ? const Color(0xFF554117) : const Color(0xFF1B4D2E))))
+        : statusColor.withValues(alpha: 0.3);
 
     final String statusText = isCancelled
         ? 'Payment Cancelled'
@@ -59,10 +67,10 @@ class TransactionReceiptCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       decoration: BoxDecoration(
-        color: const Color(0xFF141416),
+        color: colors.surface,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color.fromARGB(36, 44, 52, 90),
+          color: colors.border,
           width: 1,
         ),
       ),
@@ -99,7 +107,11 @@ class TransactionReceiptCard extends StatelessWidget {
             displayAmount,
             style: TextStyle(
               fontFamily: 'Google Sans',
-              color: isFailed ? const Color(0xFFFF453A) : Colors.white,
+              color: isFailed
+                  ? const Color(0xFFFF453A)
+                  : ((colors.name == 'Red velvet' || colors.name == 'OnePlus red')
+                      ? colors.accent
+                      : colors.textPrimary),
               fontSize: 38,
               fontWeight: FontWeight.w800,
               letterSpacing: -0.5,
@@ -112,9 +124,9 @@ class TransactionReceiptCard extends StatelessWidget {
                 ? 'Received from $merchantTitle'
                 : 'Paid to $merchantTitle',
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Google Sans',
-              color: Colors.white,
+              color: colors.textPrimary,
               fontSize: 17,
               fontWeight: FontWeight.w600,
             ),
@@ -123,9 +135,9 @@ class TransactionReceiptCard extends StatelessWidget {
           // Time subtitle
           Text(
             time,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Google Sans',
-              color: Color(0xFF8E8E93),
+              color: colors.textSecondary,
               fontSize: 13,
             ),
           ),

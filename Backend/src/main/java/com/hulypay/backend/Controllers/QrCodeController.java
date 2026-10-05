@@ -94,11 +94,8 @@ public class QrCodeController {
         String query = parts[1];
 
         // Replace existing am param or append
-        if (query.matches("(?i).*([?&])am=[^&]*.*")) {
+        if (query.matches("(?i)(^|.*&)am=[^&]*.*")) {
             query = query.replaceAll("(?i)(^|&)am=[^&]*", "$1am=" + formattedAmount);
-            if (query.startsWith("&")) {
-                query = query.substring(1);
-            }
         } else {
             query = query + "&am=" + formattedAmount;
         }

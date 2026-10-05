@@ -12,6 +12,7 @@ import '../services/auth_service.dart';
 import '../services/local_database_service.dart';
 import '../services/transaction_pdf_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_back_button.dart';
 import '../widgets/category_picker_sheet.dart';
 import '../widgets/edit_amount_sheet.dart';
 import '../widgets/transaction_detail_components.dart';
@@ -453,23 +454,25 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
   }
 
   void _showCancelConfirmationDialog(BuildContext context) {
+    final colors = AppThemeManager.colors;
     showDialog(
       context: context,
       builder: (BuildContext ctx) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF1E1E24),
+          backgroundColor: colors.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: colors.border, width: 1),
           ),
-          title: const Row(
+          title: Row(
             children: [
-              Icon(Icons.cancel_outlined, color: Color(0xFFFF453A), size: 22),
-              SizedBox(width: 8),
+              const Icon(Icons.cancel_outlined, color: Color(0xFFFF453A), size: 22),
+              const SizedBox(width: 8),
               Text(
                 'Cancel Payment',
                 style: TextStyle(
                   fontFamily: 'Google Sans',
-                  color: Colors.white,
+                  color: colors.textPrimary,
                   fontWeight: FontWeight.w700,
                   fontSize: 18,
                 ),
@@ -478,20 +481,20 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
           ),
           content: Text(
             'Are you sure you want to cancel this payment of $_displayAmount to $_merchantTitle?',
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Google Sans',
-              color: Color(0xFF8E8E93),
+              color: colors.textSecondary,
               fontSize: 14,
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text(
+              child: Text(
                 'Keep Payment',
                 style: TextStyle(
                   fontFamily: 'Google Sans',
-                  color: Color(0xFF8E8E93),
+                  color: colors.textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -548,23 +551,25 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
   }
 
   void _showDeleteConfirmationDialog(BuildContext context) {
+    final colors = AppThemeManager.colors;
     showDialog(
       context: context,
       builder: (BuildContext ctx) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF1E1E24),
+          backgroundColor: colors.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: colors.border, width: 1),
           ),
-          title: const Row(
+          title: Row(
             children: [
-              Icon(Icons.delete_outline_rounded, color: Color(0xFFFF453A), size: 22),
-              SizedBox(width: 8),
+              const Icon(Icons.delete_outline_rounded, color: Color(0xFFFF453A), size: 22),
+              const SizedBox(width: 8),
               Text(
                 'Delete Transaction',
                 style: TextStyle(
                   fontFamily: 'Google Sans',
-                  color: Colors.white,
+                  color: colors.textPrimary,
                   fontWeight: FontWeight.w700,
                   fontSize: 18,
                 ),
@@ -573,20 +578,20 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
           ),
           content: Text(
             'Are you sure you want to delete this transaction of $_displayAmount to $_merchantTitle? This action cannot be undone.',
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Google Sans',
-              color: Color(0xFF8E8E93),
+              color: colors.textSecondary,
               fontSize: 14,
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text(
+              child: Text(
                 'Cancel',
                 style: TextStyle(
                   fontFamily: 'Google Sans',
-                  color: Color(0xFF8E8E93),
+                  color: colors.textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -758,28 +763,8 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
             Positioned(
               top: topPadding + 10,
               left: 16,
-              child: GestureDetector(
-                onTap: () => Navigator.of(context).pop(_hasChanged ? true : _customCategory),
-                behavior: HitTestBehavior.opaque,
-                child: Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    color: const Color(0xDD141416),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppThemeManager.colors.border, width: 1),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black45,
-                        blurRadius: 5,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.arrow_back, color: Colors.white, size: 20),
-                  ),
-                ),
+              child: AppBackButton(
+                onPressed: () => Navigator.of(context).pop(_hasChanged ? true : _customCategory),
               ),
             ),
 
@@ -790,32 +775,32 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
               child: GestureDetector(
                 onTap: _isGeneratingPdf ? null : _handleShare,
                 behavior: HitTestBehavior.opaque,
-                child: Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    color: const Color(0xDD141416),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppThemeManager.colors.border, width: 1),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black45,
-                        blurRadius: 5,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: _isGeneratingPdf
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: AppThemeManager.colors.surface,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppThemeManager.colors.border, width: 1.5),
+                    ),
+                    child: Center(
+                      child: _isGeneratingPdf
+                          ? SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppThemeManager.colors.textPrimary,
+                              ),
+                            )
+                          : Icon(
+                              Icons.share_rounded,
+                              color: AppThemeManager.colors.textPrimary,
+                              size: 18,
                             ),
-                          )
-                        : const Icon(Icons.share_rounded, color: Colors.white, size: 20),
+                    ),
                   ),
                 ),
               ),
@@ -834,21 +819,26 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
                 snap: true,
                 snapSizes: const [0.54, 0.94],
                 builder: (BuildContext ctx, ScrollController scrollController) {
+                  final colors = AppThemeManager.colors;
+                  final isDark = colors.isDark;
+
                   return Container(
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF101013),
-                      borderRadius: BorderRadius.vertical(
+                    decoration: BoxDecoration(
+                      color: colors.surface,
+                      borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(32),
                       ),
                       border: Border(
-                        top: BorderSide(color: Color(0xFF282830), width: 1.5),
+                        top: BorderSide(color: colors.border, width: 1.5),
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Color.fromARGB(183, 0, 0, 0),
+                          color: isDark
+                              ? const Color.fromARGB(183, 0, 0, 0)
+                              : const Color.fromARGB(25, 0, 0, 0),
                           blurRadius: 48,
                           spreadRadius: 0,
-                          offset: Offset(0, -2),
+                          offset: const Offset(0, -2),
                         ),
                       ],
                     ),
@@ -869,7 +859,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
                               height: 4.5,
                               margin: const EdgeInsets.only(top: 2, bottom: 14),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF383842),
+                                color: colors.divider,
                                 borderRadius: BorderRadius.circular(3),
                               ),
                             ),
@@ -1050,9 +1040,9 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
   Widget _buildSectionHeader(String title) {
     return Text(
       title,
-      style: const TextStyle(
+      style: TextStyle(
         fontFamily: 'Google Sans',
-        color: Color(0xFF6B6B70),
+        color: AppThemeManager.colors.textMuted,
         fontSize: 11,
         fontWeight: FontWeight.w700,
         letterSpacing: 1.2,

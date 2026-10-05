@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -20,7 +21,6 @@ import '../services/upi_payment_service.dart';
 import '../services/upi_service.dart';
 import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
-import '../widgets/custom_bottom_nav_bar.dart';
 import 'payment_methods_screen.dart';
 import 'upload_qr_screen.dart';
 
@@ -28,11 +28,7 @@ class ScanAndPayScreen extends StatefulWidget {
   final double? initialAmount;
   final String? initialNote;
 
-  const ScanAndPayScreen({
-    super.key,
-    this.initialAmount,
-    this.initialNote,
-  });
+  const ScanAndPayScreen({super.key, this.initialAmount, this.initialNote});
 
   @override
   State<ScanAndPayScreen> createState() => _ScanAndPayScreenState();
@@ -57,9 +53,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
           ? widget.initialAmount!.toStringAsFixed(2)
           : '',
     );
-    _noteController = TextEditingController(
-      text: widget.initialNote ?? '',
-    );
+    _noteController = TextEditingController(text: widget.initialNote ?? '');
     _scannerController = MobileScannerController(
       detectionSpeed: DetectionSpeed.normal,
       facing: CameraFacing.back,
@@ -124,18 +118,13 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     }
   }
 
-
-
   Future<void> _openUploadFromScanner() async {
     try {
       await _scannerController.pause();
     } catch (_) {}
     if (!mounted) return;
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const UploadQrScreen(),
-      ),
-    );
+    await Navigator.of(context)
+        .push(MaterialPageRoute(builder: (_) => const UploadQrScreen()));
     if (mounted) {
       try {
         await _scannerController.start();
@@ -230,9 +219,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     final amountController = TextEditingController(
       text: upiData.amount != null ? upiData.amount!.toStringAsFixed(2) : '',
     );
-    final noteController = TextEditingController(
-      text: upiData.note ?? '',
-    );
+    final noteController = TextEditingController(text: upiData.note ?? '');
     final amountFocusNode = FocusNode();
     PaymentLocation? capturedLocation = initialLocationResult?.location;
     bool isLocationFetching = capturedLocation == null;
@@ -245,8 +232,9 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
 
     final hasPayeeName =
         upiData.payeeName != null && upiData.payeeName!.trim().isNotEmpty;
-    final primaryTitle =
-        hasPayeeName ? upiData.payeeName!.trim() : upiData.upiId;
+    final primaryTitle = hasPayeeName
+        ? upiData.payeeName!.trim()
+        : upiData.upiId;
     final subtitle = hasPayeeName ? upiData.upiId : 'UPI Payee';
 
     await Navigator.of(context).push(
@@ -277,8 +265,11 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                   border: Border.all(color: colors.border, width: 0.5),
                 ),
                 child: IconButton(
-                  icon: Icon(Icons.close_rounded,
-                      color: colors.textPrimary, size: 20),
+                  icon: Icon(
+                    Icons.close_rounded,
+                    color: colors.textPrimary,
+                    size: 20,
+                  ),
                   onPressed: () => Navigator.of(pageContext).pop(),
                   tooltip: 'Cancel',
                 ),
@@ -322,8 +313,10 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
               child: Center(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 20,
+                  ),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 420),
                     child: Column(
@@ -337,8 +330,10 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                           decoration: BoxDecoration(
                             color: colors.surfaceSecondary,
                             shape: BoxShape.circle,
-                            border:
-                                Border.all(color: colors.border, width: 1.5),
+                            border: Border.all(
+                              color: colors.border,
+                              width: 1.5,
+                            ),
                           ),
                           child: Center(
                             child: Icon(
@@ -387,31 +382,41 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                             GestureDetector(
                               onTap: () {
                                 Clipboard.setData(
-                                    ClipboardData(text: upiData.upiId));
+                                  ClipboardData(text: upiData.upiId),
+                                );
                                 ScaffoldMessenger.of(pageContext).showSnackBar(
                                   SnackBar(
-                                    content:
-                                        Text('UPI ID copied: ${upiData.upiId}'),
-                                    duration:
-                                        const Duration(milliseconds: 1500),
+                                    content: Text(
+                                      'UPI ID copied: ${upiData.upiId}',
+                                    ),
+                                    duration: const Duration(
+                                      milliseconds: 1500,
+                                    ),
                                     backgroundColor: colors.surfaceSecondary,
                                   ),
                                 );
                               },
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 3),
+                                  horizontal: 8,
+                                  vertical: 3,
+                                ),
                                 decoration: BoxDecoration(
                                   color: colors.surfaceSecondary,
                                   borderRadius: BorderRadius.circular(6),
                                   border: Border.all(
-                                      color: colors.border, width: 0.5),
+                                    color: colors.border,
+                                    width: 0.5,
+                                  ),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.copy_rounded,
-                                        size: 12, color: colors.accent),
+                                    Icon(
+                                      Icons.copy_rounded,
+                                      size: 12,
+                                      color: colors.accent,
+                                    ),
                                     const SizedBox(width: 4),
                                     Text(
                                       'Copy',
@@ -434,12 +439,16 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 16),
+                            horizontal: 20,
+                            vertical: 16,
+                          ),
                           decoration: BoxDecoration(
                             color: colors.surface,
                             borderRadius: BorderRadius.circular(20),
-                            border:
-                                Border.all(color: colors.border, width: 1.2),
+                            border: Border.all(
+                              color: colors.border,
+                              width: 1.2,
+                            ),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -476,7 +485,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                                       autofocus: true,
                                       keyboardType:
                                           const TextInputType.numberWithOptions(
-                                              decimal: true),
+                                            decimal: true,
+                                          ),
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontFamily: 'Google Sans',
@@ -488,8 +498,9 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                                       decoration: InputDecoration(
                                         hintText: '0.00',
                                         hintStyle: TextStyle(
-                                          color: colors.textMuted
-                                              .withValues(alpha: 0.35),
+                                          color: colors.textMuted.withValues(
+                                            alpha: 0.35,
+                                          ),
                                         ),
                                         border: InputBorder.none,
                                         isDense: true,
@@ -518,7 +529,9 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                           decoration: InputDecoration(
                             hintText: 'Add a note (optional)',
                             hintStyle: TextStyle(
-                                color: colors.textMuted, fontSize: 13),
+                              color: colors.textMuted,
+                              fontSize: 13,
+                            ),
                             prefixIcon: Icon(
                               Icons.edit_note_rounded,
                               color: colors.accent,
@@ -536,11 +549,15 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
-                              borderSide:
-                                  BorderSide(color: colors.accent, width: 1.5),
+                              borderSide: BorderSide(
+                                color: colors.accent,
+                                width: 1.5,
+                              ),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 14),
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 32),
@@ -555,24 +572,29 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                               side: colors.isDark
                                   ? BorderSide.none
                                   : BorderSide(
-                                      color: colors.border, width: 1.5),
+                                      color: colors.border,
+                                      width: 1.5,
+                                    ),
                               elevation: colors.isDark ? 2 : 0,
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 16),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
                             ),
                             onPressed: () async {
                               final messenger = ScaffoldMessenger.of(context);
-                              final parsedAmount = double.tryParse(
-                                      amountController.text.trim()) ??
+                              final parsedAmount =
+                                  double.tryParse(
+                                    amountController.text.trim(),
+                                  ) ??
                                   0.0;
                               if (parsedAmount <= 0) {
                                 messenger.showSnackBar(
                                   const SnackBar(
-                                      content: Text(
-                                          'Please enter a valid amount greater than 0')),
+                                    content: Text(
+                                      'Please enter a valid amount greater than 0',
+                                    ),
+                                  ),
                                 );
                                 return;
                               }
@@ -597,66 +619,103 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
 
                               // Flow: Generate backend QR with am=(user entered amount) -> share image to default UPI app from settings
                               try {
-                                final preferredAppId = await UserPreferencesService().getDefaultPaymentApp();
-                                final targetApp = (preferredAppId != UpiApps.askEveryTime)
+                                final preferredAppId =
+                                    await UserPreferencesService()
+                                        .getDefaultPaymentApp();
+                                final targetApp =
+                                    (preferredAppId != UpiApps.askEveryTime)
                                     ? UpiApps.findById(preferredAppId)
                                     : UpiApps.gpay;
-                                final String? targetPackage = targetApp?.packageName ?? UpiApps.gpay.packageName;
-                                final String appName = targetApp?.name ?? 'Google Pay';
+                                final String targetPackage =
+                                    targetApp?.packageName ??
+                                    UpiApps.gpay.packageName;
+                                final String appName =
+                                    targetApp?.name ?? 'Google Pay';
 
                                 String shareFilePath = '';
                                 try {
-                                  final imageBytes = await ApiClient().generateQrCode(
-                                    uri: upiData.rawUri,
-                                    amount: parsedAmount,
-                                    size: 512,
-                                  );
+                                  final imageBytes = await ApiClient()
+                                      .generateQrCode(
+                                        uri: upiData.rawUri,
+                                        amount: parsedAmount,
+                                        size: 512,
+                                      );
 
                                   if (imageBytes.isNotEmpty) {
-                                    final tempDir = await getTemporaryDirectory();
-                                    final newQrFile = File('${tempDir.path}/qr_scan_${DateTime.now().millisecondsSinceEpoch}.png');
-                                    await newQrFile.writeAsBytes(imageBytes, flush: true);
+                                    final tempDir =
+                                        await getTemporaryDirectory();
+                                    final newQrFile = File(
+                                      '${tempDir.path}/qr_scan_${DateTime.now().millisecondsSinceEpoch}.png',
+                                    );
+                                    await newQrFile.writeAsBytes(
+                                      imageBytes,
+                                      flush: true,
+                                    );
                                     shareFilePath = newQrFile.path;
-                                    debugPrint('[ScanAndPay] Generated amount-injected QR image at: $shareFilePath');
+                                    debugPrint(
+                                      '[ScanAndPay] Generated amount-injected QR image at: $shareFilePath',
+                                    );
                                   }
                                 } catch (e) {
-                                  debugPrint('[ScanAndPay] Backend QR generation fallback: $e');
+                                  debugPrint(
+                                    '[ScanAndPay] Backend QR generation fallback: $e',
+                                  );
                                 }
 
                                 if (shareFilePath.isNotEmpty && mounted) {
-                                  final success = await QrShareService.shareQrImage(
-                                    context: context,
-                                    filePath: shareFilePath,
-                                    amount: parsedAmount,
-                                    note: updatedNote.isNotEmpty ? updatedNote : null,
-                                    title: 'Pay with $appName',
-                                    targetPackage: targetPackage,
-                                  );
+                                  final success =
+                                      await QrShareService.shareQrImage(
+                                        context: context,
+                                        filePath: shareFilePath,
+                                        amount: parsedAmount,
+                                        note: updatedNote.isNotEmpty
+                                            ? updatedNote
+                                            : null,
+                                        title: 'Pay with $appName',
+                                        targetPackage: targetPackage,
+                                      );
 
                                   if (success && mounted) {
-                                    final txnRef = 'HULY${DateTime.now().millisecondsSinceEpoch}';
+                                    final txnRef =
+                                        'HULY${DateTime.now().millisecondsSinceEpoch}';
                                     final payee = upiData.payeeName?.trim();
                                     final upi = upiData.upiId.trim();
-                                    final merchant = (payee != null && payee.isNotEmpty)
+                                    final merchant =
+                                        (payee != null && payee.isNotEmpty)
                                         ? payee
-                                        : ((upi.isNotEmpty) ? upi : 'UPI Merchant');
+                                        : ((upi.isNotEmpty)
+                                              ? upi
+                                              : 'UPI Merchant');
 
                                     try {
-                                      await TransactionRepository().createTransaction(CreatePaymentPayload(
-                                        amount: parsedAmount,
-                                        currency: upiData.currency,
-                                        merchantName: merchant,
-                                        upiId: upi,
-                                        paymentMethod: 'UPI',
-                                        transactionReference: txnRef,
-                                        status: UserPreferencesService().cachedQuickConfirm ? 'CONFIRMED' : 'PENDING',
-                                        provider: targetApp?.name.toUpperCase().replaceAll(' ', '_') ?? 'UPI',
-                                      ));
+                                      await TransactionRepository()
+                                          .createTransaction(
+                                            CreatePaymentPayload(
+                                              amount: parsedAmount,
+                                              currency: upiData.currency,
+                                              merchantName: merchant,
+                                              upiId: upi,
+                                              paymentMethod: 'UPI',
+                                              transactionReference: txnRef,
+                                              status:
+                                                  UserPreferencesService()
+                                                      .cachedQuickConfirm
+                                                  ? 'CONFIRMED'
+                                                  : 'PENDING',
+                                              provider:
+                                                  targetApp?.name
+                                                      .toUpperCase()
+                                                      .replaceAll(' ', '_') ??
+                                                  'UPI',
+                                            ),
+                                          );
                                     } catch (_) {}
 
                                     messenger.showSnackBar(
                                       SnackBar(
-                                        content: Text(targetPackage != null ? 'Opening $appName with QR code...' : 'Opening app chooser...'),
+                                        content: Text(
+                                          'Opening $appName with QR code...',
+                                        ),
                                         behavior: SnackBarBehavior.floating,
                                       ),
                                     );
@@ -665,13 +724,18 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                                   }
                                 }
                               } catch (e) {
-                                debugPrint('[ScanAndPay] Error in QR share flow: $e');
+                                debugPrint(
+                                  '[ScanAndPay] Error in QR share flow: $e',
+                                );
                               }
 
                               // Fallback to direct intent flow if image generation/sharing is unsupported
                               if (mounted) {
                                 await _startSmsVerificationWorkflow(
-                                    updatedUpiData, parsedAmount, capturedLocation);
+                                  updatedUpiData,
+                                  parsedAmount,
+                                  capturedLocation,
+                                );
                               }
                             },
                             child: Text(
@@ -679,7 +743,11 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                                 final pref = UserPreferencesService()
                                     .cachedDefaultPaymentApp;
                                 final app = UpiApps.findById(pref);
-                                final target = app?.name ?? (pref == UpiApps.askEveryTime ? 'Any App' : 'UPI App');
+                                final target =
+                                    app?.name ??
+                                    (pref == UpiApps.askEveryTime
+                                        ? 'Any App'
+                                        : 'UPI App');
                                 return 'Pay via $target';
                               }(),
                               style: const TextStyle(
@@ -724,11 +792,15 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
             builder: (ctx) => AlertDialog(
               backgroundColor: const Color(0xFF1E1E24),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
+                borderRadius: BorderRadius.circular(20),
+              ),
               title: const Row(
                 children: [
-                  Icon(Icons.sms_failed_rounded,
-                      color: Color(0xFFE5A93C), size: 24),
+                  Icon(
+                    Icons.sms_failed_rounded,
+                    color: Color(0xFFE5A93C),
+                    size: 24,
+                  ),
                   SizedBox(width: 10),
                   Text(
                     ExternalData.smsPermissionRequiredTitle,
@@ -744,22 +816,26 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
               content: const Text(
                 ExternalData.smsPermissionRequiredContent,
                 style: TextStyle(
-                    fontFamily: 'Google Sans',
-                    color: Color(0xFFD0D0D5),
-                    fontSize: 14,
-                    height: 1.4),
+                  fontFamily: 'Google Sans',
+                  color: Color(0xFFD0D0D5),
+                  fontSize: 14,
+                  height: 1.4,
+                ),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('Dismiss',
-                      style: TextStyle(color: Color(0xFF8E8E93))),
+                  child: const Text(
+                    'Dismiss',
+                    style: TextStyle(color: Color(0xFF8E8E93)),
+                  ),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF007AFF),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                   onPressed: () async {
                     Navigator.of(ctx).pop();
@@ -767,12 +843,19 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                         await GooglePayService.requestSmsPermission();
                     if (retryGranted && mounted) {
                       _startSmsVerificationWorkflow(
-                          upiData, parsedAmount, capturedLocation);
+                        upiData,
+                        parsedAmount,
+                        capturedLocation,
+                      );
                     }
                   },
-                  child: const Text('Grant Permission',
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.w700)),
+                  child: const Text(
+                    'Grant Permission',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -783,8 +866,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     }
 
     // Determine Preferred UPI Application & Check Availability
-    final preferredAppId =
-        await UserPreferencesService().getDefaultPaymentApp();
+    final preferredAppId = await UserPreferencesService()
+        .getDefaultPaymentApp();
     bool isAppReady = true;
     SupportedUpiApp? targetApp;
 
@@ -808,11 +891,15 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
           builder: (ctx) => AlertDialog(
             backgroundColor: const Color(0xFF1E1E24),
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20)),
+              borderRadius: BorderRadius.circular(20),
+            ),
             title: Row(
               children: [
-                const Icon(Icons.warning_amber_rounded,
-                    color: Color(0xFFE5A93C), size: 24),
+                const Icon(
+                  Icons.warning_amber_rounded,
+                  color: Color(0xFFE5A93C),
+                  size: 24,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -830,34 +917,43 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
             content: Text(
               '$missingAppName is not installed on this device. Would you like to use the Android app chooser or select another UPI application?',
               style: const TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: Color(0xFFD0D0D5),
-                  fontSize: 14,
-                  height: 1.4),
+                fontFamily: 'Google Sans',
+                color: Color(0xFFD0D0D5),
+                fontSize: 14,
+                height: 1.4,
+              ),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('Cancel',
-                    style: TextStyle(color: Color(0xFF8E8E93))),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: Color(0xFF8E8E93)),
+                ),
               ),
               TextButton(
                 onPressed: () {
                   Navigator.of(ctx).pop();
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                        builder: (_) => const PaymentMethodsScreen()),
+                      builder: (_) => const PaymentMethodsScreen(),
+                    ),
                   );
                 },
-                child: const Text('Change Default App',
-                    style: TextStyle(
-                        color: Color(0xFF007AFF), fontWeight: FontWeight.w600)),
+                child: const Text(
+                  'Change Default App',
+                  style: TextStyle(
+                    color: Color(0xFF007AFF),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF007AFF),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
                 onPressed: () async {
                   Navigator.of(ctx).pop();
@@ -868,9 +964,13 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                     forceAskEveryTime: true,
                   );
                 },
-                child: const Text('Open Any Payment App',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w700)),
+                child: const Text(
+                  'Open Any Payment App',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
             ],
           ),
@@ -895,8 +995,9 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   }) async {
     final messenger = ScaffoldMessenger.of(context);
     final currentPref = await UserPreferencesService().getDefaultPaymentApp();
-    final effectiveAppId =
-        forceAskEveryTime ? UpiApps.askEveryTime : currentPref;
+    final effectiveAppId = forceAskEveryTime
+        ? UpiApps.askEveryTime
+        : currentPref;
     final bool isQuickConfirm = UserPreferencesService().cachedQuickConfirm;
     final String paymentStatus = isQuickConfirm ? 'CONFIRMED' : 'PENDING';
 
@@ -905,49 +1006,52 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     final providerName = effectiveAppId == 'google_pay'
         ? 'GOOGLE_PAY'
         : (effectiveAppId == 'amazon_pay'
-            ? 'AMAZON_PAY'
-            : (effectiveAppId == 'phonepe'
-                ? 'PHONEPE'
-                : (effectiveAppId == 'bhim' ? 'BHIM' : 'UPI')));
+              ? 'AMAZON_PAY'
+              : (effectiveAppId == 'phonepe'
+                    ? 'PHONEPE'
+                    : (effectiveAppId == 'bhim' ? 'BHIM' : 'UPI')));
 
     // Auto-resolve category
     String? autoCategory;
     try {
       final cleanUpi = upiData.upiId.toLowerCase().trim();
       if (cleanUpi.isNotEmpty) {
-        autoCategory =
-            await LocalDatabaseService().getMetadata('upi_category_$cleanUpi');
+        autoCategory = await LocalDatabaseService().getMetadata(
+          'upi_category_$cleanUpi',
+        );
       }
       if ((autoCategory == null || autoCategory.isEmpty) &&
           upiData.payeeName != null &&
           upiData.payeeName!.trim().isNotEmpty) {
         final cleanMerchant = upiData.payeeName!.toLowerCase().trim();
-        autoCategory = await LocalDatabaseService()
-            .getMetadata('merchant_category_$cleanMerchant');
+        autoCategory = await LocalDatabaseService().getMetadata(
+          'merchant_category_$cleanMerchant',
+        );
       }
     } catch (_) {}
 
     final effectivePaymentMethod =
         (autoCategory != null && autoCategory.isNotEmpty)
-            ? autoCategory
-            : 'UPI';
+        ? autoCategory
+        : 'UPI';
 
     PaymentModel pendingPayment;
     try {
-      pendingPayment =
-          await TransactionRepository().createTransaction(CreatePaymentPayload(
-        amount: parsedAmount,
-        currency: upiData.currency,
-        merchantName: upiData.payeeName,
-        upiId: upiData.upiId,
-        paymentMethod: effectivePaymentMethod,
-        transactionReference: txnRef,
-        status: paymentStatus,
-        provider: providerName,
-        latitude: capturedLocation?.latitude,
-        longitude: capturedLocation?.longitude,
-        locationAccuracyMeters: capturedLocation?.accuracyMeters,
-      ));
+      pendingPayment = await TransactionRepository().createTransaction(
+        CreatePaymentPayload(
+          amount: parsedAmount,
+          currency: upiData.currency,
+          merchantName: upiData.payeeName,
+          upiId: upiData.upiId,
+          paymentMethod: effectivePaymentMethod,
+          transactionReference: txnRef,
+          status: paymentStatus,
+          provider: providerName,
+          latitude: capturedLocation?.latitude,
+          longitude: capturedLocation?.longitude,
+          locationAccuracyMeters: capturedLocation?.accuracyMeters,
+        ),
+      );
     } catch (e) {
       pendingPayment = PaymentModel(
         id: 'local_${DateTime.now().millisecondsSinceEpoch}',
@@ -969,8 +1073,10 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
 
     if (autoCategory != null && autoCategory.isNotEmpty) {
       try {
-        await LocalDatabaseService()
-            .setMetadata('category_${pendingPayment.id}', autoCategory);
+        await LocalDatabaseService().setMetadata(
+          'category_${pendingPayment.id}',
+          autoCategory,
+        );
       } catch (_) {}
 
       try {
@@ -979,10 +1085,13 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
             !pendingPayment.id.startsWith('local_') &&
             !pendingPayment.id.startsWith('tx_')) {
           try {
-            await client.from('transactions').update({
-              'category': autoCategory,
-              'updated_at': DateTime.now().toUtc().toIso8601String(),
-            }).eq('id', pendingPayment.id);
+            await client
+                .from('transactions')
+                .update({
+                  'category': autoCategory,
+                  'updated_at': DateTime.now().toUtc().toIso8601String(),
+                })
+                .eq('id', pendingPayment.id);
           } catch (_) {}
         }
       } catch (_) {}
@@ -1008,7 +1117,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
 
     if (!launched) {
       launched = await UpiPaymentService.launchStandaloneApp(
-          preferredAppId: effectiveAppId);
+        preferredAppId: effectiveAppId,
+      );
     }
 
     if (!launched) {
@@ -1035,7 +1145,9 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   }
 
   void _showQuickConfirmSuccessDialog(
-      PaymentModel payment, UpiPaymentData upiData) {
+    PaymentModel payment,
+    UpiPaymentData upiData,
+  ) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -1092,16 +1204,16 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
             Text(
               'Merchant: ${payment.merchantName ?? payment.upiId ?? "UPI Merchant"}',
               style: const TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: Color(0xFF8E8E93),
-                  fontSize: 13),
+                fontFamily: 'Google Sans',
+                color: Color(0xFF8E8E93),
+                fontSize: 13,
+              ),
             ),
             const SizedBox(height: 14),
 
             // Quick Confirm Badge
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: const Color(0xFF161619),
                 borderRadius: BorderRadius.circular(10),
@@ -1111,11 +1223,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
               ),
               child: const Row(
                 children: [
-                  Icon(
-                    Icons.bolt_rounded,
-                    size: 18,
-                    color: Color(0xFFFFB300),
-                  ),
+                  Icon(Icons.bolt_rounded, size: 18, color: Color(0xFFFFB300)),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -1148,9 +1256,9 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF28A745),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             ),
             onPressed: () {
               Navigator.of(dialogCtx).pop();
@@ -1159,7 +1267,9 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
             child: const Text(
               'Done',
               style: TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.w700),
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],
@@ -1168,7 +1278,9 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   }
 
   void _showSmsVerificationDialog(
-      PaymentModel payment, UpiPaymentData upiData) {
+    PaymentModel payment,
+    UpiPaymentData upiData,
+  ) {
     int remainingSeconds = _paymentVerificationTimeout.inSeconds;
     Timer? timer;
     String statusState = 'WAITING';
@@ -1199,7 +1311,10 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                   statusState = 'TIMEOUT';
                   statusMessage = ExternalData.paymentVerificationTimeoutMsg;
                 });
-                TransactionRepository().reconcileTransaction(payment.id, 'TIMEOUT');
+                TransactionRepository().reconcileTransaction(
+                  payment.id,
+                  'TIMEOUT',
+                );
               }
             });
 
@@ -1221,17 +1336,18 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
               }
 
               try {
-                final result = await TransactionRepository().verifyTransactionSms(
-                  paymentId: payment.id,
-                  smsBody: body,
-                  sender: sender,
-                  receivedAt: timestamp,
-                );
+                final result = await TransactionRepository()
+                    .verifyTransactionSms(
+                      paymentId: payment.id,
+                      smsBody: body,
+                      sender: sender,
+                      receivedAt: timestamp,
+                    );
 
                 final bool isVerified = result['verified'] == true;
                 final String? resultStatus = result['status']?.toString();
-                final String? upiRef =
-                    result['extractedUpiReference']?.toString();
+                final String? upiRef = result['extractedUpiReference']
+                    ?.toString();
 
                 if (isVerified && dialogCtx.mounted) {
                   timer?.cancel();
@@ -1248,7 +1364,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                     } catch (_) {}
                     setDialogState(() {
                       statusState = 'SUCCESS';
-                      statusMessage = result['message']?.toString() ??
+                      statusMessage =
+                          result['message']?.toString() ??
                           ExternalData.paymentVerifiedSuccess;
                       resolvedUpiTxnId = upiRef;
                     });
@@ -1262,7 +1379,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                     } catch (_) {}
                     setDialogState(() {
                       statusState = 'FAILED';
-                      statusMessage = result['message']?.toString() ??
+                      statusMessage =
+                          result['message']?.toString() ??
                           ExternalData.paymentFailedBankSms;
                       resolvedUpiTxnId = upiRef;
                     });
@@ -1296,7 +1414,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
           return AlertDialog(
             backgroundColor: const Color(0xFF1E1E24),
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20)),
+              borderRadius: BorderRadius.circular(20),
+            ),
             title: Row(
               children: [
                 Container(
@@ -1306,11 +1425,12 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                     color: isSuccess
                         ? const Color(0xFF28A745).withValues(alpha: 0.15)
                         : (isFailed
-                            ? const Color(0xFFD93025).withValues(alpha: 0.15)
-                            : (isTimeout
-                                ? const Color(0xFFE5A93C).withValues(alpha: 0.15)
-                                : const Color(0xFF007AFF)
-                                    .withValues(alpha: 0.15))),
+                              ? const Color(0xFFD93025).withValues(alpha: 0.15)
+                              : (isTimeout
+                                    ? const Color(0xFFE5A93C)
+                                          .withValues(alpha: 0.15)
+                                    : const Color(0xFF007AFF)
+                                          .withValues(alpha: 0.15))),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Center(
@@ -1327,17 +1447,17 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                             isSuccess
                                 ? Icons.check_circle_rounded
                                 : (isFailed
-                                    ? Icons.error_outline_rounded
-                                    : (isTimeout
-                                        ? Icons.timer_off_rounded
-                                        : Icons.hourglass_top_rounded)),
+                                      ? Icons.error_outline_rounded
+                                      : (isTimeout
+                                            ? Icons.timer_off_rounded
+                                            : Icons.hourglass_top_rounded)),
                             color: isSuccess
                                 ? const Color(0xFF28A745)
                                 : (isFailed
-                                    ? const Color(0xFFD93025)
-                                    : (isTimeout
-                                        ? const Color(0xFFE5A93C)
-                                        : const Color(0xFF007AFF))),
+                                      ? const Color(0xFFD93025)
+                                      : (isTimeout
+                                            ? const Color(0xFFE5A93C)
+                                            : const Color(0xFF007AFF))),
                             size: 20,
                           ),
                   ),
@@ -1348,12 +1468,12 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                     isSuccess
                         ? 'Payment Successful'
                         : (isFailed
-                            ? 'Payment Failed'
-                            : (isTimeout
-                                ? 'Verification Timed Out'
-                                : (isVerifying
-                                    ? 'Verifying SMS...'
-                                    : 'Waiting for Confirmation'))),
+                              ? 'Payment Failed'
+                              : (isTimeout
+                                    ? 'Verification Timed Out'
+                                    : (isVerifying
+                                          ? 'Verifying SMS...'
+                                          : 'Waiting for Confirmation'))),
                     style: const TextStyle(
                       fontFamily: 'Google Sans',
                       color: Colors.white,
@@ -1383,9 +1503,10 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 Text(
                   'Merchant: ${payment.merchantName ?? payment.upiId ?? "UPI Merchant"}',
                   style: const TextStyle(
-                      fontFamily: 'Google Sans',
-                      color: Color(0xFF8E8E93),
-                      fontSize: 13),
+                    fontFamily: 'Google Sans',
+                    color: Color(0xFF8E8E93),
+                    fontSize: 13,
+                  ),
                 ),
                 if (resolvedUpiTxnId != null &&
                     resolvedUpiTxnId!.isNotEmpty) ...[
@@ -1405,7 +1526,9 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 // Timer badge & status indicator
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 8),
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF161619),
                     borderRadius: BorderRadius.circular(10),
@@ -1413,12 +1536,12 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                       color: isSuccess
                           ? const Color(0xFF28A745).withValues(alpha: 0.3)
                           : (isFailed
-                              ? const Color(0xFFD93025).withValues(alpha: 0.3)
-                              : (isTimeout
-                                  ? const Color(0xFFE5A93C)
-                                      .withValues(alpha: 0.3)
-                                  : const Color(0xFF007AFF)
-                                      .withValues(alpha: 0.3))),
+                                ? const Color(0xFFD93025).withValues(alpha: 0.3)
+                                : (isTimeout
+                                      ? const Color(0xFFE5A93C)
+                                            .withValues(alpha: 0.3)
+                                      : const Color(0xFF007AFF)
+                                            .withValues(alpha: 0.3))),
                     ),
                   ),
                   child: Row(
@@ -1427,14 +1550,14 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                         isSuccess
                             ? Icons.verified_rounded
                             : (isTimeout
-                                ? Icons.timer_off_outlined
-                                : Icons.schedule_rounded),
+                                  ? Icons.timer_off_outlined
+                                  : Icons.schedule_rounded),
                         size: 16,
                         color: isSuccess
                             ? const Color(0xFF28A745)
                             : (isTimeout
-                                ? const Color(0xFFE5A93C)
-                                : const Color(0xFF007AFF)),
+                                  ? const Color(0xFFE5A93C)
+                                  : const Color(0xFF007AFF)),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
@@ -1442,10 +1565,10 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                           isSuccess
                               ? 'Verified via SMS'
                               : (isFailed
-                                  ? 'Transaction Failed'
-                                  : (isTimeout
-                                      ? '5-minute window expired'
-                                      : 'SMS verification active • $timerText')),
+                                    ? 'Transaction Failed'
+                                    : (isTimeout
+                                          ? '5-minute window expired'
+                                          : 'SMS verification active • $timerText')),
                           style: TextStyle(
                             fontFamily: 'Google Sans',
                             fontSize: 12,
@@ -1453,8 +1576,8 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                             color: isSuccess
                                 ? const Color(0xFF28A745)
                                 : (isTimeout
-                                    ? const Color(0xFFE5A93C)
-                                    : const Color(0xFFD0D0D5)),
+                                      ? const Color(0xFFE5A93C)
+                                      : const Color(0xFFD0D0D5)),
                           ),
                         ),
                       ),
@@ -1466,10 +1589,11 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                   isSuccess
                       ? ExternalData.smsVerifiedSuccessBody
                       : (isFailed
-                          ? (statusMessage ?? ExternalData.paymentFailedBankSms)
-                          : (isTimeout
-                              ? ExternalData.paymentTimeoutBody
-                              : ExternalData.listeningForSmsBody)),
+                            ? (statusMessage ??
+                                  ExternalData.paymentFailedBankSms)
+                            : (isTimeout
+                                  ? ExternalData.paymentTimeoutBody
+                                  : ExternalData.listeningForSmsBody)),
                   style: const TextStyle(
                     fontFamily: 'Google Sans',
                     color: Color(0xFFA0A0A8),
@@ -1485,14 +1609,18 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                   onPressed: () {
                     timer?.cancel();
                     GooglePayService.stopSmsListener();
-                    TransactionRepository()
-                        .reconcileTransaction(payment.id, 'CANCELLED');
+                    TransactionRepository().reconcileTransaction(
+                      payment.id,
+                      'CANCELLED',
+                    );
                     Navigator.of(dialogCtx).pop();
                   },
                   child: const Text(
                     'Cancel',
                     style: TextStyle(
-                        color: Color(0xFF8E8E93), fontWeight: FontWeight.w500),
+                      color: Color(0xFF8E8E93),
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ElevatedButton(
@@ -1500,10 +1628,11 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                   backgroundColor: isSuccess
                       ? const Color(0xFF28A745)
                       : (isFailed
-                          ? const Color(0xFFD93025)
-                          : const Color(0xFF007AFF)),
+                            ? const Color(0xFFD93025)
+                            : const Color(0xFF007AFF)),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
                 onPressed: () {
                   timer?.cancel();
@@ -1518,7 +1647,9 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                       ? 'Done'
                       : (isFailed || isTimeout ? 'Dismiss' : 'Waiting...'),
                   style: const TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.w700),
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ],
@@ -1530,8 +1661,33 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeManager.colors;
+    final bool isDark = colors.isDark;
+    final bool isRedVelvet = colors.name.toLowerCase().contains('red') || colors.name.toLowerCase().contains('velvet');
+    final bool isMilkWhite = colors.name.toLowerCase().contains('milk') || (!isDark && !isRedVelvet);
+
+    final Color overlayColor = isRedVelvet
+        ? const Color.fromARGB(217, 255, 0, 0) // Rich Red Velvet translucent overlay (~85% opacity)
+        : (isMilkWhite
+            ? const Color(0xE6FFFFFF) // Pure White translucent overlay (~90% opacity)
+            : const Color(0xC7000000)); // OLED black deep translucent overlay (~78% opacity)
+
+    final Color scannerSvgColor = isRedVelvet
+        ? Colors.white // White scanner SVG on red overlay
+        : (isMilkWhite
+            ? const Color(0xFF007AFF) // Blue scanner SVG for milk theme with white bg
+            : Colors.white); // Crisp white scanner SVG for OLED
+
+    final Color buttonBg = isDark
+        ? const Color(0xFF161619).withValues(alpha: 0.85)
+        : (isRedVelvet
+            ? Colors.white.withValues(alpha: 0.92)
+            : Colors.white.withValues(alpha: 0.92));
+    final Color buttonBorder = isDark ? const Color(0xFF24242A) : (isRedVelvet ? Colors.white.withValues(alpha: 0.4) : colors.border);
+    final Color buttonIconColor = isDark ? Colors.white : (isRedVelvet ? const Color.fromARGB(255, 255, 0, 0) : colors.textPrimary);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF000000),
+      backgroundColor: isDark ? const Color(0xFF000000) : (isRedVelvet ? const Color.fromARGB(255, 255, 14, 14) : colors.background),
       body: LayoutBuilder(
         builder: (layoutContext, constraints) {
           const scanBoxSize = 260.0;
@@ -1539,11 +1695,13 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
             constraints.maxWidth / 2,
             constraints.maxHeight * 0.40,
           );
-          final cutoutRect = Rect.fromCenter(
+          final svgRect = Rect.fromCenter(
             center: centerOffset,
             width: scanBoxSize,
             height: scanBoxSize,
           );
+          // Inset cutout by 12px so transparent hole stays perfectly inside the SVG frame
+          final cutoutRect = svgRect.deflate(5.0);
 
           return Stack(
             fit: StackFit.expand,
@@ -1553,10 +1711,12 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 controller: _scannerController,
                 onDetect: _handleBarcodeDetected,
                 errorBuilder: (context, error, child) {
-                  return const Center(
+                  return Center(
                     child: Icon(
                       Icons.camera_alt_outlined,
-                      color: Color(0xFF55555C),
+                      color: isDark
+                          ? const Color(0xFF55555C)
+                          : colors.textMuted,
                       size: 48,
                     ),
                   );
@@ -1568,34 +1728,26 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 size: Size(constraints.maxWidth, constraints.maxHeight),
                 painter: ScannerOverlayPainter(
                   cutoutRect: cutoutRect,
-                  cornerRadius: 20.0,
-                  overlayColor: const Color(0x99000000),
+                  cornerRadius: 22.0,
+                  overlayColor: overlayColor,
                 ),
               ),
 
-              // 3. Viewfinder Reticle Frame exactly over the cutout
+              // 3. Viewfinder Reticle Frame using Scanner SVG
               Positioned(
-                left: cutoutRect.left,
-                top: cutoutRect.top,
-                width: cutoutRect.width,
-                height: cutoutRect.height,
+                left: svgRect.left,
+                top: svgRect.top,
+                width: svgRect.width,
+                height: svgRect.height,
                 child: IgnorePointer(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.18),
-                        width: 1.5,
-                      ),
-                    ),
-                    child: CustomPaint(
-                      size: const Size(scanBoxSize, scanBoxSize),
-                      painter: ScannerFramePainter(
-                        cornerColor: Colors.white,
-                        cornerLength: 36.0,
-                        strokeWidth: 4.0,
-                        cornerRadius: 12.0,
-                      ),
+                  child: SvgPicture.asset(
+                    'assets/icon/Scanner.svg',
+                    width: svgRect.width,
+                    height: svgRect.height,
+                    fit: BoxFit.fill,
+                    colorFilter: ColorFilter.mode(
+                      scannerSvgColor,
+                      BlendMode.srcIn,
                     ),
                   ),
                 ),
@@ -1613,22 +1765,22 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                       key: const Key('back_button'),
                       onTap: () => _handleBack(0),
                       behavior: HitTestBehavior.opaque,
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF161619).withValues(alpha: 0.8),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: const Color(0xFF24242A),
-                            width: 1,
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: buttonBg,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: buttonBorder, width: 1.5),
                           ),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.chevron_left_rounded,
-                            color: Colors.white,
-                            size: 26,
+                          child: Center(
+                            child: Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              color: buttonIconColor,
+                              size: 18,
+                            ),
                           ),
                         ),
                       ),
@@ -1642,8 +1794,11 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                             SnackBar(
                               content: const Row(
                                 children: [
-                                  Icon(Icons.bolt_rounded,
-                                      color: Color(0xFFFFB300), size: 18),
+                                  Icon(
+                                    Icons.bolt_rounded,
+                                    color: Color(0xFFFFB300),
+                                    size: 18,
+                                  ),
                                   SizedBox(width: 8),
                                   Text(ExternalData.quickConfirmActiveTitle),
                                 ],
@@ -1664,19 +1819,18 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                             width: 44,
                             height: 44,
                             decoration: BoxDecoration(
-                              color: const Color(0xFF161619)
-                                  .withValues(alpha: 0.8),
+                              color: buttonBg,
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: const Color(0xFF24242A),
-                                width: 1,
+                                color: buttonBorder,
+                                width: 1.5,
                               ),
                             ),
                             child: const Center(
                               child: Icon(
                                 Icons.bolt_rounded,
                                 color: Color(0xFFFFB300),
-                                size: 24,
+                                size: 22,
                               ),
                             ),
                           ),
@@ -1688,7 +1842,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
 
               // 5. Actions below cutout (Paying Amount Badge & Back to Home)
               Positioned(
-                top: cutoutRect.bottom + 20,
+                top: svgRect.bottom + 20,
                 left: 20,
                 right: 20,
                 child: Column(
@@ -1697,10 +1851,11 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                     if (_amountController.text.trim().isNotEmpty) ...[
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 7),
+                          horizontal: 16,
+                          vertical: 7,
+                        ),
                         decoration: BoxDecoration(
-                          color:
-                              const Color(0xFF161619).withValues(alpha: 0.85),
+                          color: buttonBg,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: const Color(0xFF30D158)
@@ -1711,11 +1866,13 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Text(
+                            Text(
                               'Paying:',
                               style: TextStyle(
                                 fontFamily: 'Google Sans',
-                                color: Color(0xFFD0D0D5),
+                                color: isDark
+                                    ? const Color(0xFFD0D0D5)
+                                    : colors.textSecondary,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -1744,19 +1901,15 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color:
-                              const Color(0xFF161619).withValues(alpha: 0.85),
+                          color: buttonBg,
                           borderRadius: BorderRadius.circular(100),
-                          border: Border.all(
-                            color: const Color(0xFF2A2A30),
-                            width: 1,
-                          ),
+                          border: Border.all(color: buttonBorder, width: 1.5),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Back to Home',
                           style: TextStyle(
                             fontFamily: 'Google Sans',
-                            color: Colors.white,
+                            color: isDark ? Colors.white : colors.textPrimary,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -1770,7 +1923,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
               // Controls on right side
               Positioned(
                 right: 34,
-                bottom: 118,
+                bottom: MediaQuery.of(context).padding.bottom + 36,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -1778,26 +1931,27 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                       key: const Key('flash_button'),
                       onTap: _toggleFlash,
                       behavior: HitTestBehavior.opaque,
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: _isFlashOn
-                              ? const Color(0xFF007AFF)
-                              : const Color(0xFF161619),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: _isFlashOn
-                                ? const Color(0xFF007AFF)
-                                : const Color(0xFF24242A),
-                            width: 1,
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: _isFlashOn ? colors.accent : buttonBg,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: _isFlashOn ? colors.accent : buttonBorder,
+                              width: 1.5,
+                            ),
                           ),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.bolt_rounded,
-                            color: Colors.white,
-                            size: 22,
+                          child: Center(
+                            child: Icon(
+                              Icons.bolt_rounded,
+                              color: _isFlashOn
+                                  ? Colors.white
+                                  : buttonIconColor,
+                              size: 20,
+                            ),
                           ),
                         ),
                       ),
@@ -1807,29 +1961,30 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                       key: const Key('switch_camera_button'),
                       onTap: _toggleCamera,
                       behavior: HitTestBehavior.opaque,
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: _isFrontCamera
-                              ? const Color(0xFF007AFF)
-                              : const Color(0xFF161619),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: _isFrontCamera
-                                ? const Color(0xFF007AFF)
-                                : const Color(0xFF24242A),
-                            width: 1,
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: _isFrontCamera ? colors.accent : buttonBg,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: _isFrontCamera
+                                  ? colors.accent
+                                  : buttonBorder,
+                              width: 1.5,
+                            ),
                           ),
-                        ),
-                        child: Center(
-                          child: SvgPicture.asset(
-                            'assets/icon/switch.svg',
-                            width: 20,
-                            height: 20,
-                            colorFilter: const ColorFilter.mode(
-                              Colors.white,
-                              BlendMode.srcIn,
+                          child: Center(
+                            child: SvgPicture.asset(
+                              'assets/icon/switch.svg',
+                              width: 20,
+                              height: 20,
+                              colorFilter: ColorFilter.mode(
+                                _isFrontCamera ? Colors.white : buttonIconColor,
+                                BlendMode.srcIn,
+                              ),
                             ),
                           ),
                         ),
@@ -1840,40 +1995,27 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                       key: const Key('upload_gallery_button'),
                       onTap: _openUploadFromScanner,
                       behavior: HitTestBehavior.opaque,
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF161619),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: const Color(0xFF24242A),
-                            width: 1,
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: buttonBg,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: buttonBorder, width: 1.5),
                           ),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.photo_library_rounded,
-                            color: Colors.white,
-                            size: 20,
+                          child: Center(
+                            child: Icon(
+                              Icons.photo_library_rounded,
+                              color: buttonIconColor,
+                              size: 20,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ],
-                ),
-              ),
-
-              // Bottom Navigation Bar
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: CustomBottomNavBar(
-                  selectedIndex: -1,
-                  onItemSelected: (index) {
-                    _handleBack(index);
-                  },
                 ),
               ),
             ],
@@ -1960,7 +2102,7 @@ class ScannerOverlayPainter extends CustomPainter {
   ScannerOverlayPainter({
     required this.cutoutRect,
     this.cornerRadius = 20.0,
-    this.overlayColor = const Color(0xB3000000),
+    this.overlayColor = const Color(0xC7000000),
   });
 
   @override
@@ -1970,10 +2112,7 @@ class ScannerOverlayPainter extends CustomPainter {
 
     final cutoutPath = Path()
       ..addRRect(
-        RRect.fromRectAndRadius(
-          cutoutRect,
-          Radius.circular(cornerRadius),
-        ),
+        RRect.fromRectAndRadius(cutoutRect, Radius.circular(cornerRadius)),
       );
 
     final overlayPath = Path.combine(

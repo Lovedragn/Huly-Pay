@@ -481,31 +481,35 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
   Widget _buildHeader() {
     final colors = AppThemeManager.colors;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SvgPicture.asset(
-              colors.isDark
-                  ? 'assets/logo/Logo-Dark.svg'
-                  : 'assets/logo/logo-Light.svg',
-              height: 24,
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Tooltip(
-                  message: 'Notifications (In Dev)',
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const NotificationsScreen(),
-                        ),
-                      );
-                    },
+    return SizedBox(
+      height: 44,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            colors.isDark
+                ? 'assets/logo/Logo-Dark.svg'
+                : 'assets/logo/logo-Light.svg',
+            height: 24,
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Tooltip(
+                message: 'Notifications (In Dev)',
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const NotificationsScreen(),
+                      ),
+                    );
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
                     child: Container(
                       width: 44,
                       height: 44,
@@ -542,47 +546,48 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
-                Tooltip(
-                  message: 'Profile & Settings',
-                  child: GestureDetector(
-                    key: const Key('profile_button'),
-                    onTap: _openSettings,
-                    behavior: HitTestBehavior.opaque,
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: Container(
-                        width: 46,
-                        height: 46,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: colors.border,
-                            width: 1.5,
-                          ),
+              ),
+              const SizedBox(width: 10),
+              Tooltip(
+                message: 'Profile & Settings',
+                child: GestureDetector(
+                  key: const Key('profile_button'),
+                  onTap: _openSettings,
+                  behavior: HitTestBehavior.opaque,
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: colors.surface,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: colors.border,
+                          width: 1.5,
                         ),
-                        child: ClipOval(
-                          child: _data.avatarUrl.isNotEmpty && _data.avatarUrl.startsWith('http')
-                              ? Image.network(
-                                  _data.avatarUrl,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => _buildAvatarFallback(),
-                                )
-                              : Image.asset(
-                                  'assets/pictures/profile.png',
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => _buildAvatarFallback(),
-                                ),
-                        ),
+                      ),
+                      child: ClipOval(
+                        child: _data.avatarUrl.isNotEmpty && _data.avatarUrl.startsWith('http')
+                            ? Image.network(
+                                _data.avatarUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => _buildAvatarFallback(),
+                              )
+                            : Image.asset(
+                                'assets/pictures/profile.png',
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => _buildAvatarFallback(),
+                              ),
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
-          ],
-        ),
-      ],
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

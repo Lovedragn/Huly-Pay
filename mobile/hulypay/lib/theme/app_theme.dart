@@ -496,13 +496,13 @@ class AppChartColors {
         Color(0xFF34E869), // Level 4: Highest spend (electric bright neon green)
       ];
     } else if (activeTheme == 'Red velvet') {
-      // Red velvet: Clean monochromatic red gradation (Level 0: clean surface -> Level 4: intense signature velvet red)
+      // Red velvet: Clean monochromatic red gradation (Level 0: clean surface -> Level 4: signature red velvet)
       return const [
-        Color(0xFFF3F4F6), // Level 0: Inactive cell
-        Color(0xFFFFCDD2), // Level 1: Low spend (light rose / soft blush)
-        Color(0xFFEF5350), // Level 2: Moderate low (medium coral red)
-        Color(0xFFE53935), // Level 3: High spend (vibrant crimson red)
-        Color(0xFFB71C1C), // Level 4: Highest spend (deep radiant velvet red)
+        Color.fromARGB(255, 255, 255, 255), // Level 0: Inactive cell
+        Color.fromARGB(255, 255, 150, 150), // Level 1: Low spend (light rose / soft blush)
+        Color.fromARGB(255, 255, 100, 100), // Level 2: Moderate low (medium coral red)
+        Color.fromARGB(255, 255, 30, 30), // Level 3: High spend (vibrant crimson red)
+        Color.fromARGB(255, 255, 0, 0), // Level 4: Highest spend (signature red font color)
       ];
     } else {
       // Milk white: Clean monochromatic blue gradation (Level 0: clean surface -> Level 4: deep royal blue)
