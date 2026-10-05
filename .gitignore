@@ -1,3 +1,8 @@
 .env
 .env.*
 !.env.example
+
+# Dart & Flutter build / tooling artifacts
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
