@@ -16,8 +16,11 @@ import 'settings_screen.dart';
 import 'transactions_screen.dart';
 import 'notifications_screen.dart';
 import 'upload_qr_screen.dart';
+import '../services/app_update_service.dart';
 import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_update_banner.dart';
+import '../widgets/app_update_dialog.dart';
 
 class HomeDashboardScreen extends StatefulWidget {
   final DashboardData? initialData;
@@ -92,6 +95,21 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
         }
       });
     }
+
+    // Check version and display banner / force update dialog on startup
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAppUpdates();
+    });
+  }
+
+  Future<void> _checkAppUpdates() async {
+    final updateInfo = await AppUpdateService().checkAppVersion();
+    if (updateInfo != null && mounted) {
+      if (updateInfo.forceUpdate) {
+        // High priority: display blocking modal dialog immediately
+        AppUpdateDialog.show(context, updateInfo);
+      }
+    }
   }
 
   void _onScroll() {
@@ -121,6 +139,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
     if (state == AppLifecycleState.resumed) {
       // Auto-fetch fresh data every time user opens or resumes our application
       _loadRealData();
+      _checkAppUpdates();
     }
   }
 
@@ -380,6 +399,28 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  ValueListenableBuilder<AppUpdateInfo?>(
+                    valueListenable: AppUpdateService().updateInfoNotifier,
+                    builder: (context, updateInfo, _) {
+                      return ValueListenableBuilder<bool>(
+                        valueListenable: AppUpdateService().isBannerDismissedNotifier,
+                        builder: (context, isDismissed, _) {
+                          // Show banner if update is available, not dismissed, and quickScan is turned off
+                          final bool isQuickScan = UserPreferencesService().cachedQuickScan;
+                          if (updateInfo != null &&
+                              updateInfo.updateAvailable &&
+                              !isDismissed &&
+                              !isQuickScan) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12.0),
+                              child: AppUpdateBanner(updateInfo: updateInfo),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      );
+                    },
+                  ),
                   _buildTotalSpentCard(),
                   const SizedBox(height: 20),
                   _buildQuickActions(),

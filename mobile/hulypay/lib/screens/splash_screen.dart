@@ -9,6 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../repositories/transaction_repository.dart';
 import '../repositories/user_repository.dart';
 import '../services/api_client.dart';
+import '../services/app_update_service.dart';
 import '../services/auth_service.dart';
 import '../services/token_validator.dart';
 import '../services/user_preferences_service.dart';
@@ -124,6 +125,9 @@ class _SplashScreenState extends State<SplashScreen>
     try {
       await UserPreferencesService().loadPreferences();
     } catch (_) {}
+
+    // --- STEP 4: Trigger backend health check and version check in background ---
+    AppUpdateService().checkAppVersion();
   }
 
   void _navigateToNext() {
