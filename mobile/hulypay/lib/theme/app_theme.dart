@@ -39,6 +39,10 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
   final Color iconDefault;
   final Color iconBackground;
   final Brightness brightness;
+  final Color success;
+  final Color warning;
+  final Color error;
+  final Color info;
 
   const AppThemeData({
     required this.name,
@@ -58,7 +62,16 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
     required this.iconDefault,
     required this.iconBackground,
     required this.brightness,
+    required this.success,
+    required this.warning,
+    required this.error,
+    required this.info,
   });
+
+  /// Convenience card and badge helpers
+  Color get cardBackground => surface;
+  Color get cardBorder => border;
+  Color get badgeBackground => surfaceSecondary;
 
   @override
   AppThemeData copyWith({
@@ -79,6 +92,10 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
     Color? iconDefault,
     Color? iconBackground,
     Brightness? brightness,
+    Color? success,
+    Color? warning,
+    Color? error,
+    Color? info,
   }) {
     return AppThemeData(
       name: name ?? this.name,
@@ -98,6 +115,10 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
       iconDefault: iconDefault ?? this.iconDefault,
       iconBackground: iconBackground ?? this.iconBackground,
       brightness: brightness ?? this.brightness,
+      success: success ?? this.success,
+      warning: warning ?? this.warning,
+      error: error ?? this.error,
+      info: info ?? this.info,
     );
   }
 
@@ -122,6 +143,10 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
       iconDefault: Color.lerp(iconDefault, other.iconDefault, t) ?? iconDefault,
       iconBackground: Color.lerp(iconBackground, other.iconBackground, t) ?? iconBackground,
       brightness: t < 0.5 ? brightness : other.brightness,
+      success: Color.lerp(success, other.success, t) ?? success,
+      warning: Color.lerp(warning, other.warning, t) ?? warning,
+      error: Color.lerp(error, other.error, t) ?? error,
+      info: Color.lerp(info, other.info, t) ?? info,
     );
   }
 
@@ -144,6 +169,10 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
     iconDefault: Color(0xFF8E8E93),
     iconBackground: Color(0xFF1C1C20),
     brightness: Brightness.dark,
+    success: Color(0xFF30D158),
+    warning: Color(0xFFFFD60A),
+    error: Color(0xFFFF453A),
+    info: Color(0xFF0A84FF),
   );
 
   /// 2. Milk white (Clean Ivory/Milk Light Mode Scheme)
@@ -165,6 +194,10 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
     iconDefault: Color(0xFF111827),
     iconBackground: Color(0xFFEFF2F6),
     brightness: Brightness.light,
+    success: Color(0xFF10B981),
+    warning: Color(0xFFF59E0B),
+    error: Color(0xFFEF4444),
+    info: Color(0xFF0066FF),
   );
 
   /// 3. Red velvet (Clean White background, crisp dark typography, signature Red big amount)
@@ -186,6 +219,10 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
     iconDefault: Color(0xFF111827),
     iconBackground: Color(0xFFF7F8FA),
     brightness: Brightness.light,
+    success: Color(0xFF30D158),
+    warning: Color(0xFFFF9800),
+    error: Color(0xFFEB0029),
+    info: Color(0xFF0066FF),
   );
 
   /// Backward compatibility aliases

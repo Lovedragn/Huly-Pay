@@ -1,17 +1,16 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:path_provider/path_provider.dart';
 import '../models/transaction_model.dart';
 import '../repositories/transaction_repository.dart';
-import '../services/api_client.dart';
+import '../services/qr_service.dart';
 import '../services/qr_share_service.dart';
 import '../services/upi_payment_service.dart';
 import '../services/upi_service.dart';
 import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_back_button.dart';
+import '../widgets/card_dialog.dart';
 
 class UploadQrScreen extends StatefulWidget {
   final double? initialAmount;
@@ -56,6 +55,18 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
       _parsedUpiData = UpiService.parseUpiUri(widget.preScannedRawUri!);
     }
 
+    _amountController.addListener(_onAmountChanged);
+
+    // Initial pregeneration if raw URI and amount are already known
+    final initialAmt = double.tryParse(_amountController.text.trim());
+    if (_scannedQrUri != null && initialAmt != null && initialAmt > 0) {
+      QrService().schedulePregeneration(
+        rawUri: _scannedQrUri!,
+        amount: initialAmt,
+        debounce: Duration.zero,
+      );
+    }
+
     // Auto-focus amount textfield once screen renders
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && _amountFocusNode.canRequestFocus) {
@@ -67,8 +78,21 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
     });
   }
 
+  void _onAmountChanged() {
+    final rawUri = _scannedQrUri;
+    final amount = double.tryParse(_amountController.text.trim());
+    if (rawUri != null && rawUri.isNotEmpty && amount != null && amount > 0) {
+      QrService().schedulePregeneration(
+        rawUri: rawUri,
+        amount: amount,
+        debounce: const Duration(milliseconds: 150),
+      );
+    }
+  }
+
   @override
   void dispose() {
+    _amountController.removeListener(_onAmountChanged);
     _amountController.dispose();
     _noteController.dispose();
     _amountFocusNode.dispose();
@@ -100,8 +124,26 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
                   _noteController.text = upiData.note!;
                 }
               });
+
+              // Rapidly start generating QR in background for the scanned QR & amount
+              final targetAmount = double.tryParse(_amountController.text.trim()) ?? upiData.amount;
+              if (targetAmount != null && targetAmount > 0) {
+                QrService().schedulePregeneration(
+                  rawUri: raw,
+                  amount: targetAmount,
+                  debounce: Duration.zero,
+                );
+              }
             } else {
               _scannedQrUri = raw;
+              final currentAmt = double.tryParse(_amountController.text.trim());
+              if (currentAmt != null && currentAmt > 0) {
+                QrService().schedulePregeneration(
+                  rawUri: raw,
+                  amount: currentAmt,
+                  debounce: Duration.zero,
+                );
+              }
             }
           }
         }
@@ -171,26 +213,25 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
       final targetApp = (preferredAppId != UpiApps.askEveryTime)
           ? UpiApps.findById(preferredAppId)
           : UpiApps.gpay;
-      final String targetPackage = targetApp?.packageName ?? UpiApps.gpay.packageName;
+      final String? targetPackage = (preferredAppId != UpiApps.askEveryTime)
+          ? (targetApp?.packageName ?? UpiApps.gpay.packageName)
+          : null;
       final String appName = targetApp?.name ?? 'Google Pay';
 
-      // 3. Request backend to generate new QR PNG image containing uri with am=parsedAmount
+      // 3. Fast on-device QR generation with pretty_qr_code (or instant retrieval from pregeneration cache)
       String shareFilePath = '';
       try {
-        final imageBytes = await ApiClient().generateQrCode(
-          uri: rawUri,
+        final qrFile = await QrService().getOrGenerateQrFile(
+          rawUri: rawUri,
           amount: parsedAmount,
           size: 512,
         );
-
-        if (imageBytes.isNotEmpty) {
-          final tempDir = await getTemporaryDirectory();
-          final newQrFile = File('${tempDir.path}/qr_generated_${DateTime.now().millisecondsSinceEpoch}.png');
-          await newQrFile.writeAsBytes(imageBytes, flush: true);
-          shareFilePath = newQrFile.path;
+        if (qrFile != null && await qrFile.exists()) {
+          shareFilePath = qrFile.path;
+          debugPrint('[UploadQrScreen] Using client-generated QR file: $shareFilePath');
         }
-      } catch (backendErr) {
-        debugPrint('[UploadQrScreen] Backend QR generation failed: $backendErr');
+      } catch (clientErr) {
+        debugPrint('[UploadQrScreen] QR generation error: $clientErr');
       }
 
       if (shareFilePath.isEmpty) {
@@ -236,7 +277,7 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
           } catch (_) {}
 
           _showFeedbackSnackBar(
-            targetPackage != null ? 'Opening $appName with QR code...' : 'Opening app chooser...',
+            'Opening $appName with QR code...',
             isError: false,
           );
         }
@@ -252,25 +293,11 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
 
   void _showFeedbackSnackBar(String message, {bool isError = false}) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: const TextStyle(
-            fontFamily: 'Google Sans',
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
-          ),
-        ),
-        backgroundColor: isError ? const Color(0xFFD93025) : const Color(0xFF1E1E24),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        duration: const Duration(seconds: 2),
-      ),
+    showCardNotification(
+      context,
+      message: message,
+      type: isError ? CardNotificationType.error : CardNotificationType.info,
+      duration: const Duration(seconds: 2),
     );
   }
 

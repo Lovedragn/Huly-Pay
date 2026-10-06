@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import '../widgets/card_dialog.dart';
 
 /// Service responsible for picking a QR image and sharing it via the native Android Sharesheet.
 ///
@@ -185,25 +186,11 @@ class QrShareService {
 
   static void _showSnackBar(BuildContext context, String message, {bool isError = false}) {
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: const TextStyle(
-            fontFamily: 'Google Sans',
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
-          ),
-        ),
-        backgroundColor: isError ? const Color(0xFFD93025) : const Color(0xFF1E1E24),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        duration: const Duration(seconds: 3),
-      ),
+    showCardNotification(
+      context,
+      message: message,
+      type: isError ? CardNotificationType.error : CardNotificationType.info,
+      duration: const Duration(seconds: 3),
     );
   }
 }

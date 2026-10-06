@@ -239,32 +239,6 @@ class ApiClient {
     }
   }
 
-  /// Requests the backend to generate a QR PNG image with the specified amount injected
-  Future<List<int>> generateQrCode({
-    required String uri,
-    double? amount,
-    int size = 512,
-  }) async {
-    try {
-      final response = await dio.post<List<int>>(
-        '/api/v1/qr/generate',
-        data: {
-          'uri': uri,
-          'amount': ?amount,
-          'size': size,
-        },
-        options: Options(
-          responseType: ResponseType.bytes,
-          headers: {
-            'Accept': 'image/png',
-          },
-        ),
-      );
-      return response.data ?? <int>[];
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    }
-  }
 
   ApiException _handleDioError(DioException error) {
     final status = error.response?.statusCode;

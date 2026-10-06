@@ -14,9 +14,8 @@ import 'help_support_screen.dart';
 import 'privacy_security_screen.dart';
 import 'notifications_screen.dart';
 import 'payment_methods_screen.dart';
-import '../services/app_update_service.dart';
 import '../widgets/app_back_button.dart';
-import '../widgets/app_update_dialog.dart';
+import '../widgets/card_dialog.dart';
 
 class SettingsScreen extends StatefulWidget {
   final String? userName;
@@ -133,13 +132,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _showLogoutDialog() {
     final colors = AppThemeManager.colors;
-    showDialog(
+    showCardDialog(
       context: context,
       builder: (BuildContext ctx) {
-        return AlertDialog(
-          backgroundColor: colors.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+        return CardDialog(
+          icon: CardDialogTitleIcon(
+            color: colors.error,
+            child: Icon(Icons.logout_rounded, color: colors.error, size: 20),
           ),
           title: Text(
             'Logout',
@@ -147,6 +146,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               fontFamily: 'Google Sans',
               color: colors.textPrimary,
               fontWeight: FontWeight.w700,
+              fontSize: 18,
             ),
           ),
           content: Text(
@@ -169,6 +169,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
+            const SizedBox(width: 8),
             TextButton(
               onPressed: () async {
                 await AuthService().signOut();
@@ -179,18 +180,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Navigator.of(ctx).pop();
                 }
                 if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text(
-                      'Logged out successfully',
-                      style: TextStyle(fontFamily: 'Google Sans'),
-                    ),
-                    backgroundColor: const Color(0xFF222226),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
+                showCardNotification(
+                  context,
+                  message: 'Logged out successfully',
+                  type: CardNotificationType.info,
                 );
                 Navigator.of(context).pushAndRemoveUntil(
                   PageRouteBuilder(
@@ -201,11 +194,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   (route) => false,
                 );
               },
-              child: const Text(
+              child: Text(
                 'Logout',
                 style: TextStyle(
                   fontFamily: 'Google Sans',
-                  color: Color(0xFFFF453A),
+                  color: colors.error,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -580,51 +573,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 66),
       _buildSettingRow(
-        icon: Icons.system_update_alt_rounded,
-        iconColor: const Color(0xFF00C076),
-        title: 'Check for Updates',
-        trailingText: 'v${widget.appVersion}',
-        onTap: () async {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Checking for updates...', style: TextStyle(fontFamily: 'Google Sans')),
-              duration: Duration(seconds: 1),
-            ),
-          );
-          final updateInfo = await AppUpdateService().checkAppVersion();
-          if (!mounted) return;
-          if (updateInfo != null) {
-            if (updateInfo.updateAvailable) {
-              AppUpdateDialog.show(context, updateInfo);
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'You are using the latest version (${updateInfo.currentVersion}).',
-                    style: const TextStyle(fontFamily: 'Google Sans'),
-                  ),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            }
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Could not check for updates. Please try again later.',
-                  style: TextStyle(fontFamily: 'Google Sans'),
-                ),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          }
-        },
-      ),
-      Divider(color: AppThemeManager.colors.divider, height: 1, thickness: 1, indent: 66),
-      _buildSettingRow(
         icon: Icons.info_outline_rounded,
         iconColor: const Color(0xFF64D2FF),
-        title: 'About Hulypay',
+        title: 'About',
         trailingText: widget.appVersion,
         onTap: () {
           Navigator.of(context).push(

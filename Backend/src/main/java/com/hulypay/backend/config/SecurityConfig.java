@@ -1,4 +1,4 @@
-package com.hulypay.backend.Config;
+package com.hulypay.backend.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +32,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/", "/api/health", "/api/health/database").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/app/version").permitAll()
-                        .requestMatchers("/api/v1/qr/**").permitAll()
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                         .requestMatchers("/swagger-ui/**",
                                 "/swagger-ui.html",

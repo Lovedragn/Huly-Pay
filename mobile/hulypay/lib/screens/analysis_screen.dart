@@ -6,7 +6,6 @@ import '../services/local_database_service.dart';
 import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/analysis_category_pie_chart.dart';
-import '../widgets/app_back_button.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import '../widgets/spending_heatmap.dart';
 import 'home_dashboard_screen.dart';
@@ -526,18 +525,6 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              if (Navigator.canPop(context) || widget.isEmbedded) ...[
-                AppBackButton(
-                  onPressed: () {
-                    if (Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                    } else {
-                      _openHome();
-                    }
-                  },
-                ),
-                const SizedBox(width: 14),
-              ],
               Text(
                 'Analyze',
                 style: TextStyle(

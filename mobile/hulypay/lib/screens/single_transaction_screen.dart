@@ -19,6 +19,7 @@ import '../widgets/transaction_detail_components.dart';
 import '../widgets/transaction_details_card.dart';
 import '../widgets/transaction_map_section.dart';
 import '../widgets/transaction_receipt_card.dart';
+import '../widgets/card_dialog.dart';
 
 class SingleTransactionScreen extends StatefulWidget {
   final TransactionItem transaction;
@@ -455,29 +456,22 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
 
   void _showCancelConfirmationDialog(BuildContext context) {
     final colors = AppThemeManager.colors;
-    showDialog(
+    showCardDialog(
       context: context,
       builder: (BuildContext ctx) {
-        return AlertDialog(
-          backgroundColor: colors.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: BorderSide(color: colors.border, width: 1),
+        return CardDialog(
+          icon: CardDialogTitleIcon(
+            color: colors.error,
+            child: Icon(Icons.cancel_outlined, color: colors.error, size: 20),
           ),
-          title: Row(
-            children: [
-              const Icon(Icons.cancel_outlined, color: Color(0xFFFF453A), size: 22),
-              const SizedBox(width: 8),
-              Text(
-                'Cancel Payment',
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: colors.textPrimary,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18,
-                ),
-              ),
-            ],
+          title: Text(
+            'Cancel Payment',
+            style: TextStyle(
+              fontFamily: 'Google Sans',
+              color: colors.textPrimary,
+              fontWeight: FontWeight.w700,
+              fontSize: 18,
+            ),
           ),
           content: Text(
             'Are you sure you want to cancel this payment of $_displayAmount to $_merchantTitle?',
@@ -499,16 +493,17 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
                 ),
               ),
             ),
+            const SizedBox(width: 8),
             TextButton(
               onPressed: () {
                 Navigator.of(ctx).pop();
                 _handleCancelPayment();
               },
-              child: const Text(
+              child: Text(
                 'Yes, Cancel',
                 style: TextStyle(
                   fontFamily: 'Google Sans',
-                  color: Color(0xFFFF453A),
+                  color: colors.error,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -552,29 +547,22 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
 
   void _showDeleteConfirmationDialog(BuildContext context) {
     final colors = AppThemeManager.colors;
-    showDialog(
+    showCardDialog(
       context: context,
       builder: (BuildContext ctx) {
-        return AlertDialog(
-          backgroundColor: colors.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: BorderSide(color: colors.border, width: 1),
+        return CardDialog(
+          icon: CardDialogTitleIcon(
+            color: colors.error,
+            child: Icon(Icons.delete_outline_rounded, color: colors.error, size: 20),
           ),
-          title: Row(
-            children: [
-              const Icon(Icons.delete_outline_rounded, color: Color(0xFFFF453A), size: 22),
-              const SizedBox(width: 8),
-              Text(
-                'Delete Transaction',
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: colors.textPrimary,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18,
-                ),
-              ),
-            ],
+          title: Text(
+            'Delete Transaction',
+            style: TextStyle(
+              fontFamily: 'Google Sans',
+              color: colors.textPrimary,
+              fontWeight: FontWeight.w700,
+              fontSize: 18,
+            ),
           ),
           content: Text(
             'Are you sure you want to delete this transaction of $_displayAmount to $_merchantTitle? This action cannot be undone.',
@@ -596,16 +584,17 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
                 ),
               ),
             ),
+            const SizedBox(width: 8),
             TextButton(
               onPressed: () {
                 Navigator.of(ctx).pop();
                 _handleDeletePayment();
               },
-              child: const Text(
+              child: Text(
                 'Yes, Delete',
                 style: TextStyle(
                   fontFamily: 'Google Sans',
-                  color: Color(0xFFFF453A),
+                  color: colors.error,
                   fontWeight: FontWeight.w700,
                 ),
               ),

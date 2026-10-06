@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
+import 'round_button.dart';
 
-/// Reusable Back Button with exact circular radius, border, and dimensions (44x44)
-/// matching the notification button across all screens.
+/// Legacy adapter for backward compatibility. Uses [RoundButton.back].
 class AppBackButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final String tooltip;
@@ -23,41 +22,13 @@ class AppBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppThemeManager.colors;
-
-    return Tooltip(
-      message: tooltip,
-      child: GestureDetector(
-        onTap: onPressed ??
-            () {
-              if (Navigator.canPop(context)) {
-                Navigator.pop(context);
-              }
-            },
-        behavior: HitTestBehavior.opaque,
-        child: MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: backgroundColor ?? colors.surface,
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: borderColor ?? colors.border,
-                width: 1.5,
-              ),
-            ),
-            child: Center(
-              child: Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: iconColor ?? colors.textPrimary,
-                size: iconSize,
-              ),
-            ),
-          ),
-        ),
-      ),
+    return RoundButton.back(
+      onTap: onPressed,
+      tooltip: tooltip,
+      backgroundColor: backgroundColor,
+      borderColor: borderColor,
+      iconColor: iconColor,
+      iconSize: iconSize,
     );
   }
 }

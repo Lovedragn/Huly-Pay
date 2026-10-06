@@ -7,6 +7,8 @@ import '../repositories/transaction_repository.dart';
 import '../repositories/user_repository.dart';
 import '../services/auth_service.dart';
 import '../services/user_preferences_service.dart';
+import '../theme/app_theme.dart';
+import '../widgets/card_dialog.dart';
 import 'home_dashboard_screen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -180,17 +182,17 @@ class _SignInScreenState extends State<SignInScreen> with WidgetsBindingObserver
   }
 
   void _showPolicyDialog(String title, String content) {
-    showDialog(
+    final colors = AppThemeManager.colors;
+    showCardDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1C1C20),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      builder: (ctx) => CardDialog(
         title: Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'Google Sans',
-            color: Colors.white,
+            color: colors.textPrimary,
             fontWeight: FontWeight.w700,
+            fontSize: 18,
           ),
         ),
         content: SizedBox(
@@ -199,9 +201,9 @@ class _SignInScreenState extends State<SignInScreen> with WidgetsBindingObserver
             physics: const BouncingScrollPhysics(),
             child: Text(
               content,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Google Sans',
-                color: Color(0xFF8E8E93),
+                color: colors.textSecondary,
                 fontSize: 13,
                 height: 1.5,
               ),
@@ -211,11 +213,11 @@ class _SignInScreenState extends State<SignInScreen> with WidgetsBindingObserver
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text(
+            child: Text(
               'Close',
               style: TextStyle(
                 fontFamily: 'Google Sans',
-                color: Colors.white,
+                color: colors.accent,
                 fontWeight: FontWeight.w600,
               ),
             ),

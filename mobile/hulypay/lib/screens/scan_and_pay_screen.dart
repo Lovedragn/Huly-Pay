@@ -1,26 +1,23 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../data/external_data.dart';
-import '../models/transaction_model.dart';
-import '../repositories/transaction_repository.dart';
-import '../services/api_client.dart';
-import '../services/auth_service.dart';
-import '../services/google_pay_service.dart';
-import '../services/local_database_service.dart';
 import '../services/location_service.dart';
 import '../services/qr_share_service.dart';
-import '../services/sms_filter_service.dart';
+import '../services/scan_payment_service.dart';
 import '../services/upi_payment_service.dart';
 import '../services/upi_service.dart';
 import '../services/user_preferences_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/card_dialog.dart';
+import '../widgets/payment_details_page.dart';
+import '../widgets/payment_dialogs.dart';
+import '../widgets/scanner_circle_button.dart';
+import '../widgets/scanner_overlay_painter.dart';
+import '../widgets/sms_verification_dialog.dart';
 import 'payment_methods_screen.dart';
 import 'upload_qr_screen.dart';
 
@@ -35,1812 +32,420 @@ class ScanAndPayScreen extends StatefulWidget {
 }
 
 class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
+  static const Duration _paymentVerificationTimeout = Duration(minutes: 5);
+  static const double _scanBoxSize = 260.0;
+
   late final MobileScannerController _scannerController;
-  late final TextEditingController _amountController;
-  late final TextEditingController _noteController;
   bool _isFlashOn = false;
   bool _isFrontCamera = false;
   bool _isProcessing = false;
   DateTime? _lastInvalidQrToastTime;
 
-  static const Duration _paymentVerificationTimeout = Duration(minutes: 5);
-
   @override
   void initState() {
     super.initState();
-    _amountController = TextEditingController(
-      text: widget.initialAmount != null && widget.initialAmount! > 0
-          ? widget.initialAmount!.toStringAsFixed(2)
-          : '',
-    );
-    _noteController = TextEditingController(text: widget.initialNote ?? '');
     _scannerController = MobileScannerController(
       detectionSpeed: DetectionSpeed.normal,
       facing: CameraFacing.back,
       torchEnabled: false,
-      returnImage: true,
       formats: const [BarcodeFormat.qrCode],
     );
   }
 
   @override
   void dispose() {
-    _amountController.dispose();
-    _noteController.dispose();
     _scannerController.dispose();
     super.dispose();
   }
 
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
+
   void _handleBack([int? targetIndex]) {
-    if (Navigator.canPop(context)) {
-      Navigator.pop(context, targetIndex);
-    }
+    if (Navigator.canPop(context)) Navigator.pop(context, targetIndex);
   }
 
-  void _toggleFlash() async {
+  Future<void> _pauseScanner() async {
+    try {
+      await _scannerController.pause();
+    } catch (_) {}
+  }
+
+  Future<void> _resumeScanner() async {
+    if (!mounted) return;
+    try {
+      await _scannerController.start();
+    } catch (_) {}
+  }
+
+  void _showSnack(
+    String message, {
+    Duration duration = const Duration(milliseconds: 1500),
+    Widget? leading,
+    CardNotificationType type = CardNotificationType.info,
+  }) {
+    if (!mounted) return;
+    showCardNotification(
+      context,
+      message: message,
+      leading: leading,
+      type: type,
+      duration: duration,
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Camera controls
+  // ---------------------------------------------------------------------------
+
+  Future<void> _toggleFlash() async {
     try {
       await _scannerController.toggleTorch();
     } catch (_) {}
-    setState(() {
-      _isFlashOn = !_isFlashOn;
-    });
+    if (mounted) setState(() => _isFlashOn = !_isFlashOn);
   }
 
-  void _toggleCamera() async {
+  Future<void> _toggleCamera() async {
     try {
       await _scannerController.switchCamera();
     } catch (_) {}
-    setState(() {
-      _isFrontCamera = !_isFrontCamera;
-    });
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isFrontCamera
-                ? ExternalData.switchedToFrontCamera
-                : ExternalData.switchedToRearCamera,
-            style: const TextStyle(
-              fontFamily: 'Google Sans',
-              color: Colors.white,
-            ),
-          ),
-          backgroundColor: const Color(0xFF1E1E24),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          duration: const Duration(milliseconds: 1500),
-        ),
-      );
-    }
+    if (!mounted) return;
+    setState(() => _isFrontCamera = !_isFrontCamera);
+    _showSnack(
+      _isFrontCamera
+          ? ExternalData.switchedToFrontCamera
+          : ExternalData.switchedToRearCamera,
+    );
   }
 
   Future<void> _openUploadFromScanner() async {
-    try {
-      await _scannerController.pause();
-    } catch (_) {}
+    await _pauseScanner();
     if (!mounted) return;
     await Navigator.of(context)
         .push(MaterialPageRoute(builder: (_) => const UploadQrScreen()));
-    if (mounted) {
-      try {
-        await _scannerController.start();
-      } catch (_) {}
-    }
+    await _resumeScanner();
   }
 
-  void _handleBarcodeDetected(BarcodeCapture capture) async {
+  // ---------------------------------------------------------------------------
+  // Detection
+  // ---------------------------------------------------------------------------
+
+  Future<void> _handleBarcodeDetected(BarcodeCapture capture) async {
     if (_isProcessing) return;
-    final barcode = capture.barcodes.firstOrNull;
-    if (barcode == null || barcode.rawValue == null) return;
-    final rawValue = barcode.rawValue!.trim();
-    if (rawValue.isEmpty) return;
+    final rawValue = capture.barcodes.firstOrNull?.rawValue?.trim();
+    if (rawValue == null || rawValue.isEmpty) return;
 
     final upiData = UpiService.parseUpiUri(rawValue);
-    if (upiData == null && !rawValue.toLowerCase().startsWith('upi:')) {
-      _handleInvalidBarcodeDetected();
+    if (upiData == null) {
+      if (!rawValue.toLowerCase().startsWith('upi:')) {
+        _handleInvalidBarcodeDetected();
+      }
       return;
     }
 
-    setState(() {
-      _isProcessing = true;
-    });
-
+    setState(() => _isProcessing = true);
+    await _pauseScanner();
     try {
-      await _scannerController.pause();
-    } catch (_) {}
-
-    if (upiData != null) {
-      _processPaymentFlow(upiData);
-    } else {
-      setState(() {
-        _isProcessing = false;
-      });
-      try {
-        await _scannerController.start();
-      } catch (_) {}
+      await _runPaymentFlow(upiData);
+    } finally {
+      if (mounted) {
+        setState(() => _isProcessing = false);
+        await _resumeScanner();
+      }
     }
   }
 
   void _handleInvalidBarcodeDetected() {
     final now = DateTime.now();
-    if (_lastInvalidQrToastTime != null &&
-        now.difference(_lastInvalidQrToastTime!) < const Duration(seconds: 3)) {
+    final last = _lastInvalidQrToastTime;
+    if (last != null && now.difference(last) < const Duration(seconds: 3)) {
       return;
     }
     _lastInvalidQrToastTime = now;
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
-            ExternalData.invalidQrMessage,
-            style: TextStyle(
-              fontFamily: 'Google Sans',
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          backgroundColor: const Color(0xFFD93025),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    }
+    _showSnack(
+      ExternalData.invalidQrMessage,
+      type: CardNotificationType.error,
+      duration: const Duration(seconds: 2),
+    );
   }
 
-  void _processPaymentFlow(UpiPaymentData upiData) async {
-    setState(() {
-      _isProcessing = true;
-    });
+  // ---------------------------------------------------------------------------
+  // Payment flow
+  // ---------------------------------------------------------------------------
 
+  Future<void> _runPaymentFlow(UpiPaymentData upiData) async {
+    // Fetch location in the background while the user types the amount.
+    PaymentLocation? location;
+    unawaited(() async {
+      try {
+        location = (await LocationService().getPaymentLocationWithStatus())
+            .location;
+      } catch (_) {}
+    }());
+
+    final details = await PaymentDetailsPage.show(
+      context,
+      upiData: upiData,
+      initialAmount: widget.initialAmount,
+    );
+    if (details == null || !mounted) return;
+
+    // Primary flow: server generates a QR with am=<amount>, share it to the UPI app.
+    if (await _payViaGeneratedQr(upiData, details)) return;
+
+    // Fallback: launch the UPI app directly and verify via SMS.
     if (!mounted) return;
-
-    await _showPaymentConfirmationModal(upiData);
-
-    if (mounted) {
-      setState(() {
-        _isProcessing = false;
-      });
-    }
+    final payData = UpiPaymentData(
+      rawUri: upiData.rawUri,
+      upiId: upiData.upiId,
+      payeeName: upiData.payeeName,
+      amount: details.amount,
+      currency: upiData.currency,
+      transactionRef: upiData.transactionRef,
+      transactionId: upiData.transactionId,
+      note: details.note ?? upiData.note,
+      merchantCode: upiData.merchantCode,
+    );
+    await _startSmsVerificationWorkflow(payData, details.amount, location);
   }
 
-  Future<void> _showPaymentConfirmationModal(
-    UpiPaymentData upiData, [
-    LocationResult? initialLocationResult,
-  ]) async {
-    final amountController = TextEditingController(
-      text: upiData.amount != null ? upiData.amount!.toStringAsFixed(2) : '',
+  /// Returns true if the generated QR was shared successfully.
+  Future<bool> _payViaGeneratedQr(
+    UpiPaymentData upiData,
+    PaymentDetailsResult details,
+  ) async {
+    final preferredAppId = await UserPreferencesService().getDefaultPaymentApp();
+    final app = await ScanPaymentService.resolveShareTargetApp();
+    final qrFile = await ScanPaymentService.generateAmountQr(
+      rawUri: upiData.rawUri,
+      amount: details.amount,
     );
-    final noteController = TextEditingController(text: upiData.note ?? '');
-    final amountFocusNode = FocusNode();
-    PaymentLocation? capturedLocation = initialLocationResult?.location;
-    bool isLocationFetching = capturedLocation == null;
+    if (qrFile == null || !mounted) return false;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (amountFocusNode.canRequestFocus) {
-        amountFocusNode.requestFocus();
-      }
-    });
-
-    final hasPayeeName =
-        upiData.payeeName != null && upiData.payeeName!.trim().isNotEmpty;
-    final primaryTitle = hasPayeeName
-        ? upiData.payeeName!.trim()
-        : upiData.upiId;
-    final subtitle = hasPayeeName ? upiData.upiId : 'UPI Payee';
-
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        fullscreenDialog: true,
-        builder: (pageContext) {
-          final colors = AppThemeManager.colors;
-
-          if (isLocationFetching) {
-            isLocationFetching = false;
-            LocationService().getPaymentLocationWithStatus().then((result) {
-              if (pageContext.mounted) {
-                capturedLocation = result.location;
-              }
-            });
-          }
-
-          return Scaffold(
-            backgroundColor: colors.background,
-            appBar: AppBar(
-              backgroundColor: colors.background,
-              elevation: 0,
-              leading: Container(
-                margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: colors.surfaceSecondary,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: colors.border, width: 0.5),
-                ),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.close_rounded,
-                    color: colors.textPrimary,
-                    size: 20,
-                  ),
-                  onPressed: () => Navigator.of(pageContext).pop(),
-                  tooltip: 'Cancel',
-                ),
-              ),
-              centerTitle: true,
-              title: Text(
-                'Payment Details',
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: colors.textPrimary,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              actions: [
-                if (UserPreferencesService().cachedQuickConfirm)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Container(
-                      key: const Key('quick_confirm_appbar_indicator'),
-                      margin: const EdgeInsets.all(8),
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: colors.surfaceSecondary,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: colors.border, width: 0.5),
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.bolt_rounded,
-                          color: Color(0xFFFFB300),
-                          size: 22,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            body: SafeArea(
-              child: Center(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 20,
-                  ),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 420),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        // Merchant Avatar
-                        Container(
-                          width: 68,
-                          height: 68,
-                          decoration: BoxDecoration(
-                            color: colors.surfaceSecondary,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: colors.border,
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.storefront_rounded,
-                              color: colors.accent,
-                              size: 34,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Merchant Name
-                        Text(
-                          primaryTitle,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'Google Sans',
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700,
-                            color: colors.textPrimary,
-                            letterSpacing: -0.3,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 6),
-
-                        // Subtitle & Copy
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Flexible(
-                              child: Text(
-                                subtitle,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontFamily: 'Google Sans',
-                                  fontSize: 13,
-                                  color: colors.textSecondary,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            GestureDetector(
-                              onTap: () {
-                                Clipboard.setData(
-                                  ClipboardData(text: upiData.upiId),
-                                );
-                                ScaffoldMessenger.of(pageContext).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      'UPI ID copied: ${upiData.upiId}',
-                                    ),
-                                    duration: const Duration(
-                                      milliseconds: 1500,
-                                    ),
-                                    backgroundColor: colors.surfaceSecondary,
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 3,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: colors.surfaceSecondary,
-                                  borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(
-                                    color: colors.border,
-                                    width: 0.5,
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.copy_rounded,
-                                      size: 12,
-                                      color: colors.accent,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      'Copy',
-                                      style: TextStyle(
-                                        fontFamily: 'Google Sans',
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                        color: colors.accent,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 32),
-
-                        // Amount Entry Box
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 16,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colors.surface,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: colors.border,
-                              width: 1.2,
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                'PAYING AMOUNT',
-                                style: TextStyle(
-                                  fontFamily: 'Google Sans',
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 1.2,
-                                  color: colors.accent,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    '₹',
-                                    style: TextStyle(
-                                      fontFamily: 'Google Sans',
-                                      fontSize: 34,
-                                      fontWeight: FontWeight.w700,
-                                      color: colors.textSecondary,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Flexible(
-                                    child: TextField(
-                                      controller: amountController,
-                                      focusNode: amountFocusNode,
-                                      autofocus: true,
-                                      keyboardType:
-                                          const TextInputType.numberWithOptions(
-                                            decimal: true,
-                                          ),
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontFamily: 'Google Sans',
-                                        color: colors.textPrimary,
-                                        fontSize: 40,
-                                        fontWeight: FontWeight.w800,
-                                        letterSpacing: -0.5,
-                                      ),
-                                      decoration: InputDecoration(
-                                        hintText: '0.00',
-                                        hintStyle: TextStyle(
-                                          color: colors.textMuted.withValues(
-                                            alpha: 0.35,
-                                          ),
-                                        ),
-                                        border: InputBorder.none,
-                                        isDense: true,
-                                        contentPadding: EdgeInsets.zero,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Note Field
-                        TextField(
-                          controller: noteController,
-                          textInputAction: TextInputAction.done,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'Google Sans',
-                            color: colors.textPrimary,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: 'Add a note (optional)',
-                            hintStyle: TextStyle(
-                              color: colors.textMuted,
-                              fontSize: 13,
-                            ),
-                            prefixIcon: Icon(
-                              Icons.edit_note_rounded,
-                              color: colors.accent,
-                              size: 22,
-                            ),
-                            filled: true,
-                            fillColor: colors.surface,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(color: colors.border),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(color: colors.border),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(
-                                color: colors.accent,
-                                width: 1.5,
-                              ),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-
-                        // Pay Button
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.black,
-                              side: colors.isDark
-                                  ? BorderSide.none
-                                  : BorderSide(
-                                      color: colors.border,
-                                      width: 1.5,
-                                    ),
-                              elevation: colors.isDark ? 2 : 0,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                            ),
-                            onPressed: () async {
-                              final messenger = ScaffoldMessenger.of(context);
-                              final parsedAmount =
-                                  double.tryParse(
-                                    amountController.text.trim(),
-                                  ) ??
-                                  0.0;
-                              if (parsedAmount <= 0) {
-                                messenger.showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Please enter a valid amount greater than 0',
-                                    ),
-                                  ),
-                                );
-                                return;
-                              }
-
-                              final updatedNote = noteController.text.trim();
-                              final updatedUpiData = UpiPaymentData(
-                                rawUri: upiData.rawUri,
-                                upiId: upiData.upiId,
-                                payeeName: upiData.payeeName,
-                                amount: parsedAmount,
-                                currency: upiData.currency,
-                                transactionRef: upiData.transactionRef,
-                                transactionId: upiData.transactionId,
-                                note: updatedNote.isNotEmpty
-                                    ? updatedNote
-                                    : upiData.note,
-                                merchantCode: upiData.merchantCode,
-                              );
-
-                              final navigator = Navigator.of(context);
-                              Navigator.of(pageContext).pop();
-
-                              // Flow: Generate backend QR with am=(user entered amount) -> share image to default UPI app from settings
-                              try {
-                                final preferredAppId =
-                                    await UserPreferencesService()
-                                        .getDefaultPaymentApp();
-                                final targetApp =
-                                    (preferredAppId != UpiApps.askEveryTime)
-                                    ? UpiApps.findById(preferredAppId)
-                                    : UpiApps.gpay;
-                                final String targetPackage =
-                                    targetApp?.packageName ??
-                                    UpiApps.gpay.packageName;
-                                final String appName =
-                                    targetApp?.name ?? 'Google Pay';
-
-                                String shareFilePath = '';
-                                try {
-                                  final imageBytes = await ApiClient()
-                                      .generateQrCode(
-                                        uri: upiData.rawUri,
-                                        amount: parsedAmount,
-                                        size: 512,
-                                      );
-
-                                  if (imageBytes.isNotEmpty) {
-                                    final tempDir =
-                                        await getTemporaryDirectory();
-                                    final newQrFile = File(
-                                      '${tempDir.path}/qr_scan_${DateTime.now().millisecondsSinceEpoch}.png',
-                                    );
-                                    await newQrFile.writeAsBytes(
-                                      imageBytes,
-                                      flush: true,
-                                    );
-                                    shareFilePath = newQrFile.path;
-                                    debugPrint(
-                                      '[ScanAndPay] Generated amount-injected QR image at: $shareFilePath',
-                                    );
-                                  }
-                                } catch (e) {
-                                  debugPrint(
-                                    '[ScanAndPay] Backend QR generation fallback: $e',
-                                  );
-                                }
-
-                                if (shareFilePath.isNotEmpty && mounted) {
-                                  final success =
-                                      await QrShareService.shareQrImage(
-                                        context: context,
-                                        filePath: shareFilePath,
-                                        amount: parsedAmount,
-                                        note: updatedNote.isNotEmpty
-                                            ? updatedNote
-                                            : null,
-                                        title: 'Pay with $appName',
-                                        targetPackage: targetPackage,
-                                      );
-
-                                  if (success && mounted) {
-                                    final txnRef =
-                                        'HULY${DateTime.now().millisecondsSinceEpoch}';
-                                    final payee = upiData.payeeName?.trim();
-                                    final upi = upiData.upiId.trim();
-                                    final merchant =
-                                        (payee != null && payee.isNotEmpty)
-                                        ? payee
-                                        : ((upi.isNotEmpty)
-                                              ? upi
-                                              : 'UPI Merchant');
-
-                                    try {
-                                      await TransactionRepository()
-                                          .createTransaction(
-                                            CreatePaymentPayload(
-                                              amount: parsedAmount,
-                                              currency: upiData.currency,
-                                              merchantName: merchant,
-                                              upiId: upi,
-                                              paymentMethod: 'UPI',
-                                              transactionReference: txnRef,
-                                              status:
-                                                  UserPreferencesService()
-                                                      .cachedQuickConfirm
-                                                  ? 'CONFIRMED'
-                                                  : 'PENDING',
-                                              provider:
-                                                  targetApp?.name
-                                                      .toUpperCase()
-                                                      .replaceAll(' ', '_') ??
-                                                  'UPI',
-                                            ),
-                                          );
-                                    } catch (_) {}
-
-                                    messenger.showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          'Opening $appName with QR code...',
-                                        ),
-                                        behavior: SnackBarBehavior.floating,
-                                      ),
-                                    );
-                                    navigator.pop();
-                                    return;
-                                  }
-                                }
-                              } catch (e) {
-                                debugPrint(
-                                  '[ScanAndPay] Error in QR share flow: $e',
-                                );
-                              }
-
-                              // Fallback to direct intent flow if image generation/sharing is unsupported
-                              if (mounted) {
-                                await _startSmsVerificationWorkflow(
-                                  updatedUpiData,
-                                  parsedAmount,
-                                  capturedLocation,
-                                );
-                              }
-                            },
-                            child: Text(
-                              () {
-                                final pref = UserPreferencesService()
-                                    .cachedDefaultPaymentApp;
-                                final app = UpiApps.findById(pref);
-                                final target =
-                                    app?.name ??
-                                    (pref == UpiApps.askEveryTime
-                                        ? 'Any App'
-                                        : 'UPI App');
-                                return 'Pay via $target';
-                              }(),
-                              style: const TextStyle(
-                                fontFamily: 'Google Sans',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
+    final shared = await QrShareService.shareQrImage(
+      context: context,
+      filePath: qrFile.path,
+      amount: details.amount,
+      note: details.note,
+      title: 'Pay with ${app.name}',
+      targetPackage: (preferredAppId != UpiApps.askEveryTime) ? app.packageName : null,
     );
+    if (!shared) return false;
+
+    await ScanPaymentService.recordSharedQrPayment(
+      upiData: upiData,
+      amount: details.amount,
+      app: app,
+    );
+    _showSnack('Opening ${app.name} with QR code...');
+    if (mounted) _handleBack();
+    return true;
   }
 
   Future<void> _startSmsVerificationWorkflow(
     UpiPaymentData upiData,
-    double parsedAmount,
-    PaymentLocation? capturedLocation,
+    double amount,
+    PaymentLocation? location,
   ) async {
-    final bool isQuickConfirm = UserPreferencesService().cachedQuickConfirm;
-
-    // Check & Request SMS Permission if Quick Confirm is off
-    if (!isQuickConfirm) {
-      bool hasPermission = await GooglePayService.isSmsPermissionGranted();
-      if (!hasPermission) {
-        hasPermission = await GooglePayService.requestSmsPermission();
-      }
-
-      if (!hasPermission) {
-        if (mounted) {
-          showDialog(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              backgroundColor: const Color(0xFF1E1E24),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              title: const Row(
-                children: [
-                  Icon(
-                    Icons.sms_failed_rounded,
-                    color: Color(0xFFE5A93C),
-                    size: 24,
-                  ),
-                  SizedBox(width: 10),
-                  Text(
-                    ExternalData.smsPermissionRequiredTitle,
-                    style: TextStyle(
-                      fontFamily: 'Google Sans',
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18,
-                    ),
-                  ),
-                ],
-              ),
-              content: const Text(
-                ExternalData.smsPermissionRequiredContent,
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: Color(0xFFD0D0D5),
-                  fontSize: 14,
-                  height: 1.4,
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text(
-                    'Dismiss',
-                    style: TextStyle(color: Color(0xFF8E8E93)),
-                  ),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF007AFF),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  onPressed: () async {
-                    Navigator.of(ctx).pop();
-                    final retryGranted =
-                        await GooglePayService.requestSmsPermission();
-                    if (retryGranted && mounted) {
-                      _startSmsVerificationWorkflow(
-                        upiData,
-                        parsedAmount,
-                        capturedLocation,
-                      );
-                    }
-                  },
-                  child: const Text(
-                    'Grant Permission',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-        return;
-      }
-    }
-
-    // Determine Preferred UPI Application & Check Availability
-    final preferredAppId = await UserPreferencesService()
-        .getDefaultPaymentApp();
-    bool isAppReady = true;
-    SupportedUpiApp? targetApp;
-
-    if (preferredAppId != UpiApps.askEveryTime) {
-      targetApp = UpiApps.findById(preferredAppId);
-      if (targetApp != null) {
-        isAppReady = await UpiPaymentService.isAppInstalled(targetApp.id);
-      }
-    } else {
-      final installed = await UpiPaymentService.getInstalledUpiPackages();
-      if (installed.isEmpty) {
-        isAppReady = await GooglePayService.isReadyToPay();
-      }
-    }
-
-    if (!isAppReady) {
-      if (mounted) {
-        final missingAppName = targetApp?.name ?? 'Preferred UPI App';
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            backgroundColor: const Color(0xFF1E1E24),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            title: Row(
-              children: [
-                const Icon(
-                  Icons.warning_amber_rounded,
-                  color: Color(0xFFE5A93C),
-                  size: 24,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    '$missingAppName Not Installed',
-                    style: const TextStyle(
-                      fontFamily: 'Google Sans',
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            content: Text(
-              '$missingAppName is not installed on this device. Would you like to use the Android app chooser or select another UPI application?',
-              style: const TextStyle(
-                fontFamily: 'Google Sans',
-                color: Color(0xFFD0D0D5),
-                fontSize: 14,
-                height: 1.4,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(color: Color(0xFF8E8E93)),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const PaymentMethodsScreen(),
-                    ),
-                  );
-                },
-                child: const Text(
-                  'Change Default App',
-                  style: TextStyle(
-                    color: Color(0xFF007AFF),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF007AFF),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                onPressed: () async {
-                  Navigator.of(ctx).pop();
-                  await _launchUpiAndStartVerification(
-                    upiData: upiData,
-                    parsedAmount: parsedAmount,
-                    capturedLocation: capturedLocation,
-                    forceAskEveryTime: true,
-                  );
-                },
-                child: const Text(
-                  'Open Any Payment App',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
+    if (!ScanPaymentService.isQuickConfirm &&
+        !await ScanPaymentService.ensureSmsPermission()) {
+      if (!mounted) return;
+      final retry = await showSmsPermissionDialog(context);
+      if (retry && await ScanPaymentService.ensureSmsPermission() && mounted) {
+        await _startSmsVerificationWorkflow(upiData, amount, location);
       }
       return;
     }
 
+    var forceAskEveryTime = false;
+    final readiness = await ScanPaymentService.checkPreferredAppReadiness();
+    if (!readiness.isReady) {
+      if (!mounted) return;
+      final action = await showAppNotInstalledDialog(
+        context,
+        readiness.app?.name ?? 'Preferred UPI App',
+      );
+      if (!mounted) return;
+      if (action == MissingAppAction.changeDefault) {
+        await Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const PaymentMethodsScreen()),
+        );
+        return;
+      }
+      if (action != MissingAppAction.openAnyApp) return;
+      forceAskEveryTime = true;
+    }
+
     await _launchUpiAndStartVerification(
       upiData: upiData,
-      parsedAmount: parsedAmount,
-      capturedLocation: capturedLocation,
-      forceAskEveryTime: false,
+      amount: amount,
+      location: location,
+      forceAskEveryTime: forceAskEveryTime,
     );
   }
 
   Future<void> _launchUpiAndStartVerification({
     required UpiPaymentData upiData,
-    required double parsedAmount,
-    required PaymentLocation? capturedLocation,
+    required double amount,
+    required PaymentLocation? location,
     bool forceAskEveryTime = false,
   }) async {
-    final messenger = ScaffoldMessenger.of(context);
-    final currentPref = await UserPreferencesService().getDefaultPaymentApp();
-    final effectiveAppId = forceAskEveryTime
+    final isQuickConfirm = ScanPaymentService.isQuickConfirm;
+    final appId = forceAskEveryTime
         ? UpiApps.askEveryTime
-        : currentPref;
-    final bool isQuickConfirm = UserPreferencesService().cachedQuickConfirm;
-    final String paymentStatus = isQuickConfirm ? 'CONFIRMED' : 'PENDING';
+        : await UserPreferencesService().getDefaultPaymentApp();
 
-    final txnRef = 'HULY${DateTime.now().millisecondsSinceEpoch}';
-    final nowIso = DateTime.now().toIso8601String();
-    final providerName = effectiveAppId == 'google_pay'
-        ? 'GOOGLE_PAY'
-        : (effectiveAppId == 'amazon_pay'
-              ? 'AMAZON_PAY'
-              : (effectiveAppId == 'phonepe'
-                    ? 'PHONEPE'
-                    : (effectiveAppId == 'bhim' ? 'BHIM' : 'UPI')));
+    final payment = await ScanPaymentService.createPendingPayment(
+      upiData: upiData,
+      amount: amount,
+      appId: appId,
+      location: location,
+    );
 
-    // Auto-resolve category
-    String? autoCategory;
-    try {
-      final cleanUpi = upiData.upiId.toLowerCase().trim();
-      if (cleanUpi.isNotEmpty) {
-        autoCategory = await LocalDatabaseService().getMetadata(
-          'upi_category_$cleanUpi',
-        );
-      }
-      if ((autoCategory == null || autoCategory.isEmpty) &&
-          upiData.payeeName != null &&
-          upiData.payeeName!.trim().isNotEmpty) {
-        final cleanMerchant = upiData.payeeName!.toLowerCase().trim();
-        autoCategory = await LocalDatabaseService().getMetadata(
-          'merchant_category_$cleanMerchant',
-        );
-      }
-    } catch (_) {}
-
-    final effectivePaymentMethod =
-        (autoCategory != null && autoCategory.isNotEmpty)
-        ? autoCategory
-        : 'UPI';
-
-    PaymentModel pendingPayment;
-    try {
-      pendingPayment = await TransactionRepository().createTransaction(
-        CreatePaymentPayload(
-          amount: parsedAmount,
-          currency: upiData.currency,
-          merchantName: upiData.payeeName,
-          upiId: upiData.upiId,
-          paymentMethod: effectivePaymentMethod,
-          transactionReference: txnRef,
-          status: paymentStatus,
-          provider: providerName,
-          latitude: capturedLocation?.latitude,
-          longitude: capturedLocation?.longitude,
-          locationAccuracyMeters: capturedLocation?.accuracyMeters,
-        ),
-      );
-    } catch (e) {
-      pendingPayment = PaymentModel(
-        id: 'local_${DateTime.now().millisecondsSinceEpoch}',
-        amount: parsedAmount,
-        currency: upiData.currency,
-        merchantName: upiData.payeeName ?? upiData.upiId,
-        upiId: upiData.upiId,
-        paymentMethod: effectivePaymentMethod,
-        transactionReference: txnRef,
-        status: paymentStatus,
-        provider: providerName,
-        latitude: capturedLocation?.latitude,
-        longitude: capturedLocation?.longitude,
-        locationAccuracyMeters: capturedLocation?.accuracyMeters,
-        createdAt: nowIso,
-        updatedAt: nowIso,
-      );
-    }
-
-    if (autoCategory != null && autoCategory.isNotEmpty) {
-      try {
-        await LocalDatabaseService().setMetadata(
-          'category_${pendingPayment.id}',
-          autoCategory,
-        );
-      } catch (_) {}
-
-      try {
-        final client = AuthService().client;
-        if (client != null &&
-            !pendingPayment.id.startsWith('local_') &&
-            !pendingPayment.id.startsWith('tx_')) {
-          try {
-            await client
-                .from('transactions')
-                .update({
-                  'category': autoCategory,
-                  'updated_at': DateTime.now().toUtc().toIso8601String(),
-                })
-                .eq('id', pendingPayment.id);
-          } catch (_) {}
-        }
-      } catch (_) {}
-    }
-
-    // Launch target app standalone
-    bool launched = false;
-    String? launchedAppName;
-
-    if (effectiveAppId != UpiApps.askEveryTime) {
-      final app = UpiApps.findById(effectiveAppId);
-      if (app != null) {
-        launchedAppName = app.name;
-        launched = await UpiPaymentService.openApp(app.packageName);
-      }
-    } else {
-      final available = await UpiPaymentService.getAvailableSupportedApps();
-      if (available.isNotEmpty) {
-        launchedAppName = available.first.name;
-        launched = await UpiPaymentService.openApp(available.first.packageName);
-      }
-    }
-
-    if (!launched) {
-      launched = await UpiPaymentService.launchStandaloneApp(
-        preferredAppId: effectiveAppId,
-      );
-    }
-
-    if (!launched) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            launchedAppName != null
-                ? 'Could not open $launchedAppName. Please ensure it is installed.'
-                : 'Could not open payment application. Please ensure a payment app is installed.',
-          ),
-          backgroundColor: const Color(0xFFD93025),
-        ),
+    final launch = await ScanPaymentService.launchPaymentApp(
+      appId,
+      upiData: upiData,
+      amount: amount,
+    );
+    if (!launch.launched) {
+      _showSnack(
+        launch.appName != null
+            ? 'Could not open ${launch.appName}. Please ensure it is installed.'
+            : 'Could not open payment application. Please ensure a payment app is installed.',
+        type: CardNotificationType.error,
+        duration: const Duration(seconds: 3),
       );
       return;
     }
+    if (!mounted) return;
 
-    if (mounted) {
-      if (isQuickConfirm) {
-        _showQuickConfirmSuccessDialog(pendingPayment, upiData);
-      } else {
-        _showSmsVerificationDialog(pendingPayment, upiData);
-      }
+    final bool goHome;
+    if (isQuickConfirm) {
+      await showQuickConfirmSuccessDialog(context, payment);
+      goHome = true;
+    } else {
+      goHome = await SmsVerificationDialog.show(
+        context,
+        payment,
+        timeout: _paymentVerificationTimeout,
+      );
     }
+    if (goHome && mounted) _handleBack(0);
   }
 
-  void _showQuickConfirmSuccessDialog(
-    PaymentModel payment,
-    UpiPaymentData upiData,
-  ) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogCtx) => AlertDialog(
-        backgroundColor: const Color(0xFF1E1E24),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: const Color(0xFF28A745).withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.check_circle_rounded,
-                  color: Color(0xFF28A745),
-                  size: 22,
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            const Expanded(
-              child: Text(
-                'Payment Successful',
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Amount: ₹${payment.amount.toStringAsFixed(2)}',
-              style: const TextStyle(
-                fontFamily: 'Google Sans',
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'Merchant: ${payment.merchantName ?? payment.upiId ?? "UPI Merchant"}',
-              style: const TextStyle(
-                fontFamily: 'Google Sans',
-                color: Color(0xFF8E8E93),
-                fontSize: 13,
-              ),
-            ),
-            const SizedBox(height: 14),
-
-            // Quick Confirm Badge
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: const Color(0xFF161619),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: const Color(0xFF28A745).withValues(alpha: 0.3),
-                ),
-              ),
-              child: const Row(
-                children: [
-                  Icon(Icons.bolt_rounded, size: 18, color: Color(0xFFFFB300)),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Quick Confirm active • Confirmed',
-                      style: TextStyle(
-                        fontFamily: 'Google Sans',
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF28A745),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              ExternalData.quickConfirmSuccessBody,
-              style: TextStyle(
-                fontFamily: 'Google Sans',
-                color: Color(0xFFA0A0A8),
-                fontSize: 12,
-                height: 1.4,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF28A745),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            ),
-            onPressed: () {
-              Navigator.of(dialogCtx).pop();
-              _handleBack(0);
-            },
-            child: const Text(
-              'Done',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showSmsVerificationDialog(
-    PaymentModel payment,
-    UpiPaymentData upiData,
-  ) {
-    int remainingSeconds = _paymentVerificationTimeout.inSeconds;
-    Timer? timer;
-    String statusState = 'WAITING';
-    String? statusMessage;
-    String? resolvedUpiTxnId;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogCtx) => StatefulBuilder(
-        builder: (ctx, setDialogState) {
-          if (timer == null && statusState == 'WAITING') {
-            timer = Timer.periodic(const Duration(seconds: 1), (t) {
-              if (!dialogCtx.mounted) {
-                t.cancel();
-                GooglePayService.stopSmsListener();
-                return;
-              }
-
-              if (remainingSeconds > 0) {
-                setDialogState(() {
-                  remainingSeconds--;
-                });
-              } else {
-                t.cancel();
-                GooglePayService.stopSmsListener();
-                setDialogState(() {
-                  statusState = 'TIMEOUT';
-                  statusMessage = ExternalData.paymentVerificationTimeoutMsg;
-                });
-                TransactionRepository().reconcileTransaction(
-                  payment.id,
-                  'TIMEOUT',
-                );
-              }
-            });
-
-            // Start listening for incoming SMS
-            GooglePayService.startSmsListener((smsData) async {
-              final body = smsData['body']?.toString() ?? '';
-              final sender = smsData['sender']?.toString();
-              final timestamp = smsData['timestamp']?.toString();
-
-              if (!SmsFilterService.isFinancialTransactionSms(body)) {
-                return;
-              }
-
-              if (dialogCtx.mounted) {
-                setDialogState(() {
-                  statusState = 'VERIFYING';
-                  statusMessage = ExternalData.verifyingSmsStatus;
-                });
-              }
-
-              try {
-                final result = await TransactionRepository()
-                    .verifyTransactionSms(
-                      paymentId: payment.id,
-                      smsBody: body,
-                      sender: sender,
-                      receivedAt: timestamp,
-                    );
-
-                final bool isVerified = result['verified'] == true;
-                final String? resultStatus = result['status']?.toString();
-                final String? upiRef = result['extractedUpiReference']
-                    ?.toString();
-
-                if (isVerified && dialogCtx.mounted) {
-                  timer?.cancel();
-                  await GooglePayService.stopSmsListener();
-
-                  if (resultStatus == 'SUCCESS' ||
-                      resultStatus == 'CONFIRMED') {
-                    try {
-                      await TransactionRepository().reconcileTransaction(
-                        payment.id,
-                        'CONFIRMED',
-                        upiTransactionId: upiRef,
-                      );
-                    } catch (_) {}
-                    setDialogState(() {
-                      statusState = 'SUCCESS';
-                      statusMessage =
-                          result['message']?.toString() ??
-                          ExternalData.paymentVerifiedSuccess;
-                      resolvedUpiTxnId = upiRef;
-                    });
-                  } else if (resultStatus == 'FAILED') {
-                    try {
-                      await TransactionRepository().reconcileTransaction(
-                        payment.id,
-                        'FAILED',
-                        upiTransactionId: upiRef,
-                      );
-                    } catch (_) {}
-                    setDialogState(() {
-                      statusState = 'FAILED';
-                      statusMessage =
-                          result['message']?.toString() ??
-                          ExternalData.paymentFailedBankSms;
-                      resolvedUpiTxnId = upiRef;
-                    });
-                  }
-                } else if (dialogCtx.mounted) {
-                  setDialogState(() {
-                    statusState = 'WAITING';
-                    statusMessage = null;
-                  });
-                }
-              } catch (_) {
-                if (dialogCtx.mounted) {
-                  setDialogState(() {
-                    statusState = 'WAITING';
-                    statusMessage = null;
-                  });
-                }
-              }
-            });
-          }
-
-          final minutes = (remainingSeconds ~/ 60).toString().padLeft(2, '0');
-          final seconds = (remainingSeconds % 60).toString().padLeft(2, '0');
-          final timerText = '$minutes:$seconds remaining';
-
-          final bool isSuccess = statusState == 'SUCCESS';
-          final bool isFailed = statusState == 'FAILED';
-          final bool isTimeout = statusState == 'TIMEOUT';
-          final bool isVerifying = statusState == 'VERIFYING';
-
-          return AlertDialog(
-            backgroundColor: const Color(0xFF1E1E24),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            title: Row(
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: isSuccess
-                        ? const Color(0xFF28A745).withValues(alpha: 0.15)
-                        : (isFailed
-                              ? const Color(0xFFD93025).withValues(alpha: 0.15)
-                              : (isTimeout
-                                    ? const Color(0xFFE5A93C)
-                                          .withValues(alpha: 0.15)
-                                    : const Color(0xFF007AFF)
-                                          .withValues(alpha: 0.15))),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Center(
-                    child: isVerifying
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Color(0xFF007AFF),
-                            ),
-                          )
-                        : Icon(
-                            isSuccess
-                                ? Icons.check_circle_rounded
-                                : (isFailed
-                                      ? Icons.error_outline_rounded
-                                      : (isTimeout
-                                            ? Icons.timer_off_rounded
-                                            : Icons.hourglass_top_rounded)),
-                            color: isSuccess
-                                ? const Color(0xFF28A745)
-                                : (isFailed
-                                      ? const Color(0xFFD93025)
-                                      : (isTimeout
-                                            ? const Color(0xFFE5A93C)
-                                            : const Color(0xFF007AFF))),
-                            size: 20,
-                          ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    isSuccess
-                        ? 'Payment Successful'
-                        : (isFailed
-                              ? 'Payment Failed'
-                              : (isTimeout
-                                    ? 'Verification Timed Out'
-                                    : (isVerifying
-                                          ? 'Verifying SMS...'
-                                          : 'Waiting for Confirmation'))),
-                    style: const TextStyle(
-                      fontFamily: 'Google Sans',
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 17,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Amount: ₹${payment.amount.toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    fontFamily: 'Google Sans',
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Merchant: ${payment.merchantName ?? payment.upiId ?? "UPI Merchant"}',
-                  style: const TextStyle(
-                    fontFamily: 'Google Sans',
-                    color: Color(0xFF8E8E93),
-                    fontSize: 13,
-                  ),
-                ),
-                if (resolvedUpiTxnId != null &&
-                    resolvedUpiTxnId!.isNotEmpty) ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    'UPI Ref / UTR: $resolvedUpiTxnId',
-                    style: const TextStyle(
-                      fontFamily: 'Google Sans',
-                      color: Color(0xFF007AFF),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 14),
-
-                // Timer badge & status indicator
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF161619),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: isSuccess
-                          ? const Color(0xFF28A745).withValues(alpha: 0.3)
-                          : (isFailed
-                                ? const Color(0xFFD93025).withValues(alpha: 0.3)
-                                : (isTimeout
-                                      ? const Color(0xFFE5A93C)
-                                            .withValues(alpha: 0.3)
-                                      : const Color(0xFF007AFF)
-                                            .withValues(alpha: 0.3))),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        isSuccess
-                            ? Icons.verified_rounded
-                            : (isTimeout
-                                  ? Icons.timer_off_outlined
-                                  : Icons.schedule_rounded),
-                        size: 16,
-                        color: isSuccess
-                            ? const Color(0xFF28A745)
-                            : (isTimeout
-                                  ? const Color(0xFFE5A93C)
-                                  : const Color(0xFF007AFF)),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          isSuccess
-                              ? 'Verified via SMS'
-                              : (isFailed
-                                    ? 'Transaction Failed'
-                                    : (isTimeout
-                                          ? '5-minute window expired'
-                                          : 'SMS verification active • $timerText')),
-                          style: TextStyle(
-                            fontFamily: 'Google Sans',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: isSuccess
-                                ? const Color(0xFF28A745)
-                                : (isTimeout
-                                      ? const Color(0xFFE5A93C)
-                                      : const Color(0xFFD0D0D5)),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  isSuccess
-                      ? ExternalData.smsVerifiedSuccessBody
-                      : (isFailed
-                            ? (statusMessage ??
-                                  ExternalData.paymentFailedBankSms)
-                            : (isTimeout
-                                  ? ExternalData.paymentTimeoutBody
-                                  : ExternalData.listeningForSmsBody)),
-                  style: const TextStyle(
-                    fontFamily: 'Google Sans',
-                    color: Color(0xFFA0A0A8),
-                    fontSize: 12,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              if (!isSuccess && !isFailed && !isTimeout)
-                TextButton(
-                  onPressed: () {
-                    timer?.cancel();
-                    GooglePayService.stopSmsListener();
-                    TransactionRepository().reconcileTransaction(
-                      payment.id,
-                      'CANCELLED',
-                    );
-                    Navigator.of(dialogCtx).pop();
-                  },
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(
-                      color: Color(0xFF8E8E93),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isSuccess
-                      ? const Color(0xFF28A745)
-                      : (isFailed
-                            ? const Color(0xFFD93025)
-                            : const Color(0xFF007AFF)),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                onPressed: () {
-                  timer?.cancel();
-                  GooglePayService.stopSmsListener();
-                  Navigator.of(dialogCtx).pop();
-                  if (isSuccess) {
-                    _handleBack(0);
-                  }
-                },
-                child: Text(
-                  isSuccess
-                      ? 'Done'
-                      : (isFailed || isTimeout ? 'Dismiss' : 'Waiting...'),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
+  // ---------------------------------------------------------------------------
+  // UI
+  // ---------------------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
+    final palette = _ScannerPalette.from(AppThemeManager.colors);
     final colors = AppThemeManager.colors;
-    final bool isDark = colors.isDark;
-    final bool isRedVelvet = colors.name.toLowerCase().contains('red') || colors.name.toLowerCase().contains('velvet');
-    final bool isMilkWhite = colors.name.toLowerCase().contains('milk') || (!isDark && !isRedVelvet);
-
-    final Color overlayColor = isRedVelvet
-        ? const Color.fromARGB(217, 255, 0, 0) // Rich Red Velvet translucent overlay (~85% opacity)
-        : (isMilkWhite
-            ? const Color(0xE6FFFFFF) // Pure White translucent overlay (~90% opacity)
-            : const Color(0xC7000000)); // OLED black deep translucent overlay (~78% opacity)
-
-    final Color scannerSvgColor = isRedVelvet
-        ? Colors.white // White scanner SVG on red overlay
-        : (isMilkWhite
-            ? const Color(0xFF007AFF) // Blue scanner SVG for milk theme with white bg
-            : Colors.white); // Crisp white scanner SVG for OLED
-
-    final Color buttonBg = isDark
-        ? const Color(0xFF161619).withValues(alpha: 0.85)
-        : (isRedVelvet
-            ? Colors.white.withValues(alpha: 0.92)
-            : Colors.white.withValues(alpha: 0.92));
-    final Color buttonBorder = isDark ? const Color(0xFF24242A) : (isRedVelvet ? Colors.white.withValues(alpha: 0.4) : colors.border);
-    final Color buttonIconColor = isDark ? Colors.white : (isRedVelvet ? const Color.fromARGB(255, 255, 0, 0) : colors.textPrimary);
+    final padding = MediaQuery.paddingOf(context);
+    final initialAmount = widget.initialAmount;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF000000) : (isRedVelvet ? const Color.fromARGB(255, 255, 14, 14) : colors.background),
+      backgroundColor: palette.scaffold,
       body: LayoutBuilder(
-        builder: (layoutContext, constraints) {
-          const scanBoxSize = 260.0;
-          final centerOffset = Offset(
-            constraints.maxWidth / 2,
-            constraints.maxHeight * 0.40,
-          );
+        builder: (_, constraints) {
           final svgRect = Rect.fromCenter(
-            center: centerOffset,
-            width: scanBoxSize,
-            height: scanBoxSize,
+            center: Offset(
+              constraints.maxWidth / 2,
+              constraints.maxHeight * 0.40,
+            ),
+            width: _scanBoxSize,
+            height: _scanBoxSize,
           );
-          // Inset cutout by 12px so transparent hole stays perfectly inside the SVG frame
-          final cutoutRect = svgRect.deflate(5.0);
 
           return Stack(
             fit: StackFit.expand,
             children: [
-              // 1. Live Camera Preview Fullscreen
+              // 1. Live camera preview
               MobileScanner(
                 controller: _scannerController,
                 onDetect: _handleBarcodeDetected,
-                errorBuilder: (context, error, child) {
-                  return Center(
-                    child: Icon(
-                      Icons.camera_alt_outlined,
-                      color: isDark
-                          ? const Color(0xFF55555C)
-                          : colors.textMuted,
-                      size: 48,
-                    ),
-                  );
-                },
-              ),
-
-              // 2. Semi-transparent surrounding overlay with transparent viewfinder cutout
-              CustomPaint(
-                size: Size(constraints.maxWidth, constraints.maxHeight),
-                painter: ScannerOverlayPainter(
-                  cutoutRect: cutoutRect,
-                  cornerRadius: 22.0,
-                  overlayColor: overlayColor,
+                errorBuilder: (_, _, _) => Center(
+                  child: Icon(
+                    Icons.camera_alt_outlined,
+                    color: palette.isDark
+                        ? const Color(0xFF55555C)
+                        : colors.textMuted,
+                    size: 48,
+                  ),
                 ),
               ),
 
-              // 3. Viewfinder Reticle Frame using Scanner SVG
-              Positioned(
-                left: svgRect.left,
-                top: svgRect.top,
-                width: svgRect.width,
-                height: svgRect.height,
+              // 2. Overlay with transparent cutout (inset so it sits inside the SVG frame)
+              CustomPaint(
+                size: constraints.biggest,
+                painter: ScannerOverlayPainter(
+                  cutoutRect: svgRect.deflate(5.0),
+                  cornerRadius: 22.0,
+                  overlayColor: palette.overlay,
+                ),
+              ),
+
+              // 3. Reticle frame
+              Positioned.fromRect(
+                rect: svgRect,
                 child: IgnorePointer(
                   child: SvgPicture.asset(
                     'assets/icon/Scanner.svg',
-                    width: svgRect.width,
-                    height: svgRect.height,
                     fit: BoxFit.fill,
                     colorFilter: ColorFilter.mode(
-                      scannerSvgColor,
+                      palette.scannerSvg,
                       BlendMode.srcIn,
                     ),
                   ),
                 ),
               ),
 
-              // 4. Top Bar (Back Button & Quick Confirm Thunder Indicator)
+              // 4. Top bar
               Positioned(
-                top: MediaQuery.of(context).padding.top + 10,
+                top: padding.top + 10,
                 left: 20,
                 right: 20,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    GestureDetector(
+                    ScannerCircleButton(
                       key: const Key('back_button'),
                       onTap: () => _handleBack(0),
-                      behavior: HitTestBehavior.opaque,
-                      child: MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: buttonBg,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: buttonBorder, width: 1.5),
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.arrow_back_ios_new_rounded,
-                              color: buttonIconColor,
-                              size: 18,
-                            ),
-                          ),
-                        ),
+                      background: palette.buttonBg,
+                      borderColor: palette.buttonBorder,
+                      child: Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: palette.buttonIcon,
+                        size: 18,
                       ),
                     ),
-                    if (UserPreferencesService().cachedQuickConfirm)
-                      GestureDetector(
+                    if (ScanPaymentService.isQuickConfirm)
+                      ScannerCircleButton(
                         key: const Key('quick_confirm_indicator'),
-                        onTap: () {
-                          ScaffoldMessenger.of(context).clearSnackBars();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Row(
-                                children: [
-                                  Icon(
-                                    Icons.bolt_rounded,
-                                    color: Color(0xFFFFB300),
-                                    size: 18,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(ExternalData.quickConfirmActiveTitle),
-                                ],
-                              ),
-                              duration: const Duration(seconds: 2),
-                              backgroundColor: const Color(0xFF1F1F24),
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          );
-                        },
-                        behavior: HitTestBehavior.opaque,
-                        child: Tooltip(
-                          message: ExternalData.quickConfirmActiveTitle,
-                          child: Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: buttonBg,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: buttonBorder,
-                                width: 1.5,
-                              ),
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.bolt_rounded,
-                                color: Color(0xFFFFB300),
-                                size: 22,
-                              ),
-                            ),
+                        tooltip: ExternalData.quickConfirmActiveTitle,
+                        onTap: () => _showSnack(
+                          ExternalData.quickConfirmActiveTitle,
+                          duration: const Duration(seconds: 2),
+                          leading: const Icon(
+                            Icons.bolt_rounded,
+                            color: Color(0xFFFFB300),
+                            size: 18,
                           ),
+                        ),
+                        background: palette.buttonBg,
+                        borderColor: palette.buttonBorder,
+                        child: const Icon(
+                          Icons.bolt_rounded,
+                          color: Color(0xFFFFB300),
+                          size: 22,
                         ),
                       ),
                   ],
                 ),
               ),
 
-              // 5. Actions below cutout (Paying Amount Badge & Back to Home)
+              // 5. Amount badge & Back to Home
               Positioned(
                 top: svgRect.bottom + 20,
                 left: 20,
@@ -1848,47 +453,13 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (_amountController.text.trim().isNotEmpty) ...[
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 7,
-                        ),
-                        decoration: BoxDecoration(
-                          color: buttonBg,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: const Color(0xFF30D158)
-                                .withValues(alpha: 0.4),
-                            width: 1.2,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Paying:',
-                              style: TextStyle(
-                                fontFamily: 'Google Sans',
-                                color: isDark
-                                    ? const Color(0xFFD0D0D5)
-                                    : colors.textSecondary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              '₹${_amountController.text.trim()}',
-                              style: const TextStyle(
-                                fontFamily: 'Google Sans',
-                                color: Color(0xFF30D158),
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
+                    if (initialAmount != null && initialAmount > 0) ...[
+                      _AmountBadge(
+                        amount: initialAmount,
+                        palette: palette,
+                        labelColor: palette.isDark
+                            ? const Color(0xFFD0D0D5)
+                            : colors.textSecondary,
                       ),
                       const SizedBox(height: 12),
                     ],
@@ -1901,15 +472,20 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: buttonBg,
+                          color: palette.buttonBg,
                           borderRadius: BorderRadius.circular(100),
-                          border: Border.all(color: buttonBorder, width: 1.5),
+                          border: Border.all(
+                            color: palette.buttonBorder,
+                            width: 1.5,
+                          ),
                         ),
                         child: Text(
                           'Back to Home',
                           style: TextStyle(
                             fontFamily: 'Google Sans',
-                            color: isDark ? Colors.white : colors.textPrimary,
+                            color: palette.isDark
+                                ? Colors.white
+                                : colors.textPrimary,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -1920,99 +496,52 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 ),
               ),
 
-              // Controls on right side
+              // 6. Right-side camera controls
               Positioned(
                 right: 34,
-                bottom: MediaQuery.of(context).padding.bottom + 36,
+                bottom: padding.bottom + 36,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
+                  spacing: 10,
                   children: [
-                    GestureDetector(
+                    ScannerCircleButton(
                       key: const Key('flash_button'),
                       onTap: _toggleFlash,
-                      behavior: HitTestBehavior.opaque,
-                      child: MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: _isFlashOn ? colors.accent : buttonBg,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: _isFlashOn ? colors.accent : buttonBorder,
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.bolt_rounded,
-                              color: _isFlashOn
-                                  ? Colors.white
-                                  : buttonIconColor,
-                              size: 20,
-                            ),
-                          ),
-                        ),
+                      background: _isFlashOn ? colors.accent : palette.buttonBg,
+                      borderColor:
+                          _isFlashOn ? colors.accent : palette.buttonBorder,
+                      child: Icon(
+                        Icons.bolt_rounded,
+                        color: _isFlashOn ? Colors.white : palette.buttonIcon,
+                        size: 20,
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    GestureDetector(
+                    ScannerCircleButton(
                       key: const Key('switch_camera_button'),
                       onTap: _toggleCamera,
-                      behavior: HitTestBehavior.opaque,
-                      child: MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: _isFrontCamera ? colors.accent : buttonBg,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: _isFrontCamera
-                                  ? colors.accent
-                                  : buttonBorder,
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Center(
-                            child: SvgPicture.asset(
-                              'assets/icon/switch.svg',
-                              width: 20,
-                              height: 20,
-                              colorFilter: ColorFilter.mode(
-                                _isFrontCamera ? Colors.white : buttonIconColor,
-                                BlendMode.srcIn,
-                              ),
-                            ),
-                          ),
+                      background:
+                          _isFrontCamera ? colors.accent : palette.buttonBg,
+                      borderColor:
+                          _isFrontCamera ? colors.accent : palette.buttonBorder,
+                      child: SvgPicture.asset(
+                        'assets/icon/switch.svg',
+                        width: 20,
+                        height: 20,
+                        colorFilter: ColorFilter.mode(
+                          _isFrontCamera ? Colors.white : palette.buttonIcon,
+                          BlendMode.srcIn,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    GestureDetector(
+                    ScannerCircleButton(
                       key: const Key('upload_gallery_button'),
                       onTap: _openUploadFromScanner,
-                      behavior: HitTestBehavior.opaque,
-                      child: MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: buttonBg,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: buttonBorder, width: 1.5),
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.photo_library_rounded,
-                              color: buttonIconColor,
-                              size: 20,
-                            ),
-                          ),
-                        ),
+                      background: palette.buttonBg,
+                      borderColor: palette.buttonBorder,
+                      child: Icon(
+                        Icons.photo_library_rounded,
+                        color: palette.buttonIcon,
+                        size: 20,
                       ),
                     ),
                   ],
@@ -2026,111 +555,120 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   }
 }
 
-class ScannerFramePainter extends CustomPainter {
-  final Color cornerColor;
-  final double cornerLength;
-  final double strokeWidth;
-  final double cornerRadius;
+/// Theme-dependent colors for the scanner overlay.
+class _ScannerPalette {
+  final bool isDark;
+  final Color scaffold;
+  final Color overlay;
+  final Color scannerSvg;
+  final Color buttonBg;
+  final Color buttonBorder;
+  final Color buttonIcon;
 
-  ScannerFramePainter({
-    this.cornerColor = Colors.white,
-    this.cornerLength = 36.0,
-    this.strokeWidth = 4.0,
-    this.cornerRadius = 8.0,
+  const _ScannerPalette({
+    required this.isDark,
+    required this.scaffold,
+    required this.overlay,
+    required this.scannerSvg,
+    required this.buttonBg,
+    required this.buttonBorder,
+    required this.buttonIcon,
   });
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = cornerColor
-      ..strokeWidth = strokeWidth
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
+  factory _ScannerPalette.from(AppThemeData colors) {
+    final isDark = colors.isDark;
+    final name = colors.name.toLowerCase();
+    final isRedVelvet = name.contains('red') || name.contains('velvet');
+    final isMilkWhite = name.contains('milk') || (!isDark && !isRedVelvet);
 
-    final w = size.width;
-    final h = size.height;
-    final r = cornerRadius;
-    final l = cornerLength;
-
-    // Top-Left
-    final tl = Path();
-    tl.moveTo(0, l);
-    tl.lineTo(0, r);
-    tl.arcToPoint(Offset(r, 0), radius: Radius.circular(r));
-    tl.lineTo(l, 0);
-    canvas.drawPath(tl, paint);
-
-    // Top-Right
-    final tr = Path();
-    tr.moveTo(w - l, 0);
-    tr.lineTo(w - r, 0);
-    tr.arcToPoint(Offset(w, r), radius: Radius.circular(r));
-    tr.lineTo(w, l);
-    canvas.drawPath(tr, paint);
-
-    // Bottom-Left
-    final bl = Path();
-    bl.moveTo(0, h - l);
-    bl.lineTo(0, h - r);
-    bl.arcToPoint(Offset(r, h), radius: Radius.circular(r));
-    bl.lineTo(l, h);
-    canvas.drawPath(bl, paint);
-
-    // Bottom-Right
-    final br = Path();
-    br.moveTo(w - l, h);
-    br.lineTo(w - r, h);
-    br.arcToPoint(Offset(w, h - r), radius: Radius.circular(r));
-    br.lineTo(w, h - l);
-    canvas.drawPath(br, paint);
+    if (isDark && !isRedVelvet) {
+      return _ScannerPalette(
+        isDark: true,
+        scaffold: const Color(0xFF000000),
+        overlay: const Color(0xC7000000), // OLED black ~78%
+        scannerSvg: Colors.white,
+        buttonBg: const Color(0xFF161619).withValues(alpha: 0.85),
+        buttonBorder: const Color(0xFF24242A),
+        buttonIcon: Colors.white,
+      );
+    }
+    if (isRedVelvet) {
+      return _ScannerPalette(
+        isDark: isDark,
+        scaffold: isDark
+            ? const Color(0xFF000000)
+            : const Color.fromARGB(255, 255, 14, 14),
+        overlay: const Color.fromARGB(217, 255, 0, 0), // red velvet ~85%
+        scannerSvg: Colors.white,
+        buttonBg: isDark
+            ? const Color(0xFF161619).withValues(alpha: 0.85)
+            : Colors.white.withValues(alpha: 0.92),
+        buttonBorder: isDark
+            ? const Color(0xFF24242A)
+            : Colors.white.withValues(alpha: 0.4),
+        buttonIcon:
+            isDark ? Colors.white : const Color.fromARGB(255, 255, 0, 0),
+      );
+    }
+    return _ScannerPalette(
+      isDark: false,
+      scaffold: colors.background,
+      overlay: isMilkWhite ? const Color(0xE6FFFFFF) : const Color(0xC7000000),
+      scannerSvg: isMilkWhite ? const Color(0xFF007AFF) : Colors.white,
+      buttonBg: Colors.white.withValues(alpha: 0.92),
+      buttonBorder: colors.border,
+      buttonIcon: colors.textPrimary,
+    );
   }
-
-  @override
-  bool shouldRepaint(covariant ScannerFramePainter oldDelegate) =>
-      oldDelegate.cornerColor != cornerColor ||
-      oldDelegate.cornerLength != cornerLength ||
-      oldDelegate.strokeWidth != strokeWidth ||
-      oldDelegate.cornerRadius != cornerRadius;
 }
 
-class ScannerOverlayPainter extends CustomPainter {
-  final Rect cutoutRect;
-  final double cornerRadius;
-  final Color overlayColor;
+class _AmountBadge extends StatelessWidget {
+  final double amount;
+  final _ScannerPalette palette;
+  final Color labelColor;
 
-  ScannerOverlayPainter({
-    required this.cutoutRect,
-    this.cornerRadius = 20.0,
-    this.overlayColor = const Color(0xC7000000),
+  const _AmountBadge({
+    required this.amount,
+    required this.palette,
+    required this.labelColor,
   });
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final backgroundPath = Path()
-      ..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
-
-    final cutoutPath = Path()
-      ..addRRect(
-        RRect.fromRectAndRadius(cutoutRect, Radius.circular(cornerRadius)),
-      );
-
-    final overlayPath = Path.combine(
-      PathOperation.difference,
-      backgroundPath,
-      cutoutPath,
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+      decoration: BoxDecoration(
+        color: palette.buttonBg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: const Color(0xFF30D158).withValues(alpha: 0.4),
+          width: 1.2,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Paying:',
+            style: TextStyle(
+              fontFamily: 'Google Sans',
+              color: labelColor,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            '₹${amount.toStringAsFixed(2)}',
+            style: const TextStyle(
+              fontFamily: 'Google Sans',
+              color: Color(0xFF30D158),
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
     );
-
-    final paint = Paint()
-      ..color = overlayColor
-      ..style = PaintingStyle.fill;
-
-    canvas.drawPath(overlayPath, paint);
   }
-
-  @override
-  bool shouldRepaint(covariant ScannerOverlayPainter oldDelegate) =>
-      oldDelegate.cutoutRect != cutoutRect ||
-      oldDelegate.cornerRadius != cornerRadius ||
-      oldDelegate.overlayColor != overlayColor;
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/app_update_service.dart';
 import '../theme/app_theme.dart';
+import 'card_dialog.dart';
 
 class AppUpdateDialog extends StatelessWidget {
   final AppUpdateInfo updateInfo;
@@ -12,7 +13,7 @@ class AppUpdateDialog extends StatelessWidget {
 
   /// Displays the appropriate dialog (blocking for forceUpdate, dismissible for optional update)
   static Future<void> show(BuildContext context, AppUpdateInfo updateInfo) async {
-    await showDialog(
+    await showCardDialog(
       context: context,
       barrierDismissible: !updateInfo.forceUpdate,
       builder: (ctx) => PopScope(
