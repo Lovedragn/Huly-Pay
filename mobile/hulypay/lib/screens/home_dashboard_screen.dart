@@ -313,11 +313,15 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
                 ),
               ),
 
-              // Floating Scanner Button — centered above bottom nav bar
+              // Floating Scanner Button — centered above floating bottom nav bar
               Positioned(
                 left: 0,
                 right: 0,
-                bottom: MediaQuery.of(context).padding.bottom + 62,
+                bottom: (MediaQuery.of(context).padding.bottom > 0
+                        ? MediaQuery.of(context).padding.bottom + 8.0
+                        : 16.0) +
+                    64.0 +
+                    14.0,
                 child: SlideTransition(
                   position: _scannerSlideAnimation,
                   child: Center(
@@ -395,7 +399,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
                 left: 20,
                 right: 20,
                 top: 4,
-                bottom: 110, // padding for bottom nav
+                bottom: 124, // padding for floating bottom nav
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

@@ -241,7 +241,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 left: 20,
                 right: 20,
                 top: 4,
-                bottom: 110, // padding for bottom nav
+                bottom: 124, // padding for floating bottom nav
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

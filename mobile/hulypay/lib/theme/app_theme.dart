@@ -163,7 +163,7 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
     textSecondary: Color(0xFF8E8E93),
     textMuted: Color(0xFF6B6B70),
     accent: Color(0xFF30D158), // Dominant Emerald/Mint Green
-    navBarBackground: Color(0xFF000000),
+    navBarBackground: Color(0xFF141416), // Dark elevated surface for floating navbar
     navBarActive: Color(0xFFFFFFFF), // Crisp White active bottom nav icon
     navBarInactive: Color(0xFF8E8E93),
     iconDefault: Color(0xFF8E8E93),
