@@ -28,6 +28,7 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
   final Color navBarActive;
   final Color navBarInactive;
   final Color navBarGradientFrom;
+  final Color navBarGradientMiddle;
   final Color navBarGradientTo;
   final Color iconDefault;
   final Color iconBackground;
@@ -53,6 +54,7 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
     required this.navBarActive,
     required this.navBarInactive,
     required this.navBarGradientFrom,
+    required this.navBarGradientMiddle,
     required this.navBarGradientTo,
     required this.iconDefault,
     required this.iconBackground,
@@ -67,6 +69,22 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
   Color get cardBackground => surface;
   Color get cardBorder => border;
   Color get badgeBackground => surfaceSecondary;
+
+  // Flipped top gradient (from theme gradient color to transparent)
+  LinearGradient get topBarGradient => LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [navBarGradientFrom, navBarGradientMiddle, navBarGradientTo],
+    stops: const [0.0, 0.5, 1.0],
+  );
+
+  // Bottom navbar gradient
+  LinearGradient get bottomBarGradient => LinearGradient(
+    begin: Alignment.bottomCenter,
+    end: Alignment.topCenter,
+    colors: [navBarGradientFrom, navBarGradientMiddle, navBarGradientTo],
+    stops: const [0.0, 0.0, 1.0],
+  );
 
   @override
   AppThemeData copyWith({
@@ -85,6 +103,7 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
     Color? navBarActive,
     Color? navBarInactive,
     Color? navBarGradientFrom,
+    Color? navBarGradientMiddle,
     Color? navBarGradientTo,
     Color? iconDefault,
     Color? iconBackground,
@@ -110,6 +129,7 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
       navBarActive: navBarActive ?? this.navBarActive,
       navBarInactive: navBarInactive ?? this.navBarInactive,
       navBarGradientFrom: navBarGradientFrom ?? this.navBarGradientFrom,
+      navBarGradientMiddle: navBarGradientMiddle ?? this.navBarGradientMiddle,
       navBarGradientTo: navBarGradientTo ?? this.navBarGradientTo,
       iconDefault: iconDefault ?? this.iconDefault,
       iconBackground: iconBackground ?? this.iconBackground,
@@ -149,6 +169,9 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
       navBarGradientFrom:
           Color.lerp(navBarGradientFrom, other.navBarGradientFrom, t) ??
           navBarGradientFrom,
+      navBarGradientMiddle:
+          Color.lerp(navBarGradientMiddle, other.navBarGradientMiddle, t) ??
+          navBarGradientMiddle,
       navBarGradientTo:
           Color.lerp(navBarGradientTo, other.navBarGradientTo, t) ??
           navBarGradientTo,
@@ -180,6 +203,7 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
     navBarActive: Color(0xFFFFFFFF),
     navBarInactive: Color(0xFF8E8E93),
     navBarGradientFrom: Color.fromARGB(153, 0, 0, 0),
+    navBarGradientMiddle: Color.fromARGB(153, 0, 0, 0),
     navBarGradientTo: Color.fromARGB(0, 0, 0, 0),
     iconDefault: Color(0xFF8E8E93),
     iconBackground: Color(0xFF1C1C20),
@@ -207,6 +231,7 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
     navBarActive: Color(0xFF111827),
     navBarInactive: Color(0xFF9CA3AF),
     navBarGradientFrom: Color.fromARGB(180, 255, 255, 255),
+    navBarGradientMiddle: Color.fromARGB(180, 255, 255, 255),
     navBarGradientTo: Color.fromARGB(0, 255, 255, 255),
     iconDefault: Color(0xFF111827),
     iconBackground: Color(0xFFEFF2F6),
@@ -234,6 +259,7 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
     navBarActive: Color(0xFF111827),
     navBarInactive: Color(0xFF9CA3AF),
     navBarGradientFrom: Color.fromARGB(255, 255, 255, 255),
+    navBarGradientMiddle: Color.fromARGB(255, 255, 255, 255),
     navBarGradientTo: Color.fromARGB(0, 255, 255, 255),
     iconDefault: Color(0xFF111827),
     iconBackground: Color(0xFFF7F8FA),
@@ -243,7 +269,6 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
     error: Color(0xFFEB0029),
     info: Color(0xFF0066FF),
   );
-
 }
 
 // Global theme state manager

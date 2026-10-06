@@ -221,41 +221,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             // Settings Layout with Sticky Top Bar
             Positioned.fill(
-              child: Column(
-                children: [
-                  Container(
-                    color: colors.background,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    child: _buildTopBar(),
-                  ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.only(
-                        left: 20,
-                        right: 20,
-                        top: 4,
-                        bottom: 124, // padding for floating bottom nav
-                      ),
-                      child: Column(
-                        children: [
-                          _buildProfileCard(),
-                          const SizedBox(height: 16),
-                          _buildAccountSection(),
-                          const SizedBox(height: 16),
-                          _buildPreferencesSection(),
-                          const SizedBox(height: 16),
-                          _buildNotificationsSection(),
-                          const SizedBox(height: 16),
-                          _buildSupportSection(),
-                          const SizedBox(height: 16),
-                          _buildLogoutCard(),
-                          const SizedBox(height: 24),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  top: 68,
+                  bottom: 124, // padding for floating bottom nav
+                ),
+                child: Column(
+                  children: [
+                    _buildProfileCard(),
+                    const SizedBox(height: 16),
+                    _buildAccountSection(),
+                    const SizedBox(height: 16),
+                    _buildPreferencesSection(),
+                    const SizedBox(height: 16),
+                    _buildNotificationsSection(),
+                    const SizedBox(height: 16),
+                    _buildSupportSection(),
+                    const SizedBox(height: 16),
+                    _buildLogoutCard(),
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            ),
+
+            // Sticky Top Bar with Flipped Gradient
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: colors.topBarGradient,
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                child: _buildTopBar(),
               ),
             ),
 

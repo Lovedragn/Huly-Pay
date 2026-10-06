@@ -127,12 +127,19 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
 
     return Scaffold(
       backgroundColor: colors.background,
+      extendBodyBehindAppBar: true,
       appBar: _buildAppBar(colors),
       body: SafeArea(
+        top: false,
         child: Center(
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            padding: EdgeInsets.fromLTRB(
+              24,
+              MediaQuery.of(context).padding.top + kToolbarHeight + 12,
+              24,
+              20,
+            ),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
               child: Column(
@@ -172,8 +179,13 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
 
   PreferredSizeWidget _buildAppBar(AppThemeData colors) {
     return AppBar(
-      backgroundColor: colors.background,
+      backgroundColor: Colors.transparent,
       elevation: 0,
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: colors.topBarGradient,
+        ),
+      ),
       leading: Container(
         margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
@@ -394,28 +406,36 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
     final isDark = colors.isDark;
     return SizedBox(
       width: double.infinity,
+      height: 54,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: isDark ? Colors.white : colors.accent,
+          backgroundColor: isDark ? Colors.white : Colors.black,
           foregroundColor: isDark ? Colors.black : Colors.white,
-          side: isDark
-              ? BorderSide.none
-              : BorderSide(color: colors.border, width: 1.2),
-          elevation: isDark ? 2 : 0,
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
         ),
         onPressed: _submit,
-        child: Text(
-          ScanPaymentService.payButtonLabel(),
-          style: TextStyle(
-            fontFamily: 'Google Sans',
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: isDark ? Colors.black : Colors.white,
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.payment_rounded,
+              size: 20,
+              color: isDark ? Colors.black : Colors.white,
+            ),
+            const SizedBox(width: 10),
+            Text(
+              ScanPaymentService.payButtonLabel(),
+              style: TextStyle(
+                fontFamily: 'Google Sans',
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: isDark ? Colors.black : Colors.white,
+              ),
+            ),
+          ],
         ),
       ),
     );

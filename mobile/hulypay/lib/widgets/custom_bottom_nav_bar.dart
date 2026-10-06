@@ -39,14 +39,7 @@ class CustomBottomNavBar extends StatelessWidget {
               child: Container(
                 key: const Key('bottom_nav_gradient'),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                      colors.navBarGradientFrom, // From (bottom)
-                      colors.navBarGradientTo,   // To (top)
-                    ],
-                  ),
+                  gradient: colors.bottomBarGradient,
                 ),
               ),
             ),

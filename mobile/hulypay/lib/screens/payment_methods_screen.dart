@@ -120,10 +120,9 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
       backgroundColor: colors.background,
       body: SafeArea(
         bottom: false,
-        child: Column(
+        child: Stack(
           children: [
-            _buildAppBar(colors),
-            Expanded(
+            Positioned.fill(
               child: _isLoading
                   ? Center(
                       child: CircularProgressIndicator(
@@ -132,7 +131,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                     )
                   : SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      padding: const EdgeInsets.only(left: 20, right: 20, top: 68, bottom: 40),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -155,6 +154,12 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                         ],
                       ),
                     ),
+            ),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: _buildAppBar(colors),
             ),
           ],
         ),
@@ -319,7 +324,10 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   }
 
   Widget _buildAppBar(AppThemeData colors) {
-    return Padding(
+    return Container(
+      decoration: BoxDecoration(
+        gradient: colors.topBarGradient,
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [

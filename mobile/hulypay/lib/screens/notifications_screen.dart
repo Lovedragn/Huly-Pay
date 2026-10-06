@@ -14,13 +14,12 @@ class NotificationsScreen extends StatelessWidget {
       backgroundColor: colors.background,
       body: SafeArea(
         bottom: false,
-        child: Column(
+        child: Stack(
           children: [
-            _buildAppBar(context, colors),
-            Expanded(
+            Positioned.fill(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 68, bottom: 40),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -30,6 +29,12 @@ class NotificationsScreen extends StatelessWidget {
                 ),
               ),
             ),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: _buildAppBar(context, colors),
+            ),
           ],
         ),
       ),
@@ -37,7 +42,10 @@ class NotificationsScreen extends StatelessWidget {
   }
 
   Widget _buildAppBar(BuildContext context, AppThemeData colors) {
-    return Padding(
+    return Container(
+      decoration: BoxDecoration(
+        gradient: colors.topBarGradient,
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [

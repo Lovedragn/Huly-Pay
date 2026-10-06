@@ -46,13 +46,13 @@ class ScanPaymentService {
 
   static String _newTxnRef() => 'HULY${DateTime.now().millisecondsSinceEpoch}';
 
-  /// Label shown on the Pay button, e.g. "Pay via Google Pay".
+  /// Label shown on the Pay button, e.g. "Google Pay".
   static String payButtonLabel() {
     final pref = UserPreferencesService().cachedDefaultPaymentApp;
     final app = UpiApps.findById(pref);
     final target = app?.name ??
         (pref == UpiApps.askEveryTime ? 'Any App' : 'UPI App');
-    return 'Pay via $target';
+    return target;
   }
 
   static String merchantLabel(UpiPaymentData data) {

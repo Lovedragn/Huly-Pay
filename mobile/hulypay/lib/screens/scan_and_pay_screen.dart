@@ -15,7 +15,7 @@ import '../theme/app_theme.dart';
 import '../widgets/card_dialog.dart';
 import '../widgets/payment_details_page.dart';
 import '../widgets/payment_dialogs.dart';
-import '../widgets/scanner_circle_button.dart';
+import '../widgets/round_button.dart';
 import '../widgets/scanner_overlay_painter.dart';
 import '../widgets/sms_verification_dialog.dart';
 import 'payment_methods_screen.dart';
@@ -340,7 +340,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final palette = _ScannerPalette.from(AppThemeManager.colors);
+    final palette = ScannerPalette.from(AppThemeManager.colors);
     final colors = AppThemeManager.colors;
     final padding = MediaQuery.paddingOf(context);
     final initialAmount = widget.initialAmount;
@@ -409,19 +409,15 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ScannerCircleButton(
+                    RoundButton.back(
                       key: const Key('back_button'),
                       onTap: () => _handleBack(0),
-                      background: palette.buttonBg,
+                      backgroundColor: palette.buttonBg,
                       borderColor: palette.buttonBorder,
-                      child: Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: palette.buttonIcon,
-                        size: 18,
-                      ),
+                      iconColor: palette.buttonIcon,
                     ),
                     if (ScanPaymentService.isQuickConfirm)
-                      ScannerCircleButton(
+                      RoundButton(
                         key: const Key('quick_confirm_indicator'),
                         tooltip: ExternalData.quickConfirmActiveTitle,
                         onTap: () => _showSnack(
@@ -433,7 +429,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                             size: 18,
                           ),
                         ),
-                        background: palette.buttonBg,
+                        backgroundColor: palette.buttonBg,
                         borderColor: palette.buttonBorder,
                         child: const Icon(
                           Icons.bolt_rounded,
@@ -445,56 +441,22 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                 ),
               ),
 
-              // 5. Amount badge & Back to Home
-              Positioned(
-                top: svgRect.bottom + 20,
-                left: 20,
-                right: 20,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (initialAmount != null && initialAmount > 0) ...[
-                      _AmountBadge(
-                        amount: initialAmount,
-                        palette: palette,
-                        labelColor: palette.isDark
-                            ? const Color(0xFFD0D0D5)
-                            : colors.textSecondary,
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-                    GestureDetector(
-                      onTap: () => _handleBack(0),
-                      behavior: HitTestBehavior.opaque,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: palette.buttonBg,
-                          borderRadius: BorderRadius.circular(100),
-                          border: Border.all(
-                            color: palette.buttonBorder,
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Text(
-                          'Back to Home',
-                          style: TextStyle(
-                            fontFamily: 'Google Sans',
-                            color: palette.isDark
-                                ? Colors.white
-                                : colors.textPrimary,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+              // 5. Amount badge
+              if (initialAmount != null && initialAmount > 0)
+                Positioned(
+                  top: svgRect.bottom + 20,
+                  left: 20,
+                  right: 20,
+                  child: Center(
+                    child: _AmountBadge(
+                      amount: initialAmount,
+                      palette: palette,
+                      labelColor: palette.isDark
+                          ? const Color(0xFFD0D0D5)
+                          : colors.textSecondary,
                     ),
-                  ],
+                  ),
                 ),
-              ),
 
               // 6. Right-side camera controls
               Positioned(
@@ -504,45 +466,39 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
                   mainAxisSize: MainAxisSize.min,
                   spacing: 10,
                   children: [
-                    ScannerCircleButton(
+                    RoundButton(
                       key: const Key('flash_button'),
                       onTap: _toggleFlash,
-                      background: _isFlashOn ? colors.accent : palette.buttonBg,
+                      isActive: _isFlashOn,
+                      backgroundColor: palette.buttonBg,
+                      activeBackgroundColor: colors.accent,
                       borderColor:
                           _isFlashOn ? colors.accent : palette.buttonBorder,
-                      child: Icon(
-                        Icons.bolt_rounded,
-                        color: _isFlashOn ? Colors.white : palette.buttonIcon,
-                        size: 20,
-                      ),
+                      iconColor: _isFlashOn ? Colors.white : palette.buttonIcon,
+                      icon: Icons.bolt_rounded,
+                      iconSize: 20,
                     ),
-                    ScannerCircleButton(
+                    RoundButton(
                       key: const Key('switch_camera_button'),
                       onTap: _toggleCamera,
-                      background:
-                          _isFrontCamera ? colors.accent : palette.buttonBg,
+                      isActive: _isFrontCamera,
+                      backgroundColor: palette.buttonBg,
+                      activeBackgroundColor: colors.accent,
                       borderColor:
                           _isFrontCamera ? colors.accent : palette.buttonBorder,
-                      child: SvgPicture.asset(
-                        'assets/icon/switch.svg',
-                        width: 20,
-                        height: 20,
-                        colorFilter: ColorFilter.mode(
+                      iconColor:
                           _isFrontCamera ? Colors.white : palette.buttonIcon,
-                          BlendMode.srcIn,
-                        ),
-                      ),
+                      svgAsset: 'assets/icon/switch.svg',
+                      iconSize: 20,
                     ),
-                    ScannerCircleButton(
+                    RoundButton(
                       key: const Key('upload_gallery_button'),
                       onTap: _openUploadFromScanner,
-                      background: palette.buttonBg,
+                      backgroundColor: palette.buttonBg,
                       borderColor: palette.buttonBorder,
-                      child: Icon(
-                        Icons.photo_library_rounded,
-                        color: palette.buttonIcon,
-                        size: 20,
-                      ),
+                      iconColor: palette.buttonIcon,
+                      icon: Icons.photo_library_rounded,
+                      iconSize: 20,
                     ),
                   ],
                 ),
@@ -556,7 +512,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
 }
 
 /// Theme-dependent colors for the scanner overlay.
-class _ScannerPalette {
+class ScannerPalette {
   final bool isDark;
   final Color scaffold;
   final Color overlay;
@@ -565,7 +521,7 @@ class _ScannerPalette {
   final Color buttonBorder;
   final Color buttonIcon;
 
-  const _ScannerPalette({
+  const ScannerPalette({
     required this.isDark,
     required this.scaffold,
     required this.overlay,
@@ -575,14 +531,14 @@ class _ScannerPalette {
     required this.buttonIcon,
   });
 
-  factory _ScannerPalette.from(AppThemeData colors) {
+  factory ScannerPalette.from(AppThemeData colors) {
     final isDark = colors.isDark;
     final name = colors.name.toLowerCase();
     final isRedVelvet = name.contains('red') || name.contains('velvet');
     final isMilkWhite = name.contains('milk') || (!isDark && !isRedVelvet);
 
     if (isDark && !isRedVelvet) {
-      return _ScannerPalette(
+      return ScannerPalette(
         isDark: true,
         scaffold: const Color(0xFF000000),
         overlay: const Color(0xC7000000), // OLED black ~78%
@@ -593,24 +549,26 @@ class _ScannerPalette {
       );
     }
     if (isRedVelvet) {
-      return _ScannerPalette(
+      return ScannerPalette(
         isDark: isDark,
         scaffold: isDark
             ? const Color(0xFF000000)
-            : const Color.fromARGB(255, 255, 14, 14),
-        overlay: const Color.fromARGB(217, 255, 0, 0), // red velvet ~85%
-        scannerSvg: Colors.white,
+            : colors.background,
+        overlay: isDark
+            ? const Color(0xC7000000)
+            : const Color(0xE6FFFFFF), // White overlay ~90%
+        scannerSvg: colors.accent,
         buttonBg: isDark
             ? const Color(0xFF161619).withValues(alpha: 0.85)
             : Colors.white.withValues(alpha: 0.92),
         buttonBorder: isDark
             ? const Color(0xFF24242A)
-            : Colors.white.withValues(alpha: 0.4),
+            : colors.border,
         buttonIcon:
-            isDark ? Colors.white : const Color.fromARGB(255, 255, 0, 0),
+            isDark ? Colors.white : colors.textPrimary,
       );
     }
-    return _ScannerPalette(
+    return ScannerPalette(
       isDark: false,
       scaffold: colors.background,
       overlay: isMilkWhite ? const Color(0xE6FFFFFF) : const Color(0xC7000000),
@@ -624,7 +582,7 @@ class _ScannerPalette {
 
 class _AmountBadge extends StatelessWidget {
   final double amount;
-  final _ScannerPalette palette;
+  final ScannerPalette palette;
   final Color labelColor;
 
   const _AmountBadge({

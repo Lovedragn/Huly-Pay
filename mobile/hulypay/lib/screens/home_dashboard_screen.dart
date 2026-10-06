@@ -400,25 +400,21 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
   Widget _buildDashboardContent() {
     final colors = AppThemeManager.colors;
 
-    return RefreshIndicator(
-      onRefresh: _loadRealData,
-      color: colors.accent,
-      backgroundColor: colors.surfaceSecondary,
-      child: Column(
-        children: [
-          Container(
-            color: colors.background,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            child: _buildHeader(),
-          ),
-          Expanded(
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: RefreshIndicator(
+            onRefresh: _loadRealData,
+            color: colors.accent,
+            backgroundColor: colors.surfaceSecondary,
+            edgeOffset: 68,
             child: SingleChildScrollView(
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
               padding: const EdgeInsets.only(
                 left: 20,
                 right: 20,
-                top: 4,
+                top: 68,
                 bottom: 124, // padding for floating bottom nav
               ),
               child: Column(
@@ -461,8 +457,20 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
               ),
             ),
           ),
-        ],
-      ),
+        ),
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: colors.topBarGradient,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            child: _buildHeader(),
+          ),
+        ),
+      ],
     );
   }
 

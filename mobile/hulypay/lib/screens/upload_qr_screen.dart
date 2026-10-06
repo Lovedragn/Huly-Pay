@@ -306,7 +306,10 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
   }
 
   Widget _buildAppBar(BuildContext context, AppThemeData colors) {
-    return Padding(
+    return Container(
+      decoration: BoxDecoration(
+        gradient: colors.topBarGradient,
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
@@ -336,15 +339,13 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            _buildAppBar(context, colors),
-            // Center the amount text area in available vertical and horizontal space
-            Expanded(
+            Positioned.fill(
               child: Center(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  padding: const EdgeInsets.only(left: 24, right: 24, top: 68, bottom: 16),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 440),
                     child: Column(
@@ -538,7 +539,7 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
                                 final appName = app?.name ?? (defaultAppId == UpiApps.askEveryTime ? 'Any App' : 'UPI App');
                                 return Text(
                                   _selectedImage != null || _scannedQrUri != null
-                                      ? 'Pay via $appName'
+                                      ? appName
                                       : 'Select QR & Pay',
                                   style: TextStyle(
                                     fontFamily: 'Google Sans',
@@ -553,6 +554,12 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
                         ),
                 ),
               ),
+            ),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: _buildAppBar(context, colors),
             ),
           ],
         ),

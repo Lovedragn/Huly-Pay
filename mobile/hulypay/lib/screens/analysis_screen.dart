@@ -433,25 +433,21 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   Widget build(BuildContext context) {
     final colors = AppThemeManager.colors;
 
-    final content = RefreshIndicator(
-      onRefresh: _loadData,
-      color: colors.accent,
-      backgroundColor: colors.surfaceSecondary,
-      displacement: 28,
-      child: Column(
-        children: [
-          Container(
-            color: colors.background,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            child: _buildHeader(),
-          ),
-          Expanded(
+    final content = Stack(
+      children: [
+        Positioned.fill(
+          child: RefreshIndicator(
+            onRefresh: _loadData,
+            color: colors.accent,
+            backgroundColor: colors.surfaceSecondary,
+            displacement: 28,
+            edgeOffset: 68,
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
               padding: const EdgeInsets.only(
                 left: 20,
                 right: 20,
-                top: 4,
+                top: 68,
                 bottom: 124, // padding for floating bottom nav
               ),
               child: Column(
@@ -474,8 +470,20 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
               ),
             ),
           ),
-        ],
-      ),
+        ),
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: colors.topBarGradient,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            child: _buildHeader(),
+          ),
+        ),
+      ],
     );
 
     if (widget.isEmbedded) {
