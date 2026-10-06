@@ -476,8 +476,8 @@ class AppChartColors {
   static List<Color> get primaryGradient {
     final activeTheme = AppThemeManager.normalizeTheme(AppThemeManager.currentTheme.value);
     if (activeTheme == 'Red velvet') {
-      // Red velvet style: sleek solid black trend line
-      return const [Color(0xFF111827), Color(0xFF111827)];
+      // Red velvet style: bright red trend line
+      return const [Color(0xFFEB0029), Color(0xFFEB0029)];
     }
     final p = globalPalette;
     return [p[1], p[0]];

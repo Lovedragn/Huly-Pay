@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -44,8 +46,6 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
   PaymentModel? _currentPayment;
   bool _isLoading = false;
   bool _isReconciling = false;
-  bool _isCancelling = false;
-  bool _isDeleting = false;
   bool _hasChanged = false;
   GoogleMapController? _mapController;
   String? _customCategory;
@@ -419,38 +419,31 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
     }
 
     final paymentId = _currentPayment?.id ?? widget.transaction.id;
-    setState(() => _isCancelling = true);
 
+    // 1. Instantly remove from local SQLite database so it's gone immediately
     try {
-      final updated = await TransactionRepository().reconcileTransaction(
-        paymentId,
-        'CANCELLED',
+      await LocalDatabaseService().deletePayment(paymentId);
+      if (_currentPayment != null && _currentPayment!.id != widget.transaction.id) {
+        await LocalDatabaseService().deletePayment(widget.transaction.id);
+      }
+    } catch (_) {}
+
+    // 2. Quickly go back to the previous screen for fastest response
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Payment cancelled and removed.'),
+          backgroundColor: Color(0xFF1E1E24),
+          behavior: SnackBarBehavior.floating,
+        ),
       );
-      if (mounted) {
-        setState(() {
-          _currentPayment = updated;
-          _isCancelling = false;
-          _hasChanged = true;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Payment has been cancelled successfully.'),
-            backgroundColor: Color(0xFFE24C4C),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isCancelling = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Cancel error: $e'),
-            backgroundColor: const Color(0xFFD93025),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
+      Navigator.of(context).pop(true);
+    }
+
+    // 3. Trigger remote deleteTransaction function in background to clean up backend
+    unawaited(TransactionRepository().deleteTransaction(paymentId));
+    if (_currentPayment != null && _currentPayment!.id != widget.transaction.id) {
+      unawaited(TransactionRepository().deleteTransaction(widget.transaction.id));
     }
   }
 
@@ -516,32 +509,31 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
 
   Future<void> _handleDeletePayment() async {
     final paymentId = _currentPayment?.id ?? widget.transaction.id;
-    setState(() => _isDeleting = true);
 
+    // 1. Instantly remove from local SQLite database
     try {
-      await TransactionRepository().deleteTransaction(paymentId);
-      if (mounted) {
-        setState(() => _isDeleting = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Transaction deleted successfully.'),
-            backgroundColor: Color(0xFF1E1E24),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        Navigator.of(context).pop(true);
+      await LocalDatabaseService().deletePayment(paymentId);
+      if (_currentPayment != null && _currentPayment!.id != widget.transaction.id) {
+        await LocalDatabaseService().deletePayment(widget.transaction.id);
       }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isDeleting = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Delete error: $e'),
-            backgroundColor: const Color(0xFFD93025),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
+    } catch (_) {}
+
+    // 2. Quickly go back immediately
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Transaction deleted successfully.'),
+          backgroundColor: Color(0xFF1E1E24),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      Navigator.of(context).pop(true);
+    }
+
+    // 3. Trigger remote delete in background
+    unawaited(TransactionRepository().deleteTransaction(paymentId));
+    if (_currentPayment != null && _currentPayment!.id != widget.transaction.id) {
+      unawaited(TransactionRepository().deleteTransaction(widget.transaction.id));
     }
   }
 
@@ -919,8 +911,6 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
 
   Widget _buildQuickActionButtons(BuildContext context) {
     final s = _status.toUpperCase();
-    final isFailed = s == 'FAILED';
-    final isCancelled = s == 'CANCELLED';
     final isPending = s == 'PENDING' || s == 'INITIATED' || s == 'PAYMENT_INITIATED';
 
     final categoryItem = _matchedCategoryItem;
@@ -933,7 +923,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
               icon: Icons.verified_rounded,
               label: _isReconciling ? 'Confirming...' : 'Confirm',
               isPrimary: true,
-              onTap: (_isReconciling || _isCancelling)
+              onTap: _isReconciling
                   ? () {}
                   : _handleReconcilePayment,
             ),
@@ -942,53 +932,29 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
           Expanded(
             child: TransactionActionButton(
               icon: Icons.cancel_outlined,
-              label: _isCancelling ? 'Cancelling...' : 'Cancel',
+              label: 'Cancel',
               isPrimary: false,
               textColor: const Color(0xFFFF453A),
               iconColor: const Color(0xFFFF453A),
               borderColor: const Color(0x55FF453A),
               backgroundColor: const Color(0x18FF453A),
-              onTap: (_isReconciling || _isCancelling)
+              onTap: _isReconciling
                   ? () {}
                   : () => _showCancelConfirmationDialog(context),
-            ),
-          ),
-          const SizedBox(width: 10),
-        ] else if (!isFailed && !isCancelled) ...[
-          Expanded(
-            child: TransactionActionButton(
-              icon: Icons.delete_outline_rounded,
-              label: _isDeleting ? 'Deleting...' : 'Delete',
-              isPrimary: false,
-              textColor: const Color(0xFFFF453A),
-              iconColor: const Color(0xFFFF453A),
-              borderColor: const Color(0x55FF453A),
-              backgroundColor: const Color(0x18FF453A),
-              onTap: _isDeleting ? () {} : () => _showDeleteConfirmationDialog(context),
             ),
           ),
           const SizedBox(width: 10),
         ] else ...[
           Expanded(
             child: TransactionActionButton(
-              icon: Icons.refresh_rounded,
-              label: 'Retry',
-              isPrimary: true,
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Retrying payment of $_displayAmount to $_merchantTitle...',
-                      style: const TextStyle(fontFamily: 'Google Sans'),
-                    ),
-                    backgroundColor: const Color(0xFF1E1E24),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                );
-              },
+              icon: Icons.delete_outline_rounded,
+              label: 'Delete',
+              isPrimary: false,
+              textColor: const Color(0xFFFF453A),
+              iconColor: const Color(0xFFFF453A),
+              borderColor: const Color(0x55FF453A),
+              backgroundColor: const Color(0x18FF453A),
+              onTap: () => _showDeleteConfirmationDialog(context),
             ),
           ),
           const SizedBox(width: 10),

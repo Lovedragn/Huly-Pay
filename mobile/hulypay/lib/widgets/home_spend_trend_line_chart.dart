@@ -161,7 +161,7 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
         drawVerticalLine: false,
         horizontalInterval: maxY > 0 ? (maxY / 4) : 100,
         getDrawingHorizontalLine: (value) =>
-            const FlLine(color: Color(0xFF222228), strokeWidth: 1),
+            const FlLine(color: Color.fromARGB(255, 202, 202, 202), strokeWidth: 1),
       ),
       titlesData: FlTitlesData(
         show: true,
@@ -245,7 +245,7 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                _gradientColors[0].withValues(alpha: 0.35),
+                _gradientColors[0].withValues(alpha: colors.isDark ? 0.35 : 0.22),
                 _gradientColors[1].withValues(alpha: 0.0),
               ],
             ),
@@ -258,6 +258,8 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
 
   /// LineChartSample4 Implementation: Dual-zone Cut-Off Line Chart
   LineChartData _buildDualZoneData(List<_TrendPoint> points) {
+    final colors = AppThemeManager.colors;
+    final isRedVelvet = colors.name == 'Red velvet' || colors.name == 'OnePlus red';
     final spots = List.generate(points.length, (i) {
       return FlSpot(i.toDouble(), points[i].amount);
     });
@@ -271,7 +273,10 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
         drawVerticalLine: false,
         horizontalInterval: maxY > 0 ? (maxY / 4) : 100,
         getDrawingHorizontalLine: (value) =>
-            const FlLine(color: Color(0xFF222228), strokeWidth: 1),
+            FlLine(
+              color: colors.isDark ? const Color(0xFF222228) : const Color(0xFFEEEEF0),
+              strokeWidth: 1,
+            ),
       ),
       titlesData: FlTitlesData(
         show: true,
@@ -302,16 +307,16 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
           spots: spots,
           isCurved: true,
           barWidth: 4,
-          color: _dualMainColor,
+          color: isRedVelvet ? const Color(0xFFEB0029) : _dualMainColor,
           belowBarData: BarAreaData(
             show: true,
-            color: _dualBelowColor.withValues(alpha: 0.35),
+            color: (isRedVelvet ? const Color(0xFFEB0029) : _dualBelowColor).withValues(alpha: 0.25),
             cutOffY: cutoffY,
             applyCutOffY: true,
           ),
           aboveBarData: BarAreaData(
             show: true,
-            color: _dualAboveColor.withValues(alpha: 0.35),
+            color: (isRedVelvet ? const Color(0xFFFF6D00) : _dualAboveColor).withValues(alpha: 0.25),
             cutOffY: cutoffY,
             applyCutOffY: true,
           ),

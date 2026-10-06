@@ -4,17 +4,30 @@
   "graph": {},
   "nodes": [
     {
-      "id": "backend_src_test_java_com_hulypay_backend_envelopeencryptionservicetests_envelopeencryptionservicetests",
-      "label": "EnvelopeEncryptionServiceTests",
+      "id": "backend_src_main_java_com_hulypay_backend_config_mobileappproperties_mobileappproperties",
+      "label": "MobileAppProperties",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 110,
-      "community_name": "EnvelopeEncryptionServiceTests",
+      "community": 12,
+      "community_name": "lombok.Data",
       "file_type": "code",
-      "norm_label": "envelopeencryptionservicetests",
-      "source_file": "backend/src/test/java/com/hulypay/backend/EnvelopeEncryptionServiceTests.java",
-      "source_location": "L8"
+      "norm_label": "mobileappproperties",
+      "source_file": "backend/src/main/java/com/hulypay/backend/config/MobileAppProperties.java",
+      "source_location": "L7"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_config_mobileappproperties_platformconfig",
+      "label": "PlatformConfig",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "lombok.Data",
+      "file_type": "code",
+      "norm_label": "platformconfig",
+      "source_file": "backend/src/main/java/com/hulypay/backend/config/MobileAppProperties.java",
+      "source_location": "L17"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_requestdto_createtransactionrequest_createtransactionrequest",
@@ -186,58 +199,6 @@
       "source_location": "L20"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_controllers_databasehealthcontroller_databasehealthcontroller",
-      "label": "DatabaseHealthController",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "AnalyticsController.java",
-      "file_type": "code",
-      "norm_label": "databasehealthcontroller",
-      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/DatabaseHealthController.java",
-      "source_location": "L9"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_controllers_databasehealthcontroller_databasehealthresponse",
-      "label": "DatabaseHealthResponse",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "AnalyticsController.java",
-      "file_type": "code",
-      "norm_label": "databasehealthresponse",
-      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/DatabaseHealthController.java",
-      "source_location": "L39"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_controllers_healthcontroller_healthcontroller",
-      "label": "HealthController",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "AnalyticsController.java",
-      "file_type": "code",
-      "norm_label": "healthcontroller",
-      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/HealthController.java",
-      "source_location": "L7"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_controllers_healthcontroller_healthresponse",
-      "label": "HealthResponse",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "AnalyticsController.java",
-      "file_type": "code",
-      "norm_label": "healthresponse",
-      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/HealthController.java",
-      "source_location": "L29"
-    },
-    {
       "id": "backend_src_main_java_com_hulypay_backend_responsedto_categorybreakdownresponse_categorybreakdownresponse",
       "label": "CategoryBreakdownResponse",
       "_callable": true,
@@ -407,13 +368,26 @@
       "source_location": "L15"
     },
     {
+      "id": "backend_src_main_java_com_hulypay_backend_services_sms_transactionsmsparserservice_transactionsmsparserservice",
+      "label": "TransactionSmsParserService",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "TransactionSmsParserService",
+      "file_type": "code",
+      "norm_label": "transactionsmsparserservice",
+      "source_file": "backend/src/main/java/com/hulypay/backend/Services/Sms/TransactionSmsParserService.java",
+      "source_location": "L12"
+    },
+    {
       "id": "backend_src_main_java_com_hulypay_backend_services_sms_transactionsmsparserservice_verificationmatchresult",
       "label": "VerificationMatchResult",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": ".parse",
+      "community_name": "TransactionSmsParserService",
       "file_type": "code",
       "norm_label": "verificationmatchresult",
       "source_file": "backend/src/main/java/com/hulypay/backend/Services/Sms/TransactionSmsParserService.java",
@@ -426,7 +400,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": ".parse",
+      "community_name": "TransactionSmsParserService",
       "file_type": "code",
       "norm_label": "smsparserservicetests",
       "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
@@ -576,17 +550,17 @@
       "source_location": "L33"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_services_sms_transactionsmsparserservice_transactionsmsparserservice",
-      "label": "TransactionSmsParserService",
+      "id": "backend_src_test_java_com_hulypay_backend_envelopeencryptionservicetests_envelopeencryptionservicetests",
+      "label": "EnvelopeEncryptionServiceTests",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 66,
       "community_name": "org.springframework.stereotype.Service",
       "file_type": "code",
-      "norm_label": "transactionsmsparserservice",
-      "source_file": "backend/src/main/java/com/hulypay/backend/Services/Sms/TransactionSmsParserService.java",
-      "source_location": "L12"
+      "norm_label": "envelopeencryptionservicetests",
+      "source_file": "backend/src/test/java/com/hulypay/backend/EnvelopeEncryptionServiceTests.java",
+      "source_location": "L8"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_security_encryptedstringconverter_encryptedstringconverter",
@@ -732,43 +706,69 @@
       "source_location": "L22"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_config_mobileappproperties_mobileappproperties",
-      "label": "MobileAppProperties",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 96,
-      "community_name": "AppVersionController.java",
-      "file_type": "code",
-      "norm_label": "mobileappproperties",
-      "source_file": "backend/src/main/java/com/hulypay/backend/config/MobileAppProperties.java",
-      "source_location": "L7"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_config_mobileappproperties_platformconfig",
-      "label": "PlatformConfig",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 96,
-      "community_name": "AppVersionController.java",
-      "file_type": "code",
-      "norm_label": "platformconfig",
-      "source_file": "backend/src/main/java/com/hulypay/backend/config/MobileAppProperties.java",
-      "source_location": "L17"
-    },
-    {
       "id": "backend_src_main_java_com_hulypay_backend_controllers_appversioncontroller_appversioncontroller",
       "label": "AppVersionController",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 96,
-      "community_name": "AppVersionController.java",
+      "community_name": "org.springframework.web.bind.annotation.GetMapping",
       "file_type": "code",
       "norm_label": "appversioncontroller",
       "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/AppVersionController.java",
       "source_location": "L16"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_controllers_databasehealthcontroller_databasehealthcontroller",
+      "label": "DatabaseHealthController",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "org.springframework.web.bind.annotation.GetMapping",
+      "file_type": "code",
+      "norm_label": "databasehealthcontroller",
+      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/DatabaseHealthController.java",
+      "source_location": "L9"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_controllers_databasehealthcontroller_databasehealthresponse",
+      "label": "DatabaseHealthResponse",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "org.springframework.web.bind.annotation.GetMapping",
+      "file_type": "code",
+      "norm_label": "databasehealthresponse",
+      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/DatabaseHealthController.java",
+      "source_location": "L39"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_controllers_healthcontroller_healthcontroller",
+      "label": "HealthController",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "org.springframework.web.bind.annotation.GetMapping",
+      "file_type": "code",
+      "norm_label": "healthcontroller",
+      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/HealthController.java",
+      "source_location": "L7"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_controllers_healthcontroller_healthresponse",
+      "label": "HealthResponse",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "org.springframework.web.bind.annotation.GetMapping",
+      "file_type": "code",
+      "norm_label": "healthresponse",
+      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/HealthController.java",
+      "source_location": "L29"
     },
     {
       "id": "backend_src_test_java_com_hulypay_backend_encryptionservicetests_encryptionservicetests",
@@ -782,42 +782,6 @@
       "norm_label": "encryptionservicetests",
       "source_file": "backend/src/test/java/com/hulypay/backend/EncryptionServiceTests.java",
       "source_location": "L8"
-    },
-    {
-      "id": "frontend_src_app_login_page_logincontent",
-      "label": "LoginContent()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 108,
-      "community_name": "AuthContext.js",
-      "file_type": "code",
-      "norm_label": "logincontent()",
-      "source_file": "frontend/src/app/login/page.js",
-      "source_location": "L9"
-    },
-    {
-      "id": "frontend_src_app_login_page_loginpage",
-      "label": "LoginPage()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 108,
-      "community_name": "AuthContext.js",
-      "file_type": "code",
-      "norm_label": "loginpage()",
-      "source_file": "frontend/src/app/login/page.js",
-      "source_location": "L352"
-    },
-    {
-      "id": "frontend_src_components_landing_navbar_dashboardbutton",
-      "label": "DashboardButton()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 108,
-      "community_name": "AuthContext.js",
-      "file_type": "code",
-      "norm_label": "dashboardbutton()",
-      "source_file": "frontend/src/components/landing/Navbar.js",
-      "source_location": "L95"
     },
     {
       "id": "frontend_src_context_authcontext_authprovider",
@@ -854,18 +818,6 @@
       "norm_label": "getinitialauth()",
       "source_file": "frontend/src/context/AuthContext.js",
       "source_location": "L36"
-    },
-    {
-      "id": "frontend_src_context_authcontext_useauth",
-      "label": "useAuth()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 108,
-      "community_name": "AuthContext.js",
-      "file_type": "code",
-      "norm_label": "useauth()",
-      "source_file": "frontend/src/context/AuthContext.js",
-      "source_location": "L31"
     },
     {
       "id": "frontend_src_lib_api_getcurrentuserprofile",
@@ -940,226 +892,62 @@
       "source_location": "L68"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_security_envelopeencryptionservice_envelopeencryptionservice_decrypt",
-      "label": ".decrypt()",
+      "id": "backend_src_main_java_com_hulypay_backend_controllers_usercontroller_usercontroller_updatecurrentuser",
+      "label": ".updateCurrentUser()",
       "_callable": true,
       "_origin": "ast",
-      "community": 110,
-      "community_name": "EnvelopeEncryptionServiceTests",
+      "community": 12,
+      "community_name": "lombok.Data",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
           {
-            "callee": "getDecoder",
-            "receiver_type": "Base64",
+            "callee": "ok",
+            "receiver_type": "ResponseEntity",
             "lang": "java",
-            "line": "L139"
-          },
-          {
-            "callee": "wrap",
-            "receiver_type": "ByteBuffer",
-            "lang": "java",
-            "line": "L145"
-          },
-          {
-            "callee": "get",
-            "receiver_type": "ByteBuffer",
-            "lang": "java",
-            "line": "L146"
-          },
-          {
-            "callee": "getShort",
-            "receiver_type": "ByteBuffer",
-            "lang": "java",
-            "line": "L155"
-          },
-          {
-            "callee": "remaining",
-            "receiver_type": "ByteBuffer",
-            "lang": "java",
-            "line": "L156"
-          },
-          {
-            "callee": "getInstance",
-            "receiver_type": "Cipher",
-            "lang": "java",
-            "line": "L170"
-          },
-          {
-            "callee": "init",
-            "receiver_type": "Cipher",
-            "lang": "java",
-            "line": "L171"
-          },
-          {
-            "callee": "doFinal",
-            "receiver_type": "Cipher",
-            "lang": "java",
-            "line": "L172"
+            "line": "L34"
           }
         ]
       },
-      "norm_label": ".decrypt()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/Security/EnvelopeEncryptionService.java",
-      "source_location": "L133"
+      "norm_label": ".updatecurrentuser()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/UserController.java",
+      "source_location": "L27"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_security_envelopeencryptionservice_envelopeencryptionservice_encrypt",
-      "label": ".encrypt()",
+      "id": "backend_src_main_java_com_hulypay_backend_responsedto_transactionresponse_transactionresponse_getpaymentstatus",
+      "label": ".getPaymentStatus()",
       "_callable": true,
       "_origin": "ast",
-      "community": 110,
-      "community_name": "EnvelopeEncryptionServiceTests",
+      "community": 12,
+      "community_name": "lombok.Data",
       "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "nextBytes",
-            "receiver_type": "SecureRandom",
-            "lang": "java",
-            "line": "L100"
-          },
-          {
-            "callee": "getInstance",
-            "receiver_type": "Cipher",
-            "lang": "java",
-            "line": "L101"
-          },
-          {
-            "callee": "init",
-            "receiver_type": "Cipher",
-            "lang": "java",
-            "line": "L102"
-          },
-          {
-            "callee": "doFinal",
-            "receiver_type": "Cipher",
-            "lang": "java",
-            "line": "L103"
-          },
-          {
-            "callee": "getEncoded",
-            "receiver_type": "SecretKey",
-            "lang": "java",
-            "line": "L103"
-          },
-          {
-            "callee": "allocate",
-            "receiver_type": "ByteBuffer",
-            "lang": "java",
-            "line": "L114"
-          },
-          {
-            "callee": "put",
-            "receiver_type": "ByteBuffer",
-            "lang": "java",
-            "line": "L115"
-          },
-          {
-            "callee": "putShort",
-            "receiver_type": "ByteBuffer",
-            "lang": "java",
-            "line": "L117"
-          },
-          {
-            "callee": "getEncoder",
-            "receiver_type": "Base64",
-            "lang": "java",
-            "line": "L122"
-          },
-          {
-            "callee": "array",
-            "receiver_type": "ByteBuffer",
-            "lang": "java",
-            "line": "L122"
-          }
-        ]
-      },
-      "norm_label": ".encrypt()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/Security/EnvelopeEncryptionService.java",
-      "source_location": "L86"
+      "norm_label": ".getpaymentstatus()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/ResponseDto/TransactionResponse.java",
+      "source_location": "L41"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_security_envelopeencryptionservice_envelopeencryptionservice_generatedek",
-      "label": ".generateDek()",
+      "id": "backend_src_main_java_com_hulypay_backend_responsedto_userresponse_userresponse_fromentity",
+      "label": ".fromEntity()",
       "_callable": true,
       "_origin": "ast",
-      "community": 110,
-      "community_name": "EnvelopeEncryptionServiceTests",
+      "community": 12,
+      "community_name": "lombok.Data",
       "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "getInstance",
-            "receiver_type": "KeyGenerator",
-            "lang": "java",
-            "line": "L74"
-          },
-          {
-            "callee": "init",
-            "receiver_type": "KeyGenerator",
-            "lang": "java",
-            "line": "L75"
-          },
-          {
-            "callee": "generateKey",
-            "receiver_type": "KeyGenerator",
-            "lang": "java",
-            "line": "L76"
-          }
-        ]
-      },
-      "norm_label": ".generatedek()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/Security/EnvelopeEncryptionService.java",
-      "source_location": "L72"
+      "norm_label": ".fromentity()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/ResponseDto/UserResponse.java",
+      "source_location": "L27"
     },
     {
-      "id": "backend_src_test_java_com_hulypay_backend_envelopeencryptionservicetests_envelopeencryptionservicetests_testenvelopeencryptionanddecryptionroundtrip",
-      "label": ".testEnvelopeEncryptionAndDecryptionRoundtrip()",
+      "id": "backend_src_main_java_com_hulypay_backend_services_userservice_userservice_updateprofile",
+      "label": ".updateProfile()",
       "_callable": true,
       "_origin": "ast",
-      "community": 110,
-      "community_name": "EnvelopeEncryptionServiceTests",
+      "community": 12,
+      "community_name": "lombok.Data",
       "file_type": "code",
-      "norm_label": ".testenvelopeencryptionanddecryptionroundtrip()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/EnvelopeEncryptionServiceTests.java",
-      "source_location": "L13"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_envelopeencryptionservicetests_envelopeencryptionservicetests_testfrequentchangingdekperencryption",
-      "label": ".testFrequentChangingDekPerEncryption()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 110,
-      "community_name": "EnvelopeEncryptionServiceTests",
-      "file_type": "code",
-      "norm_label": ".testfrequentchangingdekperencryption()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/EnvelopeEncryptionServiceTests.java",
-      "source_location": "L25"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_envelopeencryptionservicetests_envelopeencryptionservicetests_testlegacyplaintextgracefulfallback",
-      "label": ".testLegacyPlaintextGracefulFallback()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 110,
-      "community_name": "EnvelopeEncryptionServiceTests",
-      "file_type": "code",
-      "norm_label": ".testlegacyplaintextgracefulfallback()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/EnvelopeEncryptionServiceTests.java",
-      "source_location": "L48"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_envelopeencryptionservicetests_envelopeencryptionservicetests_testnullandemptyhandling",
-      "label": ".testNullAndEmptyHandling()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 110,
-      "community_name": "EnvelopeEncryptionServiceTests",
-      "file_type": "code",
-      "norm_label": ".testnullandemptyhandling()",
-      "source_file": "backend/src/test/java/com/hulypay/backend/EnvelopeEncryptionServiceTests.java",
-      "source_location": "L40"
+      "norm_label": ".updateprofile()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/Services/UserService.java",
+      "source_location": "L168"
     },
     {
       "id": "frontend_src_components_themetoggle_themetoggle",
@@ -1594,74 +1382,6 @@
       "norm_label": ".getsummary()",
       "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/AnalyticsController.java",
       "source_location": "L28"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_controllers_databasehealthcontroller_databasehealthcontroller_databasehealth",
-      "label": ".databaseHealth()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "AnalyticsController.java",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "getConnection",
-            "receiver_type": "DataSource",
-            "lang": "java",
-            "line": "L21"
-          }
-        ]
-      },
-      "norm_label": ".databasehealth()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/DatabaseHealthController.java",
-      "source_location": "L18"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_controllers_databasehealthcontroller_databasehealthcontroller_databasehealthcontroller",
-      "label": ".DatabaseHealthController()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "AnalyticsController.java",
-      "file_type": "code",
-      "norm_label": ".databasehealthcontroller()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/DatabaseHealthController.java",
-      "source_location": "L14"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_controllers_healthcontroller_healthcontroller_health",
-      "label": ".health()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "AnalyticsController.java",
-      "file_type": "code",
-      "norm_label": ".health()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/HealthController.java",
-      "source_location": "L21"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_controllers_healthcontroller_healthcontroller_root",
-      "label": ".root()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "AnalyticsController.java",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "of",
-            "receiver_type": "Map",
-            "lang": "java",
-            "line": "L12"
-          }
-        ]
-      },
-      "norm_label": ".root()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/HealthController.java",
-      "source_location": "L10"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_services_analyticsservice_analyticsservice_getcategorybreakdown",
@@ -2188,40 +1908,6 @@
       "source_location": "L21"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_controllers_usercontroller_usercontroller_updatecurrentuser",
-      "label": ".updateCurrentUser()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 30,
-      "community_name": "org.springframework.security.oauth2.jwt.Jwt",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "ok",
-            "receiver_type": "ResponseEntity",
-            "lang": "java",
-            "line": "L34"
-          }
-        ]
-      },
-      "norm_label": ".updatecurrentuser()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/UserController.java",
-      "source_location": "L27"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_responsedto_userresponse_userresponse_fromentity",
-      "label": ".fromEntity()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 30,
-      "community_name": "org.springframework.security.oauth2.jwt.Jwt",
-      "file_type": "code",
-      "norm_label": ".fromentity()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/ResponseDto/UserResponse.java",
-      "source_location": "L27"
-    },
-    {
       "id": "backend_src_main_java_com_hulypay_backend_services_userservice_userservice_getuserfromjwt",
       "label": ".getUserFromJwt()",
       "_callable": true,
@@ -2274,24 +1960,12 @@
       "source_location": "L22"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_services_userservice_userservice_updateprofile",
-      "label": ".updateProfile()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 30,
-      "community_name": "org.springframework.security.oauth2.jwt.Jwt",
-      "file_type": "code",
-      "norm_label": ".updateprofile()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/Services/UserService.java",
-      "source_location": "L168"
-    },
-    {
       "id": "backend_src_main_java_com_hulypay_backend_services_sms_transactionsmsparserservice_transactionsmsparserservice_matchtransactionwithsms",
       "label": ".matchTransactionWithSms()",
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": ".parse",
+      "community_name": "TransactionSmsParserService",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -2313,7 +1987,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": ".parse",
+      "community_name": "TransactionSmsParserService",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -2341,7 +2015,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": ".parse",
+      "community_name": "TransactionSmsParserService",
       "file_type": "code",
       "norm_label": ".testamountmismatchdetection()",
       "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
@@ -2353,7 +2027,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": ".parse",
+      "community_name": "TransactionSmsParserService",
       "file_type": "code",
       "norm_label": ".testaxisbankdebitsms()",
       "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
@@ -2365,7 +2039,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": ".parse",
+      "community_name": "TransactionSmsParserService",
       "file_type": "code",
       "norm_label": ".testcreditsmsrejectedforoutgoingtransaction()",
       "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
@@ -2377,7 +2051,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": ".parse",
+      "community_name": "TransactionSmsParserService",
       "file_type": "code",
       "norm_label": ".testfailedtransactionsms()",
       "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
@@ -2389,7 +2063,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": ".parse",
+      "community_name": "TransactionSmsParserService",
       "file_type": "code",
       "norm_label": ".testhdfcdebitsmsparsing()",
       "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
@@ -2401,7 +2075,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": ".parse",
+      "community_name": "TransactionSmsParserService",
       "file_type": "code",
       "norm_label": ".testicicibanksentsms()",
       "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
@@ -2413,7 +2087,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": ".parse",
+      "community_name": "TransactionSmsParserService",
       "file_type": "code",
       "norm_label": ".testmatchingsuccesstransactionwithsms()",
       "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
@@ -2425,7 +2099,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": ".parse",
+      "community_name": "TransactionSmsParserService",
       "file_type": "code",
       "norm_label": ".testsbidebitsmsparsing()",
       "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
@@ -2478,18 +2152,6 @@
       "norm_label": ".fromentity()",
       "source_file": "backend/src/main/java/com/hulypay/backend/ResponseDto/TransactionResponse.java",
       "source_location": "L46"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_responsedto_transactionresponse_transactionresponse_getpaymentstatus",
-      "label": ".getPaymentStatus()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "User",
-      "file_type": "code",
-      "norm_label": ".getpaymentstatus()",
-      "source_file": "backend/src/main/java/com/hulypay/backend/ResponseDto/TransactionResponse.java",
-      "source_location": "L41"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_services_transactionservice_transactionservice_createtransaction",
@@ -2591,7 +2253,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 49,
-      "community_name": "DashboardPage",
+      "community_name": "dashboard/page.js",
       "file_type": "code",
       "norm_label": "dashboardpage()",
       "source_file": "frontend/src/app/dashboard/page.js",
@@ -2603,7 +2265,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 49,
-      "community_name": "DashboardPage",
+      "community_name": "dashboard/page.js",
       "file_type": "code",
       "norm_label": "handleclickoutside()",
       "source_file": "frontend/src/app/dashboard/page.js",
@@ -2615,7 +2277,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 49,
-      "community_name": "DashboardPage",
+      "community_name": "dashboard/page.js",
       "file_type": "code",
       "norm_label": "handleglobalclick()",
       "source_file": "frontend/src/app/dashboard/page.js",
@@ -2627,11 +2289,95 @@
       "_callable": true,
       "_origin": "ast",
       "community": 49,
-      "community_name": "DashboardPage",
+      "community_name": "dashboard/page.js",
       "file_type": "code",
       "norm_label": "loaddata()",
       "source_file": "frontend/src/app/dashboard/page.js",
       "source_location": "L320"
+    },
+    {
+      "id": "frontend_src_components_dashboard_areachartspending_areachartspending",
+      "label": "AreaChartSpending()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 49,
+      "community_name": "dashboard/page.js",
+      "file_type": "code",
+      "norm_label": "areachartspending()",
+      "source_file": "frontend/src/components/dashboard/AreaChartSpending.jsx",
+      "source_location": "L40"
+    },
+    {
+      "id": "frontend_src_components_dashboard_areachartspending_areachartspending_handlekeydown",
+      "label": "handleKeyDown()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 49,
+      "community_name": "dashboard/page.js",
+      "file_type": "code",
+      "norm_label": "handlekeydown()",
+      "source_file": "frontend/src/components/dashboard/AreaChartSpending.jsx",
+      "source_location": "L61"
+    },
+    {
+      "id": "frontend_src_components_dashboard_barchartmonthly_barchartmonthly",
+      "label": "BarChartMonthly()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 49,
+      "community_name": "dashboard/page.js",
+      "file_type": "code",
+      "norm_label": "barchartmonthly()",
+      "source_file": "frontend/src/components/dashboard/BarChartMonthly.jsx",
+      "source_location": "L17"
+    },
+    {
+      "id": "frontend_src_components_dashboard_piechartcategories_piechartcategories",
+      "label": "PieChartCategories()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 49,
+      "community_name": "dashboard/page.js",
+      "file_type": "code",
+      "norm_label": "piechartcategories()",
+      "source_file": "frontend/src/components/dashboard/PieChartCategories.jsx",
+      "source_location": "L41"
+    },
+    {
+      "id": "frontend_src_components_dashboard_radarchartperformance_radarchartperformance",
+      "label": "RadarChartPerformance()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 49,
+      "community_name": "dashboard/page.js",
+      "file_type": "code",
+      "norm_label": "radarchartperformance()",
+      "source_file": "frontend/src/components/dashboard/RadarChartPerformance.jsx",
+      "source_location": "L31"
+    },
+    {
+      "id": "frontend_src_components_dashboard_transactionstable_transactionstable",
+      "label": "TransactionsTable()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 49,
+      "community_name": "dashboard/page.js",
+      "file_type": "code",
+      "norm_label": "transactionstable()",
+      "source_file": "frontend/src/components/dashboard/TransactionsTable.jsx",
+      "source_location": "L5"
+    },
+    {
+      "id": "frontend_src_components_dashboard_transactionstable_transactionstable_handleclickoutside",
+      "label": "handleClickOutside()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 49,
+      "community_name": "dashboard/page.js",
+      "file_type": "code",
+      "norm_label": "handleclickoutside()",
+      "source_file": "frontend/src/components/dashboard/TransactionsTable.jsx",
+      "source_location": "L63"
     },
     {
       "id": "frontend_src_lib_userpreferences_getuserpreferences",
@@ -2639,7 +2385,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 49,
-      "community_name": "DashboardPage",
+      "community_name": "dashboard/page.js",
       "file_type": "code",
       "norm_label": "getuserpreferences()",
       "source_file": "frontend/src/lib/userPreferences.js",
@@ -2651,7 +2397,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 49,
-      "community_name": "DashboardPage",
+      "community_name": "dashboard/page.js",
       "file_type": "code",
       "norm_label": "saveuserpreferences()",
       "source_file": "frontend/src/lib/userPreferences.js",
@@ -2663,7 +2409,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 49,
-      "community_name": "DashboardPage",
+      "community_name": "dashboard/page.js",
       "file_type": "code",
       "norm_label": "updateuserpreference()",
       "source_file": "frontend/src/lib/userPreferences.js",
@@ -2888,6 +2634,70 @@
       "source_location": "L40"
     },
     {
+      "id": "backend_src_main_java_com_hulypay_backend_security_envelopeencryptionservice_envelopeencryptionservice_decrypt",
+      "label": ".decrypt()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 66,
+      "community_name": "org.springframework.stereotype.Service",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "getDecoder",
+            "receiver_type": "Base64",
+            "lang": "java",
+            "line": "L139"
+          },
+          {
+            "callee": "wrap",
+            "receiver_type": "ByteBuffer",
+            "lang": "java",
+            "line": "L145"
+          },
+          {
+            "callee": "get",
+            "receiver_type": "ByteBuffer",
+            "lang": "java",
+            "line": "L146"
+          },
+          {
+            "callee": "getShort",
+            "receiver_type": "ByteBuffer",
+            "lang": "java",
+            "line": "L155"
+          },
+          {
+            "callee": "remaining",
+            "receiver_type": "ByteBuffer",
+            "lang": "java",
+            "line": "L156"
+          },
+          {
+            "callee": "getInstance",
+            "receiver_type": "Cipher",
+            "lang": "java",
+            "line": "L170"
+          },
+          {
+            "callee": "init",
+            "receiver_type": "Cipher",
+            "lang": "java",
+            "line": "L171"
+          },
+          {
+            "callee": "doFinal",
+            "receiver_type": "Cipher",
+            "lang": "java",
+            "line": "L172"
+          }
+        ]
+      },
+      "norm_label": ".decrypt()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/Security/EnvelopeEncryptionService.java",
+      "source_location": "L133"
+    },
+    {
       "id": "backend_src_main_java_com_hulypay_backend_security_envelopeencryptionservice_envelopeencryptionservice_derivemasterkey",
       "label": ".deriveMasterKey()",
       "_callable": true,
@@ -2916,6 +2726,82 @@
       "source_location": "L55"
     },
     {
+      "id": "backend_src_main_java_com_hulypay_backend_security_envelopeencryptionservice_envelopeencryptionservice_encrypt",
+      "label": ".encrypt()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 66,
+      "community_name": "org.springframework.stereotype.Service",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "nextBytes",
+            "receiver_type": "SecureRandom",
+            "lang": "java",
+            "line": "L100"
+          },
+          {
+            "callee": "getInstance",
+            "receiver_type": "Cipher",
+            "lang": "java",
+            "line": "L101"
+          },
+          {
+            "callee": "init",
+            "receiver_type": "Cipher",
+            "lang": "java",
+            "line": "L102"
+          },
+          {
+            "callee": "doFinal",
+            "receiver_type": "Cipher",
+            "lang": "java",
+            "line": "L103"
+          },
+          {
+            "callee": "getEncoded",
+            "receiver_type": "SecretKey",
+            "lang": "java",
+            "line": "L103"
+          },
+          {
+            "callee": "allocate",
+            "receiver_type": "ByteBuffer",
+            "lang": "java",
+            "line": "L114"
+          },
+          {
+            "callee": "put",
+            "receiver_type": "ByteBuffer",
+            "lang": "java",
+            "line": "L115"
+          },
+          {
+            "callee": "putShort",
+            "receiver_type": "ByteBuffer",
+            "lang": "java",
+            "line": "L117"
+          },
+          {
+            "callee": "getEncoder",
+            "receiver_type": "Base64",
+            "lang": "java",
+            "line": "L122"
+          },
+          {
+            "callee": "array",
+            "receiver_type": "ByteBuffer",
+            "lang": "java",
+            "line": "L122"
+          }
+        ]
+      },
+      "norm_label": ".encrypt()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/Security/EnvelopeEncryptionService.java",
+      "source_location": "L86"
+    },
+    {
       "id": "backend_src_main_java_com_hulypay_backend_security_envelopeencryptionservice_envelopeencryptionservice_envelopeencryptionservice",
       "label": ".EnvelopeEncryptionService()",
       "_callable": true,
@@ -2926,6 +2812,88 @@
       "norm_label": ".envelopeencryptionservice()",
       "source_file": "backend/src/main/java/com/hulypay/backend/Security/EnvelopeEncryptionService.java",
       "source_location": "L46"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_security_envelopeencryptionservice_envelopeencryptionservice_generatedek",
+      "label": ".generateDek()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 66,
+      "community_name": "org.springframework.stereotype.Service",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "getInstance",
+            "receiver_type": "KeyGenerator",
+            "lang": "java",
+            "line": "L74"
+          },
+          {
+            "callee": "init",
+            "receiver_type": "KeyGenerator",
+            "lang": "java",
+            "line": "L75"
+          },
+          {
+            "callee": "generateKey",
+            "receiver_type": "KeyGenerator",
+            "lang": "java",
+            "line": "L76"
+          }
+        ]
+      },
+      "norm_label": ".generatedek()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/Security/EnvelopeEncryptionService.java",
+      "source_location": "L72"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_envelopeencryptionservicetests_envelopeencryptionservicetests_testenvelopeencryptionanddecryptionroundtrip",
+      "label": ".testEnvelopeEncryptionAndDecryptionRoundtrip()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 66,
+      "community_name": "org.springframework.stereotype.Service",
+      "file_type": "code",
+      "norm_label": ".testenvelopeencryptionanddecryptionroundtrip()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/EnvelopeEncryptionServiceTests.java",
+      "source_location": "L13"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_envelopeencryptionservicetests_envelopeencryptionservicetests_testfrequentchangingdekperencryption",
+      "label": ".testFrequentChangingDekPerEncryption()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 66,
+      "community_name": "org.springframework.stereotype.Service",
+      "file_type": "code",
+      "norm_label": ".testfrequentchangingdekperencryption()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/EnvelopeEncryptionServiceTests.java",
+      "source_location": "L25"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_envelopeencryptionservicetests_envelopeencryptionservicetests_testlegacyplaintextgracefulfallback",
+      "label": ".testLegacyPlaintextGracefulFallback()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 66,
+      "community_name": "org.springframework.stereotype.Service",
+      "file_type": "code",
+      "norm_label": ".testlegacyplaintextgracefulfallback()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/EnvelopeEncryptionServiceTests.java",
+      "source_location": "L48"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_envelopeencryptionservicetests_envelopeencryptionservicetests_testnullandemptyhandling",
+      "label": ".testNullAndEmptyHandling()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 66,
+      "community_name": "org.springframework.stereotype.Service",
+      "file_type": "code",
+      "norm_label": ".testnullandemptyhandling()",
+      "source_file": "backend/src/test/java/com/hulypay/backend/EnvelopeEncryptionServiceTests.java",
+      "source_location": "L40"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_security_encryptedstringconverter_encryptedstringconverter_converttodatabasecolumn",
@@ -3406,6 +3374,30 @@
       "source_location": "L95"
     },
     {
+      "id": "frontend_src_app_login_page_logincontent",
+      "label": "LoginContent()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "features/page.js",
+      "file_type": "code",
+      "norm_label": "logincontent()",
+      "source_file": "frontend/src/app/login/page.js",
+      "source_location": "L9"
+    },
+    {
+      "id": "frontend_src_app_login_page_loginpage",
+      "label": "LoginPage()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "features/page.js",
+      "file_type": "code",
+      "norm_label": "loginpage()",
+      "source_file": "frontend/src/app/login/page.js",
+      "source_location": "L352"
+    },
+    {
       "id": "frontend_src_app_page_home",
       "label": "Home()",
       "_callable": true,
@@ -3610,6 +3602,18 @@
       "source_location": "L8"
     },
     {
+      "id": "frontend_src_components_landing_navbar_dashboardbutton",
+      "label": "DashboardButton()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "features/page.js",
+      "file_type": "code",
+      "norm_label": "dashboardbutton()",
+      "source_file": "frontend/src/components/landing/Navbar.js",
+      "source_location": "L95"
+    },
+    {
       "id": "frontend_src_components_landing_navbar_navbar",
       "label": "Navbar()",
       "_callable": true,
@@ -3682,88 +3686,16 @@
       "source_location": "L4"
     },
     {
-      "id": "frontend_src_components_dashboard_areachartspending_areachartspending",
-      "label": "AreaChartSpending()",
+      "id": "frontend_src_context_authcontext_useauth",
+      "label": "useAuth()",
       "_callable": true,
       "_origin": "ast",
-      "community": 84,
-      "community_name": "dashboard/page.js",
+      "community": 78,
+      "community_name": "features/page.js",
       "file_type": "code",
-      "norm_label": "areachartspending()",
-      "source_file": "frontend/src/components/dashboard/AreaChartSpending.jsx",
-      "source_location": "L40"
-    },
-    {
-      "id": "frontend_src_components_dashboard_areachartspending_areachartspending_handlekeydown",
-      "label": "handleKeyDown()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "dashboard/page.js",
-      "file_type": "code",
-      "norm_label": "handlekeydown()",
-      "source_file": "frontend/src/components/dashboard/AreaChartSpending.jsx",
-      "source_location": "L61"
-    },
-    {
-      "id": "frontend_src_components_dashboard_barchartmonthly_barchartmonthly",
-      "label": "BarChartMonthly()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "dashboard/page.js",
-      "file_type": "code",
-      "norm_label": "barchartmonthly()",
-      "source_file": "frontend/src/components/dashboard/BarChartMonthly.jsx",
-      "source_location": "L17"
-    },
-    {
-      "id": "frontend_src_components_dashboard_piechartcategories_piechartcategories",
-      "label": "PieChartCategories()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "dashboard/page.js",
-      "file_type": "code",
-      "norm_label": "piechartcategories()",
-      "source_file": "frontend/src/components/dashboard/PieChartCategories.jsx",
-      "source_location": "L41"
-    },
-    {
-      "id": "frontend_src_components_dashboard_radarchartperformance_radarchartperformance",
-      "label": "RadarChartPerformance()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "dashboard/page.js",
-      "file_type": "code",
-      "norm_label": "radarchartperformance()",
-      "source_file": "frontend/src/components/dashboard/RadarChartPerformance.jsx",
+      "norm_label": "useauth()",
+      "source_file": "frontend/src/context/AuthContext.js",
       "source_location": "L31"
-    },
-    {
-      "id": "frontend_src_components_dashboard_transactionstable_transactionstable",
-      "label": "TransactionsTable()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "dashboard/page.js",
-      "file_type": "code",
-      "norm_label": "transactionstable()",
-      "source_file": "frontend/src/components/dashboard/TransactionsTable.jsx",
-      "source_location": "L5"
-    },
-    {
-      "id": "frontend_src_components_dashboard_transactionstable_transactionstable_handleclickoutside",
-      "label": "handleClickOutside()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "dashboard/page.js",
-      "file_type": "code",
-      "norm_label": "handleclickoutside()",
-      "source_file": "frontend/src/components/dashboard/TransactionsTable.jsx",
-      "source_location": "L63"
     },
     {
       "id": "frontend_src_components_ui_chart_chartstyle",
@@ -3771,7 +3703,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "dashboard/page.js",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "chartstyle()",
       "source_file": "frontend/src/components/ui/chart.jsx",
@@ -3783,7 +3715,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "dashboard/page.js",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "getpayloadconfigfrompayload()",
       "source_file": "frontend/src/components/ui/chart.jsx",
@@ -3795,7 +3727,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "dashboard/page.js",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "usechart()",
       "source_file": "frontend/src/components/ui/chart.jsx",
@@ -3807,7 +3739,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "dashboard/page.js",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "cn()",
       "source_file": "frontend/src/lib/utils.js",
@@ -4553,7 +4485,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 96,
-      "community_name": "AppVersionController.java",
+      "community_name": "org.springframework.web.bind.annotation.GetMapping",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -4568,6 +4500,74 @@
       "norm_label": ".checkversion()",
       "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/AppVersionController.java",
       "source_location": "L24"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_controllers_databasehealthcontroller_databasehealthcontroller_databasehealth",
+      "label": ".databaseHealth()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "org.springframework.web.bind.annotation.GetMapping",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "getConnection",
+            "receiver_type": "DataSource",
+            "lang": "java",
+            "line": "L21"
+          }
+        ]
+      },
+      "norm_label": ".databasehealth()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/DatabaseHealthController.java",
+      "source_location": "L18"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_controllers_databasehealthcontroller_databasehealthcontroller_databasehealthcontroller",
+      "label": ".DatabaseHealthController()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "org.springframework.web.bind.annotation.GetMapping",
+      "file_type": "code",
+      "norm_label": ".databasehealthcontroller()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/DatabaseHealthController.java",
+      "source_location": "L14"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_controllers_healthcontroller_healthcontroller_health",
+      "label": ".health()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "org.springframework.web.bind.annotation.GetMapping",
+      "file_type": "code",
+      "norm_label": ".health()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/HealthController.java",
+      "source_location": "L21"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_controllers_healthcontroller_healthcontroller_root",
+      "label": ".root()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "org.springframework.web.bind.annotation.GetMapping",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "of",
+            "receiver_type": "Map",
+            "lang": "java",
+            "line": "L12"
+          }
+        ]
+      },
+      "norm_label": ".root()",
+      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/HealthController.java",
+      "source_location": "L10"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_security_encryptionservice_encryptionservice_decrypt",
@@ -4843,7 +4843,7 @@
       "file_type": "code",
       "norm_label": "amount",
       "source_file": "mobile/hulypay/lib/widgets/home_spend_trend_line_chart.dart",
-      "source_location": "L426"
+      "source_location": "L431"
     },
     {
       "id": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart_bottomtitlewidgets",
@@ -4854,7 +4854,7 @@
       "file_type": "code",
       "norm_label": "_bottomtitlewidgets",
       "source_file": "mobile/hulypay/lib/widgets/home_spend_trend_line_chart.dart",
-      "source_location": "L335"
+      "source_location": "L340"
     },
     {
       "id": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart_build",
@@ -4920,7 +4920,7 @@
       "file_type": "code",
       "norm_label": "_calculatemaxy",
       "source_file": "mobile/hulypay/lib/widgets/home_spend_trend_line_chart.dart",
-      "source_location": "L360"
+      "source_location": "L365"
     },
     {
       "id": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart_computetrendpoints",
@@ -4931,7 +4931,7 @@
       "file_type": "code",
       "norm_label": "_computetrendpoints",
       "source_file": "mobile/hulypay/lib/widgets/home_spend_trend_line_chart.dart",
-      "source_location": "L369"
+      "source_location": "L374"
     },
     {
       "id": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart_createstate",
@@ -5030,7 +5030,7 @@
       "file_type": "code",
       "norm_label": "label",
       "source_file": "mobile/hulypay/lib/widgets/home_spend_trend_line_chart.dart",
-      "source_location": "L425"
+      "source_location": "L430"
     },
     {
       "id": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart_payments",
@@ -5074,7 +5074,7 @@
       "file_type": "code",
       "norm_label": "_trendpoint",
       "source_file": "mobile/hulypay/lib/widgets/home_spend_trend_line_chart.dart",
-      "source_location": "L424"
+      "source_location": "L429"
     },
     {
       "id": "static_list",
@@ -5550,6 +5550,28 @@
       "source_location": "L29"
     },
     {
+      "id": "mobile_hulypay_lib_screens_transactions_screen_transactionsscreen",
+      "label": "TransactionsScreen",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "transactions_screen.dart",
+      "file_type": "code",
+      "norm_label": "transactionsscreen",
+      "source_file": "mobile/hulypay/lib/screens/transactions_screen.dart",
+      "source_location": "L13"
+    },
+    {
+      "id": "mobile_hulypay_lib_screens_transactions_screen_transactionsscreenstate",
+      "label": "_TransactionsScreenState",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "transactions_screen.dart",
+      "file_type": "code",
+      "norm_label": "_transactionsscreenstate",
+      "source_file": "mobile/hulypay/lib/screens/transactions_screen.dart",
+      "source_location": "L27"
+    },
+    {
       "id": "repositories_transaction_repository_dart",
       "label": "../repositories/transaction_repository.dart",
       "_origin": "ast",
@@ -5990,6 +6012,94 @@
       "source_location": "L7"
     },
     {
+      "id": "mobile_hulypay_lib_widgets_scanner_circle_button",
+      "label": "scanner_circle_button.dart",
+      "_origin": "ast",
+      "community": 101,
+      "community_name": "String?",
+      "file_type": "code",
+      "norm_label": "scanner_circle_button.dart",
+      "source_file": "mobile/hulypay/lib/widgets/scanner_circle_button.dart",
+      "source_location": null
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_scanner_circle_button_background",
+      "label": "background",
+      "_origin": "ast",
+      "community": 101,
+      "community_name": "String?",
+      "file_type": "code",
+      "norm_label": "background",
+      "source_file": "mobile/hulypay/lib/widgets/scanner_circle_button.dart",
+      "source_location": "L7"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_scanner_circle_button_bordercolor",
+      "label": "borderColor",
+      "_origin": "ast",
+      "community": 101,
+      "community_name": "String?",
+      "file_type": "code",
+      "norm_label": "bordercolor",
+      "source_file": "mobile/hulypay/lib/widgets/scanner_circle_button.dart",
+      "source_location": "L8"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_scanner_circle_button_build",
+      "label": "build",
+      "_origin": "ast",
+      "community": 101,
+      "community_name": "String?",
+      "file_type": "code",
+      "norm_label": "build",
+      "source_file": "mobile/hulypay/lib/widgets/scanner_circle_button.dart",
+      "source_location": "L21"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_scanner_circle_button_child",
+      "label": "child",
+      "_origin": "ast",
+      "community": 101,
+      "community_name": "String?",
+      "file_type": "code",
+      "norm_label": "child",
+      "source_file": "mobile/hulypay/lib/widgets/scanner_circle_button.dart",
+      "source_location": "L6"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_scanner_circle_button_ontap",
+      "label": "onTap",
+      "_origin": "ast",
+      "community": 101,
+      "community_name": "String?",
+      "file_type": "code",
+      "norm_label": "ontap",
+      "source_file": "mobile/hulypay/lib/widgets/scanner_circle_button.dart",
+      "source_location": "L5"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_scanner_circle_button_scannercirclebutton",
+      "label": "ScannerCircleButton",
+      "_origin": "ast",
+      "community": 101,
+      "community_name": "String?",
+      "file_type": "code",
+      "norm_label": "scannercirclebutton",
+      "source_file": "mobile/hulypay/lib/widgets/scanner_circle_button.dart",
+      "source_location": "L4"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_scanner_circle_button_tooltip",
+      "label": "tooltip",
+      "_origin": "ast",
+      "community": 101,
+      "community_name": "String?",
+      "file_type": "code",
+      "norm_label": "tooltip",
+      "source_file": "mobile/hulypay/lib/widgets/scanner_circle_button.dart",
+      "source_location": "L9"
+    },
+    {
       "id": "string",
       "label": "String?",
       "_origin": "ast",
@@ -5997,6 +6107,28 @@
       "community_name": "String?",
       "file_type": "code",
       "norm_label": "string?",
+      "source_file": null,
+      "source_location": null
+    },
+    {
+      "id": "voidcallback",
+      "label": "VoidCallback?",
+      "_origin": "ast",
+      "community": 101,
+      "community_name": "String?",
+      "file_type": "code",
+      "norm_label": "voidcallback?",
+      "source_file": null,
+      "source_location": null
+    },
+    {
+      "id": "widget",
+      "label": "Widget?",
+      "_origin": "ast",
+      "community": 101,
+      "community_name": "String?",
+      "file_type": "code",
+      "norm_label": "widget?",
       "source_file": null,
       "source_location": null
     },
@@ -6518,6 +6650,17 @@
       "source_location": null
     },
     {
+      "id": "data_external_data_dart",
+      "label": "../data/external_data.dart",
+      "_origin": "ast",
+      "community": 104,
+      "community_name": "about_hulypay_screen.dart",
+      "file_type": "code",
+      "norm_label": "../data/external_data.dart",
+      "source_file": null,
+      "source_location": null
+    },
+    {
       "id": "mobile_hulypay_lib_screens_about_hulypay_screen",
       "label": "about_hulypay_screen.dart",
       "_origin": "ast",
@@ -6661,6 +6804,127 @@
       "source_location": "L98"
     },
     {
+      "id": "mobile_hulypay_lib_screens_notifications_screen",
+      "label": "notifications_screen.dart",
+      "_origin": "ast",
+      "community": 104,
+      "community_name": "about_hulypay_screen.dart",
+      "file_type": "code",
+      "norm_label": "notifications_screen.dart",
+      "source_file": "mobile/hulypay/lib/screens/notifications_screen.dart",
+      "source_location": null
+    },
+    {
+      "id": "mobile_hulypay_lib_screens_notifications_screen_build",
+      "label": "build",
+      "_origin": "ast",
+      "community": 104,
+      "community_name": "about_hulypay_screen.dart",
+      "file_type": "code",
+      "norm_label": "build",
+      "source_file": "mobile/hulypay/lib/screens/notifications_screen.dart",
+      "source_location": "L10"
+    },
+    {
+      "id": "mobile_hulypay_lib_screens_notifications_screen_buildappbar",
+      "label": "_buildAppBar",
+      "_origin": "ast",
+      "community": 104,
+      "community_name": "about_hulypay_screen.dart",
+      "file_type": "code",
+      "norm_label": "_buildappbar",
+      "source_file": "mobile/hulypay/lib/screens/notifications_screen.dart",
+      "source_location": "L39"
+    },
+    {
+      "id": "mobile_hulypay_lib_screens_notifications_screen_buildcurrentlyindevelopmentcard",
+      "label": "_buildCurrentlyInDevelopmentCard",
+      "_origin": "ast",
+      "community": 104,
+      "community_name": "about_hulypay_screen.dart",
+      "file_type": "code",
+      "norm_label": "_buildcurrentlyindevelopmentcard",
+      "source_file": "mobile/hulypay/lib/screens/notifications_screen.dart",
+      "source_location": "L63"
+    },
+    {
+      "id": "mobile_hulypay_lib_screens_notifications_screen_notificationsscreen",
+      "label": "NotificationsScreen",
+      "_origin": "ast",
+      "community": 104,
+      "community_name": "about_hulypay_screen.dart",
+      "file_type": "code",
+      "norm_label": "notificationsscreen",
+      "source_file": "mobile/hulypay/lib/screens/notifications_screen.dart",
+      "source_location": "L6"
+    },
+    {
+      "id": "mobile_hulypay_lib_screens_privacy_security_screen",
+      "label": "privacy_security_screen.dart",
+      "_origin": "ast",
+      "community": 104,
+      "community_name": "about_hulypay_screen.dart",
+      "file_type": "code",
+      "norm_label": "privacy_security_screen.dart",
+      "source_file": "mobile/hulypay/lib/screens/privacy_security_screen.dart",
+      "source_location": null
+    },
+    {
+      "id": "mobile_hulypay_lib_screens_privacy_security_screen_build",
+      "label": "build",
+      "_origin": "ast",
+      "community": 104,
+      "community_name": "about_hulypay_screen.dart",
+      "file_type": "code",
+      "norm_label": "build",
+      "source_file": "mobile/hulypay/lib/screens/privacy_security_screen.dart",
+      "source_location": "L10"
+    },
+    {
+      "id": "mobile_hulypay_lib_screens_privacy_security_screen_buildappbar",
+      "label": "_buildAppBar",
+      "_origin": "ast",
+      "community": 104,
+      "community_name": "about_hulypay_screen.dart",
+      "file_type": "code",
+      "norm_label": "_buildappbar",
+      "source_file": "mobile/hulypay/lib/screens/privacy_security_screen.dart",
+      "source_location": "L74"
+    },
+    {
+      "id": "mobile_hulypay_lib_screens_privacy_security_screen_buildsectionheader",
+      "label": "_buildSectionHeader",
+      "_origin": "ast",
+      "community": 104,
+      "community_name": "about_hulypay_screen.dart",
+      "file_type": "code",
+      "norm_label": "_buildsectionheader",
+      "source_file": "mobile/hulypay/lib/screens/privacy_security_screen.dart",
+      "source_location": "L98"
+    },
+    {
+      "id": "mobile_hulypay_lib_screens_privacy_security_screen_privacysecurityscreen",
+      "label": "PrivacySecurityScreen",
+      "_origin": "ast",
+      "community": 104,
+      "community_name": "about_hulypay_screen.dart",
+      "file_type": "code",
+      "norm_label": "privacysecurityscreen",
+      "source_file": "mobile/hulypay/lib/screens/privacy_security_screen.dart",
+      "source_location": "L6"
+    },
+    {
+      "id": "widgets_app_back_button_dart",
+      "label": "../widgets/app_back_button.dart",
+      "_origin": "ast",
+      "community": 104,
+      "community_name": "about_hulypay_screen.dart",
+      "file_type": "code",
+      "norm_label": "../widgets/app_back_button.dart",
+      "source_file": null,
+      "source_location": null
+    },
+    {
       "id": "widgets_app_update_dialog_dart",
       "label": "../widgets/app_update_dialog.dart",
       "_origin": "ast",
@@ -6672,145 +6936,145 @@
       "source_location": null
     },
     {
-      "id": "card_dialog_dart",
-      "label": "card_dialog.dart",
+      "id": "mobile_hulypay_lib_widgets_payment_dialogs",
+      "label": "payment_dialogs.dart",
       "_origin": "ast",
       "community": 105,
-      "community_name": "../theme/app_theme.dart",
+      "community_name": "payment_dialogs.dart",
       "file_type": "code",
-      "norm_label": "card_dialog.dart",
-      "source_file": null,
+      "norm_label": "payment_dialogs.dart",
+      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
       "source_location": null
     },
     {
-      "id": "mobile_hulypay_lib_services_app_update_service_appupdateinfo",
-      "label": "AppUpdateInfo",
-      "_origin": "ast",
-      "community": 105,
-      "community_name": "../theme/app_theme.dart",
-      "file_type": "code",
-      "norm_label": "appupdateinfo",
-      "source_file": "mobile/hulypay/lib/services/app_update_service.dart",
-      "source_location": "L7"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_app_update_banner",
-      "label": "app_update_banner.dart",
-      "_origin": "ast",
-      "community": 105,
-      "community_name": "../theme/app_theme.dart",
-      "file_type": "code",
-      "norm_label": "app_update_banner.dart",
-      "source_file": "mobile/hulypay/lib/widgets/app_update_banner.dart",
-      "source_location": null
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_app_update_banner_appupdatebanner",
-      "label": "AppUpdateBanner",
-      "_origin": "ast",
-      "community": 105,
-      "community_name": "../theme/app_theme.dart",
-      "file_type": "code",
-      "norm_label": "appupdatebanner",
-      "source_file": "mobile/hulypay/lib/widgets/app_update_banner.dart",
-      "source_location": "L5"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_app_update_banner_build",
+      "id": "mobile_hulypay_lib_widgets_payment_dialogs_build",
       "label": "build",
       "_origin": "ast",
       "community": 105,
-      "community_name": "../theme/app_theme.dart",
+      "community_name": "payment_dialogs.dart",
       "file_type": "code",
       "norm_label": "build",
-      "source_file": "mobile/hulypay/lib/widgets/app_update_banner.dart",
-      "source_location": "L14"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_app_update_banner_updateinfo",
-      "label": "updateInfo",
-      "_origin": "ast",
-      "community": 105,
-      "community_name": "../theme/app_theme.dart",
-      "file_type": "code",
-      "norm_label": "updateinfo",
-      "source_file": "mobile/hulypay/lib/widgets/app_update_banner.dart",
-      "source_location": "L6"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_app_update_dialog",
-      "label": "app_update_dialog.dart",
-      "_origin": "ast",
-      "community": 105,
-      "community_name": "../theme/app_theme.dart",
-      "file_type": "code",
-      "norm_label": "app_update_dialog.dart",
-      "source_file": "mobile/hulypay/lib/widgets/app_update_dialog.dart",
-      "source_location": null
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_app_update_dialog_appupdatedialog",
-      "label": "AppUpdateDialog",
-      "_origin": "ast",
-      "community": 105,
-      "community_name": "../theme/app_theme.dart",
-      "file_type": "code",
-      "norm_label": "appupdatedialog",
-      "source_file": "mobile/hulypay/lib/widgets/app_update_dialog.dart",
-      "source_location": "L6"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_app_update_dialog_build",
-      "label": "build",
-      "_origin": "ast",
-      "community": 105,
-      "community_name": "../theme/app_theme.dart",
-      "file_type": "code",
-      "norm_label": "build",
-      "source_file": "mobile/hulypay/lib/widgets/app_update_dialog.dart",
-      "source_location": "L27"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_app_update_dialog_show",
-      "label": "show",
-      "_origin": "ast",
-      "community": 105,
-      "community_name": "../theme/app_theme.dart",
-      "file_type": "code",
-      "norm_label": "show",
-      "source_file": "mobile/hulypay/lib/widgets/app_update_dialog.dart",
+      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
       "source_location": "L15"
     },
     {
-      "id": "mobile_hulypay_lib_widgets_app_update_dialog_updateinfo",
-      "label": "updateInfo",
+      "id": "mobile_hulypay_lib_widgets_payment_dialogs_colors",
+      "label": "colors",
       "_origin": "ast",
       "community": 105,
-      "community_name": "../theme/app_theme.dart",
+      "community_name": "payment_dialogs.dart",
       "file_type": "code",
-      "norm_label": "updateinfo",
-      "source_file": "mobile/hulypay/lib/widgets/app_update_dialog.dart",
-      "source_location": "L7"
+      "norm_label": "colors",
+      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
+      "source_location": "L55"
     },
     {
-      "id": "services_app_update_service_dart",
-      "label": "../services/app_update_service.dart",
+      "id": "mobile_hulypay_lib_widgets_payment_dialogs_false",
+      "label": "false",
       "_origin": "ast",
       "community": 105,
-      "community_name": "../theme/app_theme.dart",
+      "community_name": "payment_dialogs.dart",
       "file_type": "code",
-      "norm_label": "../services/app_update_service.dart",
-      "source_file": null,
-      "source_location": null
+      "norm_label": "false",
+      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
+      "source_location": "L109"
     },
     {
-      "id": "theme_app_theme_dart",
-      "label": "../theme/app_theme.dart",
+      "id": "mobile_hulypay_lib_widgets_payment_dialogs_filleddialogbutton",
+      "label": "filledDialogButton",
       "_origin": "ast",
       "community": 105,
-      "community_name": "../theme/app_theme.dart",
+      "community_name": "payment_dialogs.dart",
       "file_type": "code",
-      "norm_label": "../theme/app_theme.dart",
+      "norm_label": "filleddialogbutton",
+      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
+      "source_location": "L45"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_payment_dialogs_missingappaction",
+      "label": "MissingAppAction",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "payment_dialogs.dart",
+      "file_type": "code",
+      "norm_label": "missingappaction",
+      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
+      "source_location": "L112"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_payment_dialogs_payment",
+      "label": "payment",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "payment_dialogs.dart",
+      "file_type": "code",
+      "norm_label": "payment",
+      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
+      "source_location": "L10"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_payment_dialogs_paymentsummarylines",
+      "label": "PaymentSummaryLines",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "payment_dialogs.dart",
+      "file_type": "code",
+      "norm_label": "paymentsummarylines",
+      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
+      "source_location": "L9"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_payment_dialogs_result",
+      "label": "result",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "payment_dialogs.dart",
+      "file_type": "code",
+      "norm_label": "result",
+      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
+      "source_location": "L56"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_payment_dialogs_showappnotinstalleddialog",
+      "label": "showAppNotInstalledDialog",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "payment_dialogs.dart",
+      "file_type": "code",
+      "norm_label": "showappnotinstalleddialog",
+      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
+      "source_location": "L115"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_payment_dialogs_showquickconfirmsuccessdialog",
+      "label": "showQuickConfirmSuccessDialog",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "payment_dialogs.dart",
+      "file_type": "code",
+      "norm_label": "showquickconfirmsuccessdialog",
+      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
+      "source_location": "L192"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_payment_dialogs_showsmspermissiondialog",
+      "label": "showSmsPermissionDialog",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "payment_dialogs.dart",
+      "file_type": "code",
+      "norm_label": "showsmspermissiondialog",
+      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
+      "source_location": "L54"
+    },
+    {
+      "id": "return_result",
+      "label": "return result ??",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "payment_dialogs.dart",
+      "file_type": "code",
+      "norm_label": "return result ??",
       "source_file": null,
       "source_location": null
     },
@@ -7068,17 +7332,6 @@
       "source_location": null
     },
     {
-      "id": "frontend_src_app_login_page",
-      "label": "login/page.js",
-      "_origin": "ast",
-      "community": 108,
-      "community_name": "AuthContext.js",
-      "file_type": "code",
-      "norm_label": "login/page.js",
-      "source_file": "frontend/src/app/login/page.js",
-      "source_location": "L1"
-    },
-    {
       "id": "frontend_src_context_authcontext",
       "label": "AuthContext.js",
       "_origin": "ast",
@@ -7123,136 +7376,26 @@
       "source_location": "L9"
     },
     {
-      "id": "color",
-      "label": "Color",
+      "id": "exception",
+      "label": "Exception",
       "_origin": "ast",
       "community": 109,
-      "community_name": "Color",
+      "community_name": "ApiException",
       "file_type": "code",
-      "norm_label": "color",
+      "norm_label": "exception",
       "source_file": null,
       "source_location": null
     },
     {
-      "id": "custompainter",
-      "label": "CustomPainter",
+      "id": "mobile_hulypay_lib_services_api_client_apiexception",
+      "label": "ApiException",
       "_origin": "ast",
       "community": 109,
-      "community_name": "Color",
+      "community_name": "ApiException",
       "file_type": "code",
-      "norm_label": "custompainter",
-      "source_file": null,
-      "source_location": null
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_home_today_spend_gauge_speedometergaugepainter",
-      "label": "_SpeedometerGaugePainter",
-      "_origin": "ast",
-      "community": 109,
-      "community_name": "Color",
-      "file_type": "code",
-      "norm_label": "_speedometergaugepainter",
-      "source_file": "mobile/hulypay/lib/widgets/home_today_spend_gauge.dart",
-      "source_location": "L490"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_scanner_overlay_painter",
-      "label": "scanner_overlay_painter.dart",
-      "_origin": "ast",
-      "community": 109,
-      "community_name": "Color",
-      "file_type": "code",
-      "norm_label": "scanner_overlay_painter.dart",
-      "source_file": "mobile/hulypay/lib/widgets/scanner_overlay_painter.dart",
-      "source_location": null
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_scanner_overlay_painter_cornerradius",
-      "label": "cornerRadius",
-      "_origin": "ast",
-      "community": 109,
-      "community_name": "Color",
-      "file_type": "code",
-      "norm_label": "cornerradius",
-      "source_file": "mobile/hulypay/lib/widgets/scanner_overlay_painter.dart",
-      "source_location": "L6"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_scanner_overlay_painter_cutoutrect",
-      "label": "cutoutRect",
-      "_origin": "ast",
-      "community": 109,
-      "community_name": "Color",
-      "file_type": "code",
-      "norm_label": "cutoutrect",
-      "source_file": "mobile/hulypay/lib/widgets/scanner_overlay_painter.dart",
-      "source_location": "L5"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_scanner_overlay_painter_overlaycolor",
-      "label": "overlayColor",
-      "_origin": "ast",
-      "community": 109,
-      "community_name": "Color",
-      "file_type": "code",
-      "norm_label": "overlaycolor",
-      "source_file": "mobile/hulypay/lib/widgets/scanner_overlay_painter.dart",
-      "source_location": "L7"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_scanner_overlay_painter_paint",
-      "label": "paint",
-      "_origin": "ast",
-      "community": 109,
-      "community_name": "Color",
-      "file_type": "code",
-      "norm_label": "paint",
-      "source_file": "mobile/hulypay/lib/widgets/scanner_overlay_painter.dart",
-      "source_location": "L16"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_scanner_overlay_painter_scanneroverlaypainter",
-      "label": "ScannerOverlayPainter",
-      "_origin": "ast",
-      "community": 109,
-      "community_name": "Color",
-      "file_type": "code",
-      "norm_label": "scanneroverlaypainter",
-      "source_file": "mobile/hulypay/lib/widgets/scanner_overlay_painter.dart",
-      "source_location": "L4"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_scanner_overlay_painter_shouldrepaint",
-      "label": "shouldRepaint",
-      "_origin": "ast",
-      "community": 109,
-      "community_name": "Color",
-      "file_type": "code",
-      "norm_label": "shouldrepaint",
-      "source_file": "mobile/hulypay/lib/widgets/scanner_overlay_painter.dart",
-      "source_location": "L35"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_transaction_map_section_mapgridpainter",
-      "label": "MapGridPainter",
-      "_origin": "ast",
-      "community": 109,
-      "community_name": "Color",
-      "file_type": "code",
-      "norm_label": "mapgridpainter",
-      "source_file": "mobile/hulypay/lib/widgets/transaction_map_section.dart",
-      "source_location": "L466"
-    },
-    {
-      "id": "rect",
-      "label": "Rect",
-      "_origin": "ast",
-      "community": 109,
-      "community_name": "Color",
-      "file_type": "code",
-      "norm_label": "rect",
-      "source_file": null,
-      "source_location": null
+      "norm_label": "apiexception",
+      "source_file": "mobile/hulypay/lib/services/api_client.dart",
+      "source_location": "L9"
     },
     {
       "id": "dashboard_data_dart",
@@ -7629,15 +7772,92 @@
       "source_location": "L6"
     },
     {
-      "id": "backend_src_test_java_com_hulypay_backend_envelopeencryptionservicetests",
-      "label": "EnvelopeEncryptionServiceTests.java",
+      "id": "mobile_hulypay_lib_widgets_transaction_receipt_card",
+      "label": "transaction_receipt_card.dart",
       "_origin": "ast",
       "community": 110,
-      "community_name": "EnvelopeEncryptionServiceTests",
+      "community_name": "transaction_receipt_card.dart",
       "file_type": "code",
-      "norm_label": "envelopeencryptionservicetests.java",
-      "source_file": "backend/src/test/java/com/hulypay/backend/EnvelopeEncryptionServiceTests.java",
-      "source_location": "L1"
+      "norm_label": "transaction_receipt_card.dart",
+      "source_file": "mobile/hulypay/lib/widgets/transaction_receipt_card.dart",
+      "source_location": null
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_transaction_receipt_card_build",
+      "label": "build",
+      "_origin": "ast",
+      "community": 110,
+      "community_name": "transaction_receipt_card.dart",
+      "file_type": "code",
+      "norm_label": "build",
+      "source_file": "mobile/hulypay/lib/widgets/transaction_receipt_card.dart",
+      "source_location": "L21"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_transaction_receipt_card_displayamount",
+      "label": "displayAmount",
+      "_origin": "ast",
+      "community": 110,
+      "community_name": "transaction_receipt_card.dart",
+      "file_type": "code",
+      "norm_label": "displayamount",
+      "source_file": "mobile/hulypay/lib/widgets/transaction_receipt_card.dart",
+      "source_location": "L6"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_transaction_receipt_card_isincome",
+      "label": "isIncome",
+      "_origin": "ast",
+      "community": 110,
+      "community_name": "transaction_receipt_card.dart",
+      "file_type": "code",
+      "norm_label": "isincome",
+      "source_file": "mobile/hulypay/lib/widgets/transaction_receipt_card.dart",
+      "source_location": "L9"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_transaction_receipt_card_merchanttitle",
+      "label": "merchantTitle",
+      "_origin": "ast",
+      "community": 110,
+      "community_name": "transaction_receipt_card.dart",
+      "file_type": "code",
+      "norm_label": "merchanttitle",
+      "source_file": "mobile/hulypay/lib/widgets/transaction_receipt_card.dart",
+      "source_location": "L7"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_transaction_receipt_card_status",
+      "label": "status",
+      "_origin": "ast",
+      "community": 110,
+      "community_name": "transaction_receipt_card.dart",
+      "file_type": "code",
+      "norm_label": "status",
+      "source_file": "mobile/hulypay/lib/widgets/transaction_receipt_card.dart",
+      "source_location": "L5"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_transaction_receipt_card_time",
+      "label": "time",
+      "_origin": "ast",
+      "community": 110,
+      "community_name": "transaction_receipt_card.dart",
+      "file_type": "code",
+      "norm_label": "time",
+      "source_file": "mobile/hulypay/lib/widgets/transaction_receipt_card.dart",
+      "source_location": "L8"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_transaction_receipt_card_transactionreceiptcard",
+      "label": "TransactionReceiptCard",
+      "_origin": "ast",
+      "community": 110,
+      "community_name": "transaction_receipt_card.dart",
+      "file_type": "code",
+      "norm_label": "transactionreceiptcard",
+      "source_file": "mobile/hulypay/lib/widgets/transaction_receipt_card.dart",
+      "source_location": "L4"
     },
     {
       "id": "mobile_hulypay_lib_models_transaction_model_paymentmodel",
@@ -7662,103 +7882,26 @@
       "source_location": "L4"
     },
     {
-      "id": "mobile_hulypay_lib_widgets_scanner_circle_button",
-      "label": "scanner_circle_button.dart",
+      "id": "mobile_hulypay_lib_screens_single_transaction_screen_singletransactionscreen",
+      "label": "SingleTransactionScreen",
       "_origin": "ast",
       "community": 112,
-      "community_name": "scanner_circle_button.dart",
+      "community_name": "SingleTransactionScreen",
       "file_type": "code",
-      "norm_label": "scanner_circle_button.dart",
-      "source_file": "mobile/hulypay/lib/widgets/scanner_circle_button.dart",
-      "source_location": null
+      "norm_label": "singletransactionscreen",
+      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
+      "source_location": "L26"
     },
     {
-      "id": "mobile_hulypay_lib_widgets_scanner_circle_button_background",
-      "label": "background",
+      "id": "mobile_hulypay_lib_screens_single_transaction_screen_singletransactionscreenstate",
+      "label": "_SingleTransactionScreenState",
       "_origin": "ast",
       "community": 112,
-      "community_name": "scanner_circle_button.dart",
+      "community_name": "SingleTransactionScreen",
       "file_type": "code",
-      "norm_label": "background",
-      "source_file": "mobile/hulypay/lib/widgets/scanner_circle_button.dart",
-      "source_location": "L7"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_scanner_circle_button_bordercolor",
-      "label": "borderColor",
-      "_origin": "ast",
-      "community": 112,
-      "community_name": "scanner_circle_button.dart",
-      "file_type": "code",
-      "norm_label": "bordercolor",
-      "source_file": "mobile/hulypay/lib/widgets/scanner_circle_button.dart",
-      "source_location": "L8"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_scanner_circle_button_build",
-      "label": "build",
-      "_origin": "ast",
-      "community": 112,
-      "community_name": "scanner_circle_button.dart",
-      "file_type": "code",
-      "norm_label": "build",
-      "source_file": "mobile/hulypay/lib/widgets/scanner_circle_button.dart",
-      "source_location": "L21"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_scanner_circle_button_child",
-      "label": "child",
-      "_origin": "ast",
-      "community": 112,
-      "community_name": "scanner_circle_button.dart",
-      "file_type": "code",
-      "norm_label": "child",
-      "source_file": "mobile/hulypay/lib/widgets/scanner_circle_button.dart",
-      "source_location": "L6"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_scanner_circle_button_ontap",
-      "label": "onTap",
-      "_origin": "ast",
-      "community": 112,
-      "community_name": "scanner_circle_button.dart",
-      "file_type": "code",
-      "norm_label": "ontap",
-      "source_file": "mobile/hulypay/lib/widgets/scanner_circle_button.dart",
-      "source_location": "L5"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_scanner_circle_button_scannercirclebutton",
-      "label": "ScannerCircleButton",
-      "_origin": "ast",
-      "community": 112,
-      "community_name": "scanner_circle_button.dart",
-      "file_type": "code",
-      "norm_label": "scannercirclebutton",
-      "source_file": "mobile/hulypay/lib/widgets/scanner_circle_button.dart",
-      "source_location": "L4"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_scanner_circle_button_tooltip",
-      "label": "tooltip",
-      "_origin": "ast",
-      "community": 112,
-      "community_name": "scanner_circle_button.dart",
-      "file_type": "code",
-      "norm_label": "tooltip",
-      "source_file": "mobile/hulypay/lib/widgets/scanner_circle_button.dart",
-      "source_location": "L9"
-    },
-    {
-      "id": "widget",
-      "label": "Widget?",
-      "_origin": "ast",
-      "community": 112,
-      "community_name": "scanner_circle_button.dart",
-      "file_type": "code",
-      "norm_label": "widget?",
-      "source_file": null,
-      "source_location": null
+      "norm_label": "_singletransactionscreenstate",
+      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
+      "source_location": "L43"
     },
     {
       "id": "none_bool",
@@ -7926,92 +8069,26 @@
       "source_location": null
     },
     {
-      "id": "mobile_hulypay_lib_widgets_transaction_receipt_card",
-      "label": "transaction_receipt_card.dart",
+      "id": "backend_src_main_java_com_hulypay_backend_config_mobileappproperties",
+      "label": "MobileAppProperties.java",
       "_origin": "ast",
-      "community": 115,
-      "community_name": "transaction_receipt_card.dart",
+      "community": 12,
+      "community_name": "lombok.Data",
       "file_type": "code",
-      "norm_label": "transaction_receipt_card.dart",
-      "source_file": "mobile/hulypay/lib/widgets/transaction_receipt_card.dart",
-      "source_location": null
+      "norm_label": "mobileappproperties.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/config/MobileAppProperties.java",
+      "source_location": "L1"
     },
     {
-      "id": "mobile_hulypay_lib_widgets_transaction_receipt_card_build",
-      "label": "build",
+      "id": "backend_src_main_java_com_hulypay_backend_controllers_usercontroller_java_putmapping",
+      "label": "PutMapping",
       "_origin": "ast",
-      "community": 115,
-      "community_name": "transaction_receipt_card.dart",
+      "community": 12,
+      "community_name": "lombok.Data",
       "file_type": "code",
-      "norm_label": "build",
-      "source_file": "mobile/hulypay/lib/widgets/transaction_receipt_card.dart",
-      "source_location": "L21"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_transaction_receipt_card_displayamount",
-      "label": "displayAmount",
-      "_origin": "ast",
-      "community": 115,
-      "community_name": "transaction_receipt_card.dart",
-      "file_type": "code",
-      "norm_label": "displayamount",
-      "source_file": "mobile/hulypay/lib/widgets/transaction_receipt_card.dart",
-      "source_location": "L6"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_transaction_receipt_card_isincome",
-      "label": "isIncome",
-      "_origin": "ast",
-      "community": 115,
-      "community_name": "transaction_receipt_card.dart",
-      "file_type": "code",
-      "norm_label": "isincome",
-      "source_file": "mobile/hulypay/lib/widgets/transaction_receipt_card.dart",
-      "source_location": "L9"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_transaction_receipt_card_merchanttitle",
-      "label": "merchantTitle",
-      "_origin": "ast",
-      "community": 115,
-      "community_name": "transaction_receipt_card.dart",
-      "file_type": "code",
-      "norm_label": "merchanttitle",
-      "source_file": "mobile/hulypay/lib/widgets/transaction_receipt_card.dart",
-      "source_location": "L7"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_transaction_receipt_card_status",
-      "label": "status",
-      "_origin": "ast",
-      "community": 115,
-      "community_name": "transaction_receipt_card.dart",
-      "file_type": "code",
-      "norm_label": "status",
-      "source_file": "mobile/hulypay/lib/widgets/transaction_receipt_card.dart",
-      "source_location": "L5"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_transaction_receipt_card_time",
-      "label": "time",
-      "_origin": "ast",
-      "community": 115,
-      "community_name": "transaction_receipt_card.dart",
-      "file_type": "code",
-      "norm_label": "time",
-      "source_file": "mobile/hulypay/lib/widgets/transaction_receipt_card.dart",
-      "source_location": "L8"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_transaction_receipt_card_transactionreceiptcard",
-      "label": "TransactionReceiptCard",
-      "_origin": "ast",
-      "community": 115,
-      "community_name": "transaction_receipt_card.dart",
-      "file_type": "code",
-      "norm_label": "transactionreceiptcard",
-      "source_file": "mobile/hulypay/lib/widgets/transaction_receipt_card.dart",
-      "source_location": "L4"
+      "norm_label": "putmapping",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_exceptions_errorresponse",
@@ -8088,17 +8165,6 @@
       "file_type": "code",
       "norm_label": "appversionresponse.java",
       "source_file": "backend/src/main/java/com/hulypay/backend/ResponseDto/AppVersionResponse.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_responsedto_categorybreakdownresponse",
-      "label": "CategoryBreakdownResponse.java",
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "lombok.Data",
-      "file_type": "code",
-      "norm_label": "categorybreakdownresponse.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/ResponseDto/CategoryBreakdownResponse.java",
       "source_location": "L1"
     },
     {
@@ -8179,6 +8245,17 @@
       "source_location": "L1"
     },
     {
+      "id": "com_fasterxml_jackson_annotation_jsoninclude",
+      "label": "com.fasterxml.jackson.annotation.JsonInclude",
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "lombok.Data",
+      "file_type": "code",
+      "norm_label": "com.fasterxml.jackson.annotation.jsoninclude",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "com_fasterxml_jackson_annotation_jsonproperty",
       "label": "com.fasterxml.jackson.annotation.JsonProperty",
       "_origin": "ast",
@@ -8230,6 +8307,17 @@
       "community_name": "lombok.Data",
       "file_type": "code",
       "norm_label": "lombok.noargsconstructor",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_boot_context_properties_configurationproperties",
+      "label": "org.springframework.boot.context.properties.ConfigurationProperties",
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "lombok.Data",
+      "file_type": "code",
+      "norm_label": "org.springframework.boot.context.properties.configurationproperties",
       "source_file": "",
       "source_location": ""
     },
@@ -9323,6 +9411,28 @@
       "source_location": "L561"
     },
     {
+      "id": "mobile_hulypay_lib_screens_scan_and_pay_screen_scanandpayscreen",
+      "label": "ScanAndPayScreen",
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "scan_and_pay_screen.dart",
+      "file_type": "code",
+      "norm_label": "scanandpayscreen",
+      "source_file": "mobile/hulypay/lib/screens/scan_and_pay_screen.dart",
+      "source_location": "L24"
+    },
+    {
+      "id": "mobile_hulypay_lib_screens_scan_and_pay_screen_scanandpayscreenstate",
+      "label": "_ScanAndPayScreenState",
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "scan_and_pay_screen.dart",
+      "file_type": "code",
+      "norm_label": "_scanandpayscreenstate",
+      "source_file": "mobile/hulypay/lib/screens/scan_and_pay_screen.dart",
+      "source_location": "L34"
+    },
+    {
       "id": "mobile_hulypay_lib_screens_scan_and_pay_screen_scanboxsize",
       "label": "_scanBoxSize",
       "_origin": "ast",
@@ -9785,17 +9895,6 @@
       "source_location": null
     },
     {
-      "id": "services_qr_service_dart",
-      "label": "../services/qr_service.dart",
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "upload_qr_screen.dart",
-      "file_type": "code",
-      "norm_label": "../services/qr_service.dart",
-      "source_file": null,
-      "source_location": null
-    },
-    {
       "id": "services_qr_share_service_dart",
       "label": "../services/qr_share_service.dart",
       "_origin": "ast",
@@ -9803,6 +9902,17 @@
       "community_name": "upload_qr_screen.dart",
       "file_type": "code",
       "norm_label": "../services/qr_share_service.dart",
+      "source_file": null,
+      "source_location": null
+    },
+    {
+      "id": "services_upi_service_dart",
+      "label": "../services/upi_service.dart",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "upload_qr_screen.dart",
+      "file_type": "code",
+      "norm_label": "../services/upi_service.dart",
       "source_file": null,
       "source_location": null
     },
@@ -10530,7 +10640,7 @@
       "file_type": "code",
       "norm_label": "build",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L708"
+      "source_location": "L700"
     },
     {
       "id": "mobile_hulypay_lib_screens_single_transaction_screen_buildquickactionbuttons",
@@ -10541,7 +10651,7 @@
       "file_type": "code",
       "norm_label": "_buildquickactionbuttons",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L920"
+      "source_location": "L912"
     },
     {
       "id": "mobile_hulypay_lib_screens_single_transaction_screen_buildsectionheader",
@@ -10552,7 +10662,7 @@
       "file_type": "code",
       "norm_label": "_buildsectionheader",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L1029"
+      "source_location": "L995"
     },
     {
       "id": "mobile_hulypay_lib_screens_single_transaction_screen_copytoclipboard",
@@ -10574,7 +10684,7 @@
       "file_type": "code",
       "norm_label": "createstate",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L37"
+      "source_location": "L39"
     },
     {
       "id": "mobile_hulypay_lib_screens_single_transaction_screen_currentpayment",
@@ -10585,7 +10695,7 @@
       "file_type": "code",
       "norm_label": "_currentpayment",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L44"
+      "source_location": "L46"
     },
     {
       "id": "mobile_hulypay_lib_screens_single_transaction_screen_customcategory",
@@ -10640,7 +10750,7 @@
       "file_type": "code",
       "norm_label": "_handledeletepayment",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L517"
+      "source_location": "L510"
     },
     {
       "id": "mobile_hulypay_lib_screens_single_transaction_screen_handleopenstreetviewexternal",
@@ -10709,28 +10819,6 @@
       "source_location": "L57"
     },
     {
-      "id": "mobile_hulypay_lib_screens_single_transaction_screen_iscancelling",
-      "label": "_isCancelling",
-      "_origin": "ast",
-      "community": 20,
-      "community_name": "single_transaction_screen.dart",
-      "file_type": "code",
-      "norm_label": "_iscancelling",
-      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L47"
-    },
-    {
-      "id": "mobile_hulypay_lib_screens_single_transaction_screen_isdeleting",
-      "label": "_isDeleting",
-      "_origin": "ast",
-      "community": 20,
-      "community_name": "single_transaction_screen.dart",
-      "file_type": "code",
-      "norm_label": "_isdeleting",
-      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L48"
-    },
-    {
       "id": "mobile_hulypay_lib_screens_single_transaction_screen_isgeneratingpdf",
       "label": "_isGeneratingPdf",
       "_origin": "ast",
@@ -10750,7 +10838,7 @@
       "file_type": "code",
       "norm_label": "_isloading",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L45"
+      "source_location": "L47"
     },
     {
       "id": "mobile_hulypay_lib_screens_single_transaction_screen_isreconciling",
@@ -10761,7 +10849,7 @@
       "file_type": "code",
       "norm_label": "_isreconciling",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L46"
+      "source_location": "L48"
     },
     {
       "id": "mobile_hulypay_lib_screens_single_transaction_screen_latitude",
@@ -10816,7 +10904,7 @@
       "file_type": "code",
       "norm_label": "_mapviewmode",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L43"
+      "source_location": "L45"
     },
     {
       "id": "mobile_hulypay_lib_screens_single_transaction_screen_payment",
@@ -10827,7 +10915,7 @@
       "file_type": "code",
       "norm_label": "payment",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L26"
+      "source_location": "L28"
     },
     {
       "id": "mobile_hulypay_lib_screens_single_transaction_screen_paymentid",
@@ -10838,7 +10926,7 @@
       "file_type": "code",
       "norm_label": "paymentid",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L27"
+      "source_location": "L29"
     },
     {
       "id": "mobile_hulypay_lib_screens_single_transaction_screen_sheetextentnotifier",
@@ -10860,7 +10948,7 @@
       "file_type": "code",
       "norm_label": "_showcancelconfirmationdialog",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L457"
+      "source_location": "L450"
     },
     {
       "id": "mobile_hulypay_lib_screens_single_transaction_screen_showcategorypickersheet",
@@ -10871,7 +10959,7 @@
       "file_type": "code",
       "norm_label": "_showcategorypickersheet",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L697"
+      "source_location": "L689"
     },
     {
       "id": "mobile_hulypay_lib_screens_single_transaction_screen_showdeleteconfirmationdialog",
@@ -10882,7 +10970,7 @@
       "file_type": "code",
       "norm_label": "_showdeleteconfirmationdialog",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L548"
+      "source_location": "L540"
     },
     {
       "id": "mobile_hulypay_lib_screens_single_transaction_screen_showeditamountsheet",
@@ -10904,7 +10992,7 @@
       "file_type": "code",
       "norm_label": "transaction",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L25"
+      "source_location": "L27"
     },
     {
       "id": "mobile_hulypay_lib_screens_single_transaction_screen_updatecategory",
@@ -10915,7 +11003,7 @@
       "file_type": "code",
       "norm_label": "_updatecategory",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L608"
+      "source_location": "L600"
     },
     {
       "id": "package_share_plus_share_plus_dart",
@@ -11479,25 +11567,14 @@
       "source_location": "L1"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_controllers_databasehealthcontroller",
-      "label": "DatabaseHealthController.java",
+      "id": "backend_src_main_java_com_hulypay_backend_responsedto_categorybreakdownresponse",
+      "label": "CategoryBreakdownResponse.java",
       "_origin": "ast",
       "community": 22,
       "community_name": "AnalyticsController.java",
       "file_type": "code",
-      "norm_label": "databasehealthcontroller.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/DatabaseHealthController.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_controllers_healthcontroller",
-      "label": "HealthController.java",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "AnalyticsController.java",
-      "file_type": "code",
-      "norm_label": "healthcontroller.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/HealthController.java",
+      "norm_label": "categorybreakdownresponse.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/ResponseDto/CategoryBreakdownResponse.java",
       "source_location": "L1"
     },
     {
@@ -11523,28 +11600,6 @@
       "source_location": ""
     },
     {
-      "id": "javax_sql_datasource",
-      "label": "javax.sql.DataSource",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "AnalyticsController.java",
-      "file_type": "code",
-      "norm_label": "javax.sql.datasource",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "org_springframework_web_bind_annotation_getmapping",
-      "label": "org.springframework.web.bind.annotation.GetMapping",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "AnalyticsController.java",
-      "file_type": "code",
-      "norm_label": "org.springframework.web.bind.annotation.getmapping",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "org_springframework_web_bind_annotation_requestmapping",
       "label": "org.springframework.web.bind.annotation.RequestMapping",
       "_origin": "ast",
@@ -11552,17 +11607,6 @@
       "community_name": "AnalyticsController.java",
       "file_type": "code",
       "norm_label": "org.springframework.web.bind.annotation.requestmapping",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "org_springframework_web_bind_annotation_restcontroller",
-      "label": "org.springframework.web.bind.annotation.RestController",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "AnalyticsController.java",
-      "file_type": "code",
-      "norm_label": "org.springframework.web.bind.annotation.restcontroller",
       "source_file": "",
       "source_location": ""
     },
@@ -11732,17 +11776,6 @@
       "source_location": null
     },
     {
-      "id": "exception",
-      "label": "Exception",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "api_client.dart",
-      "file_type": "code",
-      "norm_label": "exception",
-      "source_file": null,
-      "source_location": null
-    },
-    {
       "id": "int",
       "label": "int?",
       "_origin": "ast",
@@ -11763,17 +11796,6 @@
       "norm_label": "api_client.dart",
       "source_file": "mobile/hulypay/lib/services/api_client.dart",
       "source_location": null
-    },
-    {
-      "id": "mobile_hulypay_lib_services_api_client_apiexception",
-      "label": "ApiException",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "api_client.dart",
-      "file_type": "code",
-      "norm_label": "apiexception",
-      "source_file": "mobile/hulypay/lib/services/api_client.dart",
-      "source_location": "L9"
     },
     {
       "id": "mobile_hulypay_lib_services_api_client_checkappversion",
@@ -12274,17 +12296,6 @@
       "community_name": "splash_screen.dart",
       "file_type": "code",
       "norm_label": "duration",
-      "source_file": null,
-      "source_location": null
-    },
-    {
-      "id": "home_dashboard_screen_dart",
-      "label": "home_dashboard_screen.dart",
-      "_origin": "ast",
-      "community": 28,
-      "community_name": "splash_screen.dart",
-      "file_type": "code",
-      "norm_label": "home_dashboard_screen.dart",
       "source_file": null,
       "source_location": null
     },
@@ -12993,17 +13004,6 @@
       "source_location": ""
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_controllers_usercontroller_java_putmapping",
-      "label": "PutMapping",
-      "_origin": "ast",
-      "community": 30,
-      "community_name": "org.springframework.security.oauth2.jwt.Jwt",
-      "file_type": "code",
-      "norm_label": "putmapping",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "backend_src_main_java_com_hulypay_backend_controllers_usercontroller_java_requestmapping",
       "label": "RequestMapping",
       "_origin": "ast",
@@ -13024,17 +13024,6 @@
       "norm_label": "restcontroller",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_models_user",
-      "label": "User.java",
-      "_origin": "ast",
-      "community": 30,
-      "community_name": "org.springframework.security.oauth2.jwt.Jwt",
-      "file_type": "code",
-      "norm_label": "user.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/Models/User.java",
-      "source_location": "L1"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_services_userservice",
@@ -15223,28 +15212,6 @@
       "source_location": "L40"
     },
     {
-      "id": "mobile_hulypay_lib_screens_scan_and_pay_screen_scanandpayscreen",
-      "label": "ScanAndPayScreen",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "scanandpayscreen",
-      "source_file": "mobile/hulypay/lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L24"
-    },
-    {
-      "id": "mobile_hulypay_lib_screens_scan_and_pay_screen_scanandpayscreenstate",
-      "label": "_ScanAndPayScreenState",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "_scanandpayscreenstate",
-      "source_file": "mobile/hulypay/lib/screens/scan_and_pay_screen.dart",
-      "source_location": "L34"
-    },
-    {
       "id": "mobile_hulypay_lib_screens_settings_screen_settingsscreen",
       "label": "SettingsScreen",
       "_origin": "ast",
@@ -15289,103 +15256,26 @@
       "source_location": "L30"
     },
     {
-      "id": "mobile_hulypay_lib_screens_single_transaction_screen_singletransactionscreen",
-      "label": "SingleTransactionScreen",
+      "id": "mobile_hulypay_lib_widgets_transaction_map_section_transactionmapsection",
+      "label": "TransactionMapSection",
       "_origin": "ast",
       "community": 36,
       "community_name": "State",
       "file_type": "code",
-      "norm_label": "singletransactionscreen",
-      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L24"
+      "norm_label": "transactionmapsection",
+      "source_file": "mobile/hulypay/lib/widgets/transaction_map_section.dart",
+      "source_location": "L10"
     },
     {
-      "id": "mobile_hulypay_lib_screens_single_transaction_screen_singletransactionscreenstate",
-      "label": "_SingleTransactionScreenState",
+      "id": "mobile_hulypay_lib_widgets_transaction_map_section_transactionmapsectionstate",
+      "label": "_TransactionMapSectionState",
       "_origin": "ast",
       "community": 36,
       "community_name": "State",
       "file_type": "code",
-      "norm_label": "_singletransactionscreenstate",
-      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L41"
-    },
-    {
-      "id": "mobile_hulypay_lib_screens_splash_screen_splashscreen",
-      "label": "SplashScreen",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "splashscreen",
-      "source_file": "mobile/hulypay/lib/screens/splash_screen.dart",
-      "source_location": "L19"
-    },
-    {
-      "id": "mobile_hulypay_lib_screens_splash_screen_splashscreenstate",
-      "label": "_SplashScreenState",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "_splashscreenstate",
-      "source_file": "mobile/hulypay/lib/screens/splash_screen.dart",
-      "source_location": "L37"
-    },
-    {
-      "id": "mobile_hulypay_lib_screens_transactions_screen_transactionsscreen",
-      "label": "TransactionsScreen",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "transactionsscreen",
-      "source_file": "mobile/hulypay/lib/screens/transactions_screen.dart",
-      "source_location": "L13"
-    },
-    {
-      "id": "mobile_hulypay_lib_screens_transactions_screen_transactionsscreenstate",
-      "label": "_TransactionsScreenState",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "_transactionsscreenstate",
-      "source_file": "mobile/hulypay/lib/screens/transactions_screen.dart",
-      "source_location": "L27"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_card_dialog_cardnotificationoverlay",
-      "label": "_CardNotificationOverlay",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "_cardnotificationoverlay",
-      "source_file": "mobile/hulypay/lib/widgets/card_dialog.dart",
-      "source_location": "L282"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_card_dialog_cardnotificationoverlaystate",
-      "label": "_CardNotificationOverlayState",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "_cardnotificationoverlaystate",
-      "source_file": "mobile/hulypay/lib/widgets/card_dialog.dart",
-      "source_location": "L307"
-    },
-    {
-      "id": "singletickerproviderstatemixin",
-      "label": "SingleTickerProviderStateMixin",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "State",
-      "file_type": "code",
-      "norm_label": "singletickerproviderstatemixin",
-      "source_file": null,
-      "source_location": null
+      "norm_label": "_transactionmapsectionstate",
+      "source_file": "mobile/hulypay/lib/widgets/transaction_map_section.dart",
+      "source_location": "L36"
     },
     {
       "id": "state",
@@ -16334,6 +16224,17 @@
       "source_location": null
     },
     {
+      "id": "home_dashboard_screen_dart",
+      "label": "home_dashboard_screen.dart",
+      "_origin": "ast",
+      "community": 40,
+      "community_name": "sign_in_screen.dart",
+      "file_type": "code",
+      "norm_label": "home_dashboard_screen.dart",
+      "source_file": null,
+      "source_location": null
+    },
+    {
       "id": "mobile_hulypay_lib_screens_sign_in_screen",
       "label": "sign_in_screen.dart",
       "_origin": "ast",
@@ -17035,7 +16936,7 @@
       "label": "SmsParserServiceTests.java",
       "_origin": "ast",
       "community": 46,
-      "community_name": ".parse",
+      "community_name": "TransactionSmsParserService",
       "file_type": "code",
       "norm_label": "smsparserservicetests.java",
       "source_file": "backend/src/test/java/com/hulypay/backend/SmsParserServiceTests.java",
@@ -17196,11 +17097,66 @@
       "source_location": null
     },
     {
+      "id": "frontend_package_dependencies_react",
+      "label": "react",
+      "_origin": "ast",
+      "community": 49,
+      "community_name": "dashboard/page.js",
+      "file_type": "code",
+      "norm_label": "react",
+      "source_file": "frontend/package.json",
+      "source_location": "L20"
+    },
+    {
+      "id": "frontend_src_app_dashboard_page",
+      "label": "dashboard/page.js",
+      "_origin": "ast",
+      "community": 49,
+      "community_name": "dashboard/page.js",
+      "file_type": "code",
+      "norm_label": "dashboard/page.js",
+      "source_file": "frontend/src/app/dashboard/page.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_components_dashboard_areachartspending_timeframes",
+      "label": "TIMEFRAMES",
+      "_origin": "ast",
+      "community": 49,
+      "community_name": "dashboard/page.js",
+      "file_type": "code",
+      "norm_label": "timeframes",
+      "source_file": "frontend/src/components/dashboard/AreaChartSpending.jsx",
+      "source_location": "L31"
+    },
+    {
+      "id": "frontend_src_components_dashboard_transactionstable",
+      "label": "TransactionsTable.jsx",
+      "_origin": "ast",
+      "community": 49,
+      "community_name": "dashboard/page.js",
+      "file_type": "code",
+      "norm_label": "transactionstable.jsx",
+      "source_file": "frontend/src/components/dashboard/TransactionsTable.jsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_lib_api_mock_radar_metrics",
+      "label": "MOCK_RADAR_METRICS",
+      "_origin": "ast",
+      "community": 49,
+      "community_name": "dashboard/page.js",
+      "file_type": "code",
+      "norm_label": "mock_radar_metrics",
+      "source_file": "frontend/src/lib/api.js",
+      "source_location": "L36"
+    },
+    {
       "id": "frontend_src_lib_userpreferences",
       "label": "userPreferences.js",
       "_origin": "ast",
       "community": 49,
-      "community_name": "DashboardPage",
+      "community_name": "dashboard/page.js",
       "file_type": "code",
       "norm_label": "userpreferences.js",
       "source_file": "frontend/src/lib/userPreferences.js",
@@ -17211,7 +17167,7 @@
       "label": "DEFAULT_USER_PREFERENCES",
       "_origin": "ast",
       "community": 49,
-      "community_name": "DashboardPage",
+      "community_name": "dashboard/page.js",
       "file_type": "code",
       "norm_label": "default_user_preferences",
       "source_file": "frontend/src/lib/userPreferences.js",
@@ -17222,7 +17178,7 @@
       "label": "USER_PREFERENCE_WEBSITE_KEY",
       "_origin": "ast",
       "community": 49,
-      "community_name": "DashboardPage",
+      "community_name": "dashboard/page.js",
       "file_type": "code",
       "norm_label": "user_preference_website_key",
       "source_file": "frontend/src/lib/userPreferences.js",
@@ -17738,11 +17694,22 @@
       "source_location": null
     },
     {
+      "id": "color",
+      "label": "Color",
+      "_origin": "ast",
+      "community": 52,
+      "community_name": "Color",
+      "file_type": "code",
+      "norm_label": "color",
+      "source_file": null,
+      "source_location": null
+    },
+    {
       "id": "mobile_hulypay_lib_widgets_app_back_button",
       "label": "app_back_button.dart",
       "_origin": "ast",
       "community": 52,
-      "community_name": "VoidCallback?",
+      "community_name": "Color",
       "file_type": "code",
       "norm_label": "app_back_button.dart",
       "source_file": "mobile/hulypay/lib/widgets/app_back_button.dart",
@@ -17753,7 +17720,7 @@
       "label": "AppBackButton",
       "_origin": "ast",
       "community": 52,
-      "community_name": "VoidCallback?",
+      "community_name": "Color",
       "file_type": "code",
       "norm_label": "appbackbutton",
       "source_file": "mobile/hulypay/lib/widgets/app_back_button.dart",
@@ -17764,7 +17731,7 @@
       "label": "backgroundColor",
       "_origin": "ast",
       "community": 52,
-      "community_name": "VoidCallback?",
+      "community_name": "Color",
       "file_type": "code",
       "norm_label": "backgroundcolor",
       "source_file": "mobile/hulypay/lib/widgets/app_back_button.dart",
@@ -17775,7 +17742,7 @@
       "label": "borderColor",
       "_origin": "ast",
       "community": 52,
-      "community_name": "VoidCallback?",
+      "community_name": "Color",
       "file_type": "code",
       "norm_label": "bordercolor",
       "source_file": "mobile/hulypay/lib/widgets/app_back_button.dart",
@@ -17786,7 +17753,7 @@
       "label": "build",
       "_origin": "ast",
       "community": 52,
-      "community_name": "VoidCallback?",
+      "community_name": "Color",
       "file_type": "code",
       "norm_label": "build",
       "source_file": "mobile/hulypay/lib/widgets/app_back_button.dart",
@@ -17797,7 +17764,7 @@
       "label": "iconColor",
       "_origin": "ast",
       "community": 52,
-      "community_name": "VoidCallback?",
+      "community_name": "Color",
       "file_type": "code",
       "norm_label": "iconcolor",
       "source_file": "mobile/hulypay/lib/widgets/app_back_button.dart",
@@ -17808,7 +17775,7 @@
       "label": "iconSize",
       "_origin": "ast",
       "community": 52,
-      "community_name": "VoidCallback?",
+      "community_name": "Color",
       "file_type": "code",
       "norm_label": "iconsize",
       "source_file": "mobile/hulypay/lib/widgets/app_back_button.dart",
@@ -17819,7 +17786,7 @@
       "label": "onPressed",
       "_origin": "ast",
       "community": 52,
-      "community_name": "VoidCallback?",
+      "community_name": "Color",
       "file_type": "code",
       "norm_label": "onpressed",
       "source_file": "mobile/hulypay/lib/widgets/app_back_button.dart",
@@ -17830,31 +17797,97 @@
       "label": "tooltip",
       "_origin": "ast",
       "community": 52,
-      "community_name": "VoidCallback?",
+      "community_name": "Color",
       "file_type": "code",
       "norm_label": "tooltip",
       "source_file": "mobile/hulypay/lib/widgets/app_back_button.dart",
       "source_location": "L7"
     },
     {
-      "id": "round_button_dart",
-      "label": "round_button.dart",
+      "id": "mobile_hulypay_lib_widgets_scanner_overlay_painter",
+      "label": "scanner_overlay_painter.dart",
       "_origin": "ast",
       "community": 52,
-      "community_name": "VoidCallback?",
+      "community_name": "Color",
       "file_type": "code",
-      "norm_label": "round_button.dart",
+      "norm_label": "scanner_overlay_painter.dart",
+      "source_file": "mobile/hulypay/lib/widgets/scanner_overlay_painter.dart",
+      "source_location": null
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_scanner_overlay_painter_cornerradius",
+      "label": "cornerRadius",
+      "_origin": "ast",
+      "community": 52,
+      "community_name": "Color",
+      "file_type": "code",
+      "norm_label": "cornerradius",
+      "source_file": "mobile/hulypay/lib/widgets/scanner_overlay_painter.dart",
+      "source_location": "L6"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_scanner_overlay_painter_cutoutrect",
+      "label": "cutoutRect",
+      "_origin": "ast",
+      "community": 52,
+      "community_name": "Color",
+      "file_type": "code",
+      "norm_label": "cutoutrect",
+      "source_file": "mobile/hulypay/lib/widgets/scanner_overlay_painter.dart",
+      "source_location": "L5"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_scanner_overlay_painter_overlaycolor",
+      "label": "overlayColor",
+      "_origin": "ast",
+      "community": 52,
+      "community_name": "Color",
+      "file_type": "code",
+      "norm_label": "overlaycolor",
+      "source_file": "mobile/hulypay/lib/widgets/scanner_overlay_painter.dart",
+      "source_location": "L7"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_scanner_overlay_painter_paint",
+      "label": "paint",
+      "_origin": "ast",
+      "community": 52,
+      "community_name": "Color",
+      "file_type": "code",
+      "norm_label": "paint",
+      "source_file": "mobile/hulypay/lib/widgets/scanner_overlay_painter.dart",
+      "source_location": "L16"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_scanner_overlay_painter_shouldrepaint",
+      "label": "shouldRepaint",
+      "_origin": "ast",
+      "community": 52,
+      "community_name": "Color",
+      "file_type": "code",
+      "norm_label": "shouldrepaint",
+      "source_file": "mobile/hulypay/lib/widgets/scanner_overlay_painter.dart",
+      "source_location": "L35"
+    },
+    {
+      "id": "rect",
+      "label": "Rect",
+      "_origin": "ast",
+      "community": 52,
+      "community_name": "Color",
+      "file_type": "code",
+      "norm_label": "rect",
       "source_file": null,
       "source_location": null
     },
     {
-      "id": "voidcallback",
-      "label": "VoidCallback?",
+      "id": "round_button_dart",
+      "label": "round_button.dart",
       "_origin": "ast",
       "community": 52,
-      "community_name": "VoidCallback?",
+      "community_name": "Color",
       "file_type": "code",
-      "norm_label": "voidcallback?",
+      "norm_label": "round_button.dart",
       "source_file": null,
       "source_location": null
     },
@@ -17922,7 +17955,7 @@
       "file_type": "code",
       "norm_label": "_buildaccountsection",
       "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L393"
+      "source_location": "L384"
     },
     {
       "id": "mobile_hulypay_lib_screens_settings_screen_buildnotificationssection",
@@ -17933,7 +17966,7 @@
       "file_type": "code",
       "norm_label": "_buildnotificationssection",
       "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L467"
+      "source_location": "L458"
     },
     {
       "id": "mobile_hulypay_lib_screens_settings_screen_buildsupportsection",
@@ -17944,7 +17977,7 @@
       "file_type": "code",
       "norm_label": "_buildsupportsection",
       "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L545"
+      "source_location": "L536"
     },
     {
       "id": "mobile_hulypay_lib_screens_transactions_screen_buildgroupedtransactions",
@@ -17956,17 +17989,6 @@
       "norm_label": "_buildgroupedtransactions",
       "source_file": "mobile/hulypay/lib/screens/transactions_screen.dart",
       "source_location": "L440"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_transaction_tile_build",
-      "label": "build",
-      "_origin": "ast",
-      "community": 53,
-      "community_name": "MaterialPageRoute",
-      "file_type": "code",
-      "norm_label": "build",
-      "source_file": "mobile/hulypay/lib/widgets/transaction_tile.dart",
-      "source_location": "L20"
     },
     {
       "id": "color_barriercolor_string",
@@ -19080,6 +19102,17 @@
       "source_location": null
     },
     {
+      "id": "mobile_hulypay_lib_widgets_transaction_tile_build",
+      "label": "build",
+      "_origin": "ast",
+      "community": 57,
+      "community_name": "../models/transaction_model.dart",
+      "file_type": "code",
+      "norm_label": "build",
+      "source_file": "mobile/hulypay/lib/widgets/transaction_tile.dart",
+      "source_location": "L20"
+    },
+    {
       "id": "mobile_hulypay_lib_widgets_transaction_tile_ontap",
       "label": "onTap",
       "_origin": "ast",
@@ -20127,25 +20160,14 @@
       "source_location": "L1"
     },
     {
-      "id": "backend_src_main_java_com_hulypay_backend_services_versioncomparisonservice",
-      "label": "VersionComparisonService.java",
+      "id": "backend_src_test_java_com_hulypay_backend_envelopeencryptionservicetests",
+      "label": "EnvelopeEncryptionServiceTests.java",
       "_origin": "ast",
       "community": 66,
       "community_name": "org.springframework.stereotype.Service",
       "file_type": "code",
-      "norm_label": "versioncomparisonservice.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/Services/VersionComparisonService.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_src_test_java_com_hulypay_backend_encryptionservicetests",
-      "label": "EncryptionServiceTests.java",
-      "_origin": "ast",
-      "community": 66,
-      "community_name": "org.springframework.stereotype.Service",
-      "file_type": "code",
-      "norm_label": "encryptionservicetests.java",
-      "source_file": "backend/src/test/java/com/hulypay/backend/EncryptionServiceTests.java",
+      "norm_label": "envelopeencryptionservicetests.java",
+      "source_file": "backend/src/test/java/com/hulypay/backend/EnvelopeEncryptionServiceTests.java",
       "source_location": "L1"
     },
     {
@@ -20156,17 +20178,6 @@
       "community_name": "org.springframework.stereotype.Service",
       "file_type": "code",
       "norm_label": "java.security.securerandom",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "java_util_regex_pattern",
-      "label": "java.util.regex.Pattern",
-      "_origin": "ast",
-      "community": 66,
-      "community_name": "org.springframework.stereotype.Service",
-      "file_type": "code",
-      "norm_label": "java.util.regex.pattern",
       "source_file": "",
       "source_location": ""
     },
@@ -20212,6 +20223,17 @@
       "file_type": "code",
       "norm_label": "transaction.java",
       "source_file": "backend/src/main/java/com/hulypay/backend/Models/Transaction.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_models_user",
+      "label": "User.java",
+      "_origin": "ast",
+      "community": 67,
+      "community_name": "EncryptedStringConverter",
+      "file_type": "code",
+      "norm_label": "user.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/Models/User.java",
       "source_location": "L1"
     },
     {
@@ -20848,28 +20870,6 @@
       "source_location": "L511"
     },
     {
-      "id": "mobile_hulypay_lib_widgets_transaction_map_section_transactionmapsection",
-      "label": "TransactionMapSection",
-      "_origin": "ast",
-      "community": 69,
-      "community_name": "transaction_map_section.dart",
-      "file_type": "code",
-      "norm_label": "transactionmapsection",
-      "source_file": "mobile/hulypay/lib/widgets/transaction_map_section.dart",
-      "source_location": "L10"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_transaction_map_section_transactionmapsectionstate",
-      "label": "_TransactionMapSectionState",
-      "_origin": "ast",
-      "community": 69,
-      "community_name": "transaction_map_section.dart",
-      "file_type": "code",
-      "norm_label": "_transactionmapsectionstate",
-      "source_file": "mobile/hulypay/lib/widgets/transaction_map_section.dart",
-      "source_location": "L36"
-    },
-    {
       "id": "onesequencegesturerecognizer",
       "label": "OneSequenceGestureRecognizer",
       "_origin": "ast",
@@ -20912,17 +20912,6 @@
       "norm_label": "globalexceptionhandler.java",
       "source_file": "backend/src/main/java/com/hulypay/backend/Exceptions/GlobalExceptionHandler.java",
       "source_location": "L1"
-    },
-    {
-      "id": "com_fasterxml_jackson_annotation_jsoninclude",
-      "label": "com.fasterxml.jackson.annotation.JsonInclude",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "org.springframework.http.ResponseEntity",
-      "file_type": "code",
-      "norm_label": "com.fasterxml.jackson.annotation.jsoninclude",
-      "source_file": "",
-      "source_location": ""
     },
     {
       "id": "noresourcefoundexception",
@@ -22311,6 +22300,17 @@
       "source_location": "L12"
     },
     {
+      "id": "frontend_src_app_login_page",
+      "label": "login/page.js",
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "features/page.js",
+      "file_type": "code",
+      "norm_label": "login/page.js",
+      "source_file": "frontend/src/app/login/page.js",
+      "source_location": "L1"
+    },
+    {
       "id": "frontend_src_app_page",
       "label": "app/page.js",
       "_origin": "ast",
@@ -23105,145 +23105,145 @@
       "source_location": "L1"
     },
     {
-      "id": "mobile_hulypay_lib_widgets_payment_dialogs",
-      "label": "payment_dialogs.dart",
+      "id": "card_dialog_dart",
+      "label": "card_dialog.dart",
       "_origin": "ast",
       "community": 82,
-      "community_name": "payment_dialogs.dart",
+      "community_name": "../theme/app_theme.dart",
       "file_type": "code",
-      "norm_label": "payment_dialogs.dart",
-      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
+      "norm_label": "card_dialog.dart",
+      "source_file": null,
       "source_location": null
     },
     {
-      "id": "mobile_hulypay_lib_widgets_payment_dialogs_build",
+      "id": "mobile_hulypay_lib_services_app_update_service_appupdateinfo",
+      "label": "AppUpdateInfo",
+      "_origin": "ast",
+      "community": 82,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "appupdateinfo",
+      "source_file": "mobile/hulypay/lib/services/app_update_service.dart",
+      "source_location": "L7"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_app_update_banner",
+      "label": "app_update_banner.dart",
+      "_origin": "ast",
+      "community": 82,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "app_update_banner.dart",
+      "source_file": "mobile/hulypay/lib/widgets/app_update_banner.dart",
+      "source_location": null
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_app_update_banner_appupdatebanner",
+      "label": "AppUpdateBanner",
+      "_origin": "ast",
+      "community": 82,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "appupdatebanner",
+      "source_file": "mobile/hulypay/lib/widgets/app_update_banner.dart",
+      "source_location": "L5"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_app_update_banner_build",
       "label": "build",
       "_origin": "ast",
       "community": 82,
-      "community_name": "payment_dialogs.dart",
+      "community_name": "../theme/app_theme.dart",
       "file_type": "code",
       "norm_label": "build",
-      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
+      "source_file": "mobile/hulypay/lib/widgets/app_update_banner.dart",
+      "source_location": "L14"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_app_update_banner_updateinfo",
+      "label": "updateInfo",
+      "_origin": "ast",
+      "community": 82,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "updateinfo",
+      "source_file": "mobile/hulypay/lib/widgets/app_update_banner.dart",
+      "source_location": "L6"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_app_update_dialog",
+      "label": "app_update_dialog.dart",
+      "_origin": "ast",
+      "community": 82,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "app_update_dialog.dart",
+      "source_file": "mobile/hulypay/lib/widgets/app_update_dialog.dart",
+      "source_location": null
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_app_update_dialog_appupdatedialog",
+      "label": "AppUpdateDialog",
+      "_origin": "ast",
+      "community": 82,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "appupdatedialog",
+      "source_file": "mobile/hulypay/lib/widgets/app_update_dialog.dart",
+      "source_location": "L6"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_app_update_dialog_build",
+      "label": "build",
+      "_origin": "ast",
+      "community": 82,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "build",
+      "source_file": "mobile/hulypay/lib/widgets/app_update_dialog.dart",
+      "source_location": "L27"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_app_update_dialog_show",
+      "label": "show",
+      "_origin": "ast",
+      "community": 82,
+      "community_name": "../theme/app_theme.dart",
+      "file_type": "code",
+      "norm_label": "show",
+      "source_file": "mobile/hulypay/lib/widgets/app_update_dialog.dart",
       "source_location": "L15"
     },
     {
-      "id": "mobile_hulypay_lib_widgets_payment_dialogs_colors",
-      "label": "colors",
+      "id": "mobile_hulypay_lib_widgets_app_update_dialog_updateinfo",
+      "label": "updateInfo",
       "_origin": "ast",
       "community": 82,
-      "community_name": "payment_dialogs.dart",
+      "community_name": "../theme/app_theme.dart",
       "file_type": "code",
-      "norm_label": "colors",
-      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
-      "source_location": "L55"
+      "norm_label": "updateinfo",
+      "source_file": "mobile/hulypay/lib/widgets/app_update_dialog.dart",
+      "source_location": "L7"
     },
     {
-      "id": "mobile_hulypay_lib_widgets_payment_dialogs_false",
-      "label": "false",
+      "id": "services_app_update_service_dart",
+      "label": "../services/app_update_service.dart",
       "_origin": "ast",
       "community": 82,
-      "community_name": "payment_dialogs.dart",
+      "community_name": "../theme/app_theme.dart",
       "file_type": "code",
-      "norm_label": "false",
-      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
-      "source_location": "L109"
+      "norm_label": "../services/app_update_service.dart",
+      "source_file": null,
+      "source_location": null
     },
     {
-      "id": "mobile_hulypay_lib_widgets_payment_dialogs_filleddialogbutton",
-      "label": "filledDialogButton",
+      "id": "theme_app_theme_dart",
+      "label": "../theme/app_theme.dart",
       "_origin": "ast",
       "community": 82,
-      "community_name": "payment_dialogs.dart",
+      "community_name": "../theme/app_theme.dart",
       "file_type": "code",
-      "norm_label": "filleddialogbutton",
-      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
-      "source_location": "L45"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_payment_dialogs_missingappaction",
-      "label": "MissingAppAction",
-      "_origin": "ast",
-      "community": 82,
-      "community_name": "payment_dialogs.dart",
-      "file_type": "code",
-      "norm_label": "missingappaction",
-      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
-      "source_location": "L112"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_payment_dialogs_payment",
-      "label": "payment",
-      "_origin": "ast",
-      "community": 82,
-      "community_name": "payment_dialogs.dart",
-      "file_type": "code",
-      "norm_label": "payment",
-      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
-      "source_location": "L10"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_payment_dialogs_paymentsummarylines",
-      "label": "PaymentSummaryLines",
-      "_origin": "ast",
-      "community": 82,
-      "community_name": "payment_dialogs.dart",
-      "file_type": "code",
-      "norm_label": "paymentsummarylines",
-      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
-      "source_location": "L9"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_payment_dialogs_result",
-      "label": "result",
-      "_origin": "ast",
-      "community": 82,
-      "community_name": "payment_dialogs.dart",
-      "file_type": "code",
-      "norm_label": "result",
-      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
-      "source_location": "L56"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_payment_dialogs_showappnotinstalleddialog",
-      "label": "showAppNotInstalledDialog",
-      "_origin": "ast",
-      "community": 82,
-      "community_name": "payment_dialogs.dart",
-      "file_type": "code",
-      "norm_label": "showappnotinstalleddialog",
-      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
-      "source_location": "L115"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_payment_dialogs_showquickconfirmsuccessdialog",
-      "label": "showQuickConfirmSuccessDialog",
-      "_origin": "ast",
-      "community": 82,
-      "community_name": "payment_dialogs.dart",
-      "file_type": "code",
-      "norm_label": "showquickconfirmsuccessdialog",
-      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
-      "source_location": "L192"
-    },
-    {
-      "id": "mobile_hulypay_lib_widgets_payment_dialogs_showsmspermissiondialog",
-      "label": "showSmsPermissionDialog",
-      "_origin": "ast",
-      "community": 82,
-      "community_name": "payment_dialogs.dart",
-      "file_type": "code",
-      "norm_label": "showsmspermissiondialog",
-      "source_file": "mobile/hulypay/lib/widgets/payment_dialogs.dart",
-      "source_location": "L54"
-    },
-    {
-      "id": "return_result",
-      "label": "return result ??",
-      "_origin": "ast",
-      "community": 82,
-      "community_name": "payment_dialogs.dart",
-      "file_type": "code",
-      "norm_label": "return result ??",
+      "norm_label": "../theme/app_theme.dart",
       "source_file": null,
       "source_location": null
     },
@@ -23260,33 +23260,11 @@
       "source_location": "L1"
     },
     {
-      "id": "frontend_package_dependencies_react",
-      "label": "react",
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "dashboard/page.js",
-      "file_type": "code",
-      "norm_label": "react",
-      "source_file": "frontend/package.json",
-      "source_location": "L20"
-    },
-    {
-      "id": "frontend_src_app_dashboard_page",
-      "label": "dashboard/page.js",
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "dashboard/page.js",
-      "file_type": "code",
-      "norm_label": "dashboard/page.js",
-      "source_file": "frontend/src/app/dashboard/page.js",
-      "source_location": "L1"
-    },
-    {
       "id": "frontend_src_components_dashboard_areachartspending",
       "label": "AreaChartSpending.jsx",
       "_origin": "ast",
       "community": 84,
-      "community_name": "dashboard/page.js",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "areachartspending.jsx",
       "source_file": "frontend/src/components/dashboard/AreaChartSpending.jsx",
@@ -23297,29 +23275,18 @@
       "label": "chartConfig",
       "_origin": "ast",
       "community": 84,
-      "community_name": "dashboard/page.js",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "chartconfig",
       "source_file": "frontend/src/components/dashboard/AreaChartSpending.jsx",
       "source_location": "L20"
     },
     {
-      "id": "frontend_src_components_dashboard_areachartspending_timeframes",
-      "label": "TIMEFRAMES",
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "dashboard/page.js",
-      "file_type": "code",
-      "norm_label": "timeframes",
-      "source_file": "frontend/src/components/dashboard/AreaChartSpending.jsx",
-      "source_location": "L31"
-    },
-    {
       "id": "frontend_src_components_dashboard_barchartmonthly",
       "label": "BarChartMonthly.jsx",
       "_origin": "ast",
       "community": 84,
-      "community_name": "dashboard/page.js",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "barchartmonthly.jsx",
       "source_file": "frontend/src/components/dashboard/BarChartMonthly.jsx",
@@ -23330,7 +23297,7 @@
       "label": "PieChartCategories.jsx",
       "_origin": "ast",
       "community": 84,
-      "community_name": "dashboard/page.js",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "piechartcategories.jsx",
       "source_file": "frontend/src/components/dashboard/PieChartCategories.jsx",
@@ -23341,7 +23308,7 @@
       "label": "chartConfig",
       "_origin": "ast",
       "community": 84,
-      "community_name": "dashboard/page.js",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "chartconfig",
       "source_file": "frontend/src/components/dashboard/PieChartCategories.jsx",
@@ -23352,7 +23319,7 @@
       "label": "RadarChartPerformance.jsx",
       "_origin": "ast",
       "community": 84,
-      "community_name": "dashboard/page.js",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "radarchartperformance.jsx",
       "source_file": "frontend/src/components/dashboard/RadarChartPerformance.jsx",
@@ -23363,29 +23330,18 @@
       "label": "chartConfig",
       "_origin": "ast",
       "community": 84,
-      "community_name": "dashboard/page.js",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "chartconfig",
       "source_file": "frontend/src/components/dashboard/RadarChartPerformance.jsx",
       "source_location": "L20"
     },
     {
-      "id": "frontend_src_components_dashboard_transactionstable",
-      "label": "TransactionsTable.jsx",
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "dashboard/page.js",
-      "file_type": "code",
-      "norm_label": "transactionstable.jsx",
-      "source_file": "frontend/src/components/dashboard/TransactionsTable.jsx",
-      "source_location": "L1"
-    },
-    {
       "id": "frontend_src_components_ui_chart",
       "label": "chart.jsx",
       "_origin": "ast",
       "community": 84,
-      "community_name": "dashboard/page.js",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "chart.jsx",
       "source_file": "frontend/src/components/ui/chart.jsx",
@@ -23396,7 +23352,7 @@
       "label": "ChartContainer",
       "_origin": "ast",
       "community": 84,
-      "community_name": "dashboard/page.js",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "chartcontainer",
       "source_file": "frontend/src/components/ui/chart.jsx",
@@ -23407,7 +23363,7 @@
       "label": "ChartContext",
       "_origin": "ast",
       "community": 84,
-      "community_name": "dashboard/page.js",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "chartcontext",
       "source_file": "frontend/src/components/ui/chart.jsx",
@@ -23418,7 +23374,7 @@
       "label": "ChartLegendContent",
       "_origin": "ast",
       "community": 84,
-      "community_name": "dashboard/page.js",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "chartlegendcontent",
       "source_file": "frontend/src/components/ui/chart.jsx",
@@ -23429,29 +23385,18 @@
       "label": "ChartTooltipContent",
       "_origin": "ast",
       "community": 84,
-      "community_name": "dashboard/page.js",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "charttooltipcontent",
       "source_file": "frontend/src/components/ui/chart.jsx",
       "source_location": "L73"
     },
     {
-      "id": "frontend_src_lib_api_mock_radar_metrics",
-      "label": "MOCK_RADAR_METRICS",
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "dashboard/page.js",
-      "file_type": "code",
-      "norm_label": "mock_radar_metrics",
-      "source_file": "frontend/src/lib/api.js",
-      "source_location": "L36"
-    },
-    {
       "id": "ref_react",
       "label": "react",
       "_origin": "ast",
       "community": 84,
-      "community_name": "dashboard/page.js",
+      "community_name": "react",
       "file_type": "concept",
       "norm_label": "react",
       "source_file": "frontend/package.json",
@@ -23462,7 +23407,7 @@
       "label": "recharts",
       "_origin": "ast",
       "community": 84,
-      "community_name": "dashboard/page.js",
+      "community_name": "react",
       "file_type": "concept",
       "norm_label": "recharts",
       "source_file": "frontend/package.json",
@@ -23733,6 +23678,17 @@
       "source_location": "L22"
     },
     {
+      "id": "services_qr_service_dart",
+      "label": "../services/qr_service.dart",
+      "_origin": "ast",
+      "community": 85,
+      "community_name": "payment_details_page.dart",
+      "file_type": "code",
+      "norm_label": "../services/qr_service.dart",
+      "source_file": null,
+      "source_location": null
+    },
+    {
       "id": "services_scan_payment_service_dart",
       "label": "../services/scan_payment_service.dart",
       "_origin": "ast",
@@ -23740,17 +23696,6 @@
       "community_name": "payment_details_page.dart",
       "file_type": "code",
       "norm_label": "../services/scan_payment_service.dart",
-      "source_file": null,
-      "source_location": null
-    },
-    {
-      "id": "services_upi_service_dart",
-      "label": "../services/upi_service.dart",
-      "_origin": "ast",
-      "community": 85,
-      "community_name": "payment_details_page.dart",
-      "file_type": "code",
-      "norm_label": "../services/upi_service.dart",
       "source_file": null,
       "source_location": null
     },
@@ -23898,6 +23843,17 @@
       "source_location": null
     },
     {
+      "id": "backend_src_main_java_com_hulypay_backend_services_versioncomparisonservice",
+      "label": "VersionComparisonService.java",
+      "_origin": "ast",
+      "community": 87,
+      "community_name": "AppVersionControllerTests",
+      "file_type": "code",
+      "norm_label": "versioncomparisonservice.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/Services/VersionComparisonService.java",
+      "source_location": "L1"
+    },
+    {
       "id": "backend_src_test_java_com_hulypay_backend_appversioncontrollertests",
       "label": "AppVersionControllerTests.java",
       "_origin": "ast",
@@ -23907,6 +23863,17 @@
       "norm_label": "appversioncontrollertests.java",
       "source_file": "backend/src/test/java/com/hulypay/backend/AppVersionControllerTests.java",
       "source_location": "L1"
+    },
+    {
+      "id": "java_util_regex_pattern",
+      "label": "java.util.regex.Pattern",
+      "_origin": "ast",
+      "community": 87,
+      "community_name": "AppVersionControllerTests",
+      "file_type": "code",
+      "norm_label": "java.util.regex.pattern",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "org_junit_jupiter_api_displayname",
@@ -24184,7 +24151,7 @@
       "file_type": "code",
       "norm_label": "_buildgroupcard",
       "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L652"
+      "source_location": "L643"
     },
     {
       "id": "mobile_hulypay_lib_screens_settings_screen_buildlogoutcard",
@@ -24195,7 +24162,7 @@
       "file_type": "code",
       "norm_label": "_buildlogoutcard",
       "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L591"
+      "source_location": "L582"
     },
     {
       "id": "mobile_hulypay_lib_screens_settings_screen_buildpreferencessection",
@@ -24206,7 +24173,7 @@
       "file_type": "code",
       "norm_label": "_buildpreferencessection",
       "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L426"
+      "source_location": "L417"
     },
     {
       "id": "mobile_hulypay_lib_screens_settings_screen_buildprofilecard",
@@ -24228,7 +24195,7 @@
       "file_type": "code",
       "norm_label": "_buildsettingrow",
       "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L671"
+      "source_location": "L662"
     },
     {
       "id": "mobile_hulypay_lib_screens_settings_screen_buildswitchsettingrow",
@@ -24239,7 +24206,7 @@
       "file_type": "code",
       "norm_label": "_buildswitchsettingrow",
       "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L739"
+      "source_location": "L730"
     },
     {
       "id": "mobile_hulypay_lib_screens_settings_screen_buildtopbar",
@@ -25794,157 +25761,91 @@
       "source_location": ""
     },
     {
-      "id": "data_external_data_dart",
-      "label": "../data/external_data.dart",
+      "id": "mobile_hulypay_lib_screens_splash_screen_splashscreen",
+      "label": "SplashScreen",
       "_origin": "ast",
       "community": 95,
-      "community_name": "../data/external_data.dart",
+      "community_name": "_SplashScreenState",
       "file_type": "code",
-      "norm_label": "../data/external_data.dart",
+      "norm_label": "splashscreen",
+      "source_file": "mobile/hulypay/lib/screens/splash_screen.dart",
+      "source_location": "L19"
+    },
+    {
+      "id": "mobile_hulypay_lib_screens_splash_screen_splashscreenstate",
+      "label": "_SplashScreenState",
+      "_origin": "ast",
+      "community": 95,
+      "community_name": "_SplashScreenState",
+      "file_type": "code",
+      "norm_label": "_splashscreenstate",
+      "source_file": "mobile/hulypay/lib/screens/splash_screen.dart",
+      "source_location": "L37"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_card_dialog_cardnotificationoverlay",
+      "label": "_CardNotificationOverlay",
+      "_origin": "ast",
+      "community": 95,
+      "community_name": "_SplashScreenState",
+      "file_type": "code",
+      "norm_label": "_cardnotificationoverlay",
+      "source_file": "mobile/hulypay/lib/widgets/card_dialog.dart",
+      "source_location": "L282"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_card_dialog_cardnotificationoverlaystate",
+      "label": "_CardNotificationOverlayState",
+      "_origin": "ast",
+      "community": 95,
+      "community_name": "_SplashScreenState",
+      "file_type": "code",
+      "norm_label": "_cardnotificationoverlaystate",
+      "source_file": "mobile/hulypay/lib/widgets/card_dialog.dart",
+      "source_location": "L307"
+    },
+    {
+      "id": "singletickerproviderstatemixin",
+      "label": "SingleTickerProviderStateMixin",
+      "_origin": "ast",
+      "community": 95,
+      "community_name": "_SplashScreenState",
+      "file_type": "code",
+      "norm_label": "singletickerproviderstatemixin",
       "source_file": null,
       "source_location": null
-    },
-    {
-      "id": "mobile_hulypay_lib_screens_notifications_screen",
-      "label": "notifications_screen.dart",
-      "_origin": "ast",
-      "community": 95,
-      "community_name": "../data/external_data.dart",
-      "file_type": "code",
-      "norm_label": "notifications_screen.dart",
-      "source_file": "mobile/hulypay/lib/screens/notifications_screen.dart",
-      "source_location": null
-    },
-    {
-      "id": "mobile_hulypay_lib_screens_notifications_screen_build",
-      "label": "build",
-      "_origin": "ast",
-      "community": 95,
-      "community_name": "../data/external_data.dart",
-      "file_type": "code",
-      "norm_label": "build",
-      "source_file": "mobile/hulypay/lib/screens/notifications_screen.dart",
-      "source_location": "L10"
-    },
-    {
-      "id": "mobile_hulypay_lib_screens_notifications_screen_buildappbar",
-      "label": "_buildAppBar",
-      "_origin": "ast",
-      "community": 95,
-      "community_name": "../data/external_data.dart",
-      "file_type": "code",
-      "norm_label": "_buildappbar",
-      "source_file": "mobile/hulypay/lib/screens/notifications_screen.dart",
-      "source_location": "L39"
-    },
-    {
-      "id": "mobile_hulypay_lib_screens_notifications_screen_buildcurrentlyindevelopmentcard",
-      "label": "_buildCurrentlyInDevelopmentCard",
-      "_origin": "ast",
-      "community": 95,
-      "community_name": "../data/external_data.dart",
-      "file_type": "code",
-      "norm_label": "_buildcurrentlyindevelopmentcard",
-      "source_file": "mobile/hulypay/lib/screens/notifications_screen.dart",
-      "source_location": "L63"
-    },
-    {
-      "id": "mobile_hulypay_lib_screens_notifications_screen_notificationsscreen",
-      "label": "NotificationsScreen",
-      "_origin": "ast",
-      "community": 95,
-      "community_name": "../data/external_data.dart",
-      "file_type": "code",
-      "norm_label": "notificationsscreen",
-      "source_file": "mobile/hulypay/lib/screens/notifications_screen.dart",
-      "source_location": "L6"
-    },
-    {
-      "id": "mobile_hulypay_lib_screens_privacy_security_screen",
-      "label": "privacy_security_screen.dart",
-      "_origin": "ast",
-      "community": 95,
-      "community_name": "../data/external_data.dart",
-      "file_type": "code",
-      "norm_label": "privacy_security_screen.dart",
-      "source_file": "mobile/hulypay/lib/screens/privacy_security_screen.dart",
-      "source_location": null
-    },
-    {
-      "id": "mobile_hulypay_lib_screens_privacy_security_screen_build",
-      "label": "build",
-      "_origin": "ast",
-      "community": 95,
-      "community_name": "../data/external_data.dart",
-      "file_type": "code",
-      "norm_label": "build",
-      "source_file": "mobile/hulypay/lib/screens/privacy_security_screen.dart",
-      "source_location": "L10"
-    },
-    {
-      "id": "mobile_hulypay_lib_screens_privacy_security_screen_buildappbar",
-      "label": "_buildAppBar",
-      "_origin": "ast",
-      "community": 95,
-      "community_name": "../data/external_data.dart",
-      "file_type": "code",
-      "norm_label": "_buildappbar",
-      "source_file": "mobile/hulypay/lib/screens/privacy_security_screen.dart",
-      "source_location": "L74"
-    },
-    {
-      "id": "mobile_hulypay_lib_screens_privacy_security_screen_buildsectionheader",
-      "label": "_buildSectionHeader",
-      "_origin": "ast",
-      "community": 95,
-      "community_name": "../data/external_data.dart",
-      "file_type": "code",
-      "norm_label": "_buildsectionheader",
-      "source_file": "mobile/hulypay/lib/screens/privacy_security_screen.dart",
-      "source_location": "L98"
-    },
-    {
-      "id": "mobile_hulypay_lib_screens_privacy_security_screen_privacysecurityscreen",
-      "label": "PrivacySecurityScreen",
-      "_origin": "ast",
-      "community": 95,
-      "community_name": "../data/external_data.dart",
-      "file_type": "code",
-      "norm_label": "privacysecurityscreen",
-      "source_file": "mobile/hulypay/lib/screens/privacy_security_screen.dart",
-      "source_location": "L6"
-    },
-    {
-      "id": "widgets_app_back_button_dart",
-      "label": "../widgets/app_back_button.dart",
-      "_origin": "ast",
-      "community": 95,
-      "community_name": "../data/external_data.dart",
-      "file_type": "code",
-      "norm_label": "../widgets/app_back_button.dart",
-      "source_file": null,
-      "source_location": null
-    },
-    {
-      "id": "backend_src_main_java_com_hulypay_backend_config_mobileappproperties",
-      "label": "MobileAppProperties.java",
-      "_origin": "ast",
-      "community": 96,
-      "community_name": "AppVersionController.java",
-      "file_type": "code",
-      "norm_label": "mobileappproperties.java",
-      "source_file": "backend/src/main/java/com/hulypay/backend/config/MobileAppProperties.java",
-      "source_location": "L1"
     },
     {
       "id": "backend_src_main_java_com_hulypay_backend_controllers_appversioncontroller",
       "label": "AppVersionController.java",
       "_origin": "ast",
       "community": 96,
-      "community_name": "AppVersionController.java",
+      "community_name": "org.springframework.web.bind.annotation.GetMapping",
       "file_type": "code",
       "norm_label": "appversioncontroller.java",
       "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/AppVersionController.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_controllers_databasehealthcontroller",
+      "label": "DatabaseHealthController.java",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "org.springframework.web.bind.annotation.GetMapping",
+      "file_type": "code",
+      "norm_label": "databasehealthcontroller.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/DatabaseHealthController.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_com_hulypay_backend_controllers_healthcontroller",
+      "label": "HealthController.java",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "org.springframework.web.bind.annotation.GetMapping",
+      "file_type": "code",
+      "norm_label": "healthcontroller.java",
+      "source_file": "backend/src/main/java/com/hulypay/backend/Controllers/HealthController.java",
       "source_location": "L1"
     },
     {
@@ -25952,7 +25853,7 @@
       "label": "io.swagger.v3.oas.annotations.Operation",
       "_origin": "ast",
       "community": 96,
-      "community_name": "AppVersionController.java",
+      "community_name": "org.springframework.web.bind.annotation.GetMapping",
       "file_type": "code",
       "norm_label": "io.swagger.v3.oas.annotations.operation",
       "source_file": "",
@@ -25963,22 +25864,55 @@
       "label": "io.swagger.v3.oas.annotations.tags.Tag",
       "_origin": "ast",
       "community": 96,
-      "community_name": "AppVersionController.java",
+      "community_name": "org.springframework.web.bind.annotation.GetMapping",
       "file_type": "code",
       "norm_label": "io.swagger.v3.oas.annotations.tags.tag",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "org_springframework_boot_context_properties_configurationproperties",
-      "label": "org.springframework.boot.context.properties.ConfigurationProperties",
+      "id": "javax_sql_datasource",
+      "label": "javax.sql.DataSource",
       "_origin": "ast",
       "community": 96,
-      "community_name": "AppVersionController.java",
+      "community_name": "org.springframework.web.bind.annotation.GetMapping",
       "file_type": "code",
-      "norm_label": "org.springframework.boot.context.properties.configurationproperties",
+      "norm_label": "javax.sql.datasource",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "org_springframework_web_bind_annotation_getmapping",
+      "label": "org.springframework.web.bind.annotation.GetMapping",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "org.springframework.web.bind.annotation.GetMapping",
+      "file_type": "code",
+      "norm_label": "org.springframework.web.bind.annotation.getmapping",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_web_bind_annotation_restcontroller",
+      "label": "org.springframework.web.bind.annotation.RestController",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "org.springframework.web.bind.annotation.GetMapping",
+      "file_type": "code",
+      "norm_label": "org.springframework.web.bind.annotation.restcontroller",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "custompainter",
+      "label": "CustomPainter",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "home_today_spend_gauge.dart",
+      "file_type": "code",
+      "norm_label": "custompainter",
+      "source_file": null,
+      "source_location": null
     },
     {
       "id": "dart_math",
@@ -26190,6 +26124,17 @@
       "source_location": "L232"
     },
     {
+      "id": "mobile_hulypay_lib_widgets_home_today_spend_gauge_speedometergaugepainter",
+      "label": "_SpeedometerGaugePainter",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "home_today_spend_gauge.dart",
+      "file_type": "code",
+      "norm_label": "_speedometergaugepainter",
+      "source_file": "mobile/hulypay/lib/widgets/home_today_spend_gauge.dart",
+      "source_location": "L490"
+    },
+    {
       "id": "mobile_hulypay_lib_widgets_home_today_spend_gauge_trackcolor",
       "label": "trackColor",
       "_origin": "ast",
@@ -26210,6 +26155,39 @@
       "norm_label": "value",
       "source_file": "mobile/hulypay/lib/widgets/home_today_spend_gauge.dart",
       "source_location": "L491"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_scanner_overlay_painter_scanneroverlaypainter",
+      "label": "ScannerOverlayPainter",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "home_today_spend_gauge.dart",
+      "file_type": "code",
+      "norm_label": "scanneroverlaypainter",
+      "source_file": "mobile/hulypay/lib/widgets/scanner_overlay_painter.dart",
+      "source_location": "L4"
+    },
+    {
+      "id": "mobile_hulypay_lib_widgets_transaction_map_section_mapgridpainter",
+      "label": "MapGridPainter",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "home_today_spend_gauge.dart",
+      "file_type": "code",
+      "norm_label": "mapgridpainter",
+      "source_file": "mobile/hulypay/lib/widgets/transaction_map_section.dart",
+      "source_location": "L466"
+    },
+    {
+      "id": "backend_src_test_java_com_hulypay_backend_encryptionservicetests",
+      "label": "EncryptionServiceTests.java",
+      "_origin": "ast",
+      "community": 98,
+      "community_name": ".decrypt",
+      "file_type": "code",
+      "norm_label": "encryptionservicetests.java",
+      "source_file": "backend/src/test/java/com/hulypay/backend/EncryptionServiceTests.java",
+      "source_location": "L1"
     },
     {
       "id": "frontend_src_app_layout",
@@ -38551,7 +38529,7 @@
       "confidence_score": 1.0,
       "context": "route_object",
       "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L416",
+      "source_location": "L407",
       "weight": 1.0
     },
     {
@@ -38563,7 +38541,7 @@
       "confidence_score": 1.0,
       "context": "route_object",
       "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L536",
+      "source_location": "L527",
       "weight": 1.0
     },
     {
@@ -38575,7 +38553,7 @@
       "confidence_score": 1.0,
       "context": "route_object",
       "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L580",
+      "source_location": "L571",
       "weight": 1.0
     },
     {
@@ -38635,7 +38613,7 @@
       "confidence_score": 1.0,
       "context": "type_lookup",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L799",
+      "source_location": "L791",
       "weight": 1.0
     },
     {
@@ -39403,7 +39381,7 @@
       "confidence_score": 1.0,
       "context": "variable_type",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L25",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -39415,7 +39393,7 @@
       "confidence_score": 1.0,
       "context": "variable_type",
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L44",
+      "source_location": "L46",
       "weight": 1.0
     },
     {
@@ -49161,6 +49139,17 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_settings_screen",
+      "target": "mobile_hulypay_lib_screens_settings_screen_buildaccountsection",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
+      "source_location": "L384",
+      "weight": 1.0
+    },
+    {
+      "source": "mobile_hulypay_lib_screens_settings_screen",
       "target": "mobile_hulypay_lib_screens_settings_screen_avatarurl",
       "relation": "defines",
       "_origin": "ast",
@@ -49168,17 +49157,6 @@
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
       "source_location": "L39",
-      "weight": 1.0
-    },
-    {
-      "source": "mobile_hulypay_lib_screens_settings_screen",
-      "target": "mobile_hulypay_lib_screens_settings_screen_buildaccountsection",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L393",
       "weight": 1.0
     },
     {
@@ -49205,6 +49183,17 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_settings_screen",
+      "target": "mobile_hulypay_lib_screens_settings_screen_buildpreferencessection",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
+      "source_location": "L417",
+      "weight": 1.0
+    },
+    {
+      "source": "mobile_hulypay_lib_screens_settings_screen",
       "target": "mobile_hulypay_lib_screens_settings_screen_pushnotifications",
       "relation": "defines",
       "_origin": "ast",
@@ -49212,17 +49201,6 @@
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
       "source_location": "L42",
-      "weight": 1.0
-    },
-    {
-      "source": "mobile_hulypay_lib_screens_settings_screen",
-      "target": "mobile_hulypay_lib_screens_settings_screen_buildpreferencessection",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L426",
       "weight": 1.0
     },
     {
@@ -49238,6 +49216,17 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_settings_screen",
+      "target": "mobile_hulypay_lib_screens_settings_screen_buildnotificationssection",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
+      "source_location": "L458",
+      "weight": 1.0
+    },
+    {
+      "source": "mobile_hulypay_lib_screens_settings_screen",
       "target": "mobile_hulypay_lib_screens_settings_screen_initstate",
       "relation": "defines",
       "_origin": "ast",
@@ -49249,24 +49238,13 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_settings_screen",
-      "target": "mobile_hulypay_lib_screens_settings_screen_buildnotificationssection",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L467",
-      "weight": 1.0
-    },
-    {
-      "source": "mobile_hulypay_lib_screens_settings_screen",
       "target": "mobile_hulypay_lib_screens_settings_screen_buildsupportsection",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L545",
+      "source_location": "L536",
       "weight": 1.0
     },
     {
@@ -49288,7 +49266,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L591",
+      "source_location": "L582",
       "weight": 1.0
     },
     {
@@ -49299,7 +49277,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L652",
+      "source_location": "L643",
       "weight": 1.0
     },
     {
@@ -49310,7 +49288,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L671",
+      "source_location": "L662",
       "weight": 1.0
     },
     {
@@ -49321,7 +49299,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/settings_screen.dart",
-      "source_location": "L739",
+      "source_location": "L730",
       "weight": 1.0
     },
     {
@@ -49546,17 +49524,6 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "mobile_hulypay_lib_screens_single_transaction_screen_buildsectionheader",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L1029",
-      "weight": 1.0
-    },
-    {
-      "source": "mobile_hulypay_lib_screens_single_transaction_screen",
       "target": "mobile_hulypay_lib_screens_single_transaction_screen_latitude",
       "relation": "defines",
       "_origin": "ast",
@@ -49629,34 +49596,12 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L24",
-      "weight": 1.0
-    },
-    {
-      "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "mobile_hulypay_lib_screens_single_transaction_screen_transaction",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L25",
-      "weight": 1.0
-    },
-    {
-      "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "mobile_hulypay_lib_screens_single_transaction_screen_payment",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
       "source_location": "L26",
       "weight": 1.0
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "mobile_hulypay_lib_screens_single_transaction_screen_paymentid",
+      "target": "mobile_hulypay_lib_screens_single_transaction_screen_transaction",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -49674,6 +49619,28 @@
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
       "source_location": "L271",
+      "weight": 1.0
+    },
+    {
+      "source": "mobile_hulypay_lib_screens_single_transaction_screen",
+      "target": "mobile_hulypay_lib_screens_single_transaction_screen_payment",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "mobile_hulypay_lib_screens_single_transaction_screen",
+      "target": "mobile_hulypay_lib_screens_single_transaction_screen_paymentid",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -49717,7 +49684,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L37",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -49739,34 +49706,12 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L41",
-      "weight": 1.0
-    },
-    {
-      "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "mobile_hulypay_lib_screens_single_transaction_screen_mapviewmode",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
       "source_location": "L43",
       "weight": 1.0
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "mobile_hulypay_lib_screens_single_transaction_screen_currentpayment",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L44",
-      "weight": 1.0
-    },
-    {
-      "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "mobile_hulypay_lib_screens_single_transaction_screen_isloading",
+      "target": "mobile_hulypay_lib_screens_single_transaction_screen_mapviewmode",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -49783,12 +49728,12 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L457",
+      "source_location": "L450",
       "weight": 1.0
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "mobile_hulypay_lib_screens_single_transaction_screen_isreconciling",
+      "target": "mobile_hulypay_lib_screens_single_transaction_screen_currentpayment",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -49799,7 +49744,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "mobile_hulypay_lib_screens_single_transaction_screen_iscancelling",
+      "target": "mobile_hulypay_lib_screens_single_transaction_screen_isloading",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -49810,7 +49755,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "mobile_hulypay_lib_screens_single_transaction_screen_isdeleting",
+      "target": "mobile_hulypay_lib_screens_single_transaction_screen_isreconciling",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -49860,7 +49805,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L517",
+      "source_location": "L510",
       "weight": 1.0
     },
     {
@@ -49882,7 +49827,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L548",
+      "source_location": "L540",
       "weight": 1.0
     },
     {
@@ -49904,7 +49849,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L608",
+      "source_location": "L600",
       "weight": 1.0
     },
     {
@@ -49926,7 +49871,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L697",
+      "source_location": "L689",
       "weight": 1.0
     },
     {
@@ -49937,7 +49882,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L708",
+      "source_location": "L700",
       "weight": 1.0
     },
     {
@@ -49970,7 +49915,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L920",
+      "source_location": "L912",
+      "weight": 1.0
+    },
+    {
+      "source": "mobile_hulypay_lib_screens_single_transaction_screen",
+      "target": "mobile_hulypay_lib_screens_single_transaction_screen_buildsectionheader",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
+      "source_location": "L995",
       "weight": 1.0
     },
     {
@@ -56003,17 +55959,6 @@
     },
     {
       "source": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart",
-      "target": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart_bottomtitlewidgets",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "mobile/hulypay/lib/widgets/home_spend_trend_line_chart.dart",
-      "source_location": "L335",
-      "weight": 1.0
-    },
-    {
-      "source": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart",
       "target": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart_dualabovecolor",
       "relation": "defines",
       "_origin": "ast",
@@ -56025,24 +55970,24 @@
     },
     {
       "source": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart",
+      "target": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart_bottomtitlewidgets",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "mobile/hulypay/lib/widgets/home_spend_trend_line_chart.dart",
+      "source_location": "L340",
+      "weight": 1.0
+    },
+    {
+      "source": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart",
       "target": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart_calculatemaxy",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/widgets/home_spend_trend_line_chart.dart",
-      "source_location": "L360",
-      "weight": 1.0
-    },
-    {
-      "source": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart",
-      "target": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart_computetrendpoints",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "mobile/hulypay/lib/widgets/home_spend_trend_line_chart.dart",
-      "source_location": "L369",
+      "source_location": "L365",
       "weight": 1.0
     },
     {
@@ -56058,13 +56003,24 @@
     },
     {
       "source": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart",
+      "target": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart_computetrendpoints",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "mobile/hulypay/lib/widgets/home_spend_trend_line_chart.dart",
+      "source_location": "L374",
+      "weight": 1.0
+    },
+    {
+      "source": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart",
       "target": "mobile_hulypay_lib_widgets_home_spend_trend_line_chart_label",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/widgets/home_spend_trend_line_chart.dart",
-      "source_location": "L425",
+      "source_location": "L430",
       "weight": 1.0
     },
     {
@@ -56075,7 +56031,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/widgets/home_spend_trend_line_chart.dart",
-      "source_location": "L426",
+      "source_location": "L431",
       "weight": 1.0
     },
     {
@@ -56086,7 +56042,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/widgets/home_spend_trend_line_chart.dart",
-      "source_location": "L428",
+      "source_location": "L433",
       "weight": 1.0
     },
     {
@@ -60258,7 +60214,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "package_flutter_material_dart",
+      "target": "dart_async",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60269,7 +60225,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "repositories_transaction_repository_dart",
+      "target": "models_dashboard_data_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60280,7 +60236,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "services_auth_service_dart",
+      "target": "models_transaction_model_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60291,7 +60247,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "services_local_database_service_dart",
+      "target": "repositories_transaction_repository_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60302,7 +60258,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "services_transaction_pdf_service_dart",
+      "target": "services_auth_service_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60313,7 +60269,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "theme_app_theme_dart",
+      "target": "services_local_database_service_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60324,7 +60280,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "widgets_app_back_button_dart",
+      "target": "services_transaction_pdf_service_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60335,7 +60291,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "widgets_category_picker_sheet_dart",
+      "target": "theme_app_theme_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60346,7 +60302,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "widgets_edit_amount_sheet_dart",
+      "target": "widgets_app_back_button_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60357,7 +60313,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "widgets_transaction_detail_components_dart",
+      "target": "widgets_category_picker_sheet_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60368,7 +60324,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "widgets_transaction_details_card_dart",
+      "target": "widgets_edit_amount_sheet_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60379,18 +60335,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "package_flutter_services_dart",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "widgets_transaction_map_section_dart",
+      "target": "widgets_transaction_detail_components_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60401,7 +60346,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "widgets_transaction_receipt_card_dart",
+      "target": "widgets_transaction_details_card_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60412,7 +60357,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "widgets_card_dialog_dart",
+      "target": "widgets_transaction_map_section_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60423,7 +60368,29 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "package_google_maps_flutter_google_maps_flutter_dart",
+      "target": "widgets_transaction_receipt_card_dart",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "mobile_hulypay_lib_screens_single_transaction_screen",
+      "target": "widgets_card_dialog_dart",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "mobile_hulypay_lib_screens_single_transaction_screen",
+      "target": "package_flutter_material_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60434,7 +60401,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "package_share_plus_share_plus_dart",
+      "target": "package_flutter_services_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60445,7 +60412,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "package_url_launcher_url_launcher_dart",
+      "target": "package_google_maps_flutter_google_maps_flutter_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60456,7 +60423,18 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "data_external_data_dart",
+      "target": "package_share_plus_share_plus_dart",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "mobile_hulypay_lib_screens_single_transaction_screen",
+      "target": "package_url_launcher_url_launcher_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60467,18 +60445,7 @@
     },
     {
       "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "models_dashboard_data_dart",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L8",
-      "weight": 1.0
-    },
-    {
-      "source": "mobile_hulypay_lib_screens_single_transaction_screen",
-      "target": "models_transaction_model_dart",
+      "target": "data_external_data_dart",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -63212,7 +63179,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L24",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -63223,7 +63190,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L41",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -65533,7 +65500,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "mobile/hulypay/lib/screens/single_transaction_screen.dart",
-      "source_location": "L41",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -66722,5 +66689,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b8c74e1b1ac7b0b64c2be80c06e4cda7fe9b1538"
+  "built_at_commit": "bb87f4abaf4d58969b4cf4928c54f8ef51cb3d3c"
 }

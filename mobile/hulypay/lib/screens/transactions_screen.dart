@@ -542,6 +542,24 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                             ),
                           );
                           if (result != null) {
+                            if (result == true) {
+                              final targetId = activePayment?.id ?? tx.id;
+                              setState(() {
+                                _allGroups = _allGroups
+                                    .map((g) {
+                                      final remaining = g.transactions.where((t) {
+                                        final tId = t.payment?.id ?? t.id;
+                                        return tId != targetId && t.id != tx.id;
+                                      }).toList();
+                                      return TransactionGroup(
+                                        title: g.title,
+                                        transactions: remaining,
+                                      );
+                                    })
+                                    .where((g) => g.transactions.isNotEmpty)
+                                    .toList();
+                              });
+                            }
                             _loadPayments();
                           }
                         },
