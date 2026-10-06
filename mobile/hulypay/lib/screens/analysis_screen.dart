@@ -504,9 +504,9 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
               right: 0,
               bottom: 0,
               child: CustomBottomNavBar(
-                selectedIndex: 1, // Analyze tab active
+                selectedIndex: 0, // Analyze tab active (left)
                 onItemSelected: (index) {
-                  if (index == 0) {
+                  if (index == 1) {
                     _openHome();
                   } else if (index == 2) {
                     _openTransactions();

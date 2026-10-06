@@ -122,21 +122,9 @@ class CustomBottomNavBar extends StatelessWidget {
                     // Interactive navigation items (Row on top)
                     Row(
                       children: [
-                        // 1. Home
+                        // 1. Analyze (Left)
                         _buildNavItem(
                           index: 0,
-                          iconBuilder: (color) => SvgPicture.asset(
-                            'assets/icon/home.svg',
-                            width: 24,
-                            height: 24,
-                            colorFilter:
-                                ColorFilter.mode(color, BlendMode.srcIn),
-                          ),
-                        ),
-
-                        // 2. Analyze
-                        _buildNavItem(
-                          index: 1,
                           iconBuilder: (color) => SvgPicture.asset(
                             'assets/icon/analysis.svg',
                             width: 24,
@@ -146,7 +134,19 @@ class CustomBottomNavBar extends StatelessWidget {
                           ),
                         ),
 
-                        // 3. Transactions
+                        // 2. Home (Center)
+                        _buildNavItem(
+                          index: 1,
+                          iconBuilder: (color) => SvgPicture.asset(
+                            'assets/icon/home.svg',
+                            width: 24,
+                            height: 24,
+                            colorFilter:
+                                ColorFilter.mode(color, BlendMode.srcIn),
+                          ),
+                        ),
+
+                        // 3. Transactions (Right)
                         _buildNavItem(
                           index: 2,
                           iconBuilder: (color) => SvgPicture.asset(

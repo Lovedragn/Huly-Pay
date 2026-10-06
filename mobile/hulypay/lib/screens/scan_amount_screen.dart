@@ -20,6 +20,7 @@ class _ScanAmountScreenState extends State<ScanAmountScreen> {
   late final TextEditingController _amountController;
   final TextEditingController _noteController = TextEditingController();
   final FocusNode _amountFocusNode = FocusNode();
+  final FocusNode _noteFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -45,6 +46,7 @@ class _ScanAmountScreenState extends State<ScanAmountScreen> {
     _amountController.dispose();
     _noteController.dispose();
     _amountFocusNode.dispose();
+    _noteFocusNode.dispose();
     super.dispose();
   }
 
@@ -139,53 +141,50 @@ class _ScanAmountScreenState extends State<ScanAmountScreen> {
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
-        child: Stack(
+        child: Column(
           children: [
-            Positioned.fill(
+            _buildAppBar(context, colors),
+            // Center the amount text area in available vertical and horizontal space
+            Expanded(
               child: Center(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.only(left: 24, right: 24, top: 68, bottom: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 440),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Centered Amount Entry Box
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                          decoration: BoxDecoration(
-                            color: colors.surface,
-                            borderRadius: BorderRadius.zero,
-                            border: Border.all(color: colors.border, width: 1.2),
-                          ),
+                        // Centered Amount Entry (Directly on screen, no card layout)
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => _amountFocusNode.requestFocus(),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
                                 '₹',
                                 style: TextStyle(
                                   fontFamily: 'Google Sans',
-                                  fontSize: 38,
+                                  fontSize: 40,
                                   fontWeight: FontWeight.w700,
                                   color: colors.textSecondary,
                                 ),
                               ),
-                              const SizedBox(width: 8),
-                              Flexible(
+                              IntrinsicWidth(
                                 child: TextField(
                                   controller: _amountController,
                                   focusNode: _amountFocusNode,
                                   autofocus: true,
                                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                  textAlign: TextAlign.center,
+                                  textAlign: TextAlign.start,
                                   style: TextStyle(
                                     fontFamily: 'Google Sans',
                                     color: colors.textPrimary,
-                                    fontSize: 44,
+                                    fontSize: 48,
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: -0.5,
                                   ),
@@ -204,42 +203,44 @@ class _ScanAmountScreenState extends State<ScanAmountScreen> {
                           ),
                         ),
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 14),
 
-                        // Centered Note / Message Field
-                        TextField(
-                          controller: _noteController,
-                          textInputAction: TextInputAction.done,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'Google Sans',
-                            color: colors.textPrimary,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: 'Add a note (optional)',
-                            hintStyle: TextStyle(color: colors.textMuted, fontSize: 13),
-                            prefixIcon: Icon(
-                              Icons.edit_note_rounded,
-                              color: colors.accent,
-                              size: 22,
-                            ),
-                            filled: true,
-                            fillColor: colors.surface,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(color: colors.border),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(color: colors.border),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(color: colors.accent, width: 1.5),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        // Centered Note / Message Field (Directly on screen, no card layout)
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => _noteFocusNode.requestFocus(),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.edit_note_rounded,
+                                color: colors.accent,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 6),
+                              IntrinsicWidth(
+                                child: TextField(
+                                  controller: _noteController,
+                                  focusNode: _noteFocusNode,
+                                  textInputAction: TextInputAction.done,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontFamily: 'Google Sans',
+                                    color: colors.textPrimary,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText: 'Add note',
+                                    hintStyle: TextStyle(color: colors.textMuted, fontSize: 13),
+                                    border: InputBorder.none,
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -291,12 +292,6 @@ class _ScanAmountScreenState extends State<ScanAmountScreen> {
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: _buildAppBar(context, colors),
             ),
           ],
         ),

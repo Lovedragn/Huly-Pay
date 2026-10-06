@@ -50,12 +50,17 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
   late final TextEditingController _amountController;
   late final TextEditingController _noteController;
 
+  final FocusNode _amountFocusNode = FocusNode();
+  final FocusNode _noteFocusNode = FocusNode();
+
   @override
   void initState() {
     super.initState();
     final amount = widget.upiData.amount ?? widget.initialAmount;
     _amountController = TextEditingController(
-      text: amount != null && amount > 0 ? amount.toStringAsFixed(2) : '',
+      text: amount != null && amount > 0
+          ? (amount % 1 == 0 ? amount.toInt().toString() : amount.toString())
+          : '',
     );
     _noteController = TextEditingController(text: widget.upiData.note ?? '');
 
@@ -87,6 +92,8 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
     _amountController.removeListener(_onAmountChanged);
     _amountController.dispose();
     _noteController.dispose();
+    _amountFocusNode.dispose();
+    _noteFocusNode.dispose();
     super.dispose();
   }
 
@@ -127,51 +134,55 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
 
     return Scaffold(
       backgroundColor: colors.background,
-      extendBodyBehindAppBar: true,
       appBar: _buildAppBar(colors),
       body: SafeArea(
-        top: false,
-        child: Center(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: EdgeInsets.fromLTRB(
-              24,
-              MediaQuery.of(context).padding.top + kToolbarHeight + 12,
-              24,
-              20,
-            ),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildAvatar(colors),
-                  const SizedBox(height: 16),
-                  Text(
-                    primaryTitle,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Google Sans',
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: colors.textPrimary,
-                      letterSpacing: -0.3,
+        child: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        _buildAvatar(colors),
+                        const SizedBox(height: 14),
+                        Text(
+                          primaryTitle,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Google Sans',
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                            color: colors.textPrimary,
+                            letterSpacing: -0.3,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 6),
+                        _buildSubtitleRow(colors, subtitle),
+                        const SizedBox(height: 24),
+                        _buildAmountBox(colors),
+                        const SizedBox(height: 14),
+                        _buildNoteField(colors),
+                      ],
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 6),
-                  _buildSubtitleRow(colors, subtitle),
-                  const SizedBox(height: 32),
-                  _buildAmountBox(colors),
-                  const SizedBox(height: 16),
-                  _buildNoteField(colors),
-                  const SizedBox(height: 32),
-                  _buildPayButton(colors),
-                ],
+                ),
               ),
             ),
-          ),
+
+            // Bottom Sticky Pay Button (moves up with keyboard popup)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              child: _buildPayButton(colors),
+            ),
+          ],
         ),
       ),
     );
@@ -241,7 +252,6 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
       decoration: BoxDecoration(
         color: colors.surfaceSecondary,
         shape: BoxShape.circle,
-        border: Border.all(color: colors.border, width: 1.5),
       ),
       child: Icon(Icons.storefront_rounded, color: colors.accent, size: 34),
     );
@@ -268,28 +278,12 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
         GestureDetector(
           onTap: _copyUpiId,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               color: colors.surfaceSecondary,
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: colors.border, width: 0.5),
+              shape: BoxShape.circle,
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.copy_rounded, size: 12, color: colors.accent),
-                const SizedBox(width: 4),
-                Text(
-                  'Copy',
-                  style: TextStyle(
-                    fontFamily: 'Google Sans',
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: colors.accent,
-                  ),
-                ),
-              ],
-            ),
+            child: Icon(Icons.copy_rounded, size: 13, color: colors.accent),
           ),
         ),
       ],
@@ -297,67 +291,49 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
   }
 
   Widget _buildAmountBox(AppThemeData colors) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colors.border, width: 1.2),
-      ),
-      child: Column(
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => _amountFocusNode.requestFocus(),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'PAYING AMOUNT',
+            '₹',
             style: TextStyle(
               fontFamily: 'Google Sans',
-              fontSize: 11,
+              fontSize: 40,
               fontWeight: FontWeight.w700,
-              letterSpacing: 1.2,
-              color: colors.accent,
+              color: colors.textSecondary,
             ),
           ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '₹',
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  fontSize: 34,
-                  fontWeight: FontWeight.w700,
-                  color: colors.textSecondary,
-                ),
+          IntrinsicWidth(
+            child: TextField(
+              controller: _amountController,
+              focusNode: _amountFocusNode,
+              autofocus: true,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
               ),
-              const SizedBox(width: 6),
-              Flexible(
-                child: TextField(
-                  controller: _amountController,
-                  autofocus: true,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: 'Google Sans',
-                    color: colors.textPrimary,
-                    fontSize: 40,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: '0.00',
-                    hintStyle: TextStyle(
-                      color: colors.textMuted.withValues(alpha: 0.35),
-                    ),
-                    border: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                fontFamily: 'Google Sans',
+                color: colors.textPrimary,
+                fontSize: 48,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
               ),
-            ],
+              decoration: InputDecoration(
+                hintText: '0',
+                hintStyle: TextStyle(
+                  color: colors.textMuted.withValues(alpha: 0.35),
+                ),
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
           ),
         ],
       ),
@@ -365,39 +341,42 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
   }
 
   Widget _buildNoteField(AppThemeData colors) {
-    OutlineInputBorder border(Color c, [double w = 1]) => OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: c, width: w),
-        );
-
-    return TextField(
-      controller: _noteController,
-      textInputAction: TextInputAction.done,
-      onSubmitted: (_) => _submit(),
-      textAlign: TextAlign.center,
-      style: TextStyle(
-        fontFamily: 'Google Sans',
-        color: colors.textPrimary,
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-      ),
-      decoration: InputDecoration(
-        hintText: 'Add a note (optional)',
-        hintStyle: TextStyle(color: colors.textMuted, fontSize: 13),
-        prefixIcon: Icon(
-          Icons.edit_note_rounded,
-          color: colors.accent,
-          size: 22,
-        ),
-        filled: true,
-        fillColor: colors.surface,
-        border: border(colors.border),
-        enabledBorder: border(colors.border),
-        focusedBorder: border(colors.accent, 1.5),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => _noteFocusNode.requestFocus(),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.edit_note_rounded,
+            color: colors.accent,
+            size: 20,
+          ),
+          const SizedBox(width: 6),
+          IntrinsicWidth(
+            child: TextField(
+              controller: _noteController,
+              focusNode: _noteFocusNode,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => _submit(),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Google Sans',
+                color: colors.textPrimary,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+              decoration: InputDecoration(
+                hintText: 'Add note',
+                hintStyle: TextStyle(color: colors.textMuted, fontSize: 13),
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

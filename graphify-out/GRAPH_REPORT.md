@@ -1,16 +1,16 @@
 # Graph Report - Huly.pay  (2026-10-06)
 
 ## Corpus Check
-- 197 files · ~244,178 words
+- 199 files · ~244,657 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2247 nodes · 3566 edges · 115 communities (92 shown, 18 thin omitted)
+- 2260 nodes · 3584 edges · 113 communities (89 shown, 19 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 84 edges (avg confidence: 0.81)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a997302c`
+- Built from commit: `9af9778b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -45,13 +45,13 @@
 - mvnw
 - splash_screen.dart
 - package:flutter/foundation.dart
-- scan_amount_screen.dart
+- edit_amount_sheet.dart
 - sms_filter_service.dart
 - app_update_service.dart
 - main.dart
 - external_data.dart
 - 💳 HulyPay — Next-Gen Intelligent Fintech Platform
-- _SplashScreenState
+- VoidCallback?
 - user_profile.dart
 - auth_service.dart
 - AppThemeContextExtension
@@ -61,10 +61,10 @@
 - compilerOptions
 - next.config.mjs
 - transaction_detail_components.dart
-- Transaction
+- .parse
 - TransactionResponse
 - AppThemeData
-- dashboard/page.js
+- DashboardPage
 - user_repository.dart
 - payment_methods_screen.dart
 - app_back_button.dart
@@ -84,7 +84,7 @@
 - transaction_pdf_service.dart
 - home_weekly_bar_chart.dart
 - qr_service.dart
-- edit_amount_sheet.dart
+- scan_amount_screen.dart
 - transaction_details_card.dart
 - encrypt_csv.py
 - StatelessWidget
@@ -93,8 +93,8 @@
 - AGENTS.md
 - eslint.config.mjs
 - postcss.config.mjs
-- scanner_circle_button.dart
-- react
+- String?
+- dashboard/page.js
 - payment_details_page.dart
 - ApiException
 - AppVersionControllerTests
@@ -105,23 +105,21 @@
 - rules/graphify.md
 - workflows/graphify.md
 - org.junit.jupiter.api.Test
-- PaymentModel
+- ../theme/app_theme.dart
 - org.springframework.web.bind.annotation.GetMapping
 - home_today_spend_gauge.dart
 - .decrypt
 - layout.js
 - spending_heatmap.dart
-- VoidCallback?
+- customization_bottom_sheet.dart
 - google_pay_service.dart
 - package:flutter_svg/flutter_svg.dart
 - about_hulypay_screen.dart
 - payment_dialogs.dart
-- ../data/external_data.dart
 - package:flutter/material.dart
 - AuthContext.js
-- ../theme/app_theme.dart
+- EnvelopeEncryptionServiceTests
 - Color
-- String?
 - bool?
 - qr_share_service.dart
 - dependencies
@@ -139,21 +137,21 @@
 10. `TransactionController` - 13 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `AnalyticsController` --references--> `AnalyticsService`  [EXTRACTED]
-  backend/src/main/java/com/hulypay/backend/Controllers/AnalyticsController.java → backend/src/main/java/com/hulypay/backend/Services/AnalyticsService.java
+- `loadData()` --calls--> `syncAllDashboardData()`  [EXTRACTED]
+  frontend/src/app/dashboard/page.js → frontend/src/lib/api.js
 - `AppVersionController` --references--> `MobileAppProperties`  [EXTRACTED]
   backend/src/main/java/com/hulypay/backend/Controllers/AppVersionController.java → backend/src/main/java/com/hulypay/backend/config/MobileAppProperties.java
 - `AppVersionController` --references--> `VersionComparisonService`  [EXTRACTED]
   backend/src/main/java/com/hulypay/backend/Controllers/AppVersionController.java → backend/src/main/java/com/hulypay/backend/Services/VersionComparisonService.java
 - `TransactionController` --references--> `TransactionService`  [EXTRACTED]
   backend/src/main/java/com/hulypay/backend/Controllers/TransactionController.java → backend/src/main/java/com/hulypay/backend/Services/TransactionService.java
-- `Transaction` --references--> `User`  [EXTRACTED]
-  backend/src/main/java/com/hulypay/backend/Models/Transaction.java → backend/src/main/java/com/hulypay/backend/Models/User.java
+- `AnalyticsService` --references--> `TransactionRepository`  [EXTRACTED]
+  backend/src/main/java/com/hulypay/backend/Services/AnalyticsService.java → backend/src/main/java/com/hulypay/backend/Repositories/TransactionRepository.java
 
 ## Import Cycles
 - None detected.
 
-## Communities (115 total, 18 thin omitted)
+## Communities (113 total, 19 thin omitted)
 
 ### Community 0 - "home_spend_trend_line_chart.dart"
 Cohesion: 0.09
@@ -193,18 +191,18 @@ Nodes (39): Animation, _applyData, build, _buildAvatarFallback, _buildBody, _bui
 
 ### Community 9 - "settings_screen.dart"
 Cohesion: 0.06
-Nodes (32): about_hulypay_screen.dart, help_support_screen.dart, appVersion, _avatarUrl, build, _buildGroupCard, _buildLogoutCard, _buildPreferencesSection (+24 more)
+Nodes (30): about_hulypay_screen.dart, help_support_screen.dart, appVersion, _avatarUrl, build, _buildGroupCard, _buildLogoutCard, _buildPreferencesSection (+22 more)
 
 ### Community 10 - "transactions_screen.dart"
 Cohesion: 0.08
-Nodes (24): analysis_screen.dart, _allGroups, build, _buildFilterChips, _buildHeader, _buildSearchBar, createState, dispose (+16 more)
+Nodes (24): analysis_screen.dart, home_dashboard_screen.dart, _allGroups, build, _buildFilterChips, _buildHeader, _buildSearchBar, createState (+16 more)
 
 ### Community 11 - "transaction_model.dart"
 Cohesion: 0.06
-Nodes (33): dashboard_data.dart, amount, category, copyWith, createdAt, CreatePaymentPayload, CreateTransactionPayload, currency (+25 more)
+Nodes (35): dashboard_data.dart, amount, category, copyWith, createdAt, CreatePaymentPayload, CreateTransactionPayload, currency (+27 more)
 
 ### Community 12 - "lombok.Data"
-Cohesion: 0.24
+Cohesion: 0.23
 Nodes (18): CreateTransactionRequest, TransactionReconcileRequest, TransactionSmsVerificationRequest, UpdateTransactionRequest, UpdateUserRequest, AppVersionResponse, CategoryBreakdownResponse, DailySpendingResponse (+10 more)
 
 ### Community 13 - "analysis_screen.dart"
@@ -217,7 +215,7 @@ Nodes (31): double? get, local_database_service.dart, _cachedAnalysisPeriod, _ca
 
 ### Community 15 - "scan_and_pay_screen.dart"
 Cohesion: 0.04
-Nodes (45): DateTime?, amount, build, buttonBg, buttonBorder, buttonIcon, createState, dispose (+37 more)
+Nodes (47): DateTime?, amount, build, buttonBg, buttonBorder, buttonIcon, createState, dispose (+39 more)
 
 ### Community 16 - "ThemeContext.js"
 Cohesion: 0.27
@@ -225,7 +223,7 @@ Nodes (10): ThemeToggle(), emptySubscribe(), getServerSnapshot(), getSnapshot(),
 
 ### Community 17 - "upload_qr_screen.dart"
 Cohesion: 0.08
-Nodes (23): _amountController, _amountFocusNode, build, _buildAppBar, createState, dispose, _handlePayButton, initialAmount (+15 more)
+Nodes (26): _amountController, _amountFocusNode, build, _buildAppBar, createState, dispose, _handlePayButton, initialAmount (+18 more)
 
 ### Community 18 - "SecurityConfig.java"
 Cohesion: 0.10
@@ -245,11 +243,11 @@ Nodes (27): devDependencies, babel-plugin-react-compiler, eslint, eslint-config-
 
 ### Community 22 - "org.springframework.security.oauth2.jwt.Jwt"
 Cohesion: 0.12
-Nodes (18): AnalyticsController, GetMapping, PutMapping, RequestMapping, RestController, TransactionController, GetMapping, PutMapping (+10 more)
+Nodes (17): AnalyticsController, RequestMapping, RestController, TransactionController, GetMapping, PutMapping, RequestMapping, RestController (+9 more)
 
 ### Community 23 - "User"
-Cohesion: 0.11
-Nodes (15): AllArgsConstructor, Builder, Entity, Getter, NoArgsConstructor, Setter, Table, User (+7 more)
+Cohesion: 0.09
+Nodes (22): AllArgsConstructor, Builder, Entity, Getter, NoArgsConstructor, Setter, Table, Transaction (+14 more)
 
 ### Community 24 - "api_client.dart"
 Cohesion: 0.08
@@ -264,24 +262,24 @@ Cohesion: 0.38
 Nodes (8): mvnw script, clean(), die(), exec_maven(), hash_string(), set_java_home(), trim(), verbose()
 
 ### Community 28 - "splash_screen.dart"
-Cohesion: 0.11
-Nodes (18): AnimationController, Duration, build, _controller, createState, dispose, duration, _hasLocalUser (+10 more)
+Cohesion: 0.10
+Nodes (19): AnimationController, Duration, build, _controller, createState, dispose, duration, _hasLocalUser (+11 more)
 
 ### Community 29 - "package:flutter/foundation.dart"
 Cohesion: 0.22
 Nodes (8): dart:convert, getEmail, getExpirationDate, getPayload, getSubject, isExpired, TokenValidator, package:flutter/foundation.dart
 
-### Community 30 - "scan_amount_screen.dart"
-Cohesion: 0.14
-Nodes (13): FocusNode, _amountController, _amountFocusNode, build, _buildAppBar, createState, dispose, _handleScanButton (+5 more)
+### Community 30 - "edit_amount_sheet.dart"
+Cohesion: 0.12
+Nodes (17): _addAmount, build, _buildQuickChip, _controller, createState, currentAmount, dispose, EditAmountSheet (+9 more)
 
 ### Community 31 - "sms_filter_service.dart"
 Cohesion: 0.40
 Nodes (4): financialKeywords, isFinancialTransactionSms, SmsFilterService, static const List
 
 ### Community 32 - "app_update_service.dart"
-Cohesion: 0.10
-Nodes (20): api_client.dart, AppUpdateService, checkAppVersion, currentVersion, dismissBanner, downloadUrl, forceUpdate, fromJson (+12 more)
+Cohesion: 0.06
+Nodes (30): api_client.dart, card_dialog.dart, AppUpdateInfo, AppUpdateService, checkAppVersion, currentVersion, dismissBanner, downloadUrl (+22 more)
 
 ### Community 33 - "main.dart"
 Cohesion: 0.15
@@ -295,9 +293,9 @@ Nodes (113): Acceptance of, Account, Changes to, Contact Regarding, Disclaimer o
 Cohesion: 0.07
 Nodes (29): 1. Prerequisites, 2. Clone Repository & Setup, 3. Environment Configuration, 4. Run on Android, 5. Run on iOS (macOS required), ⚙️ Backend (Spring Boot), Build for Production, Core Features (+21 more)
 
-### Community 36 - "_SplashScreenState"
-Cohesion: 0.40
-Nodes (5): SplashScreen, _SplashScreenState, _CardNotificationOverlay, _CardNotificationOverlayState, SingleTickerProviderStateMixin
+### Community 36 - "VoidCallback?"
+Cohesion: 0.22
+Nodes (8): IconData?, build, icon, label, onTap, QuickActionButton, svgAsset, VoidCallback?
 
 ### Community 37 - "user_profile.dart"
 Cohesion: 0.14
@@ -308,12 +306,12 @@ Cohesion: 0.07
 Nodes (26): AuthService, client, currentAccessToken, currentSession, currentUser, hasValidActiveToken, initialize, _initialized (+18 more)
 
 ### Community 40 - "sign_in_screen.dart"
-Cohesion: 0.09
-Nodes (21): home_dashboard_screen.dart, _authSubscription, _authTimeoutTimer, build, createState, didChangeAppLifecycleState, dispose, _finishSignIn (+13 more)
+Cohesion: 0.10
+Nodes (20): _authSubscription, _authTimeoutTimer, build, createState, didChangeAppLifecycleState, dispose, _finishSignIn, _handleGitHubSignIn (+12 more)
 
 ### Community 41 - "State"
-Cohesion: 0.12
-Nodes (24): AboutHulyPayScreen, _AboutHulyPayScreenState, AnalysisScreen, _AnalysisScreenState, HelpSupportScreen, _HelpSupportScreenState, HomeDashboardScreen, _HomeDashboardScreenState (+16 more)
+Cohesion: 0.14
+Nodes (21): AnalysisScreen, _AnalysisScreenState, HelpSupportScreen, _HelpSupportScreenState, HomeDashboardScreen, _HomeDashboardScreenState, ScanAmountScreen, _ScanAmountScreenState (+13 more)
 
 ### Community 42 - "README.md"
 Cohesion: 0.50
@@ -323,17 +321,13 @@ Nodes (3): Deploy on Vercel, Getting Started, Learn More
 Cohesion: 0.12
 Nodes (15): backgroundColor, borderColor, build, canCopy, customIcon, icon, iconColor, isPrimary (+7 more)
 
-### Community 46 - "Transaction"
-Cohesion: 0.14
-Nodes (12): AllArgsConstructor, Builder, Entity, Getter, NoArgsConstructor, Setter, Table, Transaction (+4 more)
-
 ### Community 47 - "TransactionResponse"
-Cohesion: 0.24
-Nodes (6): BadRequestException, ResourceNotFoundException, TransactionResponse, TransactionService, org.springframework.transaction.annotation.Transactional, org.springframework.web.bind.annotation.ResponseStatus
+Cohesion: 0.18
+Nodes (8): GetMapping, PutMapping, BadRequestException, ResourceNotFoundException, TransactionResponse, TransactionService, org.springframework.transaction.annotation.Transactional, org.springframework.web.bind.annotation.ResponseStatus
 
-### Community 49 - "dashboard/page.js"
-Cohesion: 0.25
-Nodes (9): DashboardPage(), handleGlobalClick(), TransactionsTable(), deleteTransaction(), DEFAULT_USER_PREFERENCES, getUserPreferences(), saveUserPreferences(), updateUserPreference() (+1 more)
+### Community 49 - "DashboardPage"
+Cohesion: 0.31
+Nodes (8): DashboardPage(), handleGlobalClick(), loadData(), DEFAULT_USER_PREFERENCES, getUserPreferences(), saveUserPreferences(), updateUserPreference(), USER_PREFERENCE_WEBSITE_KEY
 
 ### Community 50 - "user_repository.dart"
 Cohesion: 0.13
@@ -348,8 +342,8 @@ Cohesion: 0.20
 Nodes (9): AppBackButton, backgroundColor, borderColor, build, iconColor, iconSize, onPressed, tooltip (+1 more)
 
 ### Community 53 - "MaterialPageRoute"
-Cohesion: 0.20
-Nodes (10): MaterialPageRoute, _buildHeader, _openUploadQr, _openUploadFromScanner, _startSmsVerificationWorkflow, _buildAccountSection, _buildNotificationsSection, _buildSupportSection (+2 more)
+Cohesion: 0.22
+Nodes (9): MaterialPageRoute, _buildHeader, _openUploadQr, _openUploadFromScanner, _startSmsVerificationWorkflow, _buildAccountSection, _buildNotificationsSection, _buildSupportSection (+1 more)
 
 ### Community 54 - "card_dialog.dart"
 Cohesion: 0.04
@@ -365,23 +359,23 @@ Cohesion: 0.06
 Nodes (32): google_pay_service.dart, location_service.dart, app, appName, checkPreferredAppReadiness, createPendingPayment, ensureSmsPermission, generateAmountQr (+24 more)
 
 ### Community 57 - "../models/transaction_model.dart"
-Cohesion: 0.25
-Nodes (7): TransactionItem, onTap, payment, transaction, ../models/dashboard_data.dart, ../models/transaction_model.dart, ../screens/single_transaction_screen.dart
+Cohesion: 0.22
+Nodes (8): TransactionItem, build, onTap, payment, transaction, ../models/dashboard_data.dart, ../models/transaction_model.dart, ../screens/single_transaction_screen.dart
 
 ### Community 58 - "api.js"
-Cohesion: 0.19
-Nodes (17): loadData(), BackendStatusBar(), verify(), checkBackendHealth(), getCategoryBreakdown(), getDailySpending(), getExpenses(), getMonthlySpending() (+9 more)
+Cohesion: 0.21
+Nodes (16): BackendStatusBar(), verify(), checkBackendHealth(), deleteTransaction(), getCategoryBreakdown(), getDailySpending(), getExpenses(), getMonthlySpending() (+8 more)
 
 ### Community 61 - "sms_verification_dialog.dart"
 Cohesion: 0.07
 Nodes (30): _badgeText, _bodyText, build, _cancel, _close, createState, dispose, icon (+22 more)
 
 ### Community 66 - "org.springframework.stereotype.Service"
-Cohesion: 0.21
-Nodes (7): EncryptionService, EnvelopeEncryptionService, EnvelopeEncryptionServiceTests, java.security.SecureRandom, javax.crypto.SecretKey, lombok.extern.slf4j.Slf4j, org.springframework.stereotype.Service
+Cohesion: 0.26
+Nodes (8): EncryptionService, EnvelopeEncryptionService, TransactionSmsParserService, java.security.SecureRandom, java.util.regex.Pattern, javax.crypto.SecretKey, lombok.extern.slf4j.Slf4j, org.springframework.stereotype.Service
 
 ### Community 67 - "EncryptedStringConverter"
-Cohesion: 0.31
+Cohesion: 0.36
 Nodes (5): EncryptedStringConverter, jakarta.persistence.AttributeConverter, jakarta.persistence.Converter, org.springframework.stereotype.Component, Override
 
 ### Community 68 - "📱 Huly Pay — Mobile Client Setup & Development Guide"
@@ -390,7 +384,7 @@ Nodes (26): Build optimized release APK:, ⚙️ Configuration & Environment, �
 
 ### Community 69 - "transaction_map_section.dart"
 Cohesion: 0.08
-Nodes (24): accuracy, build, _buildGoogleMapContent, _buildMapFallbackCanvas, _buildStreetViewContent, _buildTab, createState, gridColor (+16 more)
+Nodes (26): accuracy, build, _buildGoogleMapContent, _buildMapFallbackCanvas, _buildStreetViewContent, _buildTab, createState, gridColor (+18 more)
 
 ### Community 70 - "transaction_pdf_service.dart"
 Cohesion: 0.18
@@ -404,9 +398,9 @@ Nodes (17): build, _buildBarChartData, _buildLegendItem, _calculateMax, _compute
 Cohesion: 0.11
 Nodes (17): dart:async, dart:ui, _cacheKey, clearCache, _debounceTimer, _fileCache, _generateInternal, getOrGenerateQrFile (+9 more)
 
-### Community 73 - "edit_amount_sheet.dart"
-Cohesion: 0.12
-Nodes (17): _addAmount, build, _buildQuickChip, _controller, createState, currentAmount, dispose, EditAmountSheet (+9 more)
+### Community 73 - "scan_amount_screen.dart"
+Cohesion: 0.13
+Nodes (14): FocusNode, _amountController, _amountFocusNode, build, _buildAppBar, createState, dispose, _handleScanButton (+6 more)
 
 ### Community 74 - "transaction_details_card.dart"
 Cohesion: 0.14
@@ -418,23 +412,23 @@ Nodes (10): decrypt_value_gcm(), derive_key(), encrypt_value_gcm(), main(), proc
 
 ### Community 76 - "StatelessWidget"
 Cohesion: 0.17
-Nodes (12): NotificationsScreen, _AmountBadge, CardDialog, CardDialogTitleIcon, RoundButton, _HeatmapGridWidget, TransactionActionButton, TransactionDetailRow (+4 more)
+Nodes (12): PrivacySecurityScreen, _AmountBadge, CardDialog, CardDialogTitleIcon, RoundButton, _HeatmapGridWidget, TransactionActionButton, TransactionDetailRow (+4 more)
 
 ### Community 78 - "features/page.js"
 Cohesion: 0.05
-Nodes (41): CIPHER_FLOW, PLAIN_FLOW, VeinTextFlow(), BellNotificationAnimation(), LockJwtAnimation(), PieChartAnimation(), EXTRA_PIXELS, MORPH_PIXELS (+33 more)
+Nodes (44): CIPHER_FLOW, PLAIN_FLOW, VeinTextFlow(), BellNotificationAnimation(), LockJwtAnimation(), PieChartAnimation(), EXTRA_PIXELS, MORPH_PIXELS (+36 more)
 
-### Community 82 - "scanner_circle_button.dart"
-Cohesion: 0.22
-Nodes (8): background, borderColor, build, child, onTap, ScannerCircleButton, tooltip, Widget?
+### Community 82 - "String?"
+Cohesion: 0.20
+Nodes (9): background, borderColor, build, child, onTap, ScannerCircleButton, tooltip, String? (+1 more)
 
-### Community 84 - "react"
-Cohesion: 0.19
-Nodes (18): react, AreaChartSpending(), chartConfig, TIMEFRAMES, BarChartMonthly(), chartConfig, PieChartCategories(), chartConfig (+10 more)
+### Community 84 - "dashboard/page.js"
+Cohesion: 0.17
+Nodes (20): react, AreaChartSpending(), chartConfig, TIMEFRAMES, BarChartMonthly(), chartConfig, PieChartCategories(), chartConfig (+12 more)
 
 ### Community 85 - "payment_details_page.dart"
-Cohesion: 0.08
-Nodes (23): amount, _amountController, build, _buildAmountBox, _buildAppBar, _buildAvatar, _buildNoteField, _buildPayButton (+15 more)
+Cohesion: 0.07
+Nodes (27): amount, _amountController, _amountFocusNode, build, _buildAmountBox, _buildAppBar, _buildAvatar, _buildNoteField (+19 more)
 
 ### Community 87 - "AppVersionControllerTests"
 Cohesion: 0.23
@@ -445,24 +439,28 @@ Cohesion: 0.14
 Nodes (14): List, AnalysisCategoryPieChart, _AnalysisCategoryPieChartState, bottomRightAction, build, centerLabel, createState, items (+6 more)
 
 ### Community 90 - "help_support_screen.dart"
-Cohesion: 0.15
-Nodes (12): build, _buildAppBar, _buildContactCard, _buildFaqItem, _buildFaqSection, _copyToClipboard, createState, _launchEmail (+4 more)
+Cohesion: 0.14
+Nodes (13): build, _buildAppBar, _buildContactCard, _buildFaqItem, _buildFaqSection, _copyToClipboard, createState, _launchEmail (+5 more)
 
 ### Community 91 - "app_theme.dart"
 Cohesion: 0.02
 Nodes (98): AppThemeData get, Brightness, Color get, ColorScheme get, LinearGradient get, accent, allPalettes, amber (+90 more)
 
 ### Community 94 - "org.junit.jupiter.api.Test"
-Cohesion: 0.15
+Cohesion: 0.14
 Nodes (12): AnalyticsControllerTests, BackendApplicationTests, ExpenseControllerTests, HealthControllerTests, PaymentControllerTests, SecurityAndUserTests, java.util.Map, org.junit.jupiter.api.Test (+4 more)
+
+### Community 95 - "../theme/app_theme.dart"
+Cohesion: 0.11
+Nodes (17): ../data/external_data.dart, build, _buildAppBar, _buildCurrentlyInDevelopmentCard, NotificationsScreen, build, _buildAppBar, _buildSectionHeader (+9 more)
 
 ### Community 96 - "org.springframework.web.bind.annotation.GetMapping"
 Cohesion: 0.21
 Nodes (10): AppVersionController, DatabaseHealthController, DatabaseHealthResponse, HealthController, HealthResponse, io.swagger.v3.oas.annotations.Operation, io.swagger.v3.oas.annotations.tags.Tag, javax.sql.DataSource (+2 more)
 
 ### Community 97 - "home_today_spend_gauge.dart"
-Cohesion: 0.10
-Nodes (20): dart:math, activeColor, build, _buildZoneIndicator, _computeTodaySpend, createState, _customLimit, dailyBudget (+12 more)
+Cohesion: 0.08
+Nodes (24): CustomPainter, dart:math, activeColor, build, _buildZoneIndicator, _computeTodaySpend, createState, _customLimit (+16 more)
 
 ### Community 99 - "layout.js"
 Cohesion: 0.13
@@ -472,9 +470,9 @@ Nodes (16): dotoFont, geistMono, geistSans, metadata, pixelifySans, SmoothScroll
 Cohesion: 0.07
 Nodes (27): build, _buildFooter, _buildGrid, _buildHeader, cells, columns, _computePeriodTotal, createState (+19 more)
 
-### Community 101 - "VoidCallback?"
-Cohesion: 0.22
-Nodes (9): build, _buildThemeOptionCard, createState, CustomizationBottomSheet, _CustomizationBottomSheetState, onThemeChanged, show, ../services/user_preferences_service.dart (+1 more)
+### Community 101 - "customization_bottom_sheet.dart"
+Cohesion: 0.25
+Nodes (8): build, _buildThemeOptionCard, createState, CustomizationBottomSheet, _CustomizationBottomSheetState, onThemeChanged, show, ../services/user_preferences_service.dart
 
 ### Community 102 - "google_pay_service.dart"
 Cohesion: 0.06
@@ -485,61 +483,49 @@ Cohesion: 0.14
 Nodes (12): activeCategory, build, CategoryPickerSheet, onSelectCategory, show, build, _buildNavItem, CustomBottomNavBar (+4 more)
 
 ### Community 104 - "about_hulypay_screen.dart"
-Cohesion: 0.14
-Nodes (13): appVersion, build, _buildAppBar, _buildCreatorSection, _buildHeroBrandCard, _buildSpecRow, _buildSpecsCard, _checkForUpdates (+5 more)
+Cohesion: 0.13
+Nodes (15): AboutHulyPayScreen, _AboutHulyPayScreenState, appVersion, build, _buildAppBar, _buildCreatorSection, _buildHeroBrandCard, _buildSpecRow (+7 more)
 
 ### Community 105 - "payment_dialogs.dart"
 Cohesion: 0.15
 Nodes (12): build, colors, false, filledDialogButton, MissingAppAction, payment, PaymentSummaryLines, result (+4 more)
 
-### Community 106 - "../data/external_data.dart"
-Cohesion: 0.20
-Nodes (9): ../data/external_data.dart, build, _buildAppBar, _buildCurrentlyInDevelopmentCard, build, _buildAppBar, _buildSectionHeader, PrivacySecurityScreen (+1 more)
-
 ### Community 107 - "package:flutter/material.dart"
-Cohesion: 0.11
-Nodes (17): Container, main, main, main, main, main, main, package:flutter/material.dart (+9 more)
+Cohesion: 0.08
+Nodes (24): Container, main, main, main, main, main, main, main (+16 more)
 
 ### Community 108 - "AuthContext.js"
-Cohesion: 0.15
-Nodes (12): LoginContent(), DashboardButton(), AuthContext, AuthProvider(), getInitialAuth(), useAuth(), getCurrentUserProfile(), signInWithGitHub() (+4 more)
-
-### Community 109 - "../theme/app_theme.dart"
-Cohesion: 0.10
-Nodes (18): card_dialog.dart, AppUpdateInfo, AppUpdateBanner, build, updateInfo, AppUpdateDialog, build, show (+10 more)
+Cohesion: 0.21
+Nodes (9): AuthContext, AuthProvider(), getInitialAuth(), getCurrentUserProfile(), signInWithGitHub(), signInWithGoogle(), signOut(), supabase (+1 more)
 
 ### Community 111 - "Color"
-Cohesion: 0.17
-Nodes (11): Color, CustomPainter, _SpeedometerGaugePainter, cornerRadius, cutoutRect, overlayColor, paint, ScannerOverlayPainter (+3 more)
-
-### Community 112 - "String?"
-Cohesion: 0.22
-Nodes (8): IconData?, build, icon, label, onTap, QuickActionButton, svgAsset, String?
+Cohesion: 0.25
+Nodes (7): Color, cornerRadius, cutoutRect, overlayColor, paint, shouldRepaint, Rect
 
 ### Community 114 - "qr_share_service.dart"
-Cohesion: 0.14
-Nodes (13): _channel, googlePayPackage, pickAndShareQrImage, pickQrImage, QrShareService, shareQrImage, _showSnackBar, _supportedImageExtensions (+5 more)
+Cohesion: 0.15
+Nodes (12): _channel, googlePayPackage, pickAndShareQrImage, pickQrImage, QrShareService, shareQrImage, _showSnackBar, _supportedImageExtensions (+4 more)
 
 ### Community 115 - "dependencies"
 Cohesion: 0.17
 Nodes (12): dependencies, clsx, gsap, @gsap/react, lenis, lucide-react, next, next-transition-router (+4 more)
 
 ## Knowledge Gaps
-- **1287 isolated node(s):** `com.hulypay:backend`, `eslintConfig`, `paths`, `nextConfig`, `name` (+1282 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1494 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **18 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **1293 isolated node(s):** `com.hulypay:backend`, `eslintConfig`, `paths`, `nextConfig`, `name` (+1288 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1505 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **19 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `PaymentRepository` connect `User` to `transaction_repository.dart`?**
-  _High betweenness centrality (0.191) - this node is a cross-community bridge._
-- **Why does `Transaction` connect `Transaction` to `EncryptedStringConverter`, `lombok.Data`, `TransactionResponse`, `User`?**
-  _High betweenness centrality (0.091) - this node is a cross-community bridge._
-- **Why does `TransactionRepository` connect `User` to `Transaction`, `TransactionResponse`?**
-  _High betweenness centrality (0.027) - this node is a cross-community bridge._
+  _High betweenness centrality (0.184) - this node is a cross-community bridge._
+- **Why does `Transaction` connect `User` to `org.springframework.stereotype.Service`, `EncryptedStringConverter`, `lombok.Data`, `.parse`, `TransactionResponse`?**
+  _High betweenness centrality (0.075) - this node is a cross-community bridge._
+- **Why does `TransactionRepository` connect `User` to `lombok.Data`, `org.springframework.security.oauth2.jwt.Jwt`, `TransactionResponse`?**
+  _High betweenness centrality (0.029) - this node is a cross-community bridge._
 - **What connects `com.hulypay:backend`, `eslintConfig`, `paths` to the rest of the system?**
-  _1287 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _1293 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `home_spend_trend_line_chart.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.08695652173913043 - nodes in this community are weakly interconnected._
 - **Should `location_service.dart` be split into smaller, more focused modules?**

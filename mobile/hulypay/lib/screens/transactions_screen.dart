@@ -288,9 +288,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 selectedIndex: 2, // Transactions active
                 onItemSelected: (index) {
                   if (index == 0) {
-                    _openHome();
-                  } else if (index == 1) {
                     _openAnalysis();
+                  } else if (index == 1) {
+                    _openHome();
                   }
                 },
               ),

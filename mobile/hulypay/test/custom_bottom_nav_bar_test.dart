@@ -131,4 +131,46 @@ void main() {
     // Reset back to Oled black
     AppThemeManager.setTheme('Oled black');
   });
+
+  testWidgets('CustomBottomNavBar ordering: Analyze left, Home center, Transactions right', (tester) async {
+    int tappedIndex = -1;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppThemeManager.getMaterialTheme('Oled black'),
+        home: Scaffold(
+          body: CustomBottomNavBar(
+            selectedIndex: 1, // Home active in center
+            onItemSelected: (index) {
+              tappedIndex = index;
+            },
+          ),
+        ),
+      ),
+    );
+
+    final gestureDetectors = find.descendant(
+      of: find.byType(CustomBottomNavBar),
+      matching: find.byType(GestureDetector),
+    );
+    expect(gestureDetectors, findsNWidgets(3));
+
+    // Verify ordering from left to right:
+    final leftX = tester.getCenter(gestureDetectors.at(0)).dx;
+    final centerX = tester.getCenter(gestureDetectors.at(1)).dx;
+    final rightX = tester.getCenter(gestureDetectors.at(2)).dx;
+    expect(leftX, lessThan(centerX));
+    expect(centerX, lessThan(rightX));
+
+    // Tap left item (Analyze)
+    await tester.tap(gestureDetectors.at(0));
+    expect(tappedIndex, 0);
+
+    // Tap center item (Home)
+    await tester.tap(gestureDetectors.at(1));
+    expect(tappedIndex, 1);
+
+    // Tap right item (Transactions)
+    await tester.tap(gestureDetectors.at(2));
+    expect(tappedIndex, 2);
+  });
 }

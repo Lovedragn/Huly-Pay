@@ -75,7 +75,7 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [navBarGradientFrom, navBarGradientMiddle, navBarGradientTo],
-    stops: const [0.0, 0.5, 1.0],
+    stops: const [0.3, 0.4, 1.0],
   );
 
   // Bottom navbar gradient

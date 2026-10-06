@@ -39,7 +39,7 @@ class HomeDashboardScreen extends StatefulWidget {
 
 class _HomeDashboardScreenState extends State<HomeDashboardScreen>
     with WidgetsBindingObserver, TickerProviderStateMixin {
-  int _selectedNavIndex = 0;
+  int _selectedNavIndex = 1;
   late DashboardData _data;
   List<PaymentModel> _payments = [];
   double _dailyLimit = 1000.0;
@@ -283,12 +283,12 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: _selectedNavIndex == 0,
+      canPop: _selectedNavIndex == 1,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
-        if (_selectedNavIndex != 0) {
+        if (_selectedNavIndex != 1) {
           setState(() {
-            _selectedNavIndex = 0;
+            _selectedNavIndex = 1;
           });
         }
       },
@@ -372,7 +372,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
                     setState(() {
                       _selectedNavIndex = index;
                     });
-                    if (index == 1) {
+                    if (index == 0) {
                       _loadRealData();
                     }
                   },
@@ -387,11 +387,11 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
 
   Widget _buildBody() {
     switch (_selectedNavIndex) {
-      case 1:
+      case 0:
         return AnalysisScreen(isEmbedded: true, initialPayments: _payments);
       case 2:
         return const TransactionsScreen(isEmbedded: true);
-      case 0:
+      case 1:
       default:
         return _buildDashboardContent();
     }
