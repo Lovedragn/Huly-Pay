@@ -26,7 +26,9 @@ class _ScanAmountScreenState extends State<ScanAmountScreen> {
     super.initState();
     _amountController = TextEditingController(
       text: widget.initialAmount != null && widget.initialAmount! > 0
-          ? widget.initialAmount!.toStringAsFixed(2)
+          ? (widget.initialAmount! % 1 == 0
+              ? widget.initialAmount!.toInt().toString()
+              : widget.initialAmount!.toString())
           : '',
     );
 
@@ -103,32 +105,40 @@ class _ScanAmountScreenState extends State<ScanAmountScreen> {
     );
   }
 
+  Widget _buildAppBar(BuildContext context, AppThemeData colors) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          const AppBackButton(),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              'Scan & Pay',
+              style: TextStyle(
+                fontFamily: 'Google Sans',
+                color: colors.textPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.4,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeManager.colors;
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: const Center(
-          child: AppBackButton(),
-        ),
-        title: Text(
-          'Scan & Pay',
-          style: TextStyle(
-            fontFamily: 'Google Sans',
-            color: colors.textPrimary,
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        centerTitle: true,
-      ),
       body: SafeArea(
         child: Column(
           children: [
+            _buildAppBar(context, colors),
             Expanded(
               child: Center(
                 child: SingleChildScrollView(
@@ -146,63 +156,47 @@ class _ScanAmountScreenState extends State<ScanAmountScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                           decoration: BoxDecoration(
                             color: colors.surface,
-                            borderRadius: BorderRadius.circular(24),
+                            borderRadius: BorderRadius.zero,
                             border: Border.all(color: colors.border, width: 1.2),
                           ),
-                          child: Column(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                'PAYING AMOUNT',
+                                '₹',
                                 style: TextStyle(
                                   fontFamily: 'Google Sans',
-                                  fontSize: 11,
+                                  fontSize: 38,
                                   fontWeight: FontWeight.w700,
-                                  letterSpacing: 1.2,
-                                  color: colors.accent,
+                                  color: colors.textSecondary,
                                 ),
                               ),
-                              const SizedBox(height: 14),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    '₹',
-                                    style: TextStyle(
-                                      fontFamily: 'Google Sans',
-                                      fontSize: 38,
-                                      fontWeight: FontWeight.w700,
-                                      color: colors.textSecondary,
-                                    ),
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: TextField(
+                                  controller: _amountController,
+                                  focusNode: _amountFocusNode,
+                                  autofocus: true,
+                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontFamily: 'Google Sans',
+                                    color: colors.textPrimary,
+                                    fontSize: 44,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: -0.5,
                                   ),
-                                  const SizedBox(width: 8),
-                                  Flexible(
-                                    child: TextField(
-                                      controller: _amountController,
-                                      focusNode: _amountFocusNode,
-                                      autofocus: true,
-                                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontFamily: 'Google Sans',
-                                        color: colors.textPrimary,
-                                        fontSize: 44,
-                                        fontWeight: FontWeight.w800,
-                                        letterSpacing: -0.5,
-                                      ),
-                                      decoration: InputDecoration(
-                                        hintText: '0.00',
-                                        hintStyle: TextStyle(
-                                          color: colors.textMuted.withValues(alpha: 0.35),
-                                        ),
-                                        border: InputBorder.none,
-                                        isDense: true,
-                                        contentPadding: EdgeInsets.zero,
-                                      ),
+                                  decoration: InputDecoration(
+                                    hintText: '0',
+                                    hintStyle: TextStyle(
+                                      color: colors.textMuted.withValues(alpha: 0.35),
                                     ),
+                                    border: InputBorder.none,
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.zero,
                                   ),
-                                ],
+                                ),
                               ),
                             ],
                           ),

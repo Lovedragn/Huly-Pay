@@ -42,7 +42,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
   int _selectedNavIndex = 0;
   late DashboardData _data;
   List<PaymentModel> _payments = [];
-  double _dailyLimit = 5000.0;
+  double _dailyLimit = 1000.0;
 
   // Scroll-aware scanner button
   final ScrollController _scrollController = ScrollController();
