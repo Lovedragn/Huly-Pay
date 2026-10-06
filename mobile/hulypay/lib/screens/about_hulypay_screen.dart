@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../data/external_data.dart';
 import '../services/app_update_service.dart';
@@ -160,7 +161,7 @@ class _AboutHulyPayScreenState extends State<AboutHulyPayScreen> {
           const SizedBox(width: 14),
           Expanded(
             child: Text(
-              'About HulyPay',
+              'About',
               style: TextStyle(
                 fontFamily: 'Google Sans',
                 color: colors.textPrimary,
@@ -182,48 +183,15 @@ class _AboutHulyPayScreenState extends State<AboutHulyPayScreen> {
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: colors.border),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            colors.surface,
-            colors.surfaceSecondary.withValues(alpha: 0.5),
-          ],
-        ),
       ),
       child: Column(
         children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: colors.surfaceSecondary,
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: colors.accent.withValues(alpha: 0.35),
-                width: 2,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: colors.accent.withValues(alpha: 0.12),
-                  blurRadius: 20,
-                  spreadRadius: 2,
-                ),
-              ],
-            ),
-            child: Center(
-              child: Image.asset(
-                'assets/logo/Logo-Dark.png',
-                width: 44,
-                height: 44,
-                errorBuilder: (context, error, stackTrace) => Icon(
-                  Icons.account_balance_wallet_rounded,
-                  color: colors.accent,
-                  size: 38,
-                ),
-              ),
-            ),
+          SvgPicture.asset(
+            colors.isDark
+                ? 'assets/logo/Logo-Dark.svg'
+                : 'assets/logo/logo-Light.svg',
+            width: 56,
+            height: 56,
           ),
           const SizedBox(height: 16),
           Text(
@@ -340,39 +308,15 @@ class _AboutHulyPayScreenState extends State<AboutHulyPayScreen> {
               ),
               child: Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: colors.accent.withValues(alpha: 0.12),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Icons.language_rounded, color: colors.accent, size: 20),
-                  ),
-                  const SizedBox(width: 12),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          ExternalData.creatorName,
-                          style: TextStyle(
-                            fontFamily: 'Google Sans',
-                            color: colors.textPrimary,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          ExternalData.creatorWebsiteDisplay,
-                          style: TextStyle(
-                            fontFamily: 'Google Sans',
-                            color: colors.accent,
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
+                    child: Text(
+                      ExternalData.creatorWebsiteDisplay,
+                      style: TextStyle(
+                        fontFamily: 'Google Sans',
+                        color: colors.accent,
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   Icon(
@@ -412,49 +356,6 @@ class _AboutHulyPayScreenState extends State<AboutHulyPayScreen> {
             if (i > 0) Divider(color: colors.divider, height: 20),
             _buildSpecRow(colors, specs[i].label, specs[i].value),
           ],
-          Divider(color: colors.divider, height: 20),
-          InkWell(
-            borderRadius: BorderRadius.circular(10),
-            onTap: _isCheckingUpdate ? null : () => _checkForUpdates(silentIfLatest: false),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.system_update_alt_rounded, color: colors.accent, size: 16),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Check for Updates',
-                        style: TextStyle(
-                          fontFamily: 'Google Sans',
-                          color: colors.accent,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (_isCheckingUpdate)
-                    SizedBox(
-                      width: 14,
-                      height: 14,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: colors.accent,
-                      ),
-                    )
-                  else
-                    Icon(
-                      Icons.chevron_right_rounded,
-                      color: colors.accent,
-                      size: 18,
-                    ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );

@@ -146,25 +146,10 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                               fontSize: 13,
                             ),
                           ),
-                          const SizedBox(height: 14),
+                          const SizedBox(height: 18),
 
-                          // Always show "Ask every time" option
-                          _buildPaymentAppCard(
-                            colors: colors,
-                            appId: 'ask_every_time',
-                            appName: 'Ask every time (Android Chooser)',
-                            subtitle: 'Show system chooser dialog on payment',
-                            isDefault: _selectedDefaultApp == 'ask_every_time',
-                            iconWidget: Icon(
-                              Icons.alt_route_rounded,
-                              color: colors.textPrimary,
-                              size: 24,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-
-                          // Dynamically build installed apps
-                          ..._buildInstalledAppsList(colors),
+                          // Dynamically build installed apps & ask_every_time in Grid / App View
+                          _buildInstalledAppsGrid(colors),
 
                           const SizedBox(height: 40),
                         ],
@@ -177,199 +162,160 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     );
   }
 
-  List<Widget> _buildInstalledAppsList(AppThemeData colors) {
+  Widget _buildInstalledAppsGrid(AppThemeData colors) {
     // Filter only apps that are installed on this device
     final installedApps = UpiApps.allApps.where((app) {
       return _installedStatus[app.packageName] == true;
     }).toList();
 
     if (installedApps.isEmpty) {
-      return [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colors.border),
-          ),
-          child: Column(
-            children: [
-              Icon(
-                Icons.account_balance_wallet_outlined,
-                color: colors.textSecondary,
-                size: 36,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'No standard UPI apps installed',
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: colors.textPrimary,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Install Google Pay, PhonePe, Paytm, or Amazon Pay to select them as your default payment app.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Google Sans',
-                  color: colors.textSecondary,
-                  fontSize: 13,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ];
-    }
-
-    return installedApps.map((app) {
-      final isDefault = _selectedDefaultApp == app.id;
-
       return Container(
-        margin: const EdgeInsets.only(bottom: 12),
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isDefault ? colors.textPrimary : colors.border,
-            width: isDefault ? 1.5 : 1.0,
-          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: colors.border),
         ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(20),
-            onTap: () => _setDefaultApp(app.id),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-              child: Row(
-                children: [
-                  Container(
-                    width: 46,
-                    height: 46,
+        child: Column(
+          children: [
+            Icon(
+              Icons.account_balance_wallet_outlined,
+              color: colors.textSecondary,
+              size: 36,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'No standard UPI apps installed',
+              style: TextStyle(
+                fontFamily: 'Google Sans',
+                color: colors.textPrimary,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Install Google Pay, PhonePe, Paytm, or Amazon Pay to select them as your default payment app.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Google Sans',
+                color: colors.textSecondary,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final isAskEveryTimeDefault = _selectedDefaultApp == 'ask_every_time';
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Wrap(
+          spacing: 16,
+          runSpacing: 16,
+          children: [
+            // "Ask every time" option as compact icon button
+            Tooltip(
+              message: 'Ask every time (Android Chooser)',
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: () => _setDefaultApp('ask_every_time'),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  width: 54,
+                  height: 54,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isAskEveryTimeDefault ? colors.accent : colors.border,
+                      width: isAskEveryTimeDefault ? 2.0 : 1.0,
+                    ),
+                    boxShadow: isAskEveryTimeDefault
+                        ? [
+                            BoxShadow(
+                              color: colors.accent.withValues(alpha: 0.25),
+                              blurRadius: 8,
+                              spreadRadius: 1,
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.alt_route_rounded,
+                      color: isAskEveryTimeDefault ? colors.accent : colors.textPrimary,
+                      size: 26,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Installed apps as compact icon buttons
+            ...installedApps.map((app) {
+              final isDefault = _selectedDefaultApp == app.id;
+
+              return Tooltip(
+                message: app.name,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () => _setDefaultApp(app.id),
+                  onLongPress: () => _launchExternalApp(app),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    width: 54,
+                    height: 54,
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: colors.surfaceSecondary,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: colors.border),
+                      color: colors.surface,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isDefault ? colors.accent : colors.border,
+                        width: isDefault ? 2.0 : 1.0,
+                      ),
+                      boxShadow: isDefault
+                          ? [
+                              BoxShadow(
+                                color: colors.accent.withValues(alpha: 0.25),
+                                blurRadius: 8,
+                                spreadRadius: 1,
+                              ),
+                            ]
+                          : null,
                     ),
                     child: Center(
                       child: app.iconPath.isNotEmpty
                           ? SvgPicture.asset(
                               app.iconPath,
-                              width: 24,
-                              height: 24,
+                              width: 28,
+                              height: 28,
                             )
                           : Icon(
                               app.id == 'paytm'
                                   ? Icons.account_balance_wallet_rounded
-                                  : (app.id == 'whatsapp' ? Icons.chat_rounded : Icons.payment_rounded),
+                                  : (app.id == 'whatsapp'
+                                      ? Icons.chat_rounded
+                                      : Icons.payment_rounded),
                               color: app.id == 'paytm'
                                   ? const Color(0xFF00BAF2)
-                                  : (app.id == 'whatsapp' ? const Color(0xFF25D366) : colors.textPrimary),
-                              size: 24,
+                                  : (app.id == 'whatsapp'
+                                      ? const Color(0xFF25D366)
+                                      : colors.textPrimary),
+                              size: 26,
                             ),
                     ),
                   ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              app.name,
-                              style: TextStyle(
-                                fontFamily: 'Google Sans',
-                                color: colors.textPrimary,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            if (isDefault) ...[
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: colors.textPrimary.withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  'DEFAULT',
-                                  style: TextStyle(
-                                    fontFamily: 'Google Sans',
-                                    color: colors.textPrimary,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                        const SizedBox(height: 3),
-                        Row(
-                          children: [
-                            Container(
-                              width: 7,
-                              height: 7,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Color(0xFF34A853),
-                              ),
-                            ),
-                            const SizedBox(width: 5),
-                            Text(
-                              'Installed',
-                              style: TextStyle(
-                                fontFamily: 'Google Sans',
-                                color: const Color(0xFF34A853),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Button to directly launch external standalone app
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    onPressed: () => _launchExternalApp(app),
-                    child: Text(
-                      'Open',
-                      style: TextStyle(
-                        fontFamily: 'Google Sans',
-                        color: colors.textPrimary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  // Radio / check selection for default
-                  Icon(
-                    isDefault ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded,
-                    color: isDefault ? colors.textPrimary : colors.textSecondary.withValues(alpha: 0.5),
-                    size: 22,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }).toList();
+                ),
+              );
+            }),
+          ],
+        );
+      },
+    );
   }
 
   Widget _buildAppBar(AppThemeData colors) {
@@ -404,112 +350,6 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         color: colors.textPrimary,
         fontSize: 15.5,
         fontWeight: FontWeight.w700,
-      ),
-    );
-  }
-
-  Widget _buildPaymentAppCard({
-    required AppThemeData colors,
-    required String appId,
-    required String appName,
-    String? subtitle,
-    required bool isDefault,
-    required Widget iconWidget,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isDefault ? colors.textPrimary : colors.border,
-          width: isDefault ? 1.5 : 1.0,
-        ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: () => _setDefaultApp(appId),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-            child: Row(
-              children: [
-                Container(
-                  width: 46,
-                  height: 46,
-                  decoration: BoxDecoration(
-                    color: colors.surfaceSecondary,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: colors.border),
-                  ),
-                  child: Center(child: iconWidget),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              appName,
-                              style: TextStyle(
-                                fontFamily: 'Google Sans',
-                                color: colors.textPrimary,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          if (isDefault) ...[
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: colors.textPrimary.withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                'DEFAULT',
-                                style: TextStyle(
-                                  fontFamily: 'Google Sans',
-                                  color: colors.textPrimary,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                      if (subtitle != null && subtitle.isNotEmpty) ...[
-                        const SizedBox(height: 3),
-                        Text(
-                          subtitle,
-                          style: TextStyle(
-                            fontFamily: 'Google Sans',
-                            color: colors.textSecondary,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Icon(
-                  isDefault ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded,
-                  color: isDefault ? colors.textPrimary : colors.textSecondary.withValues(alpha: 0.5),
-                  size: 22,
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }

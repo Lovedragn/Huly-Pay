@@ -256,22 +256,6 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(width: 6),
-                  IconButton(
-                    icon: Icon(
-                      Icons.copy_rounded,
-                      color: colors.textMuted,
-                      size: 18,
-                    ),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    tooltip: 'Copy Email',
-                    onPressed: () => _copyToClipboard(
-                      context,
-                      _supportEmail,
-                      'Email address copied to clipboard',
-                    ),
-                  ),
                   const SizedBox(width: 8),
                   Icon(
                     Icons.open_in_new_rounded,

@@ -251,8 +251,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           const SizedBox(height: 16),
                           _buildLogoutCard(),
                           const SizedBox(height: 24),
-                          _buildAppInfoFooter(),
-                          const SizedBox(height: 16),
                         ],
                       ),
                     ),
@@ -310,10 +308,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: colors.border,
-          width: 1,
-        ),
       ),
       child: Row(
         children: [
@@ -381,11 +375,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ],
             ),
-          ),
-          Icon(
-            Icons.chevron_right_rounded,
-            color: colors.textMuted,
-            size: 20,
           ),
         ],
       ),
@@ -648,44 +637,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildAppInfoFooter() {
-    final colors = AppThemeManager.colors;
-
-    return Column(
-      children: [
-        Text(
-          '${ExternalData.appName} ${widget.appVersion}',
-          style: TextStyle(
-            fontFamily: 'Google Sans',
-            color: colors.textSecondary,
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.2,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          ExternalData.appTagline,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: 'Google Sans',
-            color: colors.textMuted,
-            fontSize: 11.5,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          'Crafted by ${ExternalData.creatorName}',
-          style: TextStyle(
-            fontFamily: 'Google Sans',
-            color: colors.textMuted.withValues(alpha: 0.8),
-            fontSize: 11,
-          ),
-        ),
-      ],
     );
   }
 

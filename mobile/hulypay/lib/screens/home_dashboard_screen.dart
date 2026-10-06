@@ -10,6 +10,7 @@ import '../widgets/action_button.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import '../widgets/home_spend_trend_line_chart.dart';
 import '../widgets/home_today_spend_gauge.dart';
+import '../widgets/round_button.dart';
 import 'analysis_screen.dart';
 import 'scan_and_pay_screen.dart';
 import 'settings_screen.dart';
@@ -497,55 +498,15 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Tooltip(
-                message: 'Notifications (In Dev)',
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const NotificationsScreen(),
-                      ),
-                    );
-                  },
-                  behavior: HitTestBehavior.opaque,
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: colors.surface,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: colors.border,
-                          width: 1.5,
-                        ),
-                      ),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Icon(
-                            Icons.notifications_outlined,
-                            color: colors.textPrimary,
-                            size: 22,
-                          ),
-                          Positioned(
-                            top: 10,
-                            right: 11,
-                            child: Container(
-                              width: 7,
-                              height: 7,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFFF9500),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+              RoundButton.notification(
+                tooltip: 'Notifications (In Dev)',
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const NotificationsScreen(),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
               const SizedBox(width: 10),
               Tooltip(
