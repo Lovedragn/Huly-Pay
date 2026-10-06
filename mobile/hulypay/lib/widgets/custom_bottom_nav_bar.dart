@@ -24,17 +24,45 @@ class CustomBottomNavBar extends StatelessWidget {
             : colors.navBarBackground)
         : colors.navBarBackground;
 
-    return Padding(
-      padding: EdgeInsets.only(
-        left: 20.0,
-        right: 20.0,
-        bottom: bottomMargin,
-      ),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 440),
-          child: Container(
-            height: 64,
+    final gradientHeight = bottomMargin + 64.0 + 36.0;
+
+    return SizedBox(
+      height: gradientHeight,
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        clipBehavior: Clip.none,
+        children: [
+          // 1. Soft bottom-to-top gradient overlay below/behind the navbar
+          // Colors are managed directly in app_theme.dart (from -> to)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Container(
+                key: const Key('bottom_nav_gradient'),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      colors.navBarGradientFrom, // From (bottom)
+                      colors.navBarGradientTo,   // To (top)
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // 2. Floating navbar dock
+          Positioned(
+            left: 20.0,
+            right: 20.0,
+            bottom: bottomMargin,
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 440),
+                child: Container(
+                  key: const Key('floating_navbar_container'),
+                  height: 64,
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               color: navBarBg,
@@ -145,8 +173,11 @@ class CustomBottomNavBar extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
+    ),
+  ],
+),
+);
+}
 
   Widget _buildNavItem({
     required int index,

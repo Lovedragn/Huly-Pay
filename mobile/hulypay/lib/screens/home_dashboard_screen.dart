@@ -48,6 +48,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
   final ScrollController _scrollController = ScrollController();
   late final AnimationController _scannerAnimController;
   late final Animation<Offset> _scannerSlideAnimation;
+  late final Animation<double> _scannerFadeAnimation;
   double _lastScrollOffset = 0;
 
   @override
@@ -62,10 +63,17 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
     );
     _scannerSlideAnimation = Tween<Offset>(
       begin: Offset.zero,
-      end: const Offset(0, 2.5), // slide down out of view
+      end: const Offset(0, 1.35), // slide down cleanly under navbar dock
     ).animate(CurvedAnimation(
       parent: _scannerAnimController,
       curve: Curves.easeInOut,
+    ));
+    _scannerFadeAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(CurvedAnimation(
+      parent: _scannerAnimController,
+      curve: const Interval(0.0, 0.85, curve: Curves.easeInOut),
     ));
 
     _scrollController.addListener(_onScroll);
@@ -295,25 +303,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
                 child: _buildBody(),
               ),
 
-              // Sticky Bottom Navigation Bar
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: CustomBottomNavBar(
-                  selectedIndex: _selectedNavIndex,
-                  onItemSelected: (index) {
-                    setState(() {
-                      _selectedNavIndex = index;
-                    });
-                    if (index == 1) {
-                      _loadRealData();
-                    }
-                  },
-                ),
-              ),
-
-              // Floating Scanner Button — centered above floating bottom nav bar
+              // Floating Scanner Button — centered above floating bottom nav bar (rendered under navbar in stack)
               Positioned(
                 left: 0,
                 right: 0,
@@ -322,8 +312,20 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
                         : 16.0) +
                     64.0 +
                     14.0,
-                child: SlideTransition(
-                  position: _scannerSlideAnimation,
+                child: AnimatedBuilder(
+                  animation: _scannerAnimController,
+                  builder: (context, child) {
+                    return IgnorePointer(
+                      ignoring: _scannerAnimController.value > 0.5,
+                      child: FadeTransition(
+                        opacity: _scannerFadeAnimation,
+                        child: SlideTransition(
+                          position: _scannerSlideAnimation,
+                          child: child,
+                        ),
+                      ),
+                    );
+                  },
                   child: Center(
                     child: GestureDetector(
                       onTap: _openScanAndPay,
@@ -356,6 +358,24 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
                       ),
                     ),
                   ),
+                ),
+              ),
+
+              // Sticky Bottom Navigation Bar (rendered on top of floating scanner button)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: CustomBottomNavBar(
+                  selectedIndex: _selectedNavIndex,
+                  onItemSelected: (index) {
+                    setState(() {
+                      _selectedNavIndex = index;
+                    });
+                    if (index == 1) {
+                      _loadRealData();
+                    }
+                  },
                 ),
               ),
             ],
