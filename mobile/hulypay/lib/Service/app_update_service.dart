@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../Data/external_data.dart';
 import 'api_client.dart';
 
 class AppUpdateInfo {
@@ -58,11 +59,13 @@ class AppUpdateService {
       }
     }
 
-    // 2. Fetch installed version via package_info_plus
-    String installedVersion = '1.0.0';
+    // 2. Fetch installed version via package_info_plus (with fallback to ExternalData.defaultAppVersion)
+    String installedVersion = ExternalData.defaultAppVersion.replaceFirst(RegExp(r'^v'), '');
     try {
       final packageInfo = await PackageInfo.fromPlatform();
-      installedVersion = packageInfo.version;
+      if (packageInfo.version.trim().isNotEmpty && packageInfo.version.trim() != '1.0.0') {
+        installedVersion = packageInfo.version.trim();
+      }
     } catch (e) {
       if (kDebugMode) {
         print('AppUpdateService: Failed to read package info: $e');
