@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.ClipData
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -225,42 +226,28 @@ class MainActivity : FlutterActivity() {
                 return
             }
 
+            // Determine accurate MIME type based on file extension
+            val mimeType = when {
+                imagePath.endsWith(".png", ignoreCase = true) -> "image/png"
+                imagePath.endsWith(".jpg", ignoreCase = true) || imagePath.endsWith(".jpeg", ignoreCase = true) -> "image/jpeg"
+                imagePath.endsWith(".webp", ignoreCase = true) -> "image/webp"
+                else -> contentResolver.getType(imageUri) ?: "image/*"
+            }
+
             val sendIntent = Intent(Intent.ACTION_SEND).apply {
-                type = "image/*"
+                type = mimeType
                 putExtra(Intent.EXTRA_STREAM, imageUri)
                 if (!text.isNullOrBlank()) {
                     putExtra(Intent.EXTRA_TEXT, text)
                 }
-                clipData = ClipData.newRawUri("QR Image", imageUri)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-
-            // If a specific target package is requested and installed/available, launch directly into it
-            val resolvedTargetPackage = if (!targetPackage.isNullOrBlank() && checkAppCanReceiveImage(targetPackage)) {
-                targetPackage
-            } else {
-                null
-            }
-
-            if (resolvedTargetPackage != null) {
-                android.util.Log.d("HulyPay", "[HulyPay] Launching direct image share to package: $resolvedTargetPackage")
-                sendIntent.setPackage(resolvedTargetPackage)
-                sendIntent.addCategory(Intent.CATEGORY_DEFAULT)
-                sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
-                grantUriPermission(resolvedTargetPackage, imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                startActivity(sendIntent)
-                android.util.Log.d("HulyPay", "[HulyPay] Direct share intent launched to $resolvedTargetPackage")
-                result.success(true)
-                return
-            }
-
-            // Fallback: Open system chooser sheet if target app is not installed or not specified
-            android.util.Log.d("HulyPay", "[HulyPay] Opening Android Sharesheet with URI: $imageUri")
-            val chooser = Intent.createChooser(sendIntent, title).apply {
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                clipData = ClipData.newUri(contentResolver, "QR Image", imageUri)
+                addCategory(Intent.CATEGORY_DEFAULT)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
             }
 
             val resInfoList = packageManager.queryIntentActivities(sendIntent, PackageManager.MATCH_DEFAULT_ONLY)
+                .ifEmpty { packageManager.queryIntentActivities(sendIntent, 0) }
+
             for (resolveInfo in resInfoList) {
                 val packageName = resolveInfo.activityInfo?.packageName
                 if (packageName != null) {
@@ -270,6 +257,59 @@ class MainActivity : FlutterActivity() {
                 }
             }
 
+            val knownUpiPackages = listOf(
+                "com.google.android.apps.nbu.paisa.user",
+                "com.phonepe.app",
+                "net.one97.paytm",
+                "in.amazon.mShop.android.shopping",
+                "in.org.npci.upiapp"
+            )
+            for (pkg in knownUpiPackages) {
+                try {
+                    grantUriPermission(pkg, imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                } catch (_: Exception) {}
+            }
+
+            // If a specific default payment app package is targeted, launch it directly WITHOUT opening the Sharesheet chooser
+            if (!targetPackage.isNullOrBlank() && targetPackage != "ask_every_time") {
+                try {
+                    grantUriPermission(targetPackage, imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                } catch (_: Exception) {}
+
+                val directIntent = Intent(sendIntent)
+                val targetResolveInfo = resInfoList.firstOrNull { it.activityInfo?.packageName == targetPackage }
+
+                if (targetResolveInfo?.activityInfo != null) {
+                    val comp = ComponentName(targetResolveInfo.activityInfo.packageName, targetResolveInfo.activityInfo.name)
+                    directIntent.component = comp
+                    directIntent.setPackage(targetResolveInfo.activityInfo.packageName)
+                    android.util.Log.d("HulyPay", "[HulyPay] Directly launching default app component: ${comp.flattenToString()}")
+                } else if (targetPackage == "com.google.android.apps.nbu.paisa.user") {
+                    val gpayComp = ComponentName("com.google.android.apps.nbu.paisa.user", "com.google.nbu.paisa.flutter.gpay.app.ShareIntentFilter")
+                    directIntent.component = gpayComp
+                    directIntent.setPackage("com.google.android.apps.nbu.paisa.user")
+                    android.util.Log.d("HulyPay", "[HulyPay] Directly launching GPay ShareIntentFilter: ${gpayComp.flattenToString()}")
+                } else {
+                    directIntent.setPackage(targetPackage)
+                    android.util.Log.d("HulyPay", "[HulyPay] Directly launching target package: $targetPackage")
+                }
+
+                try {
+                    startActivity(directIntent)
+                    android.util.Log.d("HulyPay", "[HulyPay] Direct image upload succeeded to default app: $targetPackage")
+                    result.success(true)
+                    return
+                } catch (directEx: Exception) {
+                    android.util.Log.w("HulyPay", "[HulyPay] Direct app launch failed, falling back to Sharesheet chooser", directEx)
+                }
+            }
+
+            // Fallback: If no targetPackage was specified (or 'ask_every_time'), open system Sharesheet chooser
+            android.util.Log.d("HulyPay", "[HulyPay] Opening Android Sharesheet chooser with URI: $imageUri")
+            val chooser = Intent.createChooser(sendIntent, title).apply {
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
             if (sendIntent.resolveActivity(packageManager) == null && resInfoList.isEmpty()) {
                 android.util.Log.w("HulyPay", "[HulyPay] No apps found to handle image share intent")
                 result.error("NO_APPS", "No compatible application found to share the QR image", null)
@@ -277,7 +317,7 @@ class MainActivity : FlutterActivity() {
             }
 
             startActivity(chooser)
-            android.util.Log.d("HulyPay", "[HulyPay] Share intent launched")
+            android.util.Log.d("HulyPay", "[HulyPay] Share intent launched via chooser")
             result.success(true)
         } catch (e: Exception) {
             android.util.Log.e("HulyPay", "[HulyPay] Error launching share intent", e)
@@ -400,18 +440,15 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun checkAppCanReceiveImage(pkg: String): Boolean {
+    private fun checkAppCanReceiveImage(pkg: String, mimeType: String = "image/*"): Boolean {
         return try {
-            // First check if the package is installed at all
-            if (checkPackageInstalled(pkg)) return true
-
-            // Next check if package handles ACTION_SEND for image/*
             val sendIntent = Intent(Intent.ACTION_SEND).apply {
-                type = "image/*"
+                type = mimeType
                 setPackage(pkg)
             }
-            val activities = packageManager.queryIntentActivities(sendIntent, 0)
-            activities.isNotEmpty()
+            val activities = packageManager.queryIntentActivities(sendIntent, PackageManager.MATCH_DEFAULT_ONLY)
+                .ifEmpty { packageManager.queryIntentActivities(sendIntent, 0) }
+            activities.isNotEmpty() || checkPackageInstalled(pkg)
         } catch (e: Exception) {
             false
         }
