@@ -124,7 +124,7 @@ class ExternalData {
   static const String appName = 'HulyPay';
   static const String appTagline =
       'Next-Generation Intelligent Fintech Experience';
-  static const String defaultAppVersion = 'v3.1.0';
+  static const String defaultAppVersion = 'v3.8.0';
   static const String apkDownloadUrl =
       'https://github.com/Lovedragn/Huly-Pay/releases/download/$defaultAppVersion/hulypay_$defaultAppVersion.apk';
   static const String apkFilename = 'hulypay_$defaultAppVersion.apk';
