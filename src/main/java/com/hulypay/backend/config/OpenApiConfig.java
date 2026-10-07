@@ -1,4 +1,4 @@
-package com.hulypay.backend.Config;
+package com.hulypay.backend.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

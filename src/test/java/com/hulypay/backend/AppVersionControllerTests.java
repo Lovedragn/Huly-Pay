@@ -74,7 +74,8 @@ class AppVersionControllerTests {
                 .andExpect(jsonPath("$.updateAvailable").value(true))
                 .andExpect(jsonPath("$.forceUpdate").value(false))
                 .andExpect(jsonPath("$.downloadUrl").value("https://huly-pay.vercel.app/downloads/hulypay-1.2.0.apk"))
-                .andExpect(jsonPath("$.message").value("A new version of HulyPay is available."));
+                .andExpect(jsonPath("$.message").value("A new version of HulyPay is available."))
+                .andExpect(jsonPath("$.releaseNotes").isArray());
     }
 
     @Test

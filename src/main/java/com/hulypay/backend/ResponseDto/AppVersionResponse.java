@@ -1,5 +1,6 @@
 package com.hulypay.backend.ResponseDto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,4 +19,5 @@ public class AppVersionResponse {
     private boolean forceUpdate;
     private String downloadUrl;
     private String message;
+    private List<String> releaseNotes;
 }
