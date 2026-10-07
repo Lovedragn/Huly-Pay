@@ -46,6 +46,7 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+.test/
 
 # Local environment values
 .env

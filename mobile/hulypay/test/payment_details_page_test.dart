@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hulypay/services/upi_service.dart';
-import 'package:hulypay/theme/app_theme.dart';
-import 'package:hulypay/widgets/payment_details_page.dart';
+import 'package:hulypay/Service/upi_service.dart';
+import 'package:hulypay/Theme/app_theme.dart';
+import 'package:hulypay/Widget/payment_details_page.dart';
 
 void main() {
   testWidgets('PaymentDetailsPage: layout, zero gap, copy icon without text, bottom-anchored pay button', (tester) async {

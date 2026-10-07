@@ -1,0 +1,593 @@
+import 'package:flutter/material.dart';
+import '../../Model/dashboard_data.dart';
+import '../../Model/transaction_model.dart';
+import '../../Repository/transaction_repository.dart';
+import '../../Service/local_database_service.dart';
+import '../../Widget/Components/Navbar/bottom_navbar.dart';
+import '../../Widget/Transaction/transaction_tile.dart';
+import '../Analyze/analysis_screen.dart';
+import '../Home/home_dashboard_screen.dart';
+import 'single_transaction_screen.dart';
+import '../../Theme/app_theme.dart';
+
+class TransactionsScreen extends StatefulWidget {
+  final List<TransactionGroup>? initialGroups;
+  final bool isEmbedded;
+
+  const TransactionsScreen({
+    super.key,
+    this.initialGroups,
+    this.isEmbedded = false,
+  });
+
+  @override
+  State<TransactionsScreen> createState() => _TransactionsScreenState();
+}
+
+class _TransactionsScreenState extends State<TransactionsScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  int _selectedFilterIndex = 0;
+  late List<TransactionGroup> _allGroups;
+  String _searchQuery = '';
+
+  List<String> get _filters {
+    final Set<String> categories = {};
+    bool hasPending = false;
+
+    for (final group in _allGroups) {
+      for (final tx in group.transactions) {
+        if (tx.isFailed) continue;
+        if (tx.isPending) {
+          hasPending = true;
+        }
+        final cat = tx.category.trim();
+        if (cat.isNotEmpty &&
+            cat.toLowerCase() != 'failed' &&
+            cat.toLowerCase() != 'pending') {
+          // Normalize capitalization (e.g. "food" -> "Food")
+          final formatted = cat.substring(0, 1).toUpperCase() + cat.substring(1);
+          categories.add(formatted);
+        }
+      }
+    }
+
+    final List<String> list = ['All'];
+    if (hasPending) {
+      list.add('Pending');
+    }
+    final sortedCategories = categories.toList()..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    list.addAll(sortedCategories);
+    return list;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialGroups != null) {
+      _allGroups = widget.initialGroups!;
+    } else {
+      _allGroups = [];
+      _loadPayments();
+    }
+  }
+
+  List<PaymentModel> _filterActivePayments(List<PaymentModel> payments) {
+    final oneDayAgo = DateTime.now().subtract(const Duration(days: 1));
+    return payments.where((p) {
+      final s = p.status.toUpperCase();
+      // Remove failed or cancelled transactions
+      if (s == 'FAILED' || s == 'CANCELLED') return false;
+
+      // Auto delete/omit pending transactions older than 1 day
+      final isPending = s == 'PENDING' || s == 'INITIATED' || s == 'PAYMENT_INITIATED';
+      if (isPending) {
+        if (p.createdAt != null && p.createdAt!.isNotEmpty) {
+          try {
+            final dt = DateTime.parse(p.createdAt!).toLocal();
+            if (dt.isBefore(oneDayAgo)) return false;
+          } catch (_) {}
+        }
+      }
+      return true;
+    }).toList();
+  }
+
+  Future<void> _loadPayments() async {
+    // Run cleanup on local database to auto-delete stale pending (> 1 day) and failed payments
+    try {
+      await TransactionRepository().cleanupStaleTransactions();
+    } catch (_) {}
+
+    // Load category metadata overrides
+    Map<String, String> categoryOverrides = {};
+    try {
+      categoryOverrides = await LocalDatabaseService().getAllCategoryMetadata();
+    } catch (_) {}
+
+    // 1. Instantly display cached payments from SQLite
+    try {
+      final cached = await TransactionRepository().getCachedTransactions();
+      if (mounted) {
+        final activeList = _filterActivePayments(cached);
+        final sorted = List<PaymentModel>.from(activeList)
+          ..sort((a, b) {
+            final aDate = a.createdAt ?? '';
+            final bDate = b.createdAt ?? '';
+            return bDate.compareTo(aDate);
+          });
+        setState(() {
+          _allGroups = PaymentModel.groupPayments(sorted, categoryOverrides);
+          if (_selectedFilterIndex >= _filters.length) {
+            _selectedFilterIndex = 0;
+          }
+        });
+      }
+    } catch (_) {}
+
+    // 2. Fetch fresh payments from backend and update SQLite cache
+    try {
+      final payments = await TransactionRepository().getTransactions(forceRefresh: true);
+      if (!mounted) return;
+      final activeList = _filterActivePayments(payments);
+      final sorted = List<PaymentModel>.from(activeList)
+        ..sort((a, b) {
+          final aDate = a.createdAt ?? '';
+          final bDate = b.createdAt ?? '';
+          return bDate.compareTo(aDate);
+        });
+      setState(() {
+        _allGroups = PaymentModel.groupPayments(sorted, categoryOverrides);
+        if (_selectedFilterIndex >= _filters.length) {
+          _selectedFilterIndex = 0;
+        }
+      });
+    } catch (_) {
+      // Graceful fallback to cached groups
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<TransactionGroup> get _filteredGroups {
+    final filterList = _filters;
+    final selectedFilter = (_selectedFilterIndex >= 0 && _selectedFilterIndex < filterList.length)
+        ? filterList[_selectedFilterIndex]
+        : 'All';
+    final query = _searchQuery.trim().toLowerCase();
+
+    List<TransactionGroup> result = [];
+
+    for (final group in _allGroups) {
+      final filteredTx = group.transactions.where((tx) {
+        // Exclude failed transactions completely from transaction page
+        if (tx.isFailed) return false;
+
+        // Filter by category
+        bool matchesType = true;
+        if (selectedFilter == 'Pending') {
+          matchesType = tx.isPending;
+        } else if (selectedFilter != 'All') {
+          matchesType = tx.category.toLowerCase() == selectedFilter.toLowerCase() ||
+              tx.category.toLowerCase().contains(selectedFilter.toLowerCase());
+        }
+
+        // Filter by search query
+        bool matchesQuery = true;
+        if (query.isNotEmpty) {
+          matchesQuery = tx.title.toLowerCase().contains(query) ||
+              tx.category.toLowerCase().contains(query) ||
+              tx.amount.toLowerCase().contains(query);
+        }
+
+        return matchesType && matchesQuery;
+      }).toList();
+
+      if (filteredTx.isNotEmpty) {
+        result.add(TransactionGroup(
+          title: group.title,
+          transactions: filteredTx,
+        ));
+      }
+    }
+
+    return result;
+  }
+
+  void _openHome() {
+    if (Navigator.canPop(context)) {
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => const HomeDashboardScreen(),
+        ),
+      );
+    }
+  }
+
+  void _openAnalysis() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => const AnalysisScreen(),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppThemeManager.colors;
+    final groupsToDisplay = _filteredGroups;
+
+    final content = Stack(
+      children: [
+        Positioned.fill(
+          child: RefreshIndicator(
+            onRefresh: _loadPayments,
+            color: colors.accent,
+            backgroundColor: colors.surfaceSecondary,
+            displacement: 28,
+            edgeOffset: 68,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+              padding: const EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 68,
+                bottom: 124, // padding for floating bottom nav
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSearchBar(),
+                  const SizedBox(height: 18),
+                  _buildFilterChips(),
+                  const SizedBox(height: 26),
+                  _buildGroupedTransactions(groupsToDisplay),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: colors.topBarGradient,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            child: _buildHeader(),
+          ),
+        ),
+      ],
+    );
+
+    if (widget.isEmbedded) {
+      return content;
+    }
+
+    return Scaffold(
+      backgroundColor: colors.background,
+      body: SafeArea(
+        bottom: false,
+        child: Stack(
+          children: [
+            Positioned.fill(child: content),
+
+            // Bottom Navigation Bar (Transactions active)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: CustomBottomNavBar(
+                selectedIndex: 2, // Transactions active
+                onItemSelected: (index) {
+                  if (index == 0) {
+                    _openAnalysis();
+                  } else if (index == 1) {
+                    _openHome();
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    final colors = AppThemeManager.colors;
+
+    return SizedBox(
+      height: 44,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          'Transactions',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontFamily: 'Google Sans',
+            color: colors.textPrimary,
+            fontSize: 24,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.5,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    final colors = AppThemeManager.colors;
+
+    return Container(
+      height: 48,
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: colors.border,
+          width: 1,
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          Icon(
+            Icons.search_rounded,
+            color: colors.textMuted,
+            size: 20,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: TextField(
+              controller: _searchController,
+              onChanged: (val) {
+                setState(() {
+                  _searchQuery = val;
+                });
+              },
+              style: TextStyle(
+                fontFamily: 'Google Sans',
+                color: colors.textPrimary,
+                fontSize: 15,
+              ),
+              decoration: InputDecoration(
+                hintText: 'Search transactions',
+                hintStyle: TextStyle(
+                  fontFamily: 'Google Sans',
+                  color: colors.textMuted,
+                  fontSize: 15,
+                ),
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+          ),
+          if (_searchQuery.isNotEmpty)
+            GestureDetector(
+              onTap: () {
+                _searchController.clear();
+                setState(() {
+                  _searchQuery = '';
+                });
+              },
+              child: Icon(
+                Icons.close_rounded,
+                color: colors.textSecondary,
+                size: 18,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChips() {
+    final colors = AppThemeManager.colors;
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: List.generate(_filters.length, (index) {
+          final isSelected = _selectedFilterIndex == index;
+          return Padding(
+            padding: EdgeInsets.only(
+              right: index < _filters.length - 1 ? 10 : 0,
+            ),
+            child: GestureDetector(
+              key: Key('filter_chip_${_filters[index]}'),
+              onTap: () {
+                setState(() {
+                  _selectedFilterIndex = index;
+                });
+              },
+              behavior: HitTestBehavior.opaque,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: isSelected ? colors.accent : colors.surfaceSecondary,
+                  borderRadius: BorderRadius.circular(20),
+                  border: isSelected
+                      ? null
+                      : Border.all(
+                          color: colors.border,
+                          width: 1,
+                        ),
+                ),
+                child: Text(
+                  _filters[index],
+                  style: TextStyle(
+                    fontFamily: 'Google Sans',
+                    color: isSelected ? Colors.white : colors.textSecondary,
+                    fontSize: 14,
+                    fontWeight:
+                        isSelected ? FontWeight.w700 : FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildGroupedTransactions(List<TransactionGroup> groups) {
+    final colors = AppThemeManager.colors;
+
+    if (groups.isEmpty) {
+      return Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(top: 16),
+        padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 24),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: colors.border,
+            width: 1,
+          ),
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: colors.iconBackground,
+              ),
+              child: Icon(
+                Icons.receipt_long_outlined,
+                color: colors.textSecondary,
+                size: 26,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No transactions found',
+              style: TextStyle(
+                fontFamily: 'Google Sans',
+                color: colors.textPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Transactions will appear here once you make payments.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Google Sans',
+                color: colors.textSecondary,
+                fontSize: 13,
+                height: 1.4,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: groups.map((group) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                group.title,
+                style: TextStyle(
+                  fontFamily: 'Google Sans',
+                  color: colors.textMuted,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.0,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: colors.surface,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: colors.border,
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    for (int i = 0; i < group.transactions.length; i++) ...[
+                      TransactionTile(
+                        transaction: group.transactions[i],
+                        onTap: () async {
+                          final tx = group.transactions[i];
+                          final activePayment = tx.payment;
+                          final result = await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => SingleTransactionScreen(
+                                transaction: tx,
+                                payment: activePayment,
+                                paymentId: activePayment?.id ??
+                                    (tx.id.startsWith('tx_') ? null : tx.id),
+                              ),
+                            ),
+                          );
+                          if (result != null) {
+                            if (result == true) {
+                              final targetId = activePayment?.id ?? tx.id;
+                              setState(() {
+                                _allGroups = _allGroups
+                                    .map((g) {
+                                      final remaining = g.transactions.where((t) {
+                                        final tId = t.payment?.id ?? t.id;
+                                        return tId != targetId && t.id != tx.id;
+                                      }).toList();
+                                      return TransactionGroup(
+                                        title: g.title,
+                                        transactions: remaining,
+                                      );
+                                    })
+                                    .where((g) => g.transactions.isNotEmpty)
+                                    .toList();
+                              });
+                            }
+                            _loadPayments();
+                          }
+                        },
+                      ),
+                      if (i < group.transactions.length - 1)
+                        Divider(
+                          color: colors.divider,
+                          height: 1,
+                          thickness: 1,
+                          indent: 74,
+                          endIndent: 16,
+                        ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+}

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hulypay/theme/app_theme.dart';
-import 'package:hulypay/widgets/custom_bottom_nav_bar.dart';
+import 'package:hulypay/Theme/app_theme.dart';
+import 'package:hulypay/Widget/bottom_nav_bar.dart';
 
 void main() {
   testWidgets('CustomBottomNavBar renders black gradient in dark theme and slides pill smoothly', (tester) async {

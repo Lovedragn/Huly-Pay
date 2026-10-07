@@ -6,3 +6,7 @@
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
+
+# Graphify cache and outputs
+graphify-out/
+**/graphify-out/

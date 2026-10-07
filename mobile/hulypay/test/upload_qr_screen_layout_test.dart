@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hulypay/screens/upload_qr_screen.dart';
-import 'package:hulypay/screens/scan_amount_screen.dart';
-import 'package:hulypay/theme/app_theme.dart';
+import 'package:hulypay/Screen/upload_qr_screen.dart';
+import 'package:hulypay/Screen/scan_amount_screen.dart';
+import 'package:hulypay/Theme/app_theme.dart';
 
 void main() {
   testWidgets('UploadQrScreen positions AppBar at top, amount in middle, and button at bottom', (tester) async {

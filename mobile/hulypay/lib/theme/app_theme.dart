@@ -70,12 +70,16 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
   Color get cardBorder => border;
   Color get badgeBackground => surfaceSecondary;
 
-  // Flipped top gradient (from theme gradient color to transparent)
+  // Flipped top gradient (from 100% solid color at top, 60% opacity at 0.6, to 0% transparent at bottom)
   LinearGradient get topBarGradient => LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [navBarGradientFrom, navBarGradientMiddle, navBarGradientTo],
-    stops: const [0.3, 0.4, 1.0],
+    colors: [
+      background.withValues(alpha: 1.0),
+      background.withValues(alpha: 0.6),
+      background.withValues(alpha: 0.3),
+    ],
+    stops: const [0.3, 0.8, 1.0],
   );
 
   // Bottom navbar gradient
@@ -83,7 +87,7 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
     begin: Alignment.bottomCenter,
     end: Alignment.topCenter,
     colors: [navBarGradientFrom, navBarGradientMiddle, navBarGradientTo],
-    stops: const [0.0, 0.0, 1.0],
+    stops: const [0.0, 0, 1.0],
   );
 
   @override

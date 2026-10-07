@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hulypay/screens/scan_and_pay_screen.dart';
-import 'package:hulypay/theme/app_theme.dart';
+import 'package:hulypay/Screen/scan_and_pay_screen.dart';
+import 'package:hulypay/Theme/app_theme.dart';
 
 void main() {
   group('ScannerPalette', () {

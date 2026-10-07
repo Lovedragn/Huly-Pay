@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hulypay/theme/app_theme.dart';
-import 'package:hulypay/widgets/card_dialog.dart';
+import 'package:hulypay/Theme/app_theme.dart';
+import 'package:hulypay/Widget/card_dialog.dart';
 
 void main() {
   testWidgets('CardDialog renders title, icon, content, and actions', (tester) async {

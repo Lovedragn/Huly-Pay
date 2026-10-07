@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hulypay/theme/app_theme.dart';
+import 'package:hulypay/Theme/app_theme.dart';
 
 void main() {
   test('AppThemeData topBarGradient has from, middle, to with from and middle same color', () {
