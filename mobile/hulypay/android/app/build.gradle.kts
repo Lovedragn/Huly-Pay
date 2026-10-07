@@ -7,7 +7,9 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-val envFile = File(projectDir, "../../.env")
+val rootEnvFile = File(projectDir, "../../.env")
+val appEnvFile = File(projectDir, "../.env")
+val envFile = if (appEnvFile.exists()) appEnvFile else rootEnvFile
 val envProps = Properties()
 if (envFile.exists()) {
     envFile.bufferedReader().use { reader ->
@@ -22,6 +24,10 @@ if (envFile.exists()) {
 }
 
 val mapsApiKey: String = envProps.getProperty("GOOGLE_MAPS_API")
+    ?: envProps.getProperty("GOOGLE_MAPS_API_KEY")
+    ?: System.getenv("GOOGLE_MAPS_API")
+    ?: System.getenv("GOOGLE_MAPS_API_KEY")
+    ?: ""
 
 android {
     namespace = "com.hulypay.app"
