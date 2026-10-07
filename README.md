@@ -370,49 +370,28 @@ Huly-Pay/
 │       │   └── Hulypay.apk       # Latest installable release APK
 │       ├── lib/
 │       │   ├── main.dart         # App entrypoint & theme binding
-│       │   ├── data/             # Local data sources
-│       │   ├── models/           # Data models (Transaction, User, Card, Category, Expense)
-│       │   ├── repositories/     # Data abstraction layer
-│       │   ├── screens/          # App views:
-│       │   │   ├── home_dashboard_screen.dart
-│       │   │   ├── scan_and_pay_screen.dart
-│       │   │   ├── scan_amount_screen.dart
-│       │   │   ├── upload_qr_screen.dart
-│       │   │   ├── analysis_screen.dart
-│       │   │   ├── transactions_screen.dart
-│       │   │   ├── single_transaction_screen.dart
-│       │   │   ├── payment_methods_screen.dart
-│       │   │   ├── settings_screen.dart
-│       │   │   ├── notifications_screen.dart
-│       │   │   ├── privacy_security_screen.dart
-│       │   │   ├── help_support_screen.dart
-│       │   │   ├── about_hulypay_screen.dart
-│       │   │   ├── sign_in_screen.dart
+│       │   ├── Data/             # Static constants & external data
+│       │   ├── Model/            # Data models (Transaction, User, DashboardData)
+│       │   ├── Repository/       # Data abstraction layer (TransactionRepository, UserRepository)
+│       │   ├── Screen/           # App views:
+│       │   │   ├── Analyze/      # analysis_screen.dart
+│       │   │   ├── Home/         # home_dashboard_screen.dart, Payment/, Settings/, Notification/
+│       │   │   ├── Security/     # sign_in_screen.dart
+│       │   │   ├── Transaction/  # transactions_screen.dart, single_transaction_screen.dart
 │       │   │   └── splash_screen.dart
-│       │   ├── services/         # Business logic services:
-│       │   │   ├── api_client.dart
-│       │   │   ├── auth_service.dart
-│       │   │   ├── google_pay_service.dart
-│       │   │   ├── local_database_service.dart
-│       │   │   ├── location_service.dart
-│       │   │   ├── qr_share_service.dart
-│       │   │   ├── sms_filter_service.dart
-│       │   │   ├── token_validator.dart
-│       │   │   ├── upi_payment_service.dart
-│       │   │   ├── upi_service.dart
-│       │   │   └── user_preferences_service.dart
-│       │   ├── theme/            # Design tokens, color palettes, typography
-│       │   └── widgets/          # Reusable UI components:
-│       │       ├── analysis_category_pie_chart.dart
-│       │       ├── category_picker_sheet.dart
-│       │       ├── custom_bottom_nav_bar.dart
-│       │       ├── customization_bottom_sheet.dart
-│       │       ├── home_spend_trend_line_chart.dart
-│       │       ├── home_today_spend_gauge.dart
-│       │       ├── home_weekly_bar_chart.dart
-│       │       ├── spending_heatmap.dart
-│       │       ├── transaction_detail_components.dart
-│       │       └── transaction_tile.dart
+│       │   ├── Service/          # Core business services & integrations:
+│       │   │   ├── api_client.dart, auth_service.dart, google_pay_service.dart
+│       │   │   ├── local_database_service.dart, location_service.dart, qr_service.dart
+│       │   │   ├── qr_share_service.dart, scan_payment_service.dart, sms_filter_service.dart
+│       │   │   ├── token_validator.dart, transaction_pdf_service.dart
+│       │   │   └── upi_payment_service.dart, upi_service.dart, user_preferences_service.dart
+│       │   ├── Theme/            # Design tokens & color palettes (Oled black, Milk white, Red velvet)
+│       │   └── Widget/           # Reusable UI components:
+│       │       ├── Bottom_Sheet/ # bottom_sheet.dart, category_picker_sheet.dart, edit_amount_sheet.dart
+│       │       ├── Chart/        # category_pie_chart, spend_trend_line_chart, spending_heatmap, today_spend_gauge, weekly_bar_chart
+│       │       ├── Components/   # Navbar/ (bottom_navbar, navbar_switch_button), round_button
+│       │       ├── Transaction/  # payment_details_page, payment_dialogs, transaction cards & tiles
+│       │       ├── dialog.dart, sms_verification_dialog.dart, update_banner.dart
 │       └── pubspec.yaml
 │
 ├── backend/                      # Spring Boot 4 REST API (Java 21)

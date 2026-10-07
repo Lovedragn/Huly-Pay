@@ -29,38 +29,83 @@
 
 ```
 lib/
-├── data/                  # Static seed data, constants, and initial configs
-├── models/                # Dart data models (Transaction, User, PaymentMethod, VersionCheck)
-├── repositories/          # Data access layer abstracting remote and local sources
-├── screens/               # Application UI pages/views
-│   ├── splash_screen.dart             # Splash loading & auto version/update check
-│   ├── sign_in_screen.dart            # User authentication (Supabase)
-│   ├── home_dashboard_screen.dart     # Main dashboard, quick actions, balance summary
-│   ├── scan_and_pay_screen.dart       # Live camera QR scanner & UPI payment flow
-│   ├── scan_amount_screen.dart        # Amount entry & UPI app selection
-│   ├── upload_qr_screen.dart          # QR image picker & parser
-│   ├── transactions_screen.dart       # List of transactions with filters
-│   ├── single_transaction_screen.dart # Detailed receipt, map view, share receipt
-│   ├── analysis_screen.dart           # Spending analytics & visual charts
-│   ├── payment_methods_screen.dart    # Bank accounts & UPI IDs management
-│   ├── notifications_screen.dart      # In-app alerts and notifications
-│   ├── privacy_security_screen.dart   # Security preferences & privacy controls
-│   ├── settings_screen.dart           # User profile & general preferences
-│   ├── help_support_screen.dart       # Support FAQs & ticket submission
-│   └── about_hulypay_screen.dart      # Version info, changelog, credits
-├── services/              # Core business services & integrations
-│   ├── api_client.dart                # Dio HTTP client for backend REST API
-│   ├── app_update_service.dart        # Remote app version checking & update banners
-│   ├── auth_service.dart              # Supabase authentication service
-│   ├── local_database_service.dart    # SQLite DB initialization & CRUD operations
-│   ├── location_service.dart          # GPS location retrieval for transactions
-│   ├── upi_payment_service.dart       # UPI intent generation & launcher
-│   ├── upi_service.dart               # UPI string parser & validation
-│   ├── transaction_pdf_service.dart   # PDF invoice/receipt generation
-│   ├── qr_share_service.dart          # QR generation and sharing
-│   └── user_preferences_service.dart # Local settings & user preferences
-├── theme/                 # App design system, color palettes, and typography
-├── widgets/               # Reusable modular UI widgets (buttons, cards, banners, dialogs)
+├── Data/                  # Static seed data, constants, external resources
+│   └── external_data.dart
+├── Model/                 # Dart data models
+│   ├── dashboard_data.dart
+│   ├── transaction_model.dart
+│   └── user_profile.dart
+├── Repository/            # Data access layer abstracting remote and local sources
+│   ├── transaction_repository.dart
+│   └── user_repository.dart
+├── Screen/                # Application UI pages/views
+│   ├── Analyze/
+│   │   └── analysis_screen.dart           # Spending analytics & visual charts
+│   ├── Home/
+│   │   ├── home_dashboard_screen.dart     # Main dashboard, quick actions, balance summary
+│   │   ├── Notification/
+│   │   │   └── notifications_screen.dart  # In-app alerts and notifications
+│   │   ├── Payment/
+│   │   │   ├── scan_amount_screen.dart    # Amount entry & UPI app selection
+│   │   │   ├── scan_and_pay_screen.dart   # Live camera QR scanner & UPI payment flow
+│   │   │   └── upload_qr_screen.dart      # QR image picker & parser
+│   │   └── Settings/
+│   │       ├── about_hulypay_screen.dart  # Version info, changelog, credits
+│   │       ├── help_support_screen.dart   # Support FAQs & ticket submission
+│   │       ├── payment_methods_screen.dart# Bank accounts & UPI IDs management
+│   │       ├── privacy_security_screen.dart# Security preferences & privacy controls
+│   │       └── settings_screen.dart       # User profile & general preferences
+│   ├── Security/
+│   │   └── sign_in_screen.dart            # User authentication (Supabase)
+│   ├── Transaction/
+│   │   ├── single_transaction_screen.dart # Detailed receipt, map view, share receipt
+│   │   └── transactions_screen.dart       # List of transactions with filters
+│   └── splash_screen.dart                 # Splash loading & auto version/update check
+├── Service/               # Core business services & integrations
+│   ├── api_client.dart                    # Dio HTTP client for backend REST API
+│   ├── app_update_service.dart            # Remote app version checking & update banners
+│   ├── auth_service.dart                  # Supabase authentication service
+│   ├── google_pay_service.dart            # Google Pay direct integration
+│   ├── local_database_service.dart        # SQLite DB initialization & CRUD operations
+│   ├── location_service.dart              # GPS location retrieval for transactions
+│   ├── qr_service.dart                    # QR code decoding and image analysis
+│   ├── qr_share_service.dart              # QR generation and sharing
+│   ├── scan_payment_service.dart          # Payment workflow orchestration
+│   ├── sms_filter_service.dart            # Automatic SMS transaction reading
+│   ├── token_validator.dart               # JWT token validation
+│   ├── transaction_pdf_service.dart       # PDF invoice/receipt generation
+│   ├── upi_payment_service.dart           # UPI intent generation & launcher
+│   ├── upi_service.dart                   # UPI string parser & validation
+│   └── user_preferences_service.dart     # Local settings & user preferences
+├── Theme/                 # App design system, color palettes (Oled black, Milk white, Red velvet)
+│   └── app_theme.dart
+├── Widget/                # Reusable modular UI widgets
+│   ├── Bottom_Sheet/                      # Modal bottom sheets
+│   │   ├── bottom_sheet.dart              # Theme & style customization modal
+│   │   ├── category_picker_sheet.dart     # Transaction category picker
+│   │   └── edit_amount_sheet.dart         # Amount modification sheet
+│   ├── Chart/                             # Visualization charts
+│   │   ├── category_pie_chart.dart        # Donut/pie category breakdown
+│   │   ├── spend_trend_line_chart.dart    # Spending trend line chart
+│   │   ├── spending_heatmap.dart          # Daily spending heatmap
+│   │   ├── today_spend_gauge.dart         # Circular spending target gauge
+│   │   └── weekly_bar_chart.dart          # Weekly spending bar chart
+│   ├── Components/                        # Generic reusable UI primitives
+│   │   ├── Navbar/
+│   │   │   ├── bottom_navbar.dart         # Floating curved bottom navigation bar
+│   │   │   └── navbar_switch_button.dart  # Navbar mode toggle
+│   │   └── round_button.dart              # Rounded icon action buttons
+│   ├── Transaction/                       # Transaction cards & receipt widgets
+│   │   ├── payment_details_page.dart      # Payment details review screen
+│   │   ├── payment_dialogs.dart           # Payment confirmation and warning dialogs
+│   │   ├── transaction_detail_components.dart
+│   │   ├── transaction_details_card.dart  # Transaction metadata card
+│   │   ├── transaction_map_section.dart   # Interactive Google Maps section
+│   │   ├── transaction_receipt_card.dart  # Downloadable/shareable receipt card
+│   │   └── transaction_tile.dart          # List item transaction row
+│   ├── dialog.dart                        # Card-like modal dialog & toast notifications
+│   ├── sms_verification_dialog.dart       # Live SMS confirmation dialog
+│   └── update_banner.dart                 # Dynamic release update banner
 └── main.dart              # Application entrypoint & initialization
 ```
 
