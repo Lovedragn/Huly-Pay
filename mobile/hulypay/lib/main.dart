@@ -4,8 +4,10 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'Screen/Home/home_dashboard_screen.dart';
 import 'Screen/splash_screen.dart';
+import 'Service/app_update_service.dart';
 import 'Service/user_preferences_service.dart';
 import 'Theme/app_theme.dart';
+import 'Widget/update_banner.dart';
 
 Future<void> main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -45,6 +47,9 @@ class HulyPayApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!showSplash) {
+      AppUpdateService().markAppReady();
+    }
     return ValueListenableBuilder<String>(
       valueListenable: AppThemeManager.currentTheme,
       builder: (context, currentThemeName, _) {
@@ -94,6 +99,14 @@ class HulyPayApp extends StatelessWidget {
                               isAuthenticated: isAuthenticated,
                             )
                           : const HomeDashboardScreen()),
+                );
+              },
+              builder: (context, child) {
+                return Stack(
+                  children: [
+                    if (child != null) child,
+                    const AppUpdateFloatingBanner(),
+                  ],
                 );
               },
             );

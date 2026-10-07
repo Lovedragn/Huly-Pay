@@ -134,6 +134,7 @@ class _SplashScreenState extends State<SplashScreen>
     if (_navigated || !mounted) return;
     _navigated = true;
     _navigationTimer?.cancel();
+    AppUpdateService().markAppReady();
 
     // Two-step validation result: Time-valid session or cached profile -> HomeDashboardScreen; else -> SignInScreen
     final bool hasValidActiveToken = AuthService().hasValidActiveToken;

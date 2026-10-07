@@ -13,6 +13,7 @@ class AppUpdateInfo {
   final bool forceUpdate;
   final String downloadUrl;
   final String message;
+  final List<String> releaseNotes;
 
   AppUpdateInfo({
     required this.currentVersion,
@@ -22,9 +23,18 @@ class AppUpdateInfo {
     required this.forceUpdate,
     required this.downloadUrl,
     required this.message,
+    this.releaseNotes = const [],
   });
 
   factory AppUpdateInfo.fromJson(Map<String, dynamic> json) {
+    List<String> parsedNotes = [];
+    if (json['releaseNotes'] is List) {
+      parsedNotes = (json['releaseNotes'] as List)
+          .map((e) => e?.toString() ?? '')
+          .where((e) => e.trim().isNotEmpty)
+          .toList();
+    }
+
     return AppUpdateInfo(
       currentVersion: json['currentVersion']?.toString() ?? '1.0.0',
       latestVersion: json['latestVersion']?.toString() ?? '1.0.0',
@@ -33,6 +43,7 @@ class AppUpdateInfo {
       forceUpdate: json['forceUpdate'] == true,
       downloadUrl: json['downloadUrl']?.toString() ?? '',
       message: json['message']?.toString() ?? '',
+      releaseNotes: parsedNotes,
     );
   }
 }
@@ -47,6 +58,13 @@ class AppUpdateService {
 
   /// Dismissal flag for optional banner in the current session
   final ValueNotifier<bool> isBannerDismissedNotifier = ValueNotifier<bool>(false);
+
+  /// Flag indicating that the main app UI has loaded and is ready to display overlays
+  final ValueNotifier<bool> isAppReadyNotifier = ValueNotifier<bool>(false);
+
+  void markAppReady() {
+    isAppReadyNotifier.value = true;
+  }
 
   /// Triggers backend health check and version check silently on startup
   Future<AppUpdateInfo?> checkAppVersion() async {

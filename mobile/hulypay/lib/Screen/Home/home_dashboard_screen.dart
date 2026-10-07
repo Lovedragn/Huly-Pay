@@ -20,7 +20,6 @@ import 'Payment/upload_qr_screen.dart';
 import '../../Service/app_update_service.dart';
 import '../../Service/user_preferences_service.dart';
 import '../../Theme/app_theme.dart';
-import '../../Widget/update_banner.dart';
 
 class HomeDashboardScreen extends StatefulWidget {
   final DashboardData? initialData;
@@ -53,6 +52,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
   @override
   void initState() {
     super.initState();
+    AppUpdateService().markAppReady();
     WidgetsBinding.instance.addObserver(this);
     _dailyLimit = UserPreferencesService().cachedDailyLimit ?? 5000.0;
 
@@ -413,28 +413,6 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ValueListenableBuilder<AppUpdateInfo?>(
-                    valueListenable: AppUpdateService().updateInfoNotifier,
-                    builder: (context, updateInfo, _) {
-                      return ValueListenableBuilder<bool>(
-                        valueListenable: AppUpdateService().isBannerDismissedNotifier,
-                        builder: (context, isDismissed, _) {
-                          // Show banner if update is available, not dismissed, and quickScan is turned off
-                          final bool isQuickScan = UserPreferencesService().cachedQuickScan;
-                          if (updateInfo != null &&
-                              updateInfo.updateAvailable &&
-                              !isDismissed &&
-                              !isQuickScan) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12.0),
-                              child: AppUpdateBanner(updateInfo: updateInfo),
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        },
-                      );
-                    },
-                  ),
                   _buildTotalSpentCard(),
                   const SizedBox(height: 20),
                   _buildQuickActions(),

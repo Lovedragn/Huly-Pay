@@ -60,6 +60,30 @@ class RoundButton extends StatelessWidget {
     );
   }
 
+  /// Factory constructor for a standardized Close button
+  factory RoundButton.close({
+    Key? key,
+    VoidCallback? onTap,
+    String tooltip = 'Close',
+    double iconSize = 18.0,
+    double size = 44.0,
+    Color? iconColor,
+    Color? backgroundColor,
+    Color? borderColor,
+  }) {
+    return RoundButton(
+      key: key,
+      onTap: onTap,
+      icon: Icons.close_rounded,
+      tooltip: tooltip,
+      size: size,
+      iconSize: iconSize,
+      iconColor: iconColor,
+      backgroundColor: backgroundColor,
+      borderColor: borderColor,
+    );
+  }
+
   /// Factory constructor for a standardized Notification button
   factory RoundButton.notification({
     Key? key,
