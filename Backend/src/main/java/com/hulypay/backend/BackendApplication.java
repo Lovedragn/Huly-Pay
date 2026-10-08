@@ -78,6 +78,46 @@ public class BackendApplication {
                                 name VARCHAR(30) NOT NULL UNIQUE
                             )
                         """);
+                        executeSql.accept("ALTER TABLE transactions DROP CONSTRAINT IF EXISTS fk_transactions_status_name");
+                        executeSql.accept("ALTER TABLE transactions DROP CONSTRAINT IF EXISTS fk_transactions_status");
+
+                        executeSql.accept("""
+                            DO $$
+                            BEGIN
+                                IF EXISTS (SELECT 1 FROM transaction_status WHERE code = 3 AND UPPER(name) = 'CANCELLED') THEN
+                                    UPDATE transactions SET status_code = 4 WHERE status_code = 3;
+                                    UPDATE transaction_status SET code = 4 WHERE code = 3;
+                                END IF;
+
+                                INSERT INTO transaction_status (code, name) VALUES (1, 'SUCCESS') ON CONFLICT (name) DO NOTHING;
+                                INSERT INTO transaction_status (code, name) VALUES (2, 'PENDING') ON CONFLICT (name) DO NOTHING;
+                                INSERT INTO transaction_status (code, name) VALUES (3, 'FAILED') ON CONFLICT (name) DO NOTHING;
+                                INSERT INTO transaction_status (code, name) VALUES (4, 'CANCELLED') ON CONFLICT (name) DO NOTHING;
+                                INSERT INTO transaction_status (code, name) VALUES (5, 'TIMEOUT') ON CONFLICT (name) DO NOTHING;
+                                INSERT INTO transaction_status (code, name) VALUES (6, 'CONFIRMED') ON CONFLICT (name) DO NOTHING;
+                                INSERT INTO transaction_status (code, name) VALUES (7, 'SUBMITTED') ON CONFLICT (name) DO NOTHING;
+                                INSERT INTO transaction_status (code, name) VALUES (8, 'INITIATED') ON CONFLICT (name) DO NOTHING;
+
+                                IF NOT EXISTS (SELECT 1 FROM transaction_status WHERE UPPER(name) = 'FAILED') THEN
+                                    INSERT INTO transaction_status (code, name)
+                                    VALUES ((SELECT COALESCE(MAX(code), 10) + 1 FROM transaction_status), 'FAILED')
+                                    ON CONFLICT DO NOTHING;
+                                END IF;
+                            END $$;
+                        """);
+
+                        executeSql.accept("""
+                            DO $$
+                            BEGIN
+                                IF NOT EXISTS (
+                                    SELECT 1 FROM information_schema.table_constraints
+                                    WHERE constraint_name = 'fk_transactions_status' AND table_name = 'transactions'
+                                ) THEN
+                                    ALTER TABLE transactions ADD CONSTRAINT fk_transactions_status
+                                        FOREIGN KEY (status_code) REFERENCES transaction_status(code) ON DELETE RESTRICT;
+                                END IF;
+                            END $$;
+                        """);
 
                         // 4. Ensure payment_methods lookup table exists
                         executeSql.accept("""

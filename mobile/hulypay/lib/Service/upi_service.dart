@@ -39,7 +39,7 @@ class UpiPaymentData {
     // 'tid' (Terminal ID) is deprecated for mobile app intents and is reserved only for physical POS hardware.
     final ref = (transactionRef != null && transactionRef!.isNotEmpty)
         ? transactionRef!
-        : 'REF-${DateTime.now().millisecondsSinceEpoch}';
+        : 'REF_${DateTime.now().millisecondsSinceEpoch}';
     params['tr'] = ref;
 
     if (note != null && note!.isNotEmpty) {

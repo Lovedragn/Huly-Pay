@@ -38,6 +38,9 @@ public class Transaction {
     @JoinColumn(name = "merchant_id")
     private Merchant merchant;
 
+    @Column(name = "merchant_name")
+    private String merchantName;
+
     @Builder.Default
     @Column(name = "category_name")
     private String categoryName = "Others";
@@ -50,6 +53,10 @@ public class Transaction {
 
     @Column(name = "provider")
     private String provider;
+
+    @Builder.Default
+    @Column(name = "status")
+    private String status = "SUCCESS";
 
     @Builder.Default
     @Column(name = "status_code")
@@ -85,7 +92,10 @@ public class Transaction {
 
     // Convenience accessors
     public String getMerchantName() {
-        return merchant != null ? merchant.getName() : null;
+        if (merchant != null && merchant.getName() != null && !merchant.getName().isBlank()) {
+            return merchant.getName();
+        }
+        return merchantName;
     }
 
     public String getCurrency() {
@@ -105,10 +115,19 @@ public class Transaction {
     }
 
     public String getStatus() {
+        if (status != null && !status.isBlank()) {
+            return status;
+        }
         return TransactionStatusEnum.toName(statusCode);
     }
 
     public void setStatus(String status) {
-        this.statusCode = TransactionStatusEnum.toCode(status);
+        this.status = (status != null && !status.isBlank()) ? status.trim().toUpperCase() : "SUCCESS";
+        this.statusCode = TransactionStatusEnum.toCode(this.status);
+    }
+
+    public void setStatusCode(Short code) {
+        this.statusCode = code != null ? code : 1;
+        this.status = TransactionStatusEnum.toName(this.statusCode);
     }
 }

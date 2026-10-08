@@ -142,7 +142,7 @@ class UpiPaymentService {
 
     final ref = (transactionRef != null && transactionRef.trim().isNotEmpty)
         ? transactionRef.trim()
-        : 'REF-${DateTime.now().millisecondsSinceEpoch}';
+        : 'REF_${DateTime.now().millisecondsSinceEpoch}';
     queryParameters['tr'] = ref;
 
     if (transactionId != null && transactionId.trim().isNotEmpty) {

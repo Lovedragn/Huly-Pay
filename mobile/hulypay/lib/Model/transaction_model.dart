@@ -115,7 +115,45 @@ class TransactionModel {
     );
   }
 
+  /// Formats raw merchant names or UPI IDs into clean, readable merchant names.
+  /// Handles VPAs like "cafe_coffee_day@okhdfcbank" -> "Cafe Coffee Day",
+  /// "9876543210@paytm" -> "Merchant (9876543210)", etc.
+  static String formatMerchantName(String? raw) {
+    if (raw == null) return 'UPI Merchant';
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) return 'UPI Merchant';
+
+    // If it's a UPI ID / VPA handle containing '@'
+    if (trimmed.contains('@')) {
+      final handle = trimmed.split('@').first.trim();
+      if (handle.isEmpty) return 'UPI Merchant';
+
+      // If handle is a pure numeric phone number or ID
+      if (RegExp(r'^\d+$').hasMatch(handle)) {
+        return 'Merchant ($handle)';
+      }
+
+      // Replace delimiters (. _ - +) with spaces
+      final cleaned = handle.replaceAll(RegExp(r'[._\-\+]'), ' ').trim();
+      if (cleaned.isEmpty) return 'UPI Merchant';
+
+      return cleaned
+          .split(RegExp(r'\s+'))
+          .where((w) => w.isNotEmpty)
+          .map((w) => w[0].toUpperCase() + w.substring(1).toLowerCase())
+          .join(' ');
+    }
+
+    return trimmed;
+  }
+
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
+    final rawMerchant = (json['merchantName'] ?? json['merchant_name']) as String?;
+    final rawUpi = (json['upiId'] ?? json['upi_id']) as String?;
+    final resolvedMerchant = (rawMerchant != null && rawMerchant.trim().isNotEmpty)
+        ? formatMerchantName(rawMerchant)
+        : (rawUpi != null && rawUpi.trim().isNotEmpty ? formatMerchantName(rawUpi) : null);
+
     return TransactionModel(
       id: (json['id'] ?? '').toString(),
       userId: (json['userId'] ?? json['user_id']) as String?,
@@ -124,7 +162,7 @@ class TransactionModel {
       currency: (json['currency'] ?? 'INR') as String,
       upiTransactionId: (json['upiTransactionId'] ?? json['upi_transaction_id']) as String?,
       upiId: (json['upiId'] ?? json['upi_id']) as String?,
-      merchantName: (json['merchantName'] ?? json['merchant_name']) as String?,
+      merchantName: resolvedMerchant,
       category: (json['category'] as String?) ?? 'Others',
       paymentMethod: (json['paymentMethod'] ?? json['payment_method']) as String?,
       transactionReference: (json['transactionReference'] ?? json['transaction_reference']) as String?,
@@ -168,8 +206,8 @@ class TransactionModel {
 
   TransactionItem toTransactionItem({String? customCategory}) {
     final title = (merchantName != null && merchantName!.trim().isNotEmpty)
-        ? merchantName!.trim()
-        : (upiId != null && upiId!.trim().isNotEmpty ? upiId!.trim() : 'UPI Payment');
+        ? formatMerchantName(merchantName!)
+        : (upiId != null && upiId!.trim().isNotEmpty ? formatMerchantName(upiId!) : 'UPI Payment');
 
     final sUpper = status.toUpperCase();
     final bool isFailedStatus = sUpper == 'FAILED' || sUpper == 'CANCELLED';

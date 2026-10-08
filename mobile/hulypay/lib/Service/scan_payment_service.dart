@@ -44,7 +44,17 @@ class ScanPaymentService {
 
   static String get initialStatus => isQuickConfirm ? 'CONFIRMED' : 'PENDING';
 
-  static String _newTxnRef() => 'HULY${DateTime.now().millisecondsSinceEpoch}';
+  static String _newTxnRef() => 'REF_${DateTime.now().millisecondsSinceEpoch}';
+
+  /// Converts a raw UPI ID or handle into a clean, human-readable merchant name.
+  static String formatMerchantFromUpi(String upiId) {
+    return TransactionModel.formatMerchantName(upiId);
+  }
+
+  /// Formats any payee name or UPI ID into a clean merchant name.
+  static String formatMerchantName(String nameOrUpi) {
+    return TransactionModel.formatMerchantName(nameOrUpi);
+  }
 
   /// Label shown on the Pay button, e.g. "Google Pay".
   static String payButtonLabel() {
@@ -55,11 +65,12 @@ class ScanPaymentService {
     return target;
   }
 
+  /// Extracts the best available merchant name for display and persistence.
   static String merchantLabel(UpiPaymentData data) {
     final payee = data.payeeName?.trim();
-    if (payee != null && payee.isNotEmpty) return payee;
+    if (payee != null && payee.isNotEmpty) return formatMerchantName(payee);
     final upi = data.upiId.trim();
-    return upi.isNotEmpty ? upi : 'UPI Merchant';
+    return upi.isNotEmpty ? formatMerchantFromUpi(upi) : 'UPI Merchant';
   }
 
   // ---------------------------------------------------------------------------
@@ -176,6 +187,7 @@ class ScanPaymentService {
     final provider = _providerById[appId] ?? 'UPI';
     final autoCategory = await resolveAutoCategory(upiData);
     final paymentMethod = autoCategory ?? 'UPI';
+    final resolvedMerchant = merchantLabel(upiData);
 
     PaymentModel payment;
     try {
@@ -183,7 +195,7 @@ class ScanPaymentService {
         CreatePaymentPayload(
           amount: amount,
           currency: upiData.currency,
-          merchantName: upiData.payeeName,
+          merchantName: resolvedMerchant,
           upiId: upiData.upiId,
           paymentMethod: paymentMethod,
           transactionReference: txnRef,
@@ -200,7 +212,7 @@ class ScanPaymentService {
         id: 'local_${DateTime.now().millisecondsSinceEpoch}',
         amount: amount,
         currency: upiData.currency,
-        merchantName: upiData.payeeName ?? upiData.upiId,
+        merchantName: resolvedMerchant,
         upiId: upiData.upiId,
         paymentMethod: paymentMethod,
         transactionReference: txnRef,

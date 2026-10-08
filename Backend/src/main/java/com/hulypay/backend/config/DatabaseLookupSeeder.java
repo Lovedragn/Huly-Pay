@@ -102,14 +102,26 @@ public class DatabaseLookupSeeder implements CommandLineRunner {
     private void seedTransactionStatuses() {
         for (TransactionStatusEnum status : TransactionStatusEnum.values()) {
             try {
-                if (!statusRepository.existsById(status.getCode())) {
-                    statusRepository.save(TransactionStatusEntity.builder()
-                            .code(status.getCode())
-                            .name(status.getName())
-                            .build());
+                java.util.Optional<TransactionStatusEntity> existingByName = statusRepository.findByNameIgnoreCase(status.getName());
+                if (existingByName.isEmpty()) {
+                    if (!statusRepository.existsById(status.getCode())) {
+                        statusRepository.save(TransactionStatusEntity.builder()
+                                .code(status.getCode())
+                                .name(status.getName())
+                                .build());
+                    } else {
+                        short maxCode = statusRepository.findAll().stream()
+                                .map(TransactionStatusEntity::getCode)
+                                .max(Short::compareTo)
+                                .orElse((short) 10);
+                        statusRepository.save(TransactionStatusEntity.builder()
+                                .code((short) (maxCode + 1))
+                                .name(status.getName())
+                                .build());
+                    }
                 }
             } catch (Exception e) {
-                log.debug("Skipping status {}: {}", status.getName(), e.getMessage());
+                log.warn("Notice seeding status {}: {}", status.getName(), e.getMessage());
             }
         }
     }

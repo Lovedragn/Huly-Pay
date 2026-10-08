@@ -8,6 +8,7 @@ class TransactionDetailsCard extends StatelessWidget {
   final String category;
   final String transactionType;
   final String referenceId;
+  final String? upiId;
   final double latitude;
   final double longitude;
   final double? accuracy;
@@ -22,6 +23,7 @@ class TransactionDetailsCard extends StatelessWidget {
     required this.category,
     required this.transactionType,
     required this.referenceId,
+    this.upiId,
     required this.latitude,
     required this.longitude,
     this.accuracy,
@@ -112,6 +114,21 @@ class TransactionDetailsCard extends StatelessWidget {
             canCopy: true,
             onCopy: () => onCopy(referenceId, 'UPI Reference No.'),
           ),
+          if (upiId != null && upiId!.trim().isNotEmpty) ...[
+            Divider(
+              color: colors.divider,
+              height: 1,
+              thickness: 1,
+              indent: 16,
+              endIndent: 16,
+            ),
+            TransactionDetailRow(
+              label: 'Payee UPI ID',
+              value: upiId!.trim(),
+              canCopy: true,
+              onCopy: () => onCopy(upiId!.trim(), 'Payee UPI ID'),
+            ),
+          ],
           Divider(
             color: colors.divider,
             height: 1,

@@ -381,14 +381,20 @@ class LocalDatabaseService {
   }
 
   PaymentModel _mapRowToPayment(Map<String, dynamic> row) {
+    final rawMerchant = row['merchant_name'] as String?;
+    final rawUpi = row['upi_id'] as String?;
+    final resolvedMerchant = (rawMerchant != null && rawMerchant.trim().isNotEmpty)
+        ? TransactionModel.formatMerchantName(rawMerchant)
+        : (rawUpi != null && rawUpi.trim().isNotEmpty ? TransactionModel.formatMerchantName(rawUpi) : null);
+
     return PaymentModel(
       id: row['id'] as String,
       userId: row['user_id'] as String?,
       amount: (row['amount'] as num).toDouble(),
       currency: row['currency'] as String? ?? 'INR',
-      merchantName: row['merchant_name'] as String?,
+      merchantName: resolvedMerchant,
       category: (row['category'] as String?) ?? 'Others',
-      upiId: row['upi_id'] as String?,
+      upiId: rawUpi,
       paymentMethod: row['payment_method'] as String?,
       transactionReference: row['transaction_reference'] as String?,
       upiTransactionId: row['upi_transaction_id'] as String?,

@@ -124,7 +124,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
       12,
       '0',
     );
-    return 'UPI/$hash';
+    return 'REF_$hash';
   }
 
   String get _paymentMethod {
@@ -189,9 +189,9 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
   String get _merchantTitle {
     if (_currentPayment?.merchantName != null &&
         _currentPayment!.merchantName!.isNotEmpty) {
-      return _currentPayment!.merchantName!;
+      return TransactionModel.formatMerchantName(_currentPayment!.merchantName!);
     }
-    return widget.transaction.title;
+    return TransactionModel.formatMerchantName(widget.transaction.title);
   }
 
   void _copyToClipboard(BuildContext context, String text, String label) {
@@ -874,6 +874,7 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
                             category: _category,
                             transactionType: widget.transaction.type,
                             referenceId: _referenceId,
+                            upiId: _currentPayment?.upiId ?? widget.payment?.upiId,
                             latitude: _latitude,
                             longitude: _longitude,
                             accuracy: _accuracy,

@@ -210,10 +210,34 @@ class TransactionRepository {
 
   /// Create a transaction and immediately persist to local SQLite and Supabase
   Future<PaymentModel> createTransaction(CreatePaymentPayload payload) async {
+    final resolvedMerchant = (payload.merchantName != null && payload.merchantName!.trim().isNotEmpty)
+        ? TransactionModel.formatMerchantName(payload.merchantName)
+        : (payload.upiId != null && payload.upiId!.trim().isNotEmpty ? TransactionModel.formatMerchantName(payload.upiId) : 'UPI Merchant');
+    final resolvedRef = (payload.transactionReference != null && payload.transactionReference!.trim().isNotEmpty)
+        ? payload.transactionReference!.trim()
+        : 'REF_${DateTime.now().millisecondsSinceEpoch}';
+
+    final effectivePayload = CreatePaymentPayload(
+      amount: payload.amount,
+      currency: payload.currency,
+      merchantName: resolvedMerchant,
+      category: payload.category,
+      upiId: payload.upiId,
+      paymentMethod: payload.paymentMethod,
+      transactionReference: resolvedRef,
+      upiTransactionId: payload.upiTransactionId,
+      provider: payload.provider,
+      latitude: payload.latitude,
+      longitude: payload.longitude,
+      locationAccuracyMeters: payload.locationAccuracyMeters,
+      expenseId: payload.expenseId,
+      status: payload.status,
+    );
+
     // Only attempt remote API if user has a valid active token
     if (AuthService().hasValidActiveToken) {
       try {
-        final payment = await _apiClient.createPayment(payload);
+        final payment = await _apiClient.createPayment(effectivePayload);
         try {
           await _localDb.upsertPayment(payment);
         } catch (_) {}
@@ -229,20 +253,20 @@ class TransactionRepository {
         final now = DateTime.now().toUtc().toIso8601String();
         final response = await client.from('transactions').insert({
           'user_id': user.id,
-          'amount': payload.amount,
-          'currency': payload.currency,
-          'merchant_name': payload.merchantName,
-          'category': (payload.category != null && payload.category!.isNotEmpty) ? payload.category : 'Others',
-          'description': payload.merchantName ?? payload.paymentMethod,
-          'upi_id': payload.upiId,
-          'payment_method': payload.paymentMethod,
-          'transaction_reference': payload.transactionReference,
-          'upi_transaction_id': payload.upiTransactionId,
-          'status': payload.status ?? 'CONFIRMED',
-          'provider': payload.provider ?? 'GOOGLE_PAY',
-          'latitude': payload.latitude,
-          'longitude': payload.longitude,
-          'location_accuracy_meters': payload.locationAccuracyMeters,
+          'amount': effectivePayload.amount,
+          'currency': effectivePayload.currency,
+          'merchant_name': resolvedMerchant,
+          'category': (effectivePayload.category != null && effectivePayload.category!.isNotEmpty) ? effectivePayload.category : 'Others',
+          'description': resolvedMerchant,
+          'upi_id': effectivePayload.upiId,
+          'payment_method': effectivePayload.paymentMethod,
+          'transaction_reference': resolvedRef,
+          'upi_transaction_id': effectivePayload.upiTransactionId,
+          'status': effectivePayload.status ?? 'CONFIRMED',
+          'provider': effectivePayload.provider ?? 'GOOGLE_PAY',
+          'latitude': effectivePayload.latitude,
+          'longitude': effectivePayload.longitude,
+          'location_accuracy_meters': effectivePayload.locationAccuracyMeters,
           'transaction_time': now,
           'created_at': now,
           'updated_at': now,
@@ -256,18 +280,18 @@ class TransactionRepository {
     // Offline / connection fallback: save locally so the user payment flow is never blocked
     final localPayment = PaymentModel(
       id: 'local_${DateTime.now().millisecondsSinceEpoch}',
-      amount: payload.amount,
-      currency: payload.currency,
-      merchantName: payload.merchantName,
-      upiId: payload.upiId,
-      paymentMethod: payload.paymentMethod,
-      transactionReference: payload.transactionReference,
-      upiTransactionId: payload.upiTransactionId,
-      status: payload.status ?? 'CONFIRMED',
-      provider: payload.provider ?? 'GOOGLE_PAY',
-      latitude: payload.latitude,
-      longitude: payload.longitude,
-      locationAccuracyMeters: payload.locationAccuracyMeters,
+      amount: effectivePayload.amount,
+      currency: effectivePayload.currency,
+      merchantName: resolvedMerchant,
+      upiId: effectivePayload.upiId,
+      paymentMethod: effectivePayload.paymentMethod,
+      transactionReference: resolvedRef,
+      upiTransactionId: effectivePayload.upiTransactionId,
+      status: effectivePayload.status ?? 'CONFIRMED',
+      provider: effectivePayload.provider ?? 'GOOGLE_PAY',
+      latitude: effectivePayload.latitude,
+      longitude: effectivePayload.longitude,
+      locationAccuracyMeters: effectivePayload.locationAccuracyMeters,
       createdAt: DateTime.now().toIso8601String(),
       updatedAt: DateTime.now().toIso8601String(),
     );

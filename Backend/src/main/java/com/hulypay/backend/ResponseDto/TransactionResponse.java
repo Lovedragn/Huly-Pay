@@ -55,7 +55,7 @@ public class TransactionResponse {
                 .amount(transaction.getAmount())
                 .currency(transaction.getCurrency())
                 .merchantId(transaction.getMerchant() != null ? transaction.getMerchant().getId() : null)
-                .merchantName(transaction.getMerchant() != null ? transaction.getMerchant().getName() : null)
+                .merchantName(transaction.getMerchantName())
                 .category(transaction.getCategory())
                 .description(transaction.getDescription())
                 .paymentMethod(transaction.getPaymentMethod())

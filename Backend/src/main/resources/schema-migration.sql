@@ -1,143 +1,171 @@
--- ==============================================================================
--- HulyPay Complete Supabase / PostgreSQL Schema Migration & Setup Script
--- Compatible with: Supabase SQL Editor, Spring Boot JPA, Next.js Web, & Flutter App
--- ==============================================================================
+-- HulyPay database schema
 
--- 0. Enable UUID & Crypto Extensions
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 
--- ==============================================================================
--- 1. USERS TABLE
--- ==============================================================================
-CREATE TABLE IF NOT EXISTS users (
-    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    email             VARCHAR(255) UNIQUE,
-    full_name         TEXT,
-    first_name        TEXT,
-    last_name         TEXT,
-    phone_number      TEXT,
-    avatar_url        TEXT,
-    auth_provider     VARCHAR(50) DEFAULT 'email',
-    provider_subject  TEXT,
-    active            BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+-- Users
+
+CREATE TABLE IF NOT EXISTS public.users (
+    id UUID NOT NULL DEFAULT gen_random_uuid(),
+    email VARCHAR(255) UNIQUE,
+    full_name TEXT,
+    first_name TEXT,
+    last_name TEXT,
+    phone_number TEXT,
+    avatar_url TEXT,
+    auth_provider VARCHAR(50) DEFAULT 'email',
+    provider_subject TEXT,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT users_pkey PRIMARY KEY (id)
 );
 
-
--- ==============================================================================
--- 2. LOOKUP TABLES: CURRENCIES, CATEGORIES, TRANSACTION_STATUS, PAYMENT_METHODS
--- ==============================================================================
-
--- Currencies
-CREATE TABLE IF NOT EXISTS currencies (
-    code      CHAR(3) PRIMARY KEY,
-    symbol    VARCHAR(5) NOT NULL
-);
-
--- Categories
-CREATE TABLE IF NOT EXISTS categories (
-    name      VARCHAR(100) PRIMARY KEY
-);
-
--- Transaction Status (Table for Spring Boot entity & lookup)
-CREATE TABLE IF NOT EXISTS transaction_status (
-    code      SMALLINT PRIMARY KEY,
-    name      VARCHAR(30) NOT NULL UNIQUE
-);
-
--- Payment Methods (Composite key: method, provider)
-CREATE TABLE IF NOT EXISTS payment_methods (
-    method    VARCHAR(100) NOT NULL,
-    provider  VARCHAR(100) NOT NULL,
-    PRIMARY KEY (method, provider)
-);
 
 -- Merchants
-CREATE TABLE IF NOT EXISTS merchants (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name        VARCHAR(255) NOT NULL UNIQUE,
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+
+CREATE TABLE IF NOT EXISTS public.merchants (
+    id UUID NOT NULL DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT merchants_pkey PRIMARY KEY (id)
 );
 
 
--- ==============================================================================
--- 3. TRANSACTIONS TABLE
--- ==============================================================================
-CREATE TABLE IF NOT EXISTS transactions (
-    id                         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id                    UUID NOT NULL,
+-- Categories
 
-    -- Amount & Currency
-    amount                     NUMERIC(12,2) NOT NULL,
-    currency_code              CHAR(3) NOT NULL DEFAULT 'INR',
-    currency                   VARCHAR(10) DEFAULT 'INR',
+CREATE TABLE IF NOT EXISTS public.categories (
+    name VARCHAR(100) NOT NULL,
+    CONSTRAINT categories_pkey PRIMARY KEY (name)
+);
 
-    -- Merchant & Category
-    merchant_id                UUID,
-    merchant_name              VARCHAR(255),
-    category_name              VARCHAR(100) DEFAULT 'Others',
-    category                   VARCHAR(100) DEFAULT 'Others',
 
-    -- Payment Method & Provider
-    payment_method             VARCHAR(100),
-    provider                   VARCHAR(100),
+-- Currencies: only INR and USD
 
-    -- Status
-    status_code                SMALLINT NOT NULL DEFAULT 1,
-    status                     VARCHAR(50) DEFAULT 'SUCCESS',
+CREATE TABLE IF NOT EXISTS public.currencies (
+    code VARCHAR(3) NOT NULL,
+    symbol VARCHAR(10) NOT NULL UNIQUE,
+    CONSTRAINT currencies_pkey PRIMARY KEY (code),
+    CONSTRAINT currencies_code_check CHECK (code IN ('INR', 'USD')),
+    CONSTRAINT currencies_symbol_check CHECK (symbol IN ('₹', '$'))
+);
 
-    -- References & Details
-    description                TEXT,
-    upi_transaction_id         TEXT,
-    transaction_reference      TEXT,
-    upi_id                     TEXT,
 
-    -- Location
-    latitude                   DOUBLE PRECISION,
-    longitude                  DOUBLE PRECISION,
-    location_accuracy_meters   DOUBLE PRECISION,
+-- Transaction statuses
 
-    -- Timestamps
-    transaction_time           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    created_at                 TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at                 TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+CREATE TABLE IF NOT EXISTS public.transaction_status (
+    name VARCHAR(30) NOT NULL,
+    CONSTRAINT transaction_status_pkey PRIMARY KEY (name)
+);
 
-    -- Constraints
+
+-- Payment methods
+
+CREATE TABLE IF NOT EXISTS public.payment_methods (
+    method VARCHAR(100) NOT NULL,
+    provider VARCHAR(100) NOT NULL,
+    CONSTRAINT payment_methods_pkey PRIMARY KEY (method, provider)
+);
+
+
+-- Transactions
+
+CREATE TABLE IF NOT EXISTS public.transactions (
+    id UUID NOT NULL DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,
+    amount NUMERIC(12,2) NOT NULL,
+    currency VARCHAR(10) NOT NULL DEFAULT '₹',
+    merchant_name VARCHAR(255),
+    category VARCHAR(100) NOT NULL DEFAULT 'Others',
+    description TEXT,
+    payment_method VARCHAR(100),
+    provider VARCHAR(100),
+    status VARCHAR(30) NOT NULL DEFAULT 'SUCCESS',
+    upi_transaction_id TEXT,
+    transaction_reference TEXT,
+    upi_id TEXT,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
+    location_accuracy_meters DOUBLE PRECISION,
+    transaction_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT transactions_pkey PRIMARY KEY (id),
+
     CONSTRAINT fk_transactions_user
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_transactions_currency
-        FOREIGN KEY (currency_code) REFERENCES currencies(code) ON DELETE RESTRICT,
+        FOREIGN KEY (user_id)
+        REFERENCES public.users(id)
+        ON DELETE CASCADE,
+
     CONSTRAINT fk_transactions_merchant
-        FOREIGN KEY (merchant_id) REFERENCES merchants(id) ON DELETE SET NULL,
+        FOREIGN KEY (merchant_name)
+        REFERENCES public.merchants(name)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+
     CONSTRAINT fk_transactions_category
-        FOREIGN KEY (category_name) REFERENCES categories(name) ON DELETE SET NULL,
+        FOREIGN KEY (category)
+        REFERENCES public.categories(name)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_transactions_currency
+        FOREIGN KEY (currency)
+        REFERENCES public.currencies(symbol)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
     CONSTRAINT fk_transactions_status
-        FOREIGN KEY (status_code) REFERENCES transaction_status(code) ON DELETE RESTRICT
+        FOREIGN KEY (status)
+        REFERENCES public.transaction_status(name)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_transactions_payment_method
+        FOREIGN KEY (payment_method, provider)
+        REFERENCES public.payment_methods(method, provider)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    CONSTRAINT transactions_amount_check
+        CHECK (amount >= 0),
+
+    CONSTRAINT transactions_currency_check
+        CHECK (currency IN ('₹', '$')),
+
+    CONSTRAINT transactions_latitude_check
+        CHECK (
+            latitude IS NULL
+            OR latitude BETWEEN -90 AND 90
+        ),
+
+    CONSTRAINT transactions_longitude_check
+        CHECK (
+            longitude IS NULL
+            OR longitude BETWEEN -180 AND 180
+        ),
+
+    CONSTRAINT transactions_accuracy_check
+        CHECK (
+            location_accuracy_meters IS NULL
+            OR location_accuracy_meters >= 0
+        )
 );
 
 
--- ==============================================================================
--- 4. CLEAN UP LEGACY TABLES IF THEY EXIST
--- ==============================================================================
-DROP TABLE IF EXISTS payments CASCADE;
-DROP TABLE IF EXISTS expenses CASCADE;
+-- Supported currencies
 
-
--- ==============================================================================
--- 5. SEED DEFAULT DATA
--- ==============================================================================
-
--- Seed Currencies (Only INR and USD)
-INSERT INTO currencies (code, symbol)
+INSERT INTO public.currencies (code, symbol)
 VALUES
     ('INR', '₹'),
     ('USD', '$')
 ON CONFLICT (code) DO NOTHING;
 
--- Seed Categories
-INSERT INTO categories (name)
+
+-- Categories
+
+INSERT INTO public.categories (name)
 VALUES
     ('Food & Dining'),
     ('Groceries'),
@@ -152,268 +180,265 @@ VALUES
     ('Others')
 ON CONFLICT (name) DO NOTHING;
 
--- Seed Transaction Status Codes
-INSERT INTO transaction_status (code, name)
+
+-- Transaction statuses
+
+INSERT INTO public.transaction_status (name)
 VALUES
-    (1, 'SUCCESS'),
-    (2, 'PENDING'),
-    (3, 'CANCELLED'),
+    ('SUCCESS'),
+    ('PENDING'),
+    ('FAILED'),
+    ('CANCELLED'),
+    ('TIMEOUT'),
+    ('CONFIRMED'),
+    ('SUBMITTED'),
+    ('INITIATED')
+ON CONFLICT (name) DO NOTHING;
 
-ON CONFLICT (code) DO NOTHING;
 
--- Seed Standard Payment Methods
-INSERT INTO payment_methods (method, provider)
+-- Payment methods
+
+INSERT INTO public.payment_methods (method, provider)
 VALUES
     ('UPI', 'GOOGLE_PAY'),
     ('UPI', 'BHIM'),
     ('UPI', 'AMAZON_PAY'),
     ('UPI', 'WHATSAPP_PAY'),
-    
     ('DEBIT_CARD', 'BANK'),
     ('CREDIT_CARD', 'BANK'),
     ('NET_BANKING', 'BANK'),
-
     ('CASH', 'MANUAL'),
-
     ('OTHER', 'OTHER')
 ON CONFLICT (method, provider) DO NOTHING;
 
 
--- ==============================================================================
--- 6. AUTOMATIC SYNCHRONIZATION TRIGGER (BRIDGES MOBILE, WEB & BACKEND)
--- ==============================================================================
-CREATE OR REPLACE FUNCTION sync_transaction_fields()
-RETURNS TRIGGER AS $$
-BEGIN
-    -- 1. Merchant sync (find or auto-create merchant by name)
-    IF NEW.merchant_name IS NOT NULL AND TRIM(NEW.merchant_name) <> '' THEN
-        INSERT INTO merchants (id, name)
-        VALUES (gen_random_uuid(), TRIM(NEW.merchant_name))
-        ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
-        RETURNING id INTO NEW.merchant_id;
-    ELSIF NEW.merchant_id IS NOT NULL AND (NEW.merchant_name IS NULL OR TRIM(NEW.merchant_name) = '') THEN
-        SELECT name INTO NEW.merchant_name FROM merchants WHERE id = NEW.merchant_id;
-    END IF;
+-- Indexes
 
-    -- 2. Category sync
-    IF NEW.category_name IS NOT NULL AND TRIM(NEW.category_name) <> '' THEN
-        NEW.category = NEW.category_name;
-    ELSIF NEW.category IS NOT NULL AND TRIM(NEW.category) <> '' THEN
-        NEW.category_name = NEW.category;
-    ELSE
-        NEW.category_name = 'Others';
-        NEW.category = 'Others';
-    END IF;
+CREATE INDEX IF NOT EXISTS idx_users_email
+ON public.users(email);
 
-    -- Ensure category exists in lookup
-    IF NEW.category_name IS NOT NULL THEN
-        INSERT INTO categories (name) VALUES (NEW.category_name) ON CONFLICT (name) DO NOTHING;
-    END IF;
+CREATE INDEX IF NOT EXISTS idx_transactions_user_id
+ON public.transactions(user_id);
 
-    -- 3. Currency sync
-    IF NEW.currency_code IS NOT NULL AND TRIM(NEW.currency_code) <> '' THEN
-        NEW.currency_code = UPPER(TRIM(NEW.currency_code));
-        NEW.currency = NEW.currency_code;
-    ELSIF NEW.currency IS NOT NULL AND TRIM(NEW.currency) <> '' THEN
-        NEW.currency_code = UPPER(TRIM(NEW.currency));
-        NEW.currency = NEW.currency_code;
-    ELSE
-        NEW.currency_code = 'INR';
-        NEW.currency = 'INR';
-    END IF;
+CREATE INDEX IF NOT EXISTS idx_transactions_user_tx_time
+ON public.transactions(user_id, transaction_time DESC);
 
-    -- 4. Status sync
-    IF NEW.status IS NOT NULL AND TRIM(NEW.status) <> '' THEN
-        SELECT code INTO NEW.status_code FROM transaction_status WHERE UPPER(name) = UPPER(TRIM(NEW.status));
-        IF NEW.status_code IS NULL THEN
-            NEW.status_code = 1;
-        END IF;
-    ELSIF NEW.status_code IS NOT NULL THEN
-        SELECT name INTO NEW.status FROM transaction_status WHERE code = NEW.status_code;
-        IF NEW.status IS NULL THEN
-            NEW.status = 'SUCCESS';
-        END IF;
-    ELSE
-        NEW.status_code = 1;
-        NEW.status = 'SUCCESS';
-    END IF;
+CREATE INDEX IF NOT EXISTS idx_transactions_merchant_name
+ON public.transactions(merchant_name);
 
-    -- 5. Payment method sync
-    IF NEW.payment_method IS NOT NULL AND NEW.provider IS NOT NULL THEN
-        INSERT INTO payment_methods (method, provider)
-        VALUES (TRIM(NEW.payment_method), TRIM(NEW.provider))
-        ON CONFLICT (method, provider) DO NOTHING;
-    END IF;
+CREATE INDEX IF NOT EXISTS idx_transactions_category
+ON public.transactions(category);
 
-    -- 6. Updated at timestamp
-    NEW.updated_at = NOW();
+CREATE INDEX IF NOT EXISTS idx_transactions_currency
+ON public.transactions(currency);
 
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+CREATE INDEX IF NOT EXISTS idx_transactions_status
+ON public.transactions(status);
 
-DROP TRIGGER IF EXISTS trg_sync_transaction_fields ON transactions;
-CREATE TRIGGER trg_sync_transaction_fields
-    BEFORE INSERT OR UPDATE ON transactions
-    FOR EACH ROW
-    EXECUTE FUNCTION sync_transaction_fields();
+CREATE INDEX IF NOT EXISTS idx_transactions_payment_method_provider
+ON public.transactions(payment_method, provider);
+
+CREATE INDEX IF NOT EXISTS idx_transactions_upi_transaction_id
+ON public.transactions(upi_transaction_id);
+
+CREATE INDEX IF NOT EXISTS idx_transactions_transaction_time
+ON public.transactions(transaction_time);
+
+CREATE INDEX IF NOT EXISTS idx_merchants_name
+ON public.merchants(name);
 
 
--- User updated_at trigger
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+-- Prevent duplicate UPI transactions per user
 
-DROP TRIGGER IF EXISTS trg_users_updated_at ON users;
-CREATE TRIGGER trg_users_updated_at
-    BEFORE UPDATE ON users
-    FOR EACH ROW
-    EXECUTE FUNCTION update_updated_at_column();
-
-
--- ==============================================================================
--- 7. SUPABASE AUTH USER AUTO-PROVISIONING TRIGGER
--- ==============================================================================
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER AS $$
-BEGIN
-    INSERT INTO public.users (id, email, full_name, avatar_url, auth_provider)
-    VALUES (
-        NEW.id,
-        NEW.email,
-        COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', ''),
-        NEW.raw_user_meta_data->>'avatar_url',
-        COALESCE(NEW.raw_app_meta_data->>'provider', 'email')
-    )
-    ON CONFLICT (id) DO UPDATE SET
-        email = EXCLUDED.email,
-        updated_at = NOW();
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-CREATE TRIGGER on_auth_user_created
-    AFTER INSERT OR UPDATE ON auth.users
-    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
-
-
--- ==============================================================================
--- 8. PERFORMANCE INDEXES
--- ==============================================================================
-CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions(user_id);
-CREATE INDEX IF NOT EXISTS idx_transactions_user_tx_time ON transactions(user_id, transaction_time DESC);
-CREATE INDEX IF NOT EXISTS idx_transactions_merchant_id ON transactions(merchant_id);
-CREATE INDEX IF NOT EXISTS idx_transactions_category_name ON transactions(category_name);
-CREATE INDEX IF NOT EXISTS idx_transactions_status_code ON transactions(status_code);
-CREATE INDEX IF NOT EXISTS idx_transactions_upi_transaction_id ON transactions(upi_transaction_id);
-CREATE INDEX IF NOT EXISTS idx_merchants_name ON merchants(name);
-
--- Prevent duplicate UPI transaction IDs per user
 CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_user_upi_transaction
-ON transactions(user_id, upi_transaction_id)
+ON public.transactions(user_id, upi_transaction_id)
 WHERE upi_transaction_id IS NOT NULL;
 
 
--- ==============================================================================
--- 9. BACKWARD-COMPATIBLE VIEW
--- ==============================================================================
-CREATE OR REPLACE VIEW transactions_view AS
-SELECT
-    t.id,
-    t.user_id,
-    t.amount,
-    t.currency_code,
-    t.currency,
-    c.symbol AS currency_symbol,
-    t.merchant_id,
-    COALESCE(t.merchant_name, m.name) AS merchant_name,
-    t.category_name,
-    t.category,
-    t.payment_method,
-    t.provider,
-    t.status_code,
-    COALESCE(t.status, s.name, 'SUCCESS') AS status,
-    t.description,
-    t.upi_transaction_id,
-    t.transaction_reference,
-    t.upi_id,
-    t.latitude,
-    t.longitude,
-    t.location_accuracy_meters,
-    t.transaction_time,
-    t.created_at,
-    t.updated_at
-FROM transactions t
-LEFT JOIN merchants m ON t.merchant_id = m.id
-LEFT JOIN currencies c ON t.currency_code = c.code
-LEFT JOIN transaction_status s ON t.status_code = s.code;
+-- Updated-at function
+
+CREATE OR REPLACE FUNCTION public.update_updated_at_column()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$;
 
 
--- ==============================================================================
--- 10. ROW LEVEL SECURITY (RLS) POLICIES
--- ==============================================================================
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE merchants ENABLE ROW LEVEL SECURITY;
-ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
-ALTER TABLE currencies ENABLE ROW LEVEL SECURITY;
-ALTER TABLE payment_methods ENABLE ROW LEVEL SECURITY;
-ALTER TABLE transaction_status ENABLE ROW LEVEL SECURITY;
+-- Users updated-at trigger
 
--- Transactions Policies
-DROP POLICY IF EXISTS "transactions_select_policy" ON transactions;
-CREATE POLICY "transactions_select_policy" ON transactions
-    FOR SELECT TO authenticated
-    USING (user_id = auth.uid());
+CREATE TRIGGER trg_users_updated_at
+BEFORE UPDATE ON public.users
+FOR EACH ROW
+EXECUTE FUNCTION public.update_updated_at_column();
 
-DROP POLICY IF EXISTS "transactions_insert_policy" ON transactions;
-CREATE POLICY "transactions_insert_policy" ON transactions
-    FOR INSERT TO authenticated
-    WITH CHECK (user_id = auth.uid());
 
-DROP POLICY IF EXISTS "transactions_update_policy" ON transactions;
-CREATE POLICY "transactions_update_policy" ON transactions
-    FOR UPDATE TO authenticated
-    USING (user_id = auth.uid())
-    WITH CHECK (user_id = auth.uid());
+-- Transactions updated-at trigger
 
-DROP POLICY IF EXISTS "transactions_delete_policy" ON transactions;
-CREATE POLICY "transactions_delete_policy" ON transactions
-    FOR DELETE TO authenticated
-    USING (user_id = auth.uid());
+CREATE TRIGGER trg_transactions_updated_at
+BEFORE UPDATE ON public.transactions
+FOR EACH ROW
+EXECUTE FUNCTION public.update_updated_at_column();
 
--- Users Policies
-DROP POLICY IF EXISTS "users_select_policy" ON users;
-CREATE POLICY "users_select_policy" ON users
-    FOR SELECT TO authenticated
-    USING (id = auth.uid());
 
-DROP POLICY IF EXISTS "users_update_policy" ON users;
-CREATE POLICY "users_update_policy" ON users
-    FOR UPDATE TO authenticated
-    USING (id = auth.uid())
-    WITH CHECK (id = auth.uid());
+-- Supabase auth user provisioning
 
--- Lookup Table Read Policies (Public / Authenticated)
-DROP POLICY IF EXISTS "currencies_read_policy" ON currencies;
-CREATE POLICY "currencies_read_policy" ON currencies FOR SELECT TO public USING (true);
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+    INSERT INTO public.users (
+        id,
+        email,
+        full_name,
+        avatar_url,
+        auth_provider
+    )
+    VALUES (
+        NEW.id,
+        NEW.email,
+        COALESCE(
+            NEW.raw_user_meta_data->>'full_name',
+            NEW.raw_user_meta_data->>'name',
+            ''
+        ),
+        NEW.raw_user_meta_data->>'avatar_url',
+        COALESCE(
+            NEW.raw_app_meta_data->>'provider',
+            'email'
+        )
+    )
+    ON CONFLICT (id)
+    DO UPDATE SET
+        email = EXCLUDED.email,
+        updated_at = NOW();
 
-DROP POLICY IF EXISTS "categories_read_policy" ON categories;
-CREATE POLICY "categories_read_policy" ON categories FOR SELECT TO public USING (true);
+    RETURN NEW;
+END;
+$$;
 
-DROP POLICY IF EXISTS "transaction_status_read_policy" ON transaction_status;
-CREATE POLICY "transaction_status_read_policy" ON transaction_status FOR SELECT TO public USING (true);
 
-DROP POLICY IF EXISTS "payment_methods_read_policy" ON payment_methods;
-CREATE POLICY "payment_methods_read_policy" ON payment_methods FOR SELECT TO public USING (true);
+-- Supabase auth trigger
 
-DROP POLICY IF EXISTS "merchants_read_policy" ON merchants;
-CREATE POLICY "merchants_read_policy" ON merchants FOR SELECT TO authenticated USING (true);
+CREATE TRIGGER on_auth_user_created
+AFTER INSERT OR UPDATE ON auth.users
+FOR EACH ROW
+EXECUTE FUNCTION public.handle_new_user();
 
-DROP POLICY IF EXISTS "merchants_insert_policy" ON merchants;
-CREATE POLICY "merchants_insert_policy" ON merchants FOR INSERT TO authenticated WITH CHECK (true);
+
+-- Enable RLS
+
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.transactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.merchants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.currencies ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.payment_methods ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.transaction_status ENABLE ROW LEVEL SECURITY;
+
+
+-- Transaction RLS
+
+CREATE POLICY "transactions_select_policy"
+ON public.transactions
+FOR SELECT
+TO authenticated
+USING (user_id = auth.uid());
+
+
+CREATE POLICY "transactions_insert_policy"
+ON public.transactions
+FOR INSERT
+TO authenticated
+WITH CHECK (user_id = auth.uid());
+
+
+CREATE POLICY "transactions_update_policy"
+ON public.transactions
+FOR UPDATE
+TO authenticated
+USING (user_id = auth.uid())
+WITH CHECK (user_id = auth.uid());
+
+
+CREATE POLICY "transactions_delete_policy"
+ON public.transactions
+FOR DELETE
+TO authenticated
+USING (user_id = auth.uid());
+
+
+-- User RLS
+
+CREATE POLICY "users_select_policy"
+ON public.users
+FOR SELECT
+TO authenticated
+USING (id = auth.uid());
+
+
+CREATE POLICY "users_update_policy"
+ON public.users
+FOR UPDATE
+TO authenticated
+USING (id = auth.uid())
+WITH CHECK (id = auth.uid());
+
+
+-- Currency read policy
+
+CREATE POLICY "currencies_read_policy"
+ON public.currencies
+FOR SELECT
+TO public
+USING (true);
+
+
+-- Category read policy
+
+CREATE POLICY "categories_read_policy"
+ON public.categories
+FOR SELECT
+TO public
+USING (true);
+
+
+-- Status read policy
+
+CREATE POLICY "transaction_status_read_policy"
+ON public.transaction_status
+FOR SELECT
+TO public
+USING (true);
+
+
+-- Payment method read policy
+
+CREATE POLICY "payment_methods_read_policy"
+ON public.payment_methods
+FOR SELECT
+TO public
+USING (true);
+
+
+-- Merchant read policy
+
+CREATE POLICY "merchants_read_policy"
+ON public.merchants
+FOR SELECT
+TO authenticated
+USING (true);
+
+
+-- Merchant insert policy
+
+CREATE POLICY "merchants_insert_policy"
+ON public.merchants
+FOR INSERT
+TO authenticated
+WITH CHECK (true);

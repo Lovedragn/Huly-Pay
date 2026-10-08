@@ -262,12 +262,12 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
       if (mounted) {
         if (success) {
           final upiData = _parsedUpiData ?? UpiService.parseUpiUri(rawUri);
-          final txnRef = 'HULY${DateTime.now().millisecondsSinceEpoch}';
+          final txnRef = 'REF_${DateTime.now().millisecondsSinceEpoch}';
           final payee = upiData?.payeeName?.trim();
           final upi = upiData?.upiId.trim();
           final merchant = (payee != null && payee.isNotEmpty)
-              ? payee
-              : ((upi != null && upi.isNotEmpty) ? upi : (note.isNotEmpty ? note : 'QR Payment'));
+              ? TransactionModel.formatMerchantName(payee)
+              : ((upi != null && upi.isNotEmpty) ? TransactionModel.formatMerchantName(upi) : (note.isNotEmpty ? note : 'QR Payment'));
 
           try {
             await TransactionRepository().createTransaction(CreatePaymentPayload(

@@ -51,7 +51,17 @@ public class TransactionService {
                 : "SUCCESS";
         short statusCode = TransactionStatusEnum.toCode(statusStr);
 
-        Merchant merchant = resolveMerchant(request.getMerchantName());
+        String rawMerchant = request.getMerchantName();
+        String derivedMerchant = (rawMerchant != null && !rawMerchant.isBlank())
+                ? rawMerchant.trim()
+                : (request.getUpiId() != null && !request.getUpiId().isBlank() ? formatMerchantFromUpi(request.getUpiId().trim()) : null);
+
+        Merchant merchant = resolveMerchant(derivedMerchant);
+
+        String txnRef = request.getTransactionReference();
+        if (txnRef == null || txnRef.isBlank()) {
+            txnRef = "REF_" + System.currentTimeMillis();
+        }
 
         ensurePaymentMethodExists(request.getPaymentMethod(), request.getProvider());
 
@@ -62,13 +72,15 @@ public class TransactionService {
                 .amount(request.getAmount())
                 .currencyCode(currency)
                 .merchant(merchant)
+                .merchantName(derivedMerchant != null ? derivedMerchant : (merchant != null ? merchant.getName() : null))
                 .categoryName(category)
                 .description(request.getDescription())
                 .paymentMethod(request.getPaymentMethod())
                 .provider(request.getProvider())
+                .status(statusStr)
                 .statusCode(statusCode)
                 .upiTransactionId(request.getUpiTransactionId())
-                .transactionReference(request.getTransactionReference())
+                .transactionReference(txnRef)
                 .upiId(request.getUpiId())
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
@@ -117,8 +129,11 @@ public class TransactionService {
         if (request.getMerchantName() != null) {
             if (request.getMerchantName().isBlank()) {
                 transaction.setMerchant(null);
+                transaction.setMerchantName(null);
             } else {
-                transaction.setMerchant(resolveMerchant(request.getMerchantName()));
+                String clean = request.getMerchantName().trim();
+                transaction.setMerchant(resolveMerchant(clean));
+                transaction.setMerchantName(clean);
             }
         }
 
@@ -145,7 +160,7 @@ public class TransactionService {
         }
 
         if (request.getStatus() != null && !request.getStatus().isBlank()) {
-            transaction.setStatusCode(TransactionStatusEnum.toCode(request.getStatus()));
+            transaction.setStatus(request.getStatus());
         }
 
         if (request.getUpiTransactionId() != null) {
@@ -193,7 +208,7 @@ public class TransactionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found with ID: " + id));
 
         if (request.getStatus() != null && !request.getStatus().isBlank()) {
-            transaction.setStatusCode(TransactionStatusEnum.toCode(request.getStatus()));
+            transaction.setStatus(request.getStatus());
         }
         if (request.getUpiTransactionId() != null && !request.getUpiTransactionId().isBlank()) {
             transaction.setUpiTransactionId(request.getUpiTransactionId());
@@ -276,6 +291,30 @@ public class TransactionService {
                 .extractedUpiReference(parsed.getUpiReference())
                 .transaction(TransactionResponse.fromEntity(saved))
                 .build();
+    }
+
+    public static String formatMerchantFromUpi(String upiId) {
+        if (upiId == null || upiId.isBlank()) return "UPI Merchant";
+        String trimmed = upiId.trim();
+        if (trimmed.contains("@")) {
+            String handle = trimmed.split("@")[0].trim();
+            if (handle.isBlank()) return "UPI Merchant";
+            if (handle.matches("\\d+")) {
+                return "Merchant (" + handle + ")";
+            }
+            String cleaned = handle.replaceAll("[._\\-+]", " ").trim();
+            if (cleaned.isBlank()) return "UPI Merchant";
+            StringBuilder sb = new StringBuilder();
+            for (String word : cleaned.split("\\s+")) {
+                if (!word.isBlank()) {
+                    if (sb.length() > 0) sb.append(" ");
+                    sb.append(Character.toUpperCase(word.charAt(0)))
+                      .append(word.substring(1).toLowerCase());
+                }
+            }
+            return sb.toString();
+        }
+        return trimmed;
     }
 
     private Merchant resolveMerchant(String merchantName) {
