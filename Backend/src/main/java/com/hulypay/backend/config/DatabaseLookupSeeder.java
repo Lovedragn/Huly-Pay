@@ -52,14 +52,7 @@ public class DatabaseLookupSeeder implements CommandLineRunner {
     private void seedCurrencies() {
         Map<String, String> currencies = Map.of(
                 "INR", "₹",
-                "USD", "$",
-                "EUR", "€",
-                "GBP", "£",
-                "JPY", "¥",
-                "CAD", "CA$",
-                "AUD", "AU$",
-                "AED", "د.إ",
-                "SGD", "S$"
+                "USD", "$"
         );
 
         currencies.forEach((code, symbol) -> {
@@ -102,23 +95,10 @@ public class DatabaseLookupSeeder implements CommandLineRunner {
     private void seedTransactionStatuses() {
         for (TransactionStatusEnum status : TransactionStatusEnum.values()) {
             try {
-                java.util.Optional<TransactionStatusEntity> existingByName = statusRepository.findByNameIgnoreCase(status.getName());
-                if (existingByName.isEmpty()) {
-                    if (!statusRepository.existsById(status.getCode())) {
-                        statusRepository.save(TransactionStatusEntity.builder()
-                                .code(status.getCode())
-                                .name(status.getName())
-                                .build());
-                    } else {
-                        short maxCode = statusRepository.findAll().stream()
-                                .map(TransactionStatusEntity::getCode)
-                                .max(Short::compareTo)
-                                .orElse((short) 10);
-                        statusRepository.save(TransactionStatusEntity.builder()
-                                .code((short) (maxCode + 1))
-                                .name(status.getName())
-                                .build());
-                    }
+                if (!statusRepository.existsById(status.getName())) {
+                    statusRepository.save(TransactionStatusEntity.builder()
+                            .name(status.getName())
+                            .build());
                 }
             } catch (Exception e) {
                 log.warn("Notice seeding status {}: {}", status.getName(), e.getMessage());
@@ -134,6 +114,7 @@ public class DatabaseLookupSeeder implements CommandLineRunner {
                 new String[]{"UPI", "BHIM"},
                 new String[]{"UPI", "AMAZON_PAY"},
                 new String[]{"UPI", "CRED"},
+                new String[]{"UPI", "WHATSAPP_PAY"},
                 new String[]{"UPI", "UPI"},
                 new String[]{"GPAY", "GOOGLE_PAY"},
                 new String[]{"DEBIT_CARD", "BANK"},

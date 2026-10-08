@@ -28,7 +28,7 @@ public class BackendApplication {
 
     /**
      * Executes schema alignment BEFORE Hibernate EntityManagerFactory initializes.
-     * Ensures existing PostgreSQL tables in Supabase match the normalized unencrypted schema.
+     * Ensures existing PostgreSQL tables in Supabase match the schema in schema-migration.sql.
      */
     @Bean
     public static BeanPostProcessor dataSourceMigrationPostProcessor() {
@@ -54,167 +54,141 @@ public class BackendApplication {
                         executeSql.accept("DROP TABLE IF EXISTS payments CASCADE");
                         executeSql.accept("DROP TABLE IF EXISTS expenses CASCADE");
 
-                        // 2. Ensure currencies lookup table exists
+                        // 2. Ensure currencies lookup table exists with INR and USD
                         executeSql.accept("""
-                            CREATE TABLE IF NOT EXISTS currencies (
-                                code CHAR(3) PRIMARY KEY,
-                                symbol VARCHAR(5) NOT NULL
+                            CREATE TABLE IF NOT EXISTS public.currencies (
+                                code VARCHAR(3) NOT NULL,
+                                symbol VARCHAR(10) NOT NULL UNIQUE,
+                                CONSTRAINT currencies_pkey PRIMARY KEY (code)
                             )
                         """);
-
-                        // 3. Ensure transaction_status lookup table exists
                         executeSql.accept("""
-                            DO $$
-                            BEGIN
-                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'transaction_statuses')
-                                   AND NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'transaction_status') THEN
-                                    ALTER TABLE transaction_statuses RENAME TO transaction_status;
-                                END IF;
-                            END $$;
+                            INSERT INTO public.currencies (code, symbol)
+                            VALUES ('INR', '₹'), ('USD', '$')
+                            ON CONFLICT (code) DO NOTHING
                         """);
+
+                        // 3. Ensure transaction_status lookup table exists (primary key name)
                         executeSql.accept("""
-                            CREATE TABLE IF NOT EXISTS transaction_status (
-                                code SMALLINT PRIMARY KEY,
-                                name VARCHAR(30) NOT NULL UNIQUE
+                            CREATE TABLE IF NOT EXISTS public.transaction_status (
+                                name VARCHAR(30) NOT NULL,
+                                CONSTRAINT transaction_status_pkey PRIMARY KEY (name)
                             )
                         """);
-                        executeSql.accept("ALTER TABLE transactions DROP CONSTRAINT IF EXISTS fk_transactions_status_name");
-                        executeSql.accept("ALTER TABLE transactions DROP CONSTRAINT IF EXISTS fk_transactions_status");
-
                         executeSql.accept("""
-                            DO $$
-                            BEGIN
-                                IF EXISTS (SELECT 1 FROM transaction_status WHERE code = 3 AND UPPER(name) = 'CANCELLED') THEN
-                                    UPDATE transactions SET status_code = 4 WHERE status_code = 3;
-                                    UPDATE transaction_status SET code = 4 WHERE code = 3;
-                                END IF;
-
-                                INSERT INTO transaction_status (code, name) VALUES (1, 'SUCCESS') ON CONFLICT (name) DO NOTHING;
-                                INSERT INTO transaction_status (code, name) VALUES (2, 'PENDING') ON CONFLICT (name) DO NOTHING;
-                                INSERT INTO transaction_status (code, name) VALUES (3, 'FAILED') ON CONFLICT (name) DO NOTHING;
-                                INSERT INTO transaction_status (code, name) VALUES (4, 'CANCELLED') ON CONFLICT (name) DO NOTHING;
-                                INSERT INTO transaction_status (code, name) VALUES (5, 'TIMEOUT') ON CONFLICT (name) DO NOTHING;
-                                INSERT INTO transaction_status (code, name) VALUES (6, 'CONFIRMED') ON CONFLICT (name) DO NOTHING;
-                                INSERT INTO transaction_status (code, name) VALUES (7, 'SUBMITTED') ON CONFLICT (name) DO NOTHING;
-                                INSERT INTO transaction_status (code, name) VALUES (8, 'INITIATED') ON CONFLICT (name) DO NOTHING;
-
-                                IF NOT EXISTS (SELECT 1 FROM transaction_status WHERE UPPER(name) = 'FAILED') THEN
-                                    INSERT INTO transaction_status (code, name)
-                                    VALUES ((SELECT COALESCE(MAX(code), 10) + 1 FROM transaction_status), 'FAILED')
-                                    ON CONFLICT DO NOTHING;
-                                END IF;
-                            END $$;
-                        """);
-
-                        executeSql.accept("""
-                            DO $$
-                            BEGIN
-                                IF NOT EXISTS (
-                                    SELECT 1 FROM information_schema.table_constraints
-                                    WHERE constraint_name = 'fk_transactions_status' AND table_name = 'transactions'
-                                ) THEN
-                                    ALTER TABLE transactions ADD CONSTRAINT fk_transactions_status
-                                        FOREIGN KEY (status_code) REFERENCES transaction_status(code) ON DELETE RESTRICT;
-                                END IF;
-                            END $$;
+                            INSERT INTO public.transaction_status (name)
+                            VALUES
+                                ('SUCCESS'), ('PENDING'), ('FAILED'), ('CANCELLED'),
+                                ('TIMEOUT'), ('CONFIRMED'), ('SUBMITTED'), ('INITIATED')
+                            ON CONFLICT (name) DO NOTHING
                         """);
 
                         // 4. Ensure payment_methods lookup table exists
                         executeSql.accept("""
-                            CREATE TABLE IF NOT EXISTS payment_methods (
+                            CREATE TABLE IF NOT EXISTS public.payment_methods (
                                 method VARCHAR(100) NOT NULL,
                                 provider VARCHAR(100) NOT NULL,
-                                PRIMARY KEY (method, provider)
+                                CONSTRAINT payment_methods_pkey PRIMARY KEY (method, provider)
                             )
                         """);
-
-                        // 5. Ensure merchants table exists and has uuid default
                         executeSql.accept("""
-                            CREATE TABLE IF NOT EXISTS merchants (
-                                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                            INSERT INTO public.payment_methods (method, provider)
+                            VALUES
+                                ('UPI', 'GOOGLE_PAY'),
+                                ('UPI', 'BHIM'),
+                                ('UPI', 'AMAZON_PAY'),
+                                ('UPI', 'WHATSAPP_PAY'),
+                                ('DEBIT_CARD', 'BANK'),
+                                ('CREDIT_CARD', 'BANK'),
+                                ('NET_BANKING', 'BANK'),
+                                ('CASH', 'MANUAL'),
+                                ('OTHER', 'OTHER')
+                            ON CONFLICT (method, provider) DO NOTHING
+                        """);
+
+                        // 5. Ensure merchants table exists
+                        executeSql.accept("""
+                            CREATE TABLE IF NOT EXISTS public.merchants (
+                                id UUID NOT NULL DEFAULT gen_random_uuid(),
                                 name VARCHAR(255) NOT NULL UNIQUE,
-                                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                                CONSTRAINT merchants_pkey PRIMARY KEY (id)
                             )
                         """);
-                        executeSql.accept("ALTER TABLE merchants ALTER COLUMN id SET DEFAULT gen_random_uuid()");
-                        executeSql.accept("ALTER TABLE merchants ALTER COLUMN created_at SET DEFAULT NOW()");
+                        executeSql.accept("ALTER TABLE public.merchants ALTER COLUMN id SET DEFAULT gen_random_uuid()");
+                        executeSql.accept("ALTER TABLE public.merchants ALTER COLUMN created_at SET DEFAULT NOW()");
 
-                        // 6. Align categories table to clean (name VARCHAR(100) PRIMARY KEY)
+                        // 6. Ensure categories table exists
                         executeSql.accept("""
-                            DO $$
-                            BEGIN
-                                IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'categories' AND column_name = 'id') THEN
-                                    CREATE TABLE IF NOT EXISTS categories_clean (
-                                        name VARCHAR(100) PRIMARY KEY
-                                    );
-                                    INSERT INTO categories_clean (name)
-                                    SELECT DISTINCT TRIM(name)
-                                    FROM categories
-                                    WHERE name IS NOT NULL AND TRIM(name) <> ''
-                                    ON CONFLICT (name) DO NOTHING;
-                                    
-                                    DROP TABLE categories CASCADE;
-                                    ALTER TABLE categories_clean RENAME TO categories;
-                                ELSIF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'categories') THEN
-                                    CREATE TABLE categories (
-                                        name VARCHAR(100) PRIMARY KEY
-                                    );
-                                END IF;
-                            END $$;
+                            CREATE TABLE IF NOT EXISTS public.categories (
+                                name VARCHAR(100) NOT NULL,
+                                CONSTRAINT categories_pkey PRIMARY KEY (name)
+                            )
+                        """);
+                        executeSql.accept("""
+                            INSERT INTO public.categories (name)
+                            VALUES
+                                ('Food & Dining'), ('Groceries'), ('Shopping'), ('Bills & Utilities'),
+                                ('Entertainment'), ('Travel & Transport'), ('Health & Medical'),
+                                ('Education'), ('Investments'), ('Personal Care'), ('Others')
+                            ON CONFLICT (name) DO NOTHING
                         """);
 
-                        // 7. Align transactions table columns
-                        executeSql.accept("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS currency_code CHAR(3) DEFAULT 'INR'");
-                        executeSql.accept("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS status_code SMALLINT DEFAULT 1");
-                        executeSql.accept("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS category_name VARCHAR(100)");
-                        executeSql.accept("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS merchant_id UUID");
-
-                        executeSql.accept("UPDATE transactions SET currency_code = 'INR' WHERE currency_code IS NULL");
-                        executeSql.accept("UPDATE transactions SET status_code = 1 WHERE status_code IS NULL");
-
-                        // Populate category_name from legacy category column if present
+                        // 7. Ensure transactions table columns and constraints match schema
                         executeSql.accept("""
-                            DO $$
-                            BEGIN
-                                IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'transactions' AND column_name = 'category') THEN
-                                    UPDATE transactions SET category_name = TRIM(category) WHERE category_name IS NULL AND category IS NOT NULL;
-                                END IF;
-                            END $$;
+                            CREATE TABLE IF NOT EXISTS public.transactions (
+                                id UUID NOT NULL DEFAULT gen_random_uuid(),
+                                user_id UUID NOT NULL,
+                                amount NUMERIC(12,2) NOT NULL,
+                                currency VARCHAR(10) NOT NULL DEFAULT '₹',
+                                merchant_name VARCHAR(255),
+                                category VARCHAR(100) NOT NULL DEFAULT 'Others',
+                                description TEXT,
+                                payment_method VARCHAR(100),
+                                provider VARCHAR(100),
+                                status VARCHAR(30) NOT NULL DEFAULT 'SUCCESS',
+                                upi_transaction_id TEXT,
+                                transaction_reference TEXT,
+                                upi_id TEXT,
+                                latitude DOUBLE PRECISION,
+                                longitude DOUBLE PRECISION,
+                                location_accuracy_meters DOUBLE PRECISION,
+                                transaction_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                                updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                                CONSTRAINT transactions_pkey PRIMARY KEY (id)
+                            )
                         """);
 
-                        // Deduplicate and populate merchants from legacy merchant_name
-                        executeSql.accept("""
-                            DO $$
-                            BEGIN
-                                IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'transactions' AND column_name = 'merchant_name') THEN
-                                    INSERT INTO merchants (id, name)
-                                    SELECT gen_random_uuid(), TRIM(merchant_name)
-                                    FROM transactions
-                                    WHERE merchant_name IS NOT NULL AND TRIM(merchant_name) <> ''
-                                    ON CONFLICT (name) DO NOTHING;
+                        executeSql.accept("ALTER TABLE public.transactions ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT '₹'");
+                        executeSql.accept("ALTER TABLE public.transactions ADD COLUMN IF NOT EXISTS merchant_name VARCHAR(255)");
+                        executeSql.accept("ALTER TABLE public.transactions ADD COLUMN IF NOT EXISTS category VARCHAR(100) DEFAULT 'Others'");
+                        executeSql.accept("ALTER TABLE public.transactions ADD COLUMN IF NOT EXISTS status VARCHAR(30) DEFAULT 'SUCCESS'");
 
-                                    UPDATE transactions t
-                                    SET merchant_id = m.id
-                                    FROM merchants m
-                                    WHERE TRIM(t.merchant_name) = m.name AND t.merchant_id IS NULL;
-                                END IF;
-                            END $$;
+                        // Populate currency default
+                        executeSql.accept("UPDATE public.transactions SET currency = '₹' WHERE currency IS NULL OR currency = 'INR'");
+                        executeSql.accept("UPDATE public.transactions SET currency = '$' WHERE currency = 'USD'");
+                        executeSql.accept("UPDATE public.transactions SET category = 'Others' WHERE category IS NULL");
+                        executeSql.accept("UPDATE public.transactions SET status = 'SUCCESS' WHERE status IS NULL");
+
+                        // Populate merchants from transactions.merchant_name
+                        executeSql.accept("""
+                            INSERT INTO public.merchants (id, name)
+                            SELECT gen_random_uuid(), TRIM(merchant_name)
+                            FROM public.transactions
+                            WHERE merchant_name IS NOT NULL AND TRIM(merchant_name) <> ''
+                            ON CONFLICT (name) DO NOTHING
                         """);
 
-                        executeSql.accept("ALTER TABLE transactions ALTER COLUMN description TYPE TEXT");
-                        executeSql.accept("ALTER TABLE transactions ALTER COLUMN upi_transaction_id TYPE TEXT");
-                        executeSql.accept("ALTER TABLE transactions ALTER COLUMN transaction_reference TYPE TEXT");
-                        executeSql.accept("ALTER TABLE transactions ALTER COLUMN upi_id TYPE TEXT");
-
-                        // 8. Align users table columns to unencrypted plaintext
-                        executeSql.accept("ALTER TABLE users ALTER COLUMN email DROP NOT NULL");
-                        executeSql.accept("ALTER TABLE users ALTER COLUMN full_name TYPE TEXT");
-                        executeSql.accept("ALTER TABLE users ALTER COLUMN first_name TYPE TEXT");
-                        executeSql.accept("ALTER TABLE users ALTER COLUMN last_name TYPE TEXT");
-                        executeSql.accept("ALTER TABLE users ALTER COLUMN phone_number TYPE TEXT");
-                        executeSql.accept("ALTER TABLE users ALTER COLUMN avatar_url TYPE TEXT");
-                        executeSql.accept("ALTER TABLE users ALTER COLUMN auth_provider TYPE TEXT");
-                        executeSql.accept("ALTER TABLE users ALTER COLUMN provider_subject TYPE TEXT");
+                        // Ensure users table matches
+                        executeSql.accept("ALTER TABLE public.users ALTER COLUMN email DROP NOT NULL");
+                        executeSql.accept("ALTER TABLE public.users ALTER COLUMN full_name TYPE TEXT");
+                        executeSql.accept("ALTER TABLE public.users ALTER COLUMN first_name TYPE TEXT");
+                        executeSql.accept("ALTER TABLE public.users ALTER COLUMN last_name TYPE TEXT");
+                        executeSql.accept("ALTER TABLE public.users ALTER COLUMN phone_number TYPE TEXT");
+                        executeSql.accept("ALTER TABLE public.users ALTER COLUMN avatar_url TYPE TEXT");
+                        executeSql.accept("ALTER TABLE public.users ALTER COLUMN auth_provider TYPE VARCHAR(50)");
+                        executeSql.accept("ALTER TABLE public.users ALTER COLUMN provider_subject TYPE TEXT");
 
                         log.info("Pre-Hibernate database schema alignment executed successfully");
                     } catch (Exception e) {

@@ -27,6 +27,7 @@ public class TransactionService {
     private final MerchantRepository merchantRepository;
     private final CategoryRepository categoryRepository;
     private final CurrencyRepository currencyRepository;
+    private final TransactionStatusRepository statusRepository;
     private final PaymentMethodRepository paymentMethodRepository;
     private final TransactionSmsParserService smsParserService;
 
@@ -36,10 +37,8 @@ public class TransactionService {
             throw new BadRequestException("Amount must be greater than zero");
         }
 
-        String currency = (request.getCurrency() != null && !request.getCurrency().isBlank())
-                ? request.getCurrency().trim().toUpperCase()
-                : "INR";
-        ensureCurrencyExists(currency);
+        String currSymbol = normalizeCurrencySymbol(request.getCurrency());
+        ensureCurrencyExists(currSymbol);
 
         String category = (request.getCategory() != null && !request.getCategory().isBlank())
                 ? request.getCategory().trim()
@@ -49,7 +48,7 @@ public class TransactionService {
         String statusStr = (request.getStatus() != null && !request.getStatus().isBlank())
                 ? request.getStatus().trim().toUpperCase()
                 : "SUCCESS";
-        short statusCode = TransactionStatusEnum.toCode(statusStr);
+        ensureTransactionStatusExists(statusStr);
 
         String rawMerchant = request.getMerchantName();
         String derivedMerchant = (rawMerchant != null && !rawMerchant.isBlank())
@@ -70,15 +69,13 @@ public class TransactionService {
         Transaction transaction = Transaction.builder()
                 .user(user)
                 .amount(request.getAmount())
-                .currencyCode(currency)
+                .currency(currSymbol)
                 .merchant(merchant)
-                .merchantName(derivedMerchant != null ? derivedMerchant : (merchant != null ? merchant.getName() : null))
-                .categoryName(category)
+                .category(category)
                 .description(request.getDescription())
                 .paymentMethod(request.getPaymentMethod())
                 .provider(request.getProvider())
                 .status(statusStr)
-                .statusCode(statusCode)
                 .upiTransactionId(request.getUpiTransactionId())
                 .transactionReference(txnRef)
                 .upiId(request.getUpiId())
@@ -121,26 +118,24 @@ public class TransactionService {
         }
 
         if (request.getCurrency() != null && !request.getCurrency().isBlank()) {
-            String curr = request.getCurrency().trim().toUpperCase();
-            ensureCurrencyExists(curr);
-            transaction.setCurrencyCode(curr);
+            String currSymbol = normalizeCurrencySymbol(request.getCurrency());
+            ensureCurrencyExists(currSymbol);
+            transaction.setCurrency(currSymbol);
         }
 
         if (request.getMerchantName() != null) {
             if (request.getMerchantName().isBlank()) {
                 transaction.setMerchant(null);
-                transaction.setMerchantName(null);
             } else {
                 String clean = request.getMerchantName().trim();
                 transaction.setMerchant(resolveMerchant(clean));
-                transaction.setMerchantName(clean);
             }
         }
 
         if (request.getCategory() != null) {
             String cat = request.getCategory().isBlank() ? "Others" : request.getCategory().trim();
             ensureCategoryExists(cat);
-            transaction.setCategoryName(cat);
+            transaction.setCategory(cat);
         }
 
         if (request.getDescription() != null) {
@@ -160,7 +155,9 @@ public class TransactionService {
         }
 
         if (request.getStatus() != null && !request.getStatus().isBlank()) {
-            transaction.setStatus(request.getStatus());
+            String cleanStatus = request.getStatus().trim().toUpperCase();
+            ensureTransactionStatusExists(cleanStatus);
+            transaction.setStatus(cleanStatus);
         }
 
         if (request.getUpiTransactionId() != null) {
@@ -208,7 +205,9 @@ public class TransactionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found with ID: " + id));
 
         if (request.getStatus() != null && !request.getStatus().isBlank()) {
-            transaction.setStatus(request.getStatus());
+            String cleanStatus = request.getStatus().trim().toUpperCase();
+            ensureTransactionStatusExists(cleanStatus);
+            transaction.setStatus(cleanStatus);
         }
         if (request.getUpiTransactionId() != null && !request.getUpiTransactionId().isBlank()) {
             transaction.setUpiTransactionId(request.getUpiTransactionId());
@@ -265,6 +264,7 @@ public class TransactionService {
 
         if (matchResult.isFailure()) {
             transaction.setStatus("FAILED");
+            ensureTransactionStatusExists("FAILED");
             Transaction saved = transactionRepository.save(transaction);
             return TransactionSmsVerificationResponse.builder()
                     .verified(true)
@@ -277,6 +277,7 @@ public class TransactionService {
         }
 
         transaction.setStatus("SUCCESS");
+        ensureTransactionStatusExists("SUCCESS");
         if (parsed.getUpiReference() != null && !parsed.getUpiReference().isBlank()) {
             transaction.setUpiTransactionId(parsed.getUpiReference());
         }
@@ -317,6 +318,17 @@ public class TransactionService {
         return trimmed;
     }
 
+    public static String normalizeCurrencySymbol(String currencyInput) {
+        if (currencyInput == null || currencyInput.isBlank()) {
+            return "₹";
+        }
+        String clean = currencyInput.trim();
+        if (clean.equalsIgnoreCase("USD") || clean.equals("$")) {
+            return "$";
+        }
+        return "₹";
+    }
+
     private Merchant resolveMerchant(String merchantName) {
         if (merchantName == null || merchantName.isBlank()) {
             return null;
@@ -326,12 +338,11 @@ public class TransactionService {
                 .orElseGet(() -> merchantRepository.save(Merchant.builder().name(clean).build()));
     }
 
-    private void ensureCurrencyExists(String currencyCode) {
-        if (currencyCode != null && !currencyCode.isBlank()) {
-            String code = currencyCode.trim().toUpperCase();
-            if (!currencyRepository.existsById(code)) {
-                currencyRepository.save(Currency.builder().code(code).symbol(code).build());
-            }
+    private void ensureCurrencyExists(String currencySymbol) {
+        String symbol = "$".equals(currencySymbol) ? "$" : "₹";
+        String code = "$".equals(symbol) ? "USD" : "INR";
+        if (!currencyRepository.existsById(code)) {
+            currencyRepository.save(Currency.builder().code(code).symbol(symbol).build());
         }
     }
 
@@ -340,6 +351,15 @@ public class TransactionService {
             String name = categoryName.trim();
             if (!categoryRepository.existsById(name)) {
                 categoryRepository.save(Category.builder().name(name).build());
+            }
+        }
+    }
+
+    private void ensureTransactionStatusExists(String statusName) {
+        if (statusName != null && !statusName.isBlank()) {
+            String name = statusName.trim().toUpperCase();
+            if (!statusRepository.existsById(name)) {
+                statusRepository.save(TransactionStatusEntity.builder().name(name).build());
             }
         }
     }

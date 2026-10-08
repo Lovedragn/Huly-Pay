@@ -19,7 +19,7 @@ public class UpdateTransactionRequest {
     @Positive(message = "Amount must be greater than zero")
     private BigDecimal amount;
 
-    @Size(min = 3, max = 3, message = "Currency must be a 3-letter ISO code")
+    @Size(min = 1, max = 10, message = "Currency must be a valid code or symbol")
     private String currency;
 
     @Size(max = 255, message = "Merchant name must not exceed 255 characters")
@@ -31,10 +31,10 @@ public class UpdateTransactionRequest {
     @Size(max = 500, message = "Description must not exceed 500 characters")
     private String description;
 
-    @Size(max = 50, message = "Payment method must not exceed 50 characters")
+    @Size(max = 100, message = "Payment method must not exceed 100 characters")
     private String paymentMethod;
 
-    @Size(max = 50, message = "Provider must not exceed 50 characters")
+    @Size(max = 100, message = "Provider must not exceed 100 characters")
     private String provider;
 
     @Size(max = 30, message = "Status must not exceed 30 characters")

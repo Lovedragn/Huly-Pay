@@ -21,6 +21,7 @@ public class TransactionResponse {
     private UUID userId;
     private BigDecimal amount;
     private String currency;
+    private String currencySymbol;
     private UUID merchantId;
     private String merchantName;
     private String category;
@@ -53,7 +54,8 @@ public class TransactionResponse {
                 .id(transaction.getId())
                 .userId(transaction.getUser() != null ? transaction.getUser().getId() : null)
                 .amount(transaction.getAmount())
-                .currency(transaction.getCurrency())
+                .currency(transaction.getCurrencyCode())
+                .currencySymbol(transaction.getCurrencySymbol())
                 .merchantId(transaction.getMerchant() != null ? transaction.getMerchant().getId() : null)
                 .merchantName(transaction.getMerchantName())
                 .category(transaction.getCategory())

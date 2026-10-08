@@ -15,9 +15,9 @@ import java.io.Serializable;
 @Builder
 public class PaymentMethodId implements Serializable {
 
-    @Column(name = "method", nullable = false)
+    @Column(name = "method", length = 100, nullable = false)
     private String method;
 
-    @Column(name = "provider", nullable = false)
+    @Column(name = "provider", length = 100, nullable = false)
     private String provider;
 }

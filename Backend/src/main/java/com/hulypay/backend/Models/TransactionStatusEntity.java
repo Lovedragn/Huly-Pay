@@ -16,9 +16,6 @@ import lombok.*;
 public class TransactionStatusEntity {
 
     @Id
-    @Column(name = "code", nullable = false)
-    private Short code;
-
-    @Column(name = "name", length = 30, nullable = false, unique = true)
+    @Column(name = "name", length = 30, nullable = false)
     private String name;
 }

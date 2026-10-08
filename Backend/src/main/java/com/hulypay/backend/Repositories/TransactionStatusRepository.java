@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface TransactionStatusRepository extends JpaRepository<TransactionStatusEntity, Short> {
+public interface TransactionStatusRepository extends JpaRepository<TransactionStatusEntity, String> {
     Optional<TransactionStatusEntity> findByNameIgnoreCase(String name);
 }

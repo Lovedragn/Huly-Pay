@@ -27,40 +27,33 @@ public class Transaction {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false, precision = 12, scale = 2)
+    @Column(name = "amount", nullable = false, precision = 12, scale = 2)
     private BigDecimal amount;
 
     @Builder.Default
-    @Column(name = "currency_code", length = 3)
-    private String currencyCode = "INR";
+    @Column(name = "currency", length = 10, nullable = false)
+    private String currency = "₹";
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "merchant_id")
+    @JoinColumn(name = "merchant_name", referencedColumnName = "name")
     private Merchant merchant;
 
-    @Column(name = "merchant_name")
-    private String merchantName;
-
     @Builder.Default
-    @Column(name = "category_name")
-    private String categoryName = "Others";
+    @Column(name = "category", length = 100, nullable = false)
+    private String category = "Others";
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "payment_method")
+    @Column(name = "payment_method", length = 100)
     private String paymentMethod;
 
-    @Column(name = "provider")
+    @Column(name = "provider", length = 100)
     private String provider;
 
     @Builder.Default
-    @Column(name = "status")
+    @Column(name = "status", length = 30, nullable = false)
     private String status = "SUCCESS";
-
-    @Builder.Default
-    @Column(name = "status_code")
-    private Short statusCode = 1;
 
     @Column(name = "upi_transaction_id", columnDefinition = "TEXT")
     private String upiTransactionId;
@@ -71,8 +64,10 @@ public class Transaction {
     @Column(name = "upi_id", columnDefinition = "TEXT")
     private String upiId;
 
+    @Column(name = "latitude")
     private Double latitude;
 
+    @Column(name = "longitude")
     private Double longitude;
 
     @Column(name = "location_accuracy_meters")
@@ -95,39 +90,65 @@ public class Transaction {
         if (merchant != null && merchant.getName() != null && !merchant.getName().isBlank()) {
             return merchant.getName();
         }
-        return merchantName;
+        return null;
+    }
+
+    public void setMerchantName(String merchantName) {
+        if (merchantName != null && !merchantName.isBlank()) {
+            this.merchant = Merchant.builder().name(merchantName.trim()).build();
+        } else {
+            this.merchant = null;
+        }
     }
 
     public String getCurrency() {
-        return currencyCode != null ? currencyCode : "INR";
+        return currency != null && !currency.isBlank() ? currency : "₹";
     }
 
     public void setCurrency(String currency) {
-        this.currencyCode = (currency != null && !currency.isBlank()) ? currency.trim().toUpperCase() : "INR";
+        if (currency == null || currency.isBlank()) {
+            this.currency = "₹";
+            return;
+        }
+        String clean = currency.trim();
+        if (clean.equalsIgnoreCase("USD") || clean.equals("$")) {
+            this.currency = "$";
+        } else if (clean.equalsIgnoreCase("INR") || clean.equals("₹") || clean.equalsIgnoreCase("RS")) {
+            this.currency = "₹";
+        } else {
+            this.currency = clean;
+        }
+    }
+
+    public String getCurrencyCode() {
+        return ("$".equals(currency) || "USD".equalsIgnoreCase(currency)) ? "USD" : "INR";
+    }
+
+    public String getCurrencySymbol() {
+        return ("$".equals(currency) || "USD".equalsIgnoreCase(currency)) ? "$" : "₹";
     }
 
     public String getCategory() {
-        return categoryName != null ? categoryName : "Others";
+        return category != null && !category.isBlank() ? category : "Others";
     }
 
     public void setCategory(String category) {
-        this.categoryName = (category != null && !category.isBlank()) ? category.trim() : "Others";
+        this.category = (category != null && !category.isBlank()) ? category.trim() : "Others";
     }
 
-    public String getStatus() {
-        if (status != null && !status.isBlank()) {
-            return status;
-        }
-        return TransactionStatusEnum.toName(statusCode);
+    public String getCategoryName() {
+        return getCategory();
     }
 
-    public void setStatus(String status) {
-        this.status = (status != null && !status.isBlank()) ? status.trim().toUpperCase() : "SUCCESS";
-        this.statusCode = TransactionStatusEnum.toCode(this.status);
+    public void setCategoryName(String categoryName) {
+        setCategory(categoryName);
+    }
+
+    public Short getStatusCode() {
+        return TransactionStatusEnum.toCode(status);
     }
 
     public void setStatusCode(Short code) {
-        this.statusCode = code != null ? code : 1;
-        this.status = TransactionStatusEnum.toName(this.statusCode);
+        this.status = TransactionStatusEnum.toName(code);
     }
 }

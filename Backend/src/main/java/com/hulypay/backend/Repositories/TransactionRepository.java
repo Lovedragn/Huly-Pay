@@ -30,9 +30,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
            "FROM Transaction t WHERE t.user.id = :userId")
     List<Object[]> getSpendingSummary(@Param("userId") UUID userId);
 
-    @Query("SELECT COALESCE(NULLIF(TRIM(t.categoryName), ''), 'Others'), COALESCE(SUM(t.amount), 0), COUNT(t) " +
+    @Query("SELECT COALESCE(NULLIF(TRIM(t.category), ''), 'Others'), COALESCE(SUM(t.amount), 0), COUNT(t) " +
            "FROM Transaction t WHERE t.user.id = :userId " +
-           "GROUP BY COALESCE(NULLIF(TRIM(t.categoryName), ''), 'Others') " +
+           "GROUP BY COALESCE(NULLIF(TRIM(t.category), ''), 'Others') " +
            "ORDER BY SUM(t.amount) DESC")
     List<Object[]> getCategoryBreakdown(@Param("userId") UUID userId);
 

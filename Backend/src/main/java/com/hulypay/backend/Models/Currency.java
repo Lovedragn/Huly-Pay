@@ -19,6 +19,6 @@ public class Currency {
     @Column(name = "code", length = 3, nullable = false)
     private String code;
 
-    @Column(name = "symbol", length = 5, nullable = false)
+    @Column(name = "symbol", length = 10, nullable = false, unique = true)
     private String symbol;
 }
