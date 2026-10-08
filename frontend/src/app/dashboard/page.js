@@ -45,7 +45,9 @@ export default function DashboardPage() {
 
   // Set authMounted after first client render to avoid hydration mismatch
   React.useEffect(() => {
-    setAuthMounted(true);
+    queueMicrotask(() => {
+      setAuthMounted(true);
+    });
   }, []);
 
   // Clean OAuth hash from URL once session is verified and parsed by Supabase
@@ -64,17 +66,19 @@ export default function DashboardPage() {
 
   // Load initial preferences from user_preference_website JSON on client mount
   React.useEffect(() => {
-    try {
-      const prefs = getUserPreferences();
-      if (typeof prefs.theaterMode === "boolean") {
-        setDailyTheaterMode(prefs.theaterMode);
+    queueMicrotask(() => {
+      try {
+        const prefs = getUserPreferences();
+        if (typeof prefs.theaterMode === "boolean") {
+          setDailyTheaterMode(prefs.theaterMode);
+        }
+        if (prefs.currency === "INR" || prefs.currency === "USD") {
+          setCurrency(prefs.currency);
+        }
+      } catch (e) {
+        console.warn("Could not read preferences from user_preference_website:", e);
       }
-      if (prefs.currency === "INR" || prefs.currency === "USD") {
-        setCurrency(prefs.currency);
-      }
-    } catch (e) {
-      console.warn("Could not read preferences from user_preference_website:", e);
-    }
+    });
   }, []);
 
   // Persist currency
@@ -522,7 +526,7 @@ export default function DashboardPage() {
                       : "text-black hover:bg-neutral-200"
                   }`}
                 >
-                  ₹ INR (UPI)
+                  ₹ INR
                 </button>
                 <button
                   type="button"
@@ -669,13 +673,18 @@ export default function DashboardPage() {
             />
           </div>
 
-          {/* Chart 2: Bar Chart (Monthly Outflow vs Budget Cap) */}
+          {/* Chart 2: Bar Chart (Budget Chart) */}
           <div
             className={`w-full transition-all duration-300 ${
               dailyTheaterMode ? "col-span-full" : ""
             }`}
           >
-            <BarChartMonthly data={monthlyData} currency={currency} />
+            <BarChartMonthly
+              data={monthlyData}
+              dailyData={dailyData}
+              expenses={expenses}
+              currency={currency}
+            />
           </div>
         </div>
 

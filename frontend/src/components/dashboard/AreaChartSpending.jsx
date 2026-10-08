@@ -152,10 +152,15 @@ export default function AreaChartSpending({
     <div className="border-[3px] border-black bg-white shadow-[6px_6px_0px_#000000] p-4 sm:p-6 flex flex-col justify-between">
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b-2 border-neutral-200">
-        <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
+        <div>
           <h2 className="text-xl sm:text-2xl font-bold font-pixel text-black">
             Daily Spending
           </h2>
+        </div>
+
+        {/* Controls & Filters (Right-aligned) */}
+        <div className="flex flex-wrap items-center justify-end gap-2 ml-auto">
+          {/* Theater View button (placed left of Amount / Average) */}
           <button
             type="button"
             onClick={handleToggleTheater}
@@ -206,10 +211,7 @@ export default function AreaChartSpending({
               </>
             )}
           </button>
-        </div>
 
-        {/* Filters */}
-        <div className="flex flex-wrap items-center gap-2">
           {/* Metric Selector: Amount vs Average */}
           <div className="flex border-2 border-black bg-neutral-100 p-0.5 text-xs font-mono">
             <button

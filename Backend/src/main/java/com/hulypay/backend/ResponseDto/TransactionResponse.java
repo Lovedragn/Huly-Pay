@@ -21,12 +21,14 @@ public class TransactionResponse {
     private UUID userId;
     private BigDecimal amount;
     private String currency;
+    private UUID merchantId;
     private String merchantName;
     private String category;
     private String description;
     private String paymentMethod;
     private String provider;
     private String status;
+    private Short statusCode;
     private String upiTransactionId;
     private String transactionReference;
     private String upiId;
@@ -52,12 +54,14 @@ public class TransactionResponse {
                 .userId(transaction.getUser() != null ? transaction.getUser().getId() : null)
                 .amount(transaction.getAmount())
                 .currency(transaction.getCurrency())
-                .merchantName(transaction.getMerchantName())
+                .merchantId(transaction.getMerchant() != null ? transaction.getMerchant().getId() : null)
+                .merchantName(transaction.getMerchant() != null ? transaction.getMerchant().getName() : null)
                 .category(transaction.getCategory())
                 .description(transaction.getDescription())
                 .paymentMethod(transaction.getPaymentMethod())
                 .provider(transaction.getProvider())
                 .status(transaction.getStatus())
+                .statusCode(transaction.getStatusCode())
                 .upiTransactionId(transaction.getUpiTransactionId())
                 .transactionReference(transaction.getTransactionReference())
                 .upiId(transaction.getUpiId())
@@ -70,8 +74,3 @@ public class TransactionResponse {
                 .build();
     }
 }
-
-
-
-
-

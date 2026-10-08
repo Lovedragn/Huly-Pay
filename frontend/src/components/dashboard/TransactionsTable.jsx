@@ -34,14 +34,16 @@ export default function TransactionsTable({
   });
 
   React.useEffect(() => {
-    try {
-      const saved = localStorage.getItem("hulypay_pref_tx_columns");
-      if (saved) {
-        setVisibleColumns((prev) => ({ ...prev, ...JSON.parse(saved) }));
+    queueMicrotask(() => {
+      try {
+        const saved = localStorage.getItem("hulypay_pref_tx_columns");
+        if (saved) {
+          setVisibleColumns((prev) => ({ ...prev, ...JSON.parse(saved) }));
+        }
+      } catch (e) {
+        // ignore
       }
-    } catch (e) {
-      // ignore
-    }
+    });
   }, []);
 
   const toggleColumn = (key) => {
@@ -83,7 +85,10 @@ export default function TransactionsTable({
     return expenses.filter((item) => {
       // Category or Merchant filter
       if (selectedCategory) {
-        const cat = item.category?.name || item.paymentMethod;
+        const cat =
+          typeof item.category === "string"
+            ? item.category
+            : item.category?.name || item.category_name || item.paymentMethod;
         const merchant = item.merchantName || item.provider;
         if (cat !== selectedCategory && merchant !== selectedCategory) {
           return false;

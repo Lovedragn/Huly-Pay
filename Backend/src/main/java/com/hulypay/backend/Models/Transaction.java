@@ -1,6 +1,5 @@
 package com.hulypay.backend.Models;
 
-import com.hulypay.backend.Security.EncryptedStringConverter;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -21,6 +20,7 @@ public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,41 +31,36 @@ public class Transaction {
     private BigDecimal amount;
 
     @Builder.Default
-    @Column(nullable = false, length = 3)
-    private String currency = "INR";
+    @Column(name = "currency_code", length = 3)
+    private String currencyCode = "INR";
 
-    @Convert(converter = EncryptedStringConverter.class)
-    @Column(name = "merchant_name", columnDefinition = "TEXT")
-    private String merchantName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "merchant_id")
+    private Merchant merchant;
 
     @Builder.Default
-    @Column(nullable = false, length = 100)
-    private String category = "Others";
+    @Column(name = "category_name")
+    private String categoryName = "Others";
 
-    @Convert(converter = EncryptedStringConverter.class)
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "payment_method", length = 50)
+    @Column(name = "payment_method")
     private String paymentMethod;
 
-    @Convert(converter = EncryptedStringConverter.class)
-    @Column(name = "provider", columnDefinition = "TEXT")
+    @Column(name = "provider")
     private String provider;
 
     @Builder.Default
-    @Column(nullable = false, length = 30)
-    private String status = "SUCCESS";
+    @Column(name = "status_code")
+    private Short statusCode = 1;
 
-    @Convert(converter = EncryptedStringConverter.class)
     @Column(name = "upi_transaction_id", columnDefinition = "TEXT")
     private String upiTransactionId;
 
-    @Convert(converter = EncryptedStringConverter.class)
     @Column(name = "transaction_reference", columnDefinition = "TEXT")
     private String transactionReference;
 
-    @Convert(converter = EncryptedStringConverter.class)
     @Column(name = "upi_id", columnDefinition = "TEXT")
     private String upiId;
 
@@ -87,4 +82,33 @@ public class Transaction {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Instant updatedAt;
+
+    // Convenience accessors
+    public String getMerchantName() {
+        return merchant != null ? merchant.getName() : null;
+    }
+
+    public String getCurrency() {
+        return currencyCode != null ? currencyCode : "INR";
+    }
+
+    public void setCurrency(String currency) {
+        this.currencyCode = (currency != null && !currency.isBlank()) ? currency.trim().toUpperCase() : "INR";
+    }
+
+    public String getCategory() {
+        return categoryName != null ? categoryName : "Others";
+    }
+
+    public void setCategory(String category) {
+        this.categoryName = (category != null && !category.isBlank()) ? category.trim() : "Others";
+    }
+
+    public String getStatus() {
+        return TransactionStatusEnum.toName(statusCode);
+    }
+
+    public void setStatus(String status) {
+        this.statusCode = TransactionStatusEnum.toCode(status);
+    }
 }

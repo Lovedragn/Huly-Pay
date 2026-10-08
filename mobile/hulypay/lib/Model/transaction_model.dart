@@ -216,28 +216,43 @@ class TransactionModel {
       case 'food & dining':
       case 'dining':
         return Icons.restaurant_rounded;
-      case 'internet':
-      case 'bills':
-      case 'utilities':
-        return Icons.wifi_rounded;
-      case 'shopping':
-        return Icons.shopping_bag_rounded;
       case 'groceries':
         return Icons.local_grocery_store_rounded;
-      case 'travel':
-      case 'transport':
-        return Icons.directions_car_rounded;
+      case 'shopping':
+        return Icons.shopping_bag_rounded;
+      case 'bills':
+      case 'bills & utilities':
+      case 'utilities':
+      case 'internet':
+        return Icons.receipt_long_rounded;
       case 'entertainment':
         return Icons.movie_rounded;
+      case 'travel':
+      case 'transport':
+      case 'travel & transport':
+      case 'transportation':
+        return Icons.directions_car_rounded;
       case 'health':
       case 'medical':
+      case 'health & medical':
+      case 'health & fitness':
         return Icons.medical_services_rounded;
+      case 'education':
+        return Icons.school_rounded;
+      case 'investments':
+      case 'investment':
+        return Icons.trending_up_rounded;
+      case 'personal care':
+      case 'personal':
+        return Icons.spa_rounded;
       case 'pending':
         return Icons.hourglass_top_rounded;
       case 'failed':
         return Icons.error_outline_rounded;
+      case 'others':
+      case 'other':
       default:
-        return Icons.payments_rounded;
+        return Icons.category_rounded;
     }
   }
 
@@ -247,23 +262,43 @@ class TransactionModel {
       case 'food & dining':
       case 'dining':
         return const Color(0xFFFF9500);
-      case 'internet':
-      case 'bills':
-      case 'utilities':
-        return const Color(0xFF007AFF);
-      case 'shopping':
-        return const Color(0xFFAF52DE);
       case 'groceries':
         return const Color(0xFF34C759);
+      case 'shopping':
+        return const Color(0xFF007AFF);
+      case 'bills':
+      case 'bills & utilities':
+      case 'utilities':
+      case 'internet':
+        return const Color(0xFFAF52DE);
+      case 'entertainment':
+        return const Color(0xFFFF2D55);
       case 'travel':
       case 'transport':
-        return const Color(0xFFFF2D55);
+      case 'travel & transport':
+      case 'transportation':
+        return const Color(0xFF30D158);
+      case 'health':
+      case 'medical':
+      case 'health & medical':
+      case 'health & fitness':
+        return const Color(0xFF5AC8FA);
+      case 'education':
+        return const Color(0xFF5856D6);
+      case 'investments':
+      case 'investment':
+        return const Color(0xFFFFCC00);
+      case 'personal care':
+      case 'personal':
+        return const Color(0xFFFF6482);
       case 'pending':
         return const Color(0xFFFF9500);
       case 'failed':
         return const Color(0xFFFF3B30);
+      case 'others':
+      case 'other':
       default:
-        return const Color(0xFF5856D6);
+        return const Color(0xFF8E8E93);
     }
   }
 

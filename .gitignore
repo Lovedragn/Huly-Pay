@@ -1,6 +1,16 @@
+# Environment files across all directories
 .env
 .env.*
+**/.env
+**/.env.*
+Backend/.env
+backend/.env
+frontend/.env
+mobile/.env
+*.env
+*.env.backup
 !.env.example
+!**/.env.example
 
 # Dart & Flutter build / tooling artifacts
 .dart_tool/

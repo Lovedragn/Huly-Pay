@@ -318,36 +318,61 @@ export async function syncActualDataFromSupabase(userId = null) {
 
     // 4. Category Breakdown
     const categoryColorMap = {
-      GPAY: "#62D800", // Terminal Lime
       "Food & Dining": "#FF0000", // Brand Red
-      Food: "#FF0000",
-      UPI: "#FF00F5", // Neon Magenta
-      GOOGLE_PAY: "#D8FF00", // Cyber Yellow
+      Groceries: "#10B981", // Emerald Green
       Shopping: "#00E5FF", // Cyan Accent
-      Travel: "#FF7A00", // Orange
-      Bills: "#A855F7", // Purple
-      Entertainment: "#EC4899", // Pink
-      Health: "#10B981", // Emerald
-      Other: "#71717A", // Slate
+      "Bills & Utilities": "#A855F7", // Purple Accent
+      Entertainment: "#EC4899", // Neon Pink
+      "Travel & Transport": "#FF7A00", // Vibrant Orange
+      "Health & Medical": "#14B8A6", // Teal
+      Education: "#6366F1", // Indigo
+      Investments: "#D8FF00", // Cyber Yellow
+      "Personal Care": "#F43F5E", // Rose
+      Others: "#71717A", // Slate Gray
+      // Aliases for backward compatibility
+      Food: "#FF0000",
+      Bills: "#A855F7",
+      Travel: "#FF7A00",
+      Transportation: "#FF7A00",
+      Health: "#14B8A6",
+      "Health & Fitness": "#14B8A6",
+      Other: "#71717A",
+      GPAY: "#62D800",
+      UPI: "#FF00F5",
+      GOOGLE_PAY: "#D8FF00",
     };
 
     const categoryIconMap = {
+      "Food & Dining": "utensils",
+      Groceries: "shopping-cart",
+      Shopping: "shopping-bag",
+      "Bills & Utilities": "zap",
+      Entertainment: "film",
+      "Travel & Transport": "navigation",
+      "Health & Medical": "activity",
+      Education: "book-open",
+      Investments: "trending-up",
+      "Personal Care": "smile",
+      Others: "grid",
+      // Aliases for backward compatibility
+      Food: "utensils",
+      Bills: "zap",
+      Travel: "navigation",
+      Transportation: "navigation",
+      Health: "activity",
+      "Health & Fitness": "activity",
+      Other: "grid",
       GPAY: "zap",
-      "Food & Dining": "briefcase",
-      Food: "briefcase",
       UPI: "trending-up",
       GOOGLE_PAY: "code",
-      Shopping: "cpu",
-      Travel: "server",
-      Bills: "zap",
-      Entertainment: "trending-up",
-      Health: "server",
-      Other: "briefcase",
     };
 
     const catAggregate = {};
     normalizedTransactions.forEach((t) => {
-      const cName = t.category?.name || "Others";
+      const cName =
+        (typeof t.category === "string"
+          ? t.category
+          : t.category?.name || t.category_name) || "Others";
       if (!catAggregate[cName]) {
         catAggregate[cName] = { category: cName, totalAmount: 0, count: 0 };
       }

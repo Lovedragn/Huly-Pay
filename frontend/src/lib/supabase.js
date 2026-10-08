@@ -1,10 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseUrl = process.env.SUPABASE_URL || "https://placeholder.supabase.co";
 
 const supabasePublishableKey =
   process.env.SUPABASE_PUBLISHABLE_KEY ||
-  "";
+  process.env.SUPABASE_ANON_KEY ||
+  "placeholder-key";
 
 export const supabase = createClient(supabaseUrl, supabasePublishableKey, {
   auth: {

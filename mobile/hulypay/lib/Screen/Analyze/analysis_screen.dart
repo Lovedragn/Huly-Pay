@@ -52,17 +52,22 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 
   static const Map<String, Color> _kCategoryColors = {
     'Food & Dining': Color(0xFFFF9500),
+    'Groceries': Color(0xFF34C759),
     'Shopping': Color(0xFF007AFF),
     'Bills & Utilities': Color(0xFFAF52DE),
-    'Transportation': Color(0xFF30D158),
     'Entertainment': Color(0xFFFF2D55),
-    'Groceries': Color(0xFF34C759),
-    'Health & Fitness': Color(0xFF5AC8FA),
-    'Travel': Color(0xFFFFCC00),
-    'Personal Care': Color(0xFFFF6482),
+    'Travel & Transport': Color(0xFF30D158),
+    'Health & Medical': Color(0xFF5AC8FA),
     'Education': Color(0xFF5856D6),
-    'Other': Color(0xFF8E8E93),
+    'Investments': Color(0xFFFFCC00),
+    'Personal Care': Color(0xFFFF6482),
     'Others': Color(0xFF8E8E93),
+    // Aliases for backward compatibility
+    'Transportation': Color(0xFF30D158),
+    'Health & Fitness': Color(0xFF5AC8FA),
+    'Travel': Color(0xFF30D158),
+    'Food': Color(0xFFFF9500),
+    'Other': Color(0xFF8E8E93),
   };
 
   @override
@@ -230,8 +235,16 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
         tLower.contains('petrol') ||
         tLower.contains('metro') ||
         tLower.contains('transit') ||
-        tLower.contains('cab')) {
-      return 'Transportation';
+        tLower.contains('cab') ||
+        tLower.contains('flight') ||
+        tLower.contains('airline') ||
+        tLower.contains('hotel') ||
+        tLower.contains('makemytrip') ||
+        tLower.contains('irctc') ||
+        tLower.contains('stay') ||
+        tLower.contains('travel') ||
+        tLower.contains('transport')) {
+      return 'Travel & Transport';
     } else if (tLower.contains('bill') ||
         tLower.contains('electric') ||
         tLower.contains('water') ||
@@ -262,18 +275,21 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
         tLower.contains('med') ||
         tLower.contains('clinic') ||
         tLower.contains('hospital') ||
+        tLower.contains('doctor') ||
         tLower.contains('cult') ||
         tLower.contains('gym') ||
         tLower.contains('fitness')) {
-      return 'Health & Fitness';
-    } else if (tLower.contains('flight') ||
-        tLower.contains('airline') ||
-        tLower.contains('hotel') ||
-        tLower.contains('makemytrip') ||
-        tLower.contains('irctc') ||
-        tLower.contains('stay') ||
-        tLower.contains('travel')) {
-      return 'Travel';
+      return 'Health & Medical';
+    } else if (tLower.contains('zerodha') ||
+        tLower.contains('groww') ||
+        tLower.contains('upstox') ||
+        tLower.contains('mutual fund') ||
+        tLower.contains('invest') ||
+        tLower.contains('stocks') ||
+        tLower.contains('sip') ||
+        tLower.contains('coin') ||
+        tLower.contains('indmoney')) {
+      return 'Investments';
     } else if (tLower.contains('salon') ||
         tLower.contains('spa') ||
         tLower.contains('beauty') ||

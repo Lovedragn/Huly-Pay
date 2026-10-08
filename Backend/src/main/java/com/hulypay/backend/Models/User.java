@@ -1,6 +1,5 @@
 package com.hulypay.backend.Models;
 
-import com.hulypay.backend.Security.EncryptedStringConverter;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -22,39 +21,32 @@ public class User {
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Convert(converter = EncryptedStringConverter.class)
-    @Column(name = "full_name", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "full_name")
     private String fullName;
 
-    @Convert(converter = EncryptedStringConverter.class)
-    @Column(name = "phone_number", columnDefinition = "TEXT")
+    @Column(name = "phone_number")
     private String phoneNumber;
 
     @Builder.Default
     @Column(name = "active", nullable = false)
     private Boolean active = true;
 
-    @Convert(converter = EncryptedStringConverter.class)
-    @Column(name = "first_name", columnDefinition = "TEXT")
+    @Column(name = "first_name")
     private String firstName;
 
-    @Convert(converter = EncryptedStringConverter.class)
-    @Column(name = "last_name", columnDefinition = "TEXT")
+    @Column(name = "last_name")
     private String lastName;
 
-    @Convert(converter = EncryptedStringConverter.class)
-    @Column(name = "avatar_url", columnDefinition = "TEXT")
+    @Column(name = "avatar_url")
     private String avatarUrl;
 
-    @Convert(converter = EncryptedStringConverter.class)
-    @Column(name = "auth_provider", columnDefinition = "TEXT")
+    @Column(name = "auth_provider")
     private String authProvider;
 
-    @Convert(converter = EncryptedStringConverter.class)
-    @Column(name = "provider_subject", columnDefinition = "TEXT")
+    @Column(name = "provider_subject")
     private String providerSubject;
 
     @CreationTimestamp

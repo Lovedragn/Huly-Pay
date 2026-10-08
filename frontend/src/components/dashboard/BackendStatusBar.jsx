@@ -118,7 +118,7 @@ export default function BackendStatusBar({
                 : "text-neutral-600 hover:text-black"
             }`}
           >
-            ₹ INR (UPI)
+            ₹ INR
           </button>
           <button
             type="button"

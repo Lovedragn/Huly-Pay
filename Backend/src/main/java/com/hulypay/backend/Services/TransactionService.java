@@ -1,12 +1,11 @@
 package com.hulypay.backend.Services;
 
-import com.hulypay.backend.RequestDto.*;
-import com.hulypay.backend.ResponseDto.*;
 import com.hulypay.backend.Exceptions.BadRequestException;
 import com.hulypay.backend.Exceptions.ResourceNotFoundException;
-import com.hulypay.backend.Models.Transaction;
-import com.hulypay.backend.Models.User;
-import com.hulypay.backend.Repositories.TransactionRepository;
+import com.hulypay.backend.Models.*;
+import com.hulypay.backend.Repositories.*;
+import com.hulypay.backend.RequestDto.*;
+import com.hulypay.backend.ResponseDto.*;
 import com.hulypay.backend.Services.Sms.ParsedTransactionSms;
 import com.hulypay.backend.Services.Sms.TransactionSmsParserService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +24,10 @@ import java.util.UUID;
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
+    private final MerchantRepository merchantRepository;
+    private final CategoryRepository categoryRepository;
+    private final CurrencyRepository currencyRepository;
+    private final PaymentMethodRepository paymentMethodRepository;
     private final TransactionSmsParserService smsParserService;
 
     @Transactional
@@ -34,29 +37,36 @@ public class TransactionService {
         }
 
         String currency = (request.getCurrency() != null && !request.getCurrency().isBlank())
-                ? request.getCurrency().toUpperCase()
+                ? request.getCurrency().trim().toUpperCase()
                 : "INR";
+        ensureCurrencyExists(currency);
 
         String category = (request.getCategory() != null && !request.getCategory().isBlank())
                 ? request.getCategory().trim()
                 : "Others";
+        ensureCategoryExists(category);
 
-        String status = (request.getStatus() != null && !request.getStatus().isBlank())
+        String statusStr = (request.getStatus() != null && !request.getStatus().isBlank())
                 ? request.getStatus().trim().toUpperCase()
                 : "SUCCESS";
+        short statusCode = TransactionStatusEnum.toCode(statusStr);
+
+        Merchant merchant = resolveMerchant(request.getMerchantName());
+
+        ensurePaymentMethodExists(request.getPaymentMethod(), request.getProvider());
 
         Instant txTime = request.getTransactionTime() != null ? request.getTransactionTime() : Instant.now();
 
         Transaction transaction = Transaction.builder()
                 .user(user)
                 .amount(request.getAmount())
-                .currency(currency)
-                .merchantName(request.getMerchantName())
-                .category(category)
+                .currencyCode(currency)
+                .merchant(merchant)
+                .categoryName(category)
                 .description(request.getDescription())
                 .paymentMethod(request.getPaymentMethod())
                 .provider(request.getProvider())
-                .status(status)
+                .statusCode(statusCode)
                 .upiTransactionId(request.getUpiTransactionId())
                 .transactionReference(request.getTransactionReference())
                 .upiId(request.getUpiId())
@@ -99,15 +109,23 @@ public class TransactionService {
         }
 
         if (request.getCurrency() != null && !request.getCurrency().isBlank()) {
-            transaction.setCurrency(request.getCurrency().toUpperCase());
+            String curr = request.getCurrency().trim().toUpperCase();
+            ensureCurrencyExists(curr);
+            transaction.setCurrencyCode(curr);
         }
 
         if (request.getMerchantName() != null) {
-            transaction.setMerchantName(request.getMerchantName());
+            if (request.getMerchantName().isBlank()) {
+                transaction.setMerchant(null);
+            } else {
+                transaction.setMerchant(resolveMerchant(request.getMerchantName()));
+            }
         }
 
         if (request.getCategory() != null) {
-            transaction.setCategory(request.getCategory().isBlank() ? "Others" : request.getCategory().trim());
+            String cat = request.getCategory().isBlank() ? "Others" : request.getCategory().trim();
+            ensureCategoryExists(cat);
+            transaction.setCategoryName(cat);
         }
 
         if (request.getDescription() != null) {
@@ -122,8 +140,12 @@ public class TransactionService {
             transaction.setProvider(request.getProvider());
         }
 
+        if (transaction.getPaymentMethod() != null && transaction.getProvider() != null) {
+            ensurePaymentMethodExists(transaction.getPaymentMethod(), transaction.getProvider());
+        }
+
         if (request.getStatus() != null && !request.getStatus().isBlank()) {
-            transaction.setStatus(request.getStatus().trim().toUpperCase());
+            transaction.setStatusCode(TransactionStatusEnum.toCode(request.getStatus()));
         }
 
         if (request.getUpiTransactionId() != null) {
@@ -171,7 +193,7 @@ public class TransactionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found with ID: " + id));
 
         if (request.getStatus() != null && !request.getStatus().isBlank()) {
-            transaction.setStatus(request.getStatus().trim().toUpperCase());
+            transaction.setStatusCode(TransactionStatusEnum.toCode(request.getStatus()));
         }
         if (request.getUpiTransactionId() != null && !request.getUpiTransactionId().isBlank()) {
             transaction.setUpiTransactionId(request.getUpiTransactionId());
@@ -255,6 +277,43 @@ public class TransactionService {
                 .transaction(TransactionResponse.fromEntity(saved))
                 .build();
     }
+
+    private Merchant resolveMerchant(String merchantName) {
+        if (merchantName == null || merchantName.isBlank()) {
+            return null;
+        }
+        String clean = merchantName.trim();
+        return merchantRepository.findByNameIgnoreCase(clean)
+                .orElseGet(() -> merchantRepository.save(Merchant.builder().name(clean).build()));
+    }
+
+    private void ensureCurrencyExists(String currencyCode) {
+        if (currencyCode != null && !currencyCode.isBlank()) {
+            String code = currencyCode.trim().toUpperCase();
+            if (!currencyRepository.existsById(code)) {
+                currencyRepository.save(Currency.builder().code(code).symbol(code).build());
+            }
+        }
+    }
+
+    private void ensureCategoryExists(String categoryName) {
+        if (categoryName != null && !categoryName.isBlank()) {
+            String name = categoryName.trim();
+            if (!categoryRepository.existsById(name)) {
+                categoryRepository.save(Category.builder().name(name).build());
+            }
+        }
+    }
+
+    private void ensurePaymentMethodExists(String method, String provider) {
+        if (method != null && !method.isBlank() && provider != null && !provider.isBlank()) {
+            PaymentMethodId id = PaymentMethodId.builder()
+                    .method(method.trim())
+                    .provider(provider.trim())
+                    .build();
+            if (!paymentMethodRepository.existsById(id)) {
+                paymentMethodRepository.save(PaymentMethod.builder().id(id).build());
+            }
+        }
+    }
 }
-
-

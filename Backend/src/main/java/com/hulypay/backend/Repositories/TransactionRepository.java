@@ -1,6 +1,7 @@
 package com.hulypay.backend.Repositories;
 
 import com.hulypay.backend.Models.Transaction;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,21 +14,25 @@ import java.util.UUID;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
 
+    @EntityGraph(attributePaths = {"merchant", "user"})
     List<Transaction> findByUserIdOrderByTransactionTimeDesc(UUID userId);
 
+    @EntityGraph(attributePaths = {"merchant", "user"})
     List<Transaction> findByUserIdOrderByCreatedAtDesc(UUID userId);
 
+    @EntityGraph(attributePaths = {"merchant", "user"})
     Optional<Transaction> findByIdAndUserId(UUID id, UUID userId);
 
+    @EntityGraph(attributePaths = {"merchant", "user"})
     Optional<Transaction> findByUpiTransactionId(String upiTransactionId);
 
     @Query("SELECT COALESCE(SUM(t.amount), 0), COUNT(t), COALESCE(AVG(t.amount), 0) " +
            "FROM Transaction t WHERE t.user.id = :userId")
     List<Object[]> getSpendingSummary(@Param("userId") UUID userId);
 
-    @Query("SELECT COALESCE(NULLIF(TRIM(t.category), ''), 'Others'), COALESCE(SUM(t.amount), 0), COUNT(t) " +
+    @Query("SELECT COALESCE(NULLIF(TRIM(t.categoryName), ''), 'Others'), COALESCE(SUM(t.amount), 0), COUNT(t) " +
            "FROM Transaction t WHERE t.user.id = :userId " +
-           "GROUP BY COALESCE(NULLIF(TRIM(t.category), ''), 'Others') " +
+           "GROUP BY COALESCE(NULLIF(TRIM(t.categoryName), ''), 'Others') " +
            "ORDER BY SUM(t.amount) DESC")
     List<Object[]> getCategoryBreakdown(@Param("userId") UUID userId);
 
@@ -41,5 +46,3 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
                    "GROUP BY TO_CHAR(t.transaction_time, 'YYYY-MM') ORDER BY tx_month ASC", nativeQuery = true)
     List<Object[]> getMonthlySpending(@Param("userId") UUID userId);
 }
-
-

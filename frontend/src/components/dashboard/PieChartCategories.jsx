@@ -10,30 +10,50 @@ import {
 
 const chartConfig = {
   totalAmount: {
-    label: "Amount ($)",
+    label: "Amount",
   },
-  "Cloud Infrastructure": {
-    label: "Cloud Infrastructure",
+  "Food & Dining": {
+    label: "Food & Dining",
     color: "#FF0000",
   },
-  "SaaS & Developer Tools": {
-    label: "SaaS Tools",
-    color: "#FF00F5",
+  Groceries: {
+    label: "Groceries",
+    color: "#10B981",
   },
-  "Hardware & POS Terminals": {
-    label: "Hardware & POS",
-    color: "#62D800",
-  },
-  "Payment Gateway Fees": {
-    label: "Payment Fees",
-    color: "#D8FF00",
-  },
-  "Growth & Global Marketing": {
-    label: "Marketing",
+  Shopping: {
+    label: "Shopping",
     color: "#00E5FF",
   },
-  "Office & Operations": {
-    label: "Operations",
+  "Bills & Utilities": {
+    label: "Bills & Utilities",
+    color: "#A855F7",
+  },
+  Entertainment: {
+    label: "Entertainment",
+    color: "#EC4899",
+  },
+  "Travel & Transport": {
+    label: "Travel & Transport",
+    color: "#FF7A00",
+  },
+  "Health & Medical": {
+    label: "Health & Medical",
+    color: "#14B8A6",
+  },
+  Education: {
+    label: "Education",
+    color: "#6366F1",
+  },
+  Investments: {
+    label: "Investments",
+    color: "#D8FF00",
+  },
+  "Personal Care": {
+    label: "Personal Care",
+    color: "#F43F5E",
+  },
+  Others: {
+    label: "Others",
     color: "#71717A",
   },
 };
