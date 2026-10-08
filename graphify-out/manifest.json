@@ -144,9 +144,9 @@
     "semantic_hash": ""
   },
   "frontend/src/app/layout.js": {
-    "mtime": 1791371975.7995548,
-    "seen": 1791471023.0629125,
-    "ast_hash": "888a3a048aa1602502d104ba608fc10a",
+    "mtime": 1791475436.1354754,
+    "seen": 1791475479.7085674,
+    "ast_hash": "b3a656280cce7ac25f01cf32a3ea2b97",
     "semantic_hash": ""
   },
   "frontend/src/app/page.js": {
@@ -156,9 +156,9 @@
     "semantic_hash": ""
   },
   "frontend/AGENTS.md": {
-    "mtime": 1791371975.4897943,
-    "seen": 1791471023.0632374,
-    "ast_hash": "3ad29ed1c7e1970f724e872fcffc4909",
+    "mtime": 1791476138.963581,
+    "seen": 1791476179.1371746,
+    "ast_hash": "efb888862c9f94a087a633f105bfafb5",
     "semantic_hash": ""
   },
   "frontend/CLAUDE.md": {
@@ -174,9 +174,9 @@
     "semantic_hash": ""
   },
   "frontend/src/app/dashboard/page.js": {
-    "mtime": 1791474387.7844927,
-    "seen": 1791474509.3221467,
-    "ast_hash": "09621fd2bf5510a621baa9647de19c00",
+    "mtime": 1791476067.5131922,
+    "seen": 1791476179.1123023,
+    "ast_hash": "b66e0323ac79e2a0a18a2674e8b90069",
     "semantic_hash": ""
   },
   "frontend/src/components/landing/CardDownload.js": {
@@ -498,9 +498,9 @@
     "semantic_hash": ""
   },
   "frontend/src/components/dashboard/AreaChartSpending.jsx": {
-    "mtime": 1791474624.2255194,
-    "seen": 1791474695.8285437,
-    "ast_hash": "cc2c7b831c10001bb54d38e468a976fd",
+    "mtime": 1791476099.9325364,
+    "seen": 1791476179.115156,
+    "ast_hash": "37becf0ec52bf22e539818ef6d57b567",
     "semantic_hash": ""
   },
   "frontend/src/components/dashboard/BackendStatusBar.jsx": {
@@ -510,9 +510,9 @@
     "semantic_hash": ""
   },
   "frontend/src/components/dashboard/BarChartMonthly.jsx": {
-    "mtime": 1791474666.322714,
-    "seen": 1791474695.8287601,
-    "ast_hash": "6e4a333cbeaeeb07198667fad5f7317b",
+    "mtime": 1791476010.022222,
+    "seen": 1791476179.1153574,
+    "ast_hash": "fa68967f924dcf98e69c8fd78c98933a",
     "semantic_hash": ""
   },
   "frontend/src/components/dashboard/PieChartCategories.jsx": {
@@ -552,9 +552,9 @@
     "semantic_hash": ""
   },
   "frontend/src/lib/supabase.js": {
-    "mtime": 1791471878.4565876,
-    "seen": 1791471959.9783027,
-    "ast_hash": "fc4856414fd189df7c6625401021dde7",
+    "mtime": 1791475088.5255153,
+    "seen": 1791475479.714919,
+    "ast_hash": "3b3b13819110ab44ad33c6317dc0b5ec",
     "semantic_hash": ""
   },
   "frontend/src/lib/utils.js": {
@@ -576,9 +576,9 @@
     "semantic_hash": ""
   },
   "frontend/src/context/ThemeContext.js": {
-    "mtime": 1791371975.825417,
-    "seen": 1791471023.0629904,
-    "ast_hash": "f9eefe7e314439153b2e5d4eeb70e46e",
+    "mtime": 1791475410.3430607,
+    "seen": 1791475479.7147143,
+    "ast_hash": "64fb49e524643747afaba65457099a8c",
     "semantic_hash": ""
   },
   "frontend/src/lib/userPreferences.js": {

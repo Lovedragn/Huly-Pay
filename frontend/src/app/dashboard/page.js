@@ -661,7 +661,7 @@ export default function DashboardPage() {
         >
           {/* Chart 1: Area Chart (Daily Spending - with Theater View support) */}
           <div
-            className={`w-full transition-all duration-300 ${
+            className={`w-full min-w-0 overflow-hidden transition-all duration-300 ${
               dailyTheaterMode ? "col-span-full" : ""
             }`}
           >
@@ -675,7 +675,7 @@ export default function DashboardPage() {
 
           {/* Chart 2: Bar Chart (Budget Chart) */}
           <div
-            className={`w-full transition-all duration-300 ${
+            className={`w-full min-w-0 overflow-hidden transition-all duration-300 ${
               dailyTheaterMode ? "col-span-full" : ""
             }`}
           >

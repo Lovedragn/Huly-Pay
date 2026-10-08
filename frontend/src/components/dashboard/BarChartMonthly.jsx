@@ -23,6 +23,10 @@ const TIMEFRAMES = [
   { id: "all", label: "ALL", days: null },
 ];
 
+// Fixed unreduced bar widths
+const BAR_SIZE_BUDGET = 36;
+const BAR_SIZE_SPENT = 18;
+
 export default function BarChartMonthly({
   data = [],
   dailyData = [],
@@ -56,6 +60,7 @@ export default function BarChartMonthly({
       data && data.length > 0
         ? data[data.length - 1].budget || 60000
         : 60000;
+    const weeklyBudget = Math.round(latestMonthBudget / 4);
 
     // 2. Determine reference latest date
     let latestDate = new Date();
@@ -71,49 +76,66 @@ export default function BarChartMonthly({
       if (ts.length > 0) latestDate = new Date(Math.max(...ts));
     }
 
-    let result = [];
+    const monthNames = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    ];
 
-    if (timeRange === "7d") {
-      // 7 Days: Daily breakdown over last 7 days
-      const dailyBudget = Math.round(latestMonthBudget / 30);
-      for (let i = 6; i >= 0; i--) {
-        const d = new Date(latestDate);
-        d.setDate(d.getDate() - i);
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, "0");
-        const dd = String(d.getDate()).padStart(2, "0");
-        const dateStr = `${yyyy}-${mm}-${dd}`;
+    // Helper to sum expenses and count in a timestamp window
+    function getIntervalStats(startMs, endMs) {
+      const txs = (expenses || []).filter((e) => {
+        if (!e.date) return false;
+        const t = new Date(e.date).getTime();
+        return !isNaN(t) && t >= startMs && t <= endMs;
+      });
+      let spent = txs.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+      let count = txs.length;
 
-        const dayTx = (expenses || []).filter((e) => e.date === dateStr);
-        let daySpent = dayTx.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
-        let dayCount = dayTx.length;
-
-        if (dayCount === 0 && dailyData && dailyData.length > 0) {
-          const match = dailyData.find((item) => item.date === dateStr);
-          if (match) {
-            daySpent = match.totalAmount || 0;
-            dayCount = match.count || 0;
+      if (count === 0 && dailyData && dailyData.length > 0) {
+        dailyData.forEach((d) => {
+          if (!d.date) return;
+          const t = new Date(d.date).getTime();
+          if (!isNaN(t) && t >= startMs && t <= endMs) {
+            spent += d.totalAmount || 0;
+            count += d.count || 0;
           }
-        }
-
-        const label = d.toLocaleDateString("en-US", {
-          day: "2-digit",
-          month: "short",
-        });
-
-        result.push({
-          label,
-          rawDate: dateStr,
-          totalAmount: daySpent,
-          budget: dailyBudget,
-          count: dayCount,
         });
       }
+      return { spent, count };
+    }
+
+    let result = [];
+
+    // RULES:
+    // - From 7days to 6month: use WEEKS for X-axis
+    // - For 1y and all: use MONTHS for X-axis
+    if (timeRange === "7d") {
+      // 7 Days: Show the 2 most recent weeks (Prior Week vs Current Week)
+      const oneDayMs = 24 * 60 * 60 * 1000;
+      const lastWeekStart = latestDate.getTime() - 13 * oneDayMs;
+      const lastWeekEnd = latestDate.getTime() - 7 * oneDayMs;
+      const lastWeekStats = getIntervalStats(lastWeekStart, lastWeekEnd);
+
+      const thisWeekStart = latestDate.getTime() - 6 * oneDayMs;
+      const thisWeekEnd = latestDate.getTime();
+      const thisWeekStats = getIntervalStats(thisWeekStart, thisWeekEnd);
+
+      result.push({
+        label: "Last Week",
+        totalAmount: lastWeekStats.spent,
+        budget: weeklyBudget,
+        count: lastWeekStats.count,
+      });
+      result.push({
+        label: "This Week",
+        totalAmount: thisWeekStats.spent,
+        budget: weeklyBudget,
+        count: thisWeekStats.count,
+      });
     } else if (timeRange === "1m") {
-      // 1 Month: 4 weekly milestone buckets of the active month
+      // 1 Month: 4 weeks of the active month
       const activeYear = latestDate.getFullYear();
       const activeMonthIdx = latestDate.getMonth();
-      const weeklyBudget = Math.round(latestMonthBudget / 4);
 
       const weeks = [
         { label: "W1 (1-7)", start: 1, end: 7 },
@@ -123,54 +145,107 @@ export default function BarChartMonthly({
       ];
 
       weeks.forEach((w) => {
-        const weekTx = (expenses || []).filter((e) => {
-          if (!e.date) return false;
-          const parts = e.date.split("-");
-          if (parts.length < 3) return false;
-          const y = parseInt(parts[0], 10);
-          const m = parseInt(parts[1], 10) - 1;
-          const day = parseInt(parts[2], 10);
-          return y === activeYear && m === activeMonthIdx && day >= w.start && day <= w.end;
-        });
-
-        let weekSpent = weekTx.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
-        let weekCount = weekTx.length;
-
-        if (weekCount === 0 && dailyData && dailyData.length > 0) {
-          dailyData.forEach((d) => {
-            if (!d.date) return;
-            const parts = d.date.split("-");
-            if (parts.length < 3) return;
-            const y = parseInt(parts[0], 10);
-            const m = parseInt(parts[1], 10) - 1;
-            const day = parseInt(parts[2], 10);
-            if (y === activeYear && m === activeMonthIdx && day >= w.start && day <= w.end) {
-              weekSpent += d.totalAmount || 0;
-              weekCount += d.count || 0;
-            }
-          });
-        }
+        const startDate = new Date(activeYear, activeMonthIdx, w.start, 0, 0, 0);
+        const endDate = new Date(activeYear, activeMonthIdx, w.end, 23, 59, 59);
+        const stats = getIntervalStats(startDate.getTime(), endDate.getTime());
 
         result.push({
           label: w.label,
-          totalAmount: weekSpent,
+          totalAmount: stats.spent,
           budget: weeklyBudget,
-          count: weekCount,
+          count: stats.count,
         });
       });
+    } else if (timeRange === "4m") {
+      // 4 Months: 16 weeks across the last 4 months
+      for (let mOffset = 3; mOffset >= 0; mOffset--) {
+        const targetDate = new Date(latestDate.getFullYear(), latestDate.getMonth() - mOffset, 1);
+        const y = targetDate.getFullYear();
+        const mIdx = targetDate.getMonth();
+        const mName = monthNames[mIdx];
+
+        const weeks = [
+          { w: "W1", start: 1, end: 7 },
+          { w: "W2", start: 8, end: 14 },
+          { w: "W3", start: 15, end: 21 },
+          { w: "W4", start: 22, end: 31 },
+        ];
+
+        weeks.forEach((w) => {
+          const startDate = new Date(y, mIdx, w.start, 0, 0, 0);
+          const endDate = new Date(y, mIdx, w.end, 23, 59, 59);
+          const stats = getIntervalStats(startDate.getTime(), endDate.getTime());
+
+          result.push({
+            label: `${mName} ${w.w}`,
+            totalAmount: stats.spent,
+            budget: weeklyBudget,
+            count: stats.count,
+          });
+        });
+      }
+    } else if (timeRange === "6m") {
+      // 6 Months: 24 weeks across the last 6 months
+      for (let mOffset = 5; mOffset >= 0; mOffset--) {
+        const targetDate = new Date(latestDate.getFullYear(), latestDate.getMonth() - mOffset, 1);
+        const y = targetDate.getFullYear();
+        const mIdx = targetDate.getMonth();
+        const mName = monthNames[mIdx];
+
+        const weeks = [
+          { w: "W1", start: 1, end: 7 },
+          { w: "W2", start: 8, end: 14 },
+          { w: "W3", start: 15, end: 21 },
+          { w: "W4", start: 22, end: 31 },
+        ];
+
+        weeks.forEach((w) => {
+          const startDate = new Date(y, mIdx, w.start, 0, 0, 0);
+          const endDate = new Date(y, mIdx, w.end, 23, 59, 59);
+          const stats = getIntervalStats(startDate.getTime(), endDate.getTime());
+
+          result.push({
+            label: `${mName} ${w.w}`,
+            totalAmount: stats.spent,
+            budget: weeklyBudget,
+            count: stats.count,
+          });
+        });
+      }
+    } else if (timeRange === "1y") {
+      // 1 Year: 12 months for X-axis
+      for (let i = 11; i >= 0; i--) {
+        const d = new Date(latestDate.getFullYear(), latestDate.getMonth() - i, 1);
+        const y = d.getFullYear();
+        const mIdx = d.getMonth();
+        const rawMonth = `${y}-${String(mIdx + 1).padStart(2, "0")}`;
+        const label = `${monthNames[mIdx]} ${String(y).slice(2)}`;
+
+        const existing = (data || []).find(
+          (item) => item.rawMonth === rawMonth || item.month === label
+        );
+
+        if (existing) {
+          result.push({
+            label: existing.month || label,
+            rawMonth,
+            totalAmount: existing.totalAmount || 0,
+            budget: existing.budget || latestMonthBudget,
+            count: existing.count || 0,
+          });
+        } else {
+          result.push({
+            label,
+            rawMonth,
+            totalAmount: 0,
+            budget: latestMonthBudget,
+            count: 0,
+          });
+        }
+      }
     } else {
-      // 4m, 6m, 1y, all -> Monthly aggregation
-      let numMonths = 12;
-      if (timeRange === "4m") numMonths = 4;
-      else if (timeRange === "6m") numMonths = 6;
-      else if (timeRange === "1y") numMonths = 12;
-      else if (timeRange === "all") numMonths = Math.max(data.length, 6);
-
-      const monthNames = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-      ];
-
+      // ALL: All recorded months for X-axis
+      const numMonths = Math.max(data.length, 6);
       for (let i = numMonths - 1; i >= 0; i--) {
         const d = new Date(latestDate.getFullYear(), latestDate.getMonth() - i, 1);
         const y = d.getFullYear();
@@ -228,16 +303,13 @@ export default function BarChartMonthly({
     return Math.round((totalSpentInView / totalBudgetInView) * 100);
   }, [totalSpentInView, totalBudgetInView]);
 
-  const { barSizeBudget, barSizeSpent } = React.useMemo(() => {
-    const len = formattedData.length;
-    if (len <= 4) return { barSizeBudget: 44, barSizeSpent: 22 };
-    if (len <= 7) return { barSizeBudget: 36, barSizeSpent: 18 };
-    if (len <= 12) return { barSizeBudget: 24, barSizeSpent: 12 };
-    return { barSizeBudget: 20, barSizeSpent: 10 };
+  // Ensure bars maintain full, unreduced width without overflowing
+  const minChartWidth = React.useMemo(() => {
+    return Math.max(480, formattedData.length * 56);
   }, [formattedData.length]);
 
   return (
-    <div className="border-[3px] border-black bg-white shadow-[6px_6px_0px_#000000] p-4 sm:p-6 flex flex-col justify-between">
+    <div className="border-[3px] border-black bg-white shadow-[6px_6px_0px_#000000] p-4 sm:p-6 flex flex-col justify-between min-w-0 overflow-hidden">
       {/* Header & Controls */}
       <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 pb-5 border-b-2 border-neutral-200">
         <div>
@@ -339,92 +411,95 @@ export default function BarChartMonthly({
         </div>
       </div>
 
-      {/* Chart Canvas with Overlapping Bars */}
-      <div className="w-full pt-2 min-h-[300px]">
-        <ChartContainer config={chartConfig} className="w-full h-[320px]">
-          <BarChart
-            data={formattedData}
-            margin={{ top: 15, right: 10, left: -20, bottom: 0 }}
-            barGap="-100%"
-          >
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis
-              dataKey="label"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              style={{ fontSize: "11px", fontWeight: "600" }}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) =>
-                viewMode === "txCount"
-                  ? `${value} tx`
-                  : value >= 1000
-                  ? `${currencySymbol}${(value / 1000).toFixed(0)}k`
-                  : `${currencySymbol}${value}`
-              }
-              style={{ fontSize: "11px" }}
-            />
-            <ChartTooltip
-              cursor={{ fill: "rgba(0, 0, 0, 0.04)" }}
-              content={
-                <ChartTooltipContent
-                  indicator="dot"
-                  formatter={(val, name) => (
-                    <div className="flex items-center justify-between w-full gap-3">
-                      <span className="text-neutral-600 font-pixel text-xs">
-                        {chartConfig[name]?.label || name}:
-                      </span>
-                      <span className="font-doto font-bold text-black">
-                        {name === "count"
-                          ? `${val} transactions`
-                          : `${currencySymbol}${Number(val).toLocaleString()}`}
-                      </span>
-                    </div>
-                  )}
-                />
-              }
-            />
-
-            {viewMode === "spendingVsBudget" ? (
-              <>
-                {/* Outer/Background: Budget Bar in Green (#62D800) */}
-                <Bar
-                  dataKey="budget"
-                  name="budget"
-                  fill="#62D800"
-                  radius={[3, 3, 0, 0]}
-                  stroke="#000000"
-                  strokeWidth={1.5}
-                  barSize={barSizeBudget}
-                />
-                {/* Inner/Foreground: Spended Bar in Black (#000000) */}
-                <Bar
-                  dataKey="totalAmount"
-                  name="totalAmount"
-                  fill="#000000"
-                  radius={[3, 3, 0, 0]}
-                  stroke="#000000"
-                  strokeWidth={1.5}
-                  barSize={barSizeSpent}
-                />
-              </>
-            ) : (
-              <Bar
-                dataKey="count"
-                name="count"
-                fill="#FF00F5"
-                radius={[3, 3, 0, 0]}
-                stroke="#000000"
-                strokeWidth={1.5}
-                barSize={24}
+      {/* Chart Canvas with Overlapping Bars and Smooth Horizontal Scroll */}
+      <div className="w-full pt-2 min-h-[300px] overflow-x-auto overflow-y-hidden scrollbar-thin">
+        <div style={{ minWidth: minChartWidth, width: "100%", height: 320 }}>
+          <ChartContainer config={chartConfig} className="w-full h-[320px]">
+            <BarChart
+              data={formattedData}
+              margin={{ top: 15, right: 30, left: -10, bottom: 0 }}
+              barGap="-100%"
+            >
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis
+                dataKey="label"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+                interval={0}
+                style={{ fontSize: "11px", fontWeight: "600" }}
               />
-            )}
-          </BarChart>
-        </ChartContainer>
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                tickFormatter={(value) =>
+                  viewMode === "txCount"
+                    ? `${value} tx`
+                    : value >= 1000
+                    ? `${currencySymbol}${(value / 1000).toFixed(0)}k`
+                    : `${currencySymbol}${value}`
+                }
+                style={{ fontSize: "11px" }}
+              />
+              <ChartTooltip
+                cursor={{ fill: "rgba(0, 0, 0, 0.04)" }}
+                content={
+                  <ChartTooltipContent
+                    indicator="dot"
+                    formatter={(val, name) => (
+                      <div className="flex items-center justify-between w-full gap-3">
+                        <span className="text-neutral-600 font-pixel text-xs">
+                          {chartConfig[name]?.label || name}:
+                        </span>
+                        <span className="font-doto font-bold text-black">
+                          {name === "count"
+                            ? `${val} transactions`
+                            : `${currencySymbol}${Number(val).toLocaleString()}`}
+                        </span>
+                      </div>
+                    )}
+                  />
+                }
+              />
+
+              {viewMode === "spendingVsBudget" ? (
+                <>
+                  {/* Outer/Background: Budget Bar in Green (#62D800) */}
+                  <Bar
+                    dataKey="budget"
+                    name="budget"
+                    fill="#62D800"
+                    radius={[3, 3, 0, 0]}
+                    stroke="#000000"
+                    strokeWidth={1.5}
+                    barSize={BAR_SIZE_BUDGET}
+                  />
+                  {/* Inner/Foreground: Spended Bar in Black (#000000) */}
+                  <Bar
+                    dataKey="totalAmount"
+                    name="totalAmount"
+                    fill="#000000"
+                    radius={[3, 3, 0, 0]}
+                    stroke="#000000"
+                    strokeWidth={1.5}
+                    barSize={BAR_SIZE_SPENT}
+                  />
+                </>
+              ) : (
+                <Bar
+                  dataKey="count"
+                  name="count"
+                  fill="#FF00F5"
+                  radius={[3, 3, 0, 0]}
+                  stroke="#000000"
+                  strokeWidth={1.5}
+                  barSize={24}
+                />
+              )}
+            </BarChart>
+          </ChartContainer>
+        </div>
       </div>
     </div>
   );

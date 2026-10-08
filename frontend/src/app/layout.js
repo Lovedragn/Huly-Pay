@@ -1,6 +1,5 @@
 import localFont from "next/font/local";
 import { Geist, Geist_Mono } from "next/font/google";
-import Script from "next/script";
 import "lenis/dist/lenis.css";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
@@ -43,35 +42,6 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} ${pixelifySans.variable} ${dotoFont.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
-        <Script
-          id="theme-init"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var theme = null;
-                  var rawPrefs = localStorage.getItem('user_preference_website');
-                  if (rawPrefs) {
-                    try {
-                      var parsed = JSON.parse(rawPrefs);
-                      theme = parsed.theme;
-                    } catch (e) {}
-                  }
-                  if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.documentElement.classList.add('dark');
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                  } else {
-                    document.documentElement.classList.remove('dark');
-                    document.documentElement.setAttribute('data-theme', 'light');
-                  }
-                } catch (e) {}
-              })();
-            `,
-          }}
-        />
-      </head>
       <body
         className="min-h-full flex flex-col font-pixel bg-[#FFFFEB] dark:bg-[#0C0D0F] text-black dark:text-white transition-colors duration-200"
         suppressHydrationWarning

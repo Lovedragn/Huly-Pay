@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useServerInsertedHTML } from "next/navigation";
 
 const ThemeContext = React.createContext({
   theme: "light",
@@ -63,6 +64,35 @@ function getServerSnapshot() {
 const emptySubscribe = () => () => {};
 
 export function ThemeProvider({ children }) {
+  useServerInsertedHTML(() => (
+    <script
+      id="theme-init"
+      dangerouslySetInnerHTML={{
+        __html: `
+          (function() {
+            try {
+              var theme = null;
+              var rawPrefs = localStorage.getItem('user_preference_website');
+              if (rawPrefs) {
+                try {
+                  var parsed = JSON.parse(rawPrefs);
+                  theme = parsed.theme;
+                } catch (e) {}
+              }
+              if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                document.documentElement.setAttribute('data-theme', 'dark');
+              } else {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.setAttribute('data-theme', 'light');
+              }
+            } catch (e) {}
+          })();
+        `,
+      }}
+    />
+  ));
+
   const theme = React.useSyncExternalStore(
     subscribe,
     getSnapshot,
