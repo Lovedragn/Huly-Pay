@@ -534,17 +534,29 @@ class ScannerPalette {
     final isDark = colors.isDark;
     final name = colors.name.toLowerCase();
     final isRedVelvet = name.contains('red') || name.contains('velvet');
-    final isMilkWhite = name.contains('milk') || (!isDark && !isRedVelvet);
+    final isCoffeePaper = name.contains('coffee') || name.contains('paper') || name.contains('brown');
+    final isFunky = name.contains('funky');
 
-    if (isDark && !isRedVelvet) {
+    if (isFunky) {
+      return ScannerPalette(
+        isDark: false,
+        scaffold: colors.background,
+        overlay: const Color(0xE6FFFFFF), // Pure white overlay ~90%
+        scannerSvg: const Color(0xFF00FFFF), // Electric Cyan scanner (#00ffff)
+        buttonBg: Colors.white.withValues(alpha: 0.95),
+        buttonBorder: const Color(0x330284C7),
+        buttonIcon: const Color(0xFF0284C7), // Electric blue button icon
+      );
+    }
+    if (isCoffeePaper) {
       return ScannerPalette(
         isDark: true,
-        scaffold: const Color(0xFF000000),
-        overlay: const Color(0xC7000000), // OLED black ~78%
-        scannerSvg: Colors.white,
-        buttonBg: const Color(0xFF161619).withValues(alpha: 0.85),
-        buttonBorder: const Color(0xFF24242A),
-        buttonIcon: Colors.white,
+        scaffold: colors.background,
+        overlay: const Color(0xD93B271B), // Warm coffee paper overlay ~85%
+        scannerSvg: const Color(0xFFFFFFFF), // Pure white scanner SVG
+        buttonBg: const Color(0xFF563B29).withValues(alpha: 0.90),
+        buttonBorder: const Color(0x40F5EBE0),
+        buttonIcon: const Color(0xFFFFFFFF), // Pure white button icon
       );
     }
     if (isRedVelvet) {
@@ -568,13 +580,13 @@ class ScannerPalette {
       );
     }
     return ScannerPalette(
-      isDark: false,
-      scaffold: colors.background,
-      overlay: isMilkWhite ? const Color(0xE6FFFFFF) : const Color(0xC7000000),
-      scannerSvg: isMilkWhite ? const Color(0xFF007AFF) : Colors.white,
-      buttonBg: Colors.white.withValues(alpha: 0.92),
-      buttonBorder: colors.border,
-      buttonIcon: colors.textPrimary,
+      isDark: true,
+      scaffold: const Color(0xFF000000),
+      overlay: const Color(0xC7000000), // OLED black ~78%
+      scannerSvg: Colors.white,
+      buttonBg: const Color(0xFF161619).withValues(alpha: 0.85),
+      buttonBorder: const Color(0xFF24242A),
+      buttonIcon: Colors.white,
     );
   }
 }

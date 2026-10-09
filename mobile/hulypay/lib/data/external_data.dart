@@ -529,10 +529,10 @@ Website: $creatorWebsiteUrl
       'description': 'Pure black for AMOLED displays with neon accents (Default)',
     },
     {
-      'id': 'Milk white',
-      'name': 'Milk white',
-      'label': 'Milk',
-      'description': 'Clean ivory daytime theme with high clarity and royal accents',
+      'id': 'Coffee paper',
+      'name': 'Coffee paper',
+      'label': 'Coffee',
+      'description': 'Warm light brown coffee aesthetic with cream and pure white typography',
     },
     {
       'id': 'Red velvet',
@@ -540,13 +540,20 @@ Website: $creatorWebsiteUrl
       'label': 'Red',
       'description': 'White background, signature red big amount, red bottom nav & red accents',
     },
+    {
+      'id': 'Funky',
+      'name': 'Funky',
+      'label': 'Funky',
+      'description': 'Light sky blue background (#38BDF8) with pure white cards (#FFFFFF), electric blue buttons, and vivid accents',
+    },
   ];
 
   /// Descriptions for unified theme chart color palettes
   static const Map<String, String> chartPaletteDescriptions = {
     'Oled black': 'Electric Blue, vibrant Cyan, Mint, Amber & Rose',
-    'Milk white': 'Royal Blue, Ocean Cyan, Fresh Mint, Warm Gold & Rose',
+    'Coffee paper': 'Warm Caramel, Cream Latte, Amber Roast, Kraft & Rich Coffee',
     'Red velvet': 'Bright Yellow, Golden Amber, Radiant Orange & Crimson Red',
+    'Funky': 'Electric Red (#FF0000), Neon Green (#2BFF00), Bright Yellow (#FFC800) & Electric Cyan (#00FFFF)',
     'OnePlus red': 'Bright Yellow, Golden Amber, Radiant Orange & Crimson Red',
   };
 

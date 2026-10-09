@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 
 // Theme and chart palette names
-const List<String> kAppThemeNames = ['Oled black', 'Milk white', 'Red velvet'];
+const List<String> kAppThemeNames = [
+  'Oled black',
+  'Coffee paper',
+  'Red velvet',
+  'Funky',
+];
 
 const List<String> kChartPaletteNames = [
   'Oled black',
-  'Milk white',
+  'Coffee paper',
   'Red velvet',
+  'Funky',
 ];
 
 const Color kCloudWhite = Color(0xFFF4F6F9);
@@ -218,33 +224,36 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
     info: Color(0xFF0A84FF),
   );
 
-  // Milk white theme preset
-  static const AppThemeData milkWhite = AppThemeData(
-    name: 'Milk white',
-    isDark: false,
-    background: Color(0xFFF7F8FA),
-    surface: Color(0xFFFFFFFF),
-    surfaceSecondary: Color(0xFFEFF2F6),
-    border: Color(0xFFE2E6EE),
-    divider: Color(0xFFE8ECF2),
-    textPrimary: Color(0xFF111827),
-    textSecondary: Color(0xFF4B5563),
-    textMuted: Color(0xFF6B7280),
-    accent: Color(0xFF007AFF),
-    navBarBackground: Color(0xFFFFFFFF),
-    navBarActive: Color(0xFF111827),
-    navBarInactive: Color(0xFF9CA3AF),
-    navBarGradientFrom: Color.fromARGB(180, 255, 255, 255),
-    navBarGradientMiddle: Color.fromARGB(180, 255, 255, 255),
-    navBarGradientTo: Color.fromARGB(0, 255, 255, 255),
-    iconDefault: Color(0xFF111827),
-    iconBackground: Color(0xFFEFF2F6),
-    brightness: Brightness.light,
-    success: Color(0xFF10B981),
-    warning: Color(0xFFF59E0B),
-    error: Color(0xFFEF4444),
-    info: Color(0xFF0066FF),
+  // Coffee paper theme preset
+  static const AppThemeData coffeePaper = AppThemeData(
+    name: 'Coffee paper',
+    isDark: true,
+    background: Color(0xFF4A3427), // Warm light brown / coffee paper tone
+    surface: Color(0xFF3B271B), // Rich dark coffee card surface
+    surfaceSecondary: Color(0xFF563B29), // Warm light brown secondary surface
+    border: Color(0x3DF5EBE0), // Soft cream white border
+    divider: Color(0x24F5EBE0), // Subtle cream white divider
+    textPrimary: Color(0xFFFFFFFF), // Pure white
+    textSecondary: Color(0xFFF5EBE0), // Cream white
+    textMuted: Color(0xFFD7CCC8), // Latte cream muted
+    accent: Color(0xFFD4A373), // Warm light brown / caramel accent
+    navBarBackground: Color(0xFF3B271B),
+    navBarActive: Color(0xFFFFFFFF), // Pure white active indicator
+    navBarInactive: Color(0xFFBCAAA4), // Cream white inactive
+    navBarGradientFrom: Color.fromARGB(220, 59, 39, 27),
+    navBarGradientMiddle: Color.fromARGB(220, 59, 39, 27),
+    navBarGradientTo: Color.fromARGB(0, 59, 39, 27),
+    iconDefault: Color(0xFFFFFFFF), // Pure white
+    iconBackground: Color(0xFF563B29), // Warm light brown icon pill background
+    brightness: Brightness.dark,
+    success: Color(0xFF66BB6A),
+    warning: Color(0xFFFFA726),
+    error: Color(0xFFEF5350),
+    info: Color(0xFFD4A373),
   );
+
+  // Backward compatibility alias for deprecated Milk white preset
+  static const AppThemeData milkWhite = coffeePaper;
 
   // Red velvet theme preset
   static const AppThemeData redVelvet = AppThemeData(
@@ -273,6 +282,34 @@ class AppThemeData extends ThemeExtension<AppThemeData> {
     error: Color(0xFFEB0029),
     info: Color(0xFF0066FF),
   );
+
+  // Funky theme preset (Vibrant light blue main bg, crisp pure white cards, electric blue accents)
+  static const AppThemeData funky = AppThemeData(
+    name: 'Funky',
+    isDark: false,
+    background: Color(0xFF38BDF8), // Vibrant light sky blue main bg (#38BDF8)
+    surface: Color(0xFFFFFFFF), // Crisp pure white card surface (#FFFFFF)
+    surfaceSecondary: Color(0xFFE0F2FE), // Soft ice blue secondary surface (#E0F2FE)
+    border: Color(0x330284C7), // Delicate ocean blue border
+    divider: Color(0x1F0284C7), // Subtle divider
+    textPrimary: Color(0xFF0F172A), // Deep slate navy for maximum legibility on white cards
+    textSecondary: Color(0xFF475569), // Slate secondary text
+    textMuted: Color(0xFF94A3B8), // Soft muted slate text
+    accent: Color(0xFF0284C7), // Electric cobalt blue primary action (#0284C7)
+    navBarBackground: Color(0xFFFFFFFF), // Pure white bottom nav dock
+    navBarActive: Color(0xFF0284C7), // Electric blue active indicator
+    navBarInactive: Color(0xFF94A3B8), // Slate inactive icons
+    navBarGradientFrom: Color.fromARGB(220, 56, 189, 248),
+    navBarGradientMiddle: Color.fromARGB(220, 56, 189, 248),
+    navBarGradientTo: Color.fromARGB(0, 56, 189, 248),
+    iconDefault: Color(0xFF0284C7), // Electric blue icons
+    iconBackground: Color(0xFFE0F2FE), // Soft ice blue icon container
+    brightness: Brightness.light,
+    success: Color(0xFF2BFF00), // Electric Green (#2bff00)
+    warning: Color(0xFFFFC800), // Bright Yellow (#ffc800)
+    error: Color(0xFFFF0000), // Punchy Red (#ff0000)
+    info: Color(0xFF00FFFF), // Electric Cyan (#00ffff)
+  );
 }
 
 // Global theme state manager
@@ -294,14 +331,19 @@ class AppThemeManager {
   // Normalize theme names
   static String normalizeTheme(String themeName) {
     final lower = themeName.toLowerCase().trim();
-    if (lower.contains('red') ||
+    if (lower.contains('funky')) {
+      return 'Funky';
+    } else if (lower.contains('red') ||
         lower.contains('velvet') ||
         lower.contains('oneplus')) {
       return 'Red velvet';
-    } else if (lower.contains('milk') ||
+    } else if (lower.contains('coffee') ||
+        lower.contains('paper') ||
+        lower.contains('brown') ||
+        lower.contains('milk') ||
         lower.contains('white') ||
         lower.contains('light')) {
-      return 'Milk white';
+      return 'Coffee paper';
     }
     return 'Oled black';
   }
@@ -332,8 +374,10 @@ class AppThemeManager {
   static AppThemeData getThemeColors(String themeName) {
     final resolved = normalizeTheme(themeName);
     switch (resolved) {
-      case 'Milk white':
-        return AppThemeData.milkWhite;
+      case 'Funky':
+        return AppThemeData.funky;
+      case 'Coffee paper':
+        return AppThemeData.coffeePaper;
       case 'Red velvet':
         return AppThemeData.redVelvet;
       case 'Oled black':
@@ -433,16 +477,19 @@ class AppChartColors {
     Color(0xFF5856D6),
   ];
 
-  // Milk white palette
-  static const List<Color> milkWhitePalette = [
-    Color(0xFF0066FF),
-    Color(0xFF00B4D8),
-    Color(0xFF10B981),
-    Color(0xFFF59E0B),
-    Color(0xFFEF4444),
-    Color(0xFF8B5CF6),
-    Color(0xFF3B82F6),
+  // Coffee paper palette
+  static const List<Color> coffeePaperPalette = [
+    Color(0xFFD4A373), // Warm light brown / caramel
+    Color(0xFFE6BE8A), // Cream latte
+    Color(0xFFF5EBE0), // Cream white
+    Color(0xFFC49A6C), // Golden kraft brown
+    Color(0xFFB07D4F), // Amber roast brown
+    Color(0xFF8D5B36), // Deep warm coffee
+    Color(0xFF6F4E37), // Classic coffee
   ];
+
+  // Backward compatibility alias
+  static const List<Color> milkWhitePalette = coffeePaperPalette;
 
   // Red velvet palette
   static const List<Color> redVelvetPalette = [
@@ -455,14 +502,26 @@ class AppChartColors {
     Color(0xFFC00021),
   ];
 
+  // Funky palette: #ff0000, #2bff00, #ffc800, #00ffff
+  static const List<Color> funkyPalette = [
+    Color(0xFFFF0000), // Pure Red (#ff0000)
+    Color(0xFF2BFF00), // Neon Green (#2bff00)
+    Color(0xFFFFC800), // Bright Yellow (#ffc800)
+    Color(0xFF00FFFF), // Electric Cyan (#00ffff)
+    Color(0xFFFF007F), // Electric Pink
+    Color(0xFF0066FF), // Royal Blue
+    Color(0xFF7B2CBF), // Funky Violet
+  ];
+
   // Default fallback palette
   static const List<Color> defaultPalette = oledBlackPalette;
 
   // Palette lookup map
   static const Map<String, List<Color>> allPalettes = {
     'Oled black': oledBlackPalette,
-    'Milk white': milkWhitePalette,
+    'Coffee paper': coffeePaperPalette,
     'Red velvet': redVelvetPalette,
+    'Funky': funkyPalette,
   };
 
   // Active theme chart palette
@@ -471,8 +530,10 @@ class AppChartColors {
       AppThemeManager.currentTheme.value,
     );
     switch (activeTheme) {
-      case 'Milk white':
-        return milkWhitePalette;
+      case 'Funky':
+        return funkyPalette;
+      case 'Coffee paper':
+        return coffeePaperPalette;
       case 'Red velvet':
         return redVelvetPalette;
       case 'Oled black':
@@ -488,6 +549,10 @@ class AppChartColors {
     );
     if (activeTheme == 'Red velvet') {
       return const [Color(0xFFEB0029), Color(0xFFEB0029)];
+    } else if (activeTheme == 'Coffee paper') {
+      return const [Color(0xFFD4A373), Color(0xFFF5EBE0)];
+    } else if (activeTheme == 'Funky') {
+      return const [Color(0xFFFF0000), Color(0xFF00FFFF)]; // Red (#ff0000) to Cyan (#00ffff)
     }
     final p = globalPalette;
     return [p[1], p[0]];
@@ -500,6 +565,10 @@ class AppChartColors {
     );
     if (activeTheme == 'Red velvet') {
       return const Color(0xFFEB0029);
+    } else if (activeTheme == 'Coffee paper') {
+      return const Color(0xFFD4A373);
+    } else if (activeTheme == 'Funky') {
+      return const Color(0xFF00FFFF); // Electric Cyan (#00ffff)
     }
     return globalPalette[1];
   }
@@ -519,11 +588,15 @@ class AppChartColors {
   static Color get barToday => globalPalette[0];
   static Color get barDefault => globalPalette[0].withValues(alpha: 0.45);
 
-  static Color get barTrack => AppThemeManager.colors.isDark
-      ? const Color(0xFF1C1C20)
-      : const Color(0xFFE5E7EB);
+  static Color get barTrack => AppThemeManager.theme == 'Coffee paper'
+      ? const Color(0xFF3B271B)
+      : (AppThemeManager.theme == 'Funky'
+          ? const Color(0xFFE0F2FE)
+          : (AppThemeManager.colors.isDark
+              ? const Color(0xFF1C1C20)
+              : const Color(0xFFE5E7EB)));
 
-  // 5-level heatmap palette per theme
+  // 5-level heatmap palette per theme: dark brown to light brown for Coffee paper, quad-color for Funky
   static List<Color> get heatmapPalette {
     final activeTheme = AppThemeManager.normalizeTheme(
       AppThemeManager.currentTheme.value,
@@ -545,13 +618,23 @@ class AppChartColors {
         Color.fromARGB(255, 255, 30, 30),
         Color.fromARGB(255, 255, 0, 0),
       ];
-    } else {
+    } else if (activeTheme == 'Funky') {
+      // Funky quad-color heatmap: Pure white base -> Cyan (#00ffff) -> Green (#2bff00) -> Yellow (#ffc800) -> Red (#ff0000)
       return const [
-        Color(0xFFEFF2F6),
-        Color(0xFFBAE6FD),
-        Color(0xFF60A5FA),
-        Color(0xFF2563EB),
-        Color(0xFF1E40AF),
+        Color(0xFFFFFFFF), // Level 0: Pure white card base
+        Color(0xFF00FFFF), // Level 1: Cyan (#00ffff)
+        Color(0xFF2BFF00), // Level 2: Green (#2bff00)
+        Color(0xFFFFC800), // Level 3: Yellow (#ffc800)
+        Color(0xFFFF0000), // Level 4: Red (#ff0000, peak spend)
+      ];
+    } else {
+      // Coffee paper: dark brown to light brown
+      return const [
+        Color(0xFF2E1C14), // Level 0: Dark brown (empty/lowest spend)
+        Color(0xFF543828), // Level 1: Deep coffee brown
+        Color(0xFF7A5239), // Level 2: Medium brown
+        Color(0xFFA26E4B), // Level 3: Warm brown / caramel
+        Color(0xFFD4A373), // Level 4: Light brown (peak spend)
       ];
     }
   }
@@ -565,8 +648,10 @@ class AppChartColors {
       return const Color(0xFF34E869);
     } else if (activeTheme == 'Red velvet') {
       return const Color(0xFFEB0029);
+    } else if (activeTheme == 'Funky') {
+      return const Color(0xFF00FFFF); // Electric Cyan (#00ffff) highlight
     } else {
-      return const Color(0xFF007AFF);
+      return const Color(0xFFFFFFFF);
     }
   }
 
@@ -579,8 +664,10 @@ class AppChartColors {
       return const Color(0xFF30D158);
     } else if (activeTheme == 'Red velvet') {
       return const Color(0xFFEB0029);
+    } else if (activeTheme == 'Funky') {
+      return const Color(0xFFFF0000); // Punchy Red (#ff0000) border
     } else {
-      return const Color(0xFF007AFF);
+      return const Color(0xFFD4A373);
     }
   }
 }

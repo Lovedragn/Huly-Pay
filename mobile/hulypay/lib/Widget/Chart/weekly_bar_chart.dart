@@ -254,9 +254,11 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
             colors: [_defaultBarColor.withValues(alpha: 0.5), _defaultBarColor],
           );
         } else {
-          barColor = AppThemeManager.colors.isDark
-              ? const Color(0xFF26262B)
-              : const Color(0xFFE5E7EB);
+          barColor = (AppThemeManager.theme == 'Coffee paper')
+              ? const Color(0xFF4A3427)
+              : (AppThemeManager.colors.isDark
+                  ? const Color(0xFF26262B)
+                  : const Color(0xFFE5E7EB));
           barGradient = null;
         }
 
@@ -300,9 +302,11 @@ class _HomeWeeklyBarChartState extends State<HomeWeeklyBarChart> {
           fontFamily: 'Google Sans',
           color: isToday
               ? _todayBarColor
-              : (AppThemeManager.colors.isDark
-                  ? const Color(0xFF6B6B70)
-                  : const Color(0xFF9CA3AF)),
+              : (AppThemeManager.theme == 'Coffee paper'
+                  ? const Color(0xFFD7CCC8)
+                  : (AppThemeManager.colors.isDark
+                      ? const Color(0xFF6B6B70)
+                      : const Color(0xFF9CA3AF))),
           fontWeight: isToday ? FontWeight.w800 : FontWeight.w600,
           fontSize: 13,
         ),

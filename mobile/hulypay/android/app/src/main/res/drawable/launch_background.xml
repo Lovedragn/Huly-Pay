@@ -3,4 +3,7 @@
     <item>
         <bitmap android:gravity="fill" android:src="@drawable/background"/>
     </item>
+    <item
+        android:gravity="center"
+        android:drawable="@drawable/splash_icon"/>
 </layer-list>

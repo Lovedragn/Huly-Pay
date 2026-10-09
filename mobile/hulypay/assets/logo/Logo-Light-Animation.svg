@@ -1,0 +1,89 @@
+<svg width="30" height="29" viewBox="0 0 30 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    /* Each black eraser exists inside its own luminance mask to erase the logo along its guide stroke */
+    .erase-mask { mask-type: luminance; }
+    .eraser {
+      fill: none;
+      stroke: black;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      animation: erase 0.8s linear forwards;
+    }
+    .e0 { stroke-dasharray: 20.3; stroke-dashoffset: 20.3; animation-delay: 0.14s; }
+    .e1 { stroke-dasharray: 6.1; stroke-dashoffset: 6.1; animation-delay: 0.08s; }
+    .e2 { stroke-dasharray: 15.9; stroke-dashoffset: 15.9; animation-delay: 0.06s; }
+    .e3 { stroke-dasharray: 15.9; stroke-dashoffset: 15.9; animation-delay: 0.12s; }
+    .e4 { stroke-dasharray: 14.05; stroke-dashoffset: 14.05; animation-delay: 0.16s; }
+    .e5 { stroke-dasharray: 14.05; stroke-dashoffset: 14.05; animation-delay: 0.20s; }
+    .e6 { stroke-dasharray: 20.35; stroke-dashoffset: 20.35; animation-delay: 0s; }
+    .e7 { stroke-dasharray: 6.15; stroke-dashoffset: 6.15; animation-delay: 0.08s; }
+    @keyframes erase { to { stroke-dashoffset: 0; } }
+    @media (prefers-reduced-motion: reduce) {
+      .eraser { animation: none; stroke-dashoffset: 20.3; }
+    }
+  </style>
+
+  <defs>
+    <clipPath id="logo-clip"><rect width="30" height="29"/></clipPath>
+
+    <mask class="erase-mask" id="erase-0" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="-5" y="-5" width="40" height="39" mask-type="luminance">
+      <rect x="-5" y="-5" width="40" height="39" fill="white"/>
+      <path class="eraser e0" d="M29.3 18.4 C27 19.6 23.2 19.4 20 20 C17.1 20.7 15.9 23 16.97 28.98" stroke="black" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="20.3" stroke-dashoffset="20.3">
+        <animate attributeName="stroke-dashoffset" from="20.3" to="0" dur="0.8s" begin="0.14s" fill="freeze"/>
+      </path>
+    </mask>
+    <mask class="erase-mask" id="erase-1" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="-5" y="-5" width="40" height="39" mask-type="luminance">
+      <rect x="-5" y="-5" width="40" height="39" fill="white"/>
+      <path class="eraser e1" d="M14.994 5.227 C13.4 5.02 12 3.2 10.9 1.2" stroke="black" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6.1" stroke-dashoffset="6.1">
+        <animate attributeName="stroke-dashoffset" from="6.1" to="0" dur="0.8s" begin="0.08s" fill="freeze"/>
+      </path>
+    </mask>
+    <mask class="erase-mask" id="erase-2" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="-5" y="-5" width="40" height="39" mask-type="luminance">
+      <rect x="-5" y="-5" width="40" height="39" fill="white"/>
+      <path class="eraser e2" d="M29.4 11.9 C23.3 14.3 20.1 17.5 14.98 17.85" stroke="black" stroke-width="10.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="15.9" stroke-dashoffset="15.9">
+        <animate attributeName="stroke-dashoffset" from="15.9" to="0" dur="0.8s" begin="0.06s" fill="freeze"/>
+      </path>
+    </mask>
+    <mask class="erase-mask" id="erase-3" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="-5" y="-5" width="40" height="39" mask-type="luminance">
+      <rect x="-5" y="-5" width="40" height="39" fill="white"/>
+      <path class="eraser e3" d="M0.6 11.9 C6.7 14.3 9.9 17.5 15 17.85" stroke="black" stroke-width="10.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="15.9" stroke-dashoffset="15.9">
+        <animate attributeName="stroke-dashoffset" from="15.9" to="0" dur="0.8s" begin="0.12s" fill="freeze"/>
+      </path>
+    </mask>
+    <mask class="erase-mask" id="erase-4" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="-5" y="-5" width="40" height="39" mask-type="luminance">
+      <rect x="-5" y="-5" width="40" height="39" fill="white"/>
+      <path class="eraser e4" d="M4.8 3.5 C8 8.3 10.8 11.9 14.994 12.1" stroke="black" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="14.05" stroke-dashoffset="14.05">
+        <animate attributeName="stroke-dashoffset" from="14.05" to="0" dur="0.8s" begin="0.16s" fill="freeze"/>
+      </path>
+    </mask>
+    <mask class="erase-mask" id="erase-5" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="-5" y="-5" width="40" height="39" mask-type="luminance">
+      <rect x="-5" y="-5" width="40" height="39" fill="white"/>
+      <path class="eraser e5" d="M14.975 12.1 C19.2 11.9 22 8.3 25.19 3.5" stroke="black" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="14.05" stroke-dashoffset="14.05">
+        <animate attributeName="stroke-dashoffset" from="14.05" to="0" dur="0.8s" begin="0.20s" fill="freeze"/>
+      </path>
+    </mask>
+    <mask class="erase-mask" id="erase-6" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="-5" y="-5" width="40" height="39" mask-type="luminance">
+      <rect x="-5" y="-5" width="40" height="39" fill="white"/>
+      <path class="eraser e6" d="M13 28.98 C14.1 23 12.9 20.7 10 20 C6.8 19.4 3 19.6 0.66 18.4" stroke="black" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="20.35" stroke-dashoffset="20.35">
+        <animate attributeName="stroke-dashoffset" from="20.35" to="0" dur="0.8s" begin="0s" fill="freeze"/>
+      </path>
+    </mask>
+    <mask class="erase-mask" id="erase-7" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="-5" y="-5" width="40" height="39" mask-type="luminance">
+      <rect x="-5" y="-5" width="40" height="39" fill="white"/>
+      <path class="eraser e7" d="M14.975 5.227 C16.6 5.02 18 3.2 19.1 1.2" stroke="black" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6.15" stroke-dashoffset="6.15">
+        <animate attributeName="stroke-dashoffset" from="6.15" to="0" dur="0.8s" begin="0.08s" fill="freeze"/>
+      </path>
+    </mask>
+  </defs>
+
+  <g clip-path="url(#logo-clip)" fill="black">
+    <path d="M16.9687 28.9806C14.7321 15.4741 26.7056 20.6767 29.3093 18.4017C29.7043 18.0566 28.4218 20.8112 28.2449 21.293C28.2445 21.2939 28.755 21.2552 28.2478 21.2928C18.4797 22.0168 19.1569 23.002 19.689 28.4549L16.9687 28.9806Z" mask="url(#erase-0)"/>
+    <path d="M14.9939 5.22707C15.0113 5.22959 15.0291 7.66092 14.9939 7.65056C11.0148 7.65056 8.90148 0.94195 8.90148 0.94195L11.6072 -3.05176e-05C11.6072 -3.05176e-05 13.2468 5.01533 14.9939 5.22707Z" mask="url(#erase-1)"/>
+    <path d="M29.3845 10.5247C29.4114 10.5265 29.9592 13.2316 29.9692 13.2497C23.1652 16.1755 20.8972 19.3143 14.9754 19.4612C14.9673 19.4514 14.902 16.2632 14.9754 16.2439C19.0875 16.3516 22.1569 13.4191 29.3845 10.5247Z" mask="url(#erase-2)"/>
+    <path d="M0.584738 10.5247C0.55788 10.5265 0.0100069 13.2316 2.76566e-05 13.2497C6.80404 16.1755 9.07206 19.3143 14.9938 19.4612C15.002 19.4514 15.0672 16.2632 14.9938 16.2439C10.8817 16.3516 7.81231 13.4191 0.584738 10.5247Z" mask="url(#erase-3)"/>
+    <path d="M14.9938 13.4232C8.65237 14.0732 5.76828 8.14699 2.80892 5.58456C2.83604 5.55702 4.80672 3.50811 4.77917 3.49875C7.14969 5.46597 9.48676 10.7008 14.9938 10.8046C15.0163 12.1918 14.9732 13.3816 14.9938 13.4232Z" mask="url(#erase-4)"/>
+    <path d="M14.9754 13.4232C21.3169 14.0732 24.201 8.14699 27.1603 5.58456C27.1332 5.55702 25.1625 3.50811 25.1901 3.49875C22.8196 5.46597 20.4825 10.7008 14.9754 10.8046C14.953 12.1918 14.996 13.3816 14.9754 13.4232Z" mask="url(#erase-5)"/>
+    <path d="M13.0005 28.9806C15.2371 15.4741 3.26365 20.6767 0.65991 18.4017C0.264957 18.0566 1.54748 20.8112 1.72439 21.293C1.72471 21.2939 1.2142 21.2552 1.72147 21.2928C11.4896 22.0168 10.8123 23.002 10.2803 28.4549L13.0005 28.9806Z" mask="url(#erase-6)"/>
+    <path d="M14.9753 5.22707C14.9579 5.22959 14.9402 7.66092 14.9753 7.65056C18.9544 7.65056 21.0678 0.94195 21.0678 0.94195L18.362 -3.05176e-05C18.362 -3.05176e-05 16.7225 5.01533 14.9753 5.22707Z" mask="url(#erase-7)"/>
+  </g>
+</svg>

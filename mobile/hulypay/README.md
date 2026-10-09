@@ -77,7 +77,7 @@ lib/
 │   ├── upi_payment_service.dart           # UPI intent generation & launcher
 │   ├── upi_service.dart                   # UPI string parser & validation
 │   └── user_preferences_service.dart     # Local settings & user preferences
-├── Theme/                 # App design system, color palettes (Oled black, Milk white, Red velvet)
+├── Theme/                 # App design system, color palettes (Oled black, Coffee paper, Red velvet, Funky)
 │   └── app_theme.dart
 ├── Widget/                # Reusable modular UI widgets
 │   ├── Bottom_Sheet/                      # Modal bottom sheets

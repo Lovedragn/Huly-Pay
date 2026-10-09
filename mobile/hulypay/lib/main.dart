@@ -89,6 +89,9 @@ class HulyPayApp extends StatelessWidget {
               onGenerateRoute: (settings) {
                 // Gracefully handle incoming deep links (e.g. Supabase OAuth callback /?code=...)
                 // without throwing 'Could not find a generator for route' exceptions.
+                if (settings.name == '/' || settings.name == null) {
+                  return null;
+                }
                 return MaterialPageRoute(
                   settings: settings,
                   builder: (_) => home ??

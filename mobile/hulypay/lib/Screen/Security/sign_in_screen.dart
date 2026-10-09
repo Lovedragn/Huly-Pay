@@ -236,46 +236,13 @@ class _SignInScreenState extends State<SignInScreen> with WidgetsBindingObserver
         children: [
           // 1. Center: Logo positioned at the EXACT same coordinates as SplashScreen
           Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Hero(
-                  tag: 'huly_pay_brand_logo',
-                  child: SvgPicture.asset(
-                    'assets/logo/Logo-Dark.svg',
-                    width: 120,
-                    height: 120,
-                  ),
-                ),
-                const SizedBox(height: 18),
-                const Opacity(
-                  opacity: 0.0,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Hulypay',
-                        style: TextStyle(
-                          fontFamily: 'Google Sans',
-                          fontSize: 36,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.8,
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Track. Pay. Grow.',
-                        style: TextStyle(
-                          fontFamily: 'Google Sans',
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            child: Hero(
+              tag: 'huly_pay_brand_logo',
+              child: SvgPicture.asset(
+                'assets/logo/Logo-Dark.svg',
+                width: 102,
+                height: 102,
+              ),
             ),
           ),
 

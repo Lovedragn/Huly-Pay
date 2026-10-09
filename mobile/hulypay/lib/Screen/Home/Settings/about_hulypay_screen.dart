@@ -211,7 +211,7 @@ class _AboutHulyPayScreenState extends State<AboutHulyPayScreen> {
           SvgPicture.asset(
             colors.isDark
                 ? 'assets/logo/Logo-Dark.svg'
-                : 'assets/logo/logo-Light.svg',
+                : 'assets/logo/Logo-Light.svg',
             width: 56,
             height: 56,
           ),

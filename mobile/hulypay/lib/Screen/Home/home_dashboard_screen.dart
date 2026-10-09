@@ -494,7 +494,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
           SvgPicture.asset(
             colors.isDark
                 ? 'assets/logo/Logo-Dark.svg'
-                : 'assets/logo/logo-Light.svg',
+                : 'assets/logo/Logo-Light.svg',
             height: 24,
           ),
           Row(
@@ -538,11 +538,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen>
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) => _buildAvatarFallback(),
                               )
-                            : Image.asset(
-                                'assets/pictures/profile.png',
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) => _buildAvatarFallback(),
-                              ),
+                            : _buildAvatarFallback(),
                       ),
                     ),
                   ),

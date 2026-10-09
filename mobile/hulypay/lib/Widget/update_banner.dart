@@ -28,6 +28,9 @@ class AppUpdateBanner extends StatelessWidget {
             'Smoother animations, UI refinements & stability enhancements',
           ];
 
+    final isFunky = colors.name == 'Funky';
+    final primaryAccent = isFunky ? const Color(0xFF0284C7) : colors.accent;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -42,19 +45,14 @@ class AppUpdateBanner extends StatelessWidget {
                 color: colors.surface,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: colors.accent.withValues(alpha: 0.38),
-                  width: 1.5,
+                  color: colors.border,
+                  width: 1.2,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: colors.accent.withValues(alpha: 0.15),
+                    color: Colors.black.withValues(alpha: colors.isDark ? 0.45 : 0.12),
                     blurRadius: 24,
                     offset: const Offset(0, 8),
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.45),
-                    blurRadius: 30,
-                    offset: const Offset(0, 10),
                   ),
                 ],
               ),
@@ -92,7 +90,7 @@ class AppUpdateBanner extends StatelessWidget {
                                   vertical: 2.5,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: colors.accent.withValues(alpha: 0.18),
+                                  color: primaryAccent.withValues(alpha: 0.14),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
@@ -101,7 +99,7 @@ class AppUpdateBanner extends StatelessWidget {
                                     fontFamily: 'Google Sans',
                                     fontSize: 11.5,
                                     fontWeight: FontWeight.w700,
-                                    color: colors.accent,
+                                    color: primaryAccent,
                                   ),
                                 ),
                               ),
@@ -120,7 +118,7 @@ class AppUpdateBanner extends StatelessWidget {
                                 color: colors.surfaceSecondary.withValues(alpha: 0.5),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: colors.border.withValues(alpha: 0.3),
+                                  color: colors.border.withValues(alpha: 0.5),
                                   width: 0.8,
                                 ),
                               ),
@@ -150,7 +148,7 @@ class AppUpdateBanner extends StatelessWidget {
                                               width: 5,
                                               height: 5,
                                               decoration: BoxDecoration(
-                                                color: colors.accent,
+                                                color: primaryAccent,
                                                 shape: BoxShape.circle,
                                               ),
                                             ),
@@ -190,7 +188,7 @@ class AppUpdateBanner extends StatelessWidget {
                               size: 17,
                             ),
                             label: const Text(
-                              'Update',
+                              'Download File',
                               style: TextStyle(
                                 fontFamily: 'Google Sans',
                                 fontSize: 13.5,
@@ -199,7 +197,8 @@ class AppUpdateBanner extends StatelessWidget {
                               ),
                             ),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: colors.accent,
+                              backgroundColor: primaryAccent,
+                              foregroundColor: Colors.white,
                               elevation: 0,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(22),

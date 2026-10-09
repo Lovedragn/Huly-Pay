@@ -800,8 +800,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   final theme = AppThemeManager.theme;
                   if (theme == 'Red velvet') {
                     return const Color(0xFFEB0029); // Red
-                  } else if (theme == 'Milk white') {
-                    return const Color(0xFF007AFF); // Blue
+                  } else if (theme == 'Coffee paper') {
+                    return const Color(0xFFD4A373); // Warm light brown / Coffee paper
+                  } else if (theme == 'Funky') {
+                    return const Color(0xFF2BFF00); // Neon Green (#2bff00)
                   } else {
                     return const Color(0xFF34C759); // Green (Oled black default)
                   }

@@ -235,7 +235,7 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
                 radius: 3.5,
                 color: AppChartColors.trendDotColor,
                 strokeWidth: 1.5,
-                strokeColor: colors.isDark ? const Color(0xFF141416) : Colors.white,
+                strokeColor: colors.surface,
               );
             },
           ),
@@ -274,7 +274,9 @@ class _HomeSpendTrendLineChartState extends State<HomeSpendTrendLineChart> {
         horizontalInterval: maxY > 0 ? (maxY / 4) : 100,
         getDrawingHorizontalLine: (value) =>
             FlLine(
-              color: colors.isDark ? const Color(0xFF222228) : const Color(0xFFEEEEF0),
+              color: colors.name == 'Coffee paper'
+                  ? const Color(0xFF4A3427)
+                  : (colors.isDark ? const Color(0xFF222228) : const Color(0xFFEEEEF0)),
               strokeWidth: 1,
             ),
       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hulypay/Theme/app_theme.dart';
-import 'package:hulypay/Widget/bottom_nav_bar.dart';
+import 'package:hulypay/Widget/Components/Navbar/bottom_navbar.dart';
 
 void main() {
   testWidgets('CustomBottomNavBar renders black gradient in dark theme and slides pill smoothly', (tester) async {
@@ -83,12 +83,12 @@ void main() {
     expect(finalRenderX, greaterThan(midRenderX));
   });
 
-  testWidgets('CustomBottomNavBar renders white gradient in Milk white and Red velvet themes from app_theme.dart', (tester) async {
-    // 1. Milk white theme
-    AppThemeManager.setTheme('Milk white');
+  testWidgets('CustomBottomNavBar renders gradient in Coffee paper and Red velvet themes from app_theme.dart', (tester) async {
+    // 1. Coffee paper theme
+    AppThemeManager.setTheme('Coffee paper');
     await tester.pumpWidget(
       MaterialApp(
-        theme: AppThemeManager.getMaterialTheme('Milk white'),
+        theme: AppThemeManager.getMaterialTheme('Coffee paper'),
         home: Scaffold(
           body: CustomBottomNavBar(
             selectedIndex: 0,
@@ -98,13 +98,13 @@ void main() {
       ),
     );
 
-    final milkGradientFinder = find.byKey(const Key('bottom_nav_gradient'));
-    expect(milkGradientFinder, findsOneWidget);
-    final milkGradientContainer = tester.widget<Container>(milkGradientFinder);
-    final milkGradientDeco = milkGradientContainer.decoration as BoxDecoration;
-    final milkGradient = milkGradientDeco.gradient as LinearGradient;
-    expect(milkGradient.colors.first, AppThemeData.milkWhite.navBarGradientFrom);
-    expect(milkGradient.colors.last, AppThemeData.milkWhite.navBarGradientTo);
+    final coffeeGradientFinder = find.byKey(const Key('bottom_nav_gradient'));
+    expect(coffeeGradientFinder, findsOneWidget);
+    final coffeeGradientContainer = tester.widget<Container>(coffeeGradientFinder);
+    final coffeeGradientDeco = coffeeGradientContainer.decoration as BoxDecoration;
+    final coffeeGradient = coffeeGradientDeco.gradient as LinearGradient;
+    expect(coffeeGradient.colors.first, AppThemeData.coffeePaper.navBarGradientFrom);
+    expect(coffeeGradient.colors.last, AppThemeData.coffeePaper.navBarGradientTo);
 
     // 2. Red velvet theme
     AppThemeManager.setTheme('Red velvet');
@@ -127,6 +127,28 @@ void main() {
     final redGradient = redGradientDeco.gradient as LinearGradient;
     expect(redGradient.colors.first, AppThemeData.redVelvet.navBarGradientFrom);
     expect(redGradient.colors.last, AppThemeData.redVelvet.navBarGradientTo);
+
+    // 3. Funky theme
+    AppThemeManager.setTheme('Funky');
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppThemeManager.getMaterialTheme('Funky'),
+        home: Scaffold(
+          body: CustomBottomNavBar(
+            selectedIndex: 0,
+            onItemSelected: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    final funkyGradientFinder = find.byKey(const Key('bottom_nav_gradient'));
+    expect(funkyGradientFinder, findsOneWidget);
+    final funkyGradientContainer = tester.widget<Container>(funkyGradientFinder);
+    final funkyGradientDeco = funkyGradientContainer.decoration as BoxDecoration;
+    final funkyGradient = funkyGradientDeco.gradient as LinearGradient;
+    expect(funkyGradient.colors.first, AppThemeData.funky.navBarGradientFrom);
+    expect(funkyGradient.colors.last, AppThemeData.funky.navBarGradientTo);
 
     // Reset back to Oled black
     AppThemeManager.setTheme('Oled black');

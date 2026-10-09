@@ -72,8 +72,9 @@ class _HomeTodaySpendGaugeChartState extends State<HomeTodaySpendGaugeChart> {
     }
 
     final colors = AppThemeManager.colors;
-    final trackColor =
-        colors.isDark ? const Color(0xFF222228) : const Color(0xFFE5E7EB);
+    final trackColor = colors.name == 'Coffee paper'
+        ? const Color(0xFF4A3427)
+        : (colors.isDark ? const Color(0xFF222228) : const Color(0xFFE5E7EB));
 
     return Container(
       width: double.infinity,

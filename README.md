@@ -385,7 +385,7 @@ Huly-Pay/
 │       │   │   ├── qr_share_service.dart, scan_payment_service.dart, sms_filter_service.dart
 │       │   │   ├── token_validator.dart, transaction_pdf_service.dart
 │       │   │   └── upi_payment_service.dart, upi_service.dart, user_preferences_service.dart
-│       │   ├── Theme/            # Design tokens & color palettes (Oled black, Milk white, Red velvet)
+│       │   ├── Theme/            # Design tokens & color palettes (Oled black, Coffee paper, Red velvet, Funky)
 │       │   └── Widget/           # Reusable UI components:
 │       │       ├── Bottom_Sheet/ # bottom_sheet.dart, category_picker_sheet.dart, edit_amount_sheet.dart
 │       │       ├── Chart/        # category_pie_chart, spend_trend_line_chart, spending_heatmap, today_spend_gauge, weekly_bar_chart

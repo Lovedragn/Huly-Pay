@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hulypay/Screen/upload_qr_screen.dart';
-import 'package:hulypay/Screen/scan_amount_screen.dart';
+import 'package:hulypay/Screen/Home/Payment/upload_qr_screen.dart';
+import 'package:hulypay/Screen/Home/Payment/scan_amount_screen.dart';
 import 'package:hulypay/Theme/app_theme.dart';
 
 void main() {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hulypay/Screen/scan_and_pay_screen.dart';
+import 'package:hulypay/Screen/Home/Payment/scan_and_pay_screen.dart';
 import 'package:hulypay/Theme/app_theme.dart';
 
 void main() {
@@ -32,15 +32,22 @@ void main() {
       expect(palette.buttonIcon, Colors.white);
     });
 
-    test('Milk white theme uses blue scanner SVG and milk white theme borders', () {
-      final palette = ScannerPalette.from(AppThemeData.milkWhite);
+    test('Coffee paper theme uses pure white scanner SVG and coffee paper palette', () {
+      final palette = ScannerPalette.from(AppThemeData.coffeePaper);
+
+      expect(palette.isDark, isTrue);
+      expect(palette.scaffold, AppThemeData.coffeePaper.background);
+      expect(palette.scannerSvg, const Color(0xFFFFFFFF));
+      expect(palette.buttonIcon, const Color(0xFFFFFFFF));
+    });
+
+    test('Funky theme uses cyan scanner SVG and blue button icon on light sky blue background', () {
+      final palette = ScannerPalette.from(AppThemeData.funky);
 
       expect(palette.isDark, isFalse);
-      expect(palette.scaffold, AppThemeData.milkWhite.background);
-      expect(palette.overlay, const Color(0xE6FFFFFF));
-      expect(palette.scannerSvg, const Color(0xFF007AFF));
-      expect(palette.buttonBorder, AppThemeData.milkWhite.border);
-      expect(palette.buttonIcon, AppThemeData.milkWhite.textPrimary);
+      expect(palette.scaffold, AppThemeData.funky.background);
+      expect(palette.scannerSvg, const Color(0xFF00FFFF));
+      expect(palette.buttonIcon, const Color(0xFF0284C7));
     });
   });
 }

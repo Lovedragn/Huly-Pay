@@ -4,15 +4,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../Repository/transaction_repository.dart';
 import '../Repository/user_repository.dart';
+import '../Widget/animated_huly_logo.dart';
 import '../Service/api_client.dart';
 import '../Service/app_update_service.dart';
 import '../Service/auth_service.dart';
 import '../Service/token_validator.dart';
 import '../Service/user_preferences_service.dart';
+import '../Theme/app_theme.dart';
 import 'Home/home_dashboard_screen.dart';
 import 'Security/sign_in_screen.dart';
 
@@ -24,7 +25,7 @@ class SplashScreen extends StatefulWidget {
 
   const SplashScreen({
     super.key,
-    this.duration = const Duration(milliseconds: 300),
+    this.duration = const Duration(seconds: 1),
     this.nextScreen,
     this.initializeAuth = true,
     this.isAuthenticated,
@@ -48,15 +49,23 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 280),
+      duration: widget.duration,
     );
+
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _navigateToNext();
+      }
+    });
 
     _controller.forward();
 
-    // Smoothly hand off from the native splash screen to the Flutter animated splash screen
-    FlutterNativeSplash.remove();
+    // Seamless handoff: Remove native splash screen after Flutter renders Frame 1
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FlutterNativeSplash.remove();
+    });
 
-    _navigationTimer = Timer(widget.duration, _navigateToNext);
+    _navigationTimer = Timer(widget.duration + const Duration(milliseconds: 300), _navigateToNext);
   }
 
   Future<void> _initializeAppAndAuth() async {
@@ -170,94 +179,33 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    const double logoSize = 120.0;
+    const double logoSize = 102.0;
+    final colors = AppThemeManager.colors;
+    final isDark = colors.isDark;
+    final backgroundColor = isDark ? const Color(0xFF000000) : colors.background;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF000000),
+      backgroundColor: backgroundColor,
       body: GestureDetector(
         key: const Key('splash_gesture_detector'),
         onTap: _navigateToNext,
         behavior: HitTestBehavior.opaque,
         child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) {
-                  final double t = _controller.value;
-                  final double opacity = Curves.easeOut.transform(
-                    (t / 0.4).clamp(0.0, 1.0),
-                  );
-                  final double scale =
-                      0.88 +
-                      0.12 *
-                          Curves.easeOutCubic.transform(
-                            (t / 0.5).clamp(0.0, 1.0),
-                          );
-                  return Opacity(
-                    opacity: opacity,
-                    child: Transform.scale(
-                      scale: scale,
-                      child: child,
-                    ),
-                  );
-                },
-                child: Hero(
-                  tag: 'huly_pay_brand_logo',
-                  child: SvgPicture.asset(
-                    'assets/logo/Logo-Dark.svg',
-                    width: logoSize,
-                    height: logoSize,
-                  ),
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, _) {
+              // Slower first, then accelerating faster
+              final double curvedProgress = Curves.easeIn.transform(_controller.value);
+              return Hero(
+                tag: 'huly_pay_brand_logo',
+                child: AnimatedHulyLogo(
+                  progress: curvedProgress,
+                  reverse: true,
+                  color: isDark ? Colors.white : Colors.black,
+                  size: logoSize,
                 ),
-              ),
-              const SizedBox(height: 18),
-              AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) {
-                  final double t = _controller.value;
-                  double textOpacity = 0.0;
-                  if (t >= 0.25 && t < 0.60) {
-                    textOpacity = Curves.easeOutCubic.transform(
-                      (t - 0.25) / 0.35,
-                    );
-                  } else if (t >= 0.60) {
-                    textOpacity = 1.0;
-                  }
-                  return Opacity(
-                    opacity: textOpacity.clamp(0.0, 1.0),
-                    child: child,
-                  );
-                },
-                child: const Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Hulypay',
-                      style: TextStyle(
-                        fontFamily: 'Google Sans',
-                        color: Colors.white,
-                        fontSize: 36,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.8,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Track. Pay. Grow.',
-                      style: TextStyle(
-                        fontFamily: 'Google Sans',
-                        color: Color(0xFF8E8E93),
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),

@@ -143,11 +143,16 @@ class _TransactionMapSectionState extends State<TransactionMapSection> {
     final colors = AppThemeManager.colors;
     final isDark = colors.isDark;
 
+    final isCoffeePaper = colors.name == 'Coffee paper';
+    final isFunky = colors.name == 'Funky';
+
     return Container(
       color: isDark
-          ? const Color(0xFF181A20)
-          : (colors.name == 'Milk white'
-              ? const Color(0xFFEFF2F6)
+          ? (isCoffeePaper
+              ? const Color(0xFF3B271B)
+              : const Color(0xFF181A20))
+          : (isFunky
+              ? const Color(0xFFE0F2FE)
               : const Color(0xFFF7F8FA)),
       child: Stack(
         fit: StackFit.expand,
@@ -155,14 +160,26 @@ class _TransactionMapSectionState extends State<TransactionMapSection> {
           CustomPaint(
             painter: MapGridPainter(
               gridColor: isDark
-                  ? const Color(0xFF222630)
-                  : const Color(0xFFE2E6EE),
+                  ? (isCoffeePaper
+                      ? const Color(0xFF4A3427)
+                      : const Color(0xFF222630))
+                  : (isFunky
+                      ? const Color(0xFFBAE6FD)
+                      : const Color(0xFFE2E6EE)),
               roadColor: isDark
-                  ? const Color(0xFF2A3040)
-                  : const Color(0xFFD6DBE5),
+                  ? (isCoffeePaper
+                      ? const Color(0xFF563B29)
+                      : const Color(0xFF2A3040))
+                  : (isFunky
+                      ? const Color(0xFF7DD3FC)
+                      : const Color(0xFFD6DBE5)),
               highlightRoadColor: isDark
-                  ? const Color(0xFF333B4D)
-                  : const Color(0xFFCAD1DE),
+                  ? (isCoffeePaper
+                      ? const Color(0xFF6E4D37)
+                      : const Color(0xFF333B4D))
+                  : (isFunky
+                      ? const Color(0xFF0284C7).withValues(alpha: 0.65)
+                      : const Color(0xFFCAD1DE)),
             ),
           ),
           Align(
