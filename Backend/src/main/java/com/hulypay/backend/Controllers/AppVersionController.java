@@ -15,12 +15,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequiredArgsConstructor
 @Tag(name = "App Version", description = "Endpoints for mobile app update checking")
 public class AppVersionController {
 
     private final MobileAppProperties mobileAppProperties;
     private final VersionComparisonService versionComparisonService;
+
+    public AppVersionController(MobileAppProperties mobileAppProperties, VersionComparisonService versionComparisonService) {
+        this.mobileAppProperties = mobileAppProperties;
+        this.versionComparisonService = versionComparisonService;
+    }
 
     @Operation(summary = "Check mobile application version and available updates")
     @GetMapping("/api/app/version")
