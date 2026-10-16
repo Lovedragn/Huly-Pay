@@ -10,6 +10,7 @@ class TransactionModel {
   final String? upiTransactionId;
   final String? upiId;
   final String? merchantName;
+  final String? description;
   final String? category;
   final String? paymentMethod;
   final String? transactionReference;
@@ -32,6 +33,7 @@ class TransactionModel {
     this.upiTransactionId,
     this.upiId,
     this.merchantName,
+    this.description,
     this.category,
     this.paymentMethod,
     this.transactionReference,
@@ -46,27 +48,22 @@ class TransactionModel {
     this.updatedAt,
   });
 
-  /// Whether this transaction is currently pending/initiated.
+  /// Whether this transaction is currently pending.
   bool get isPending {
     final s = status.toUpperCase().trim();
     return s == 'PENDING' || s == 'INITIATED' || s == 'PAYMENT_INITIATED';
   }
 
-  /// Whether this transaction completed successfully.
-  /// Only completed / confirmed / paid / settled statuses count as successful.
+  /// Whether this transaction completed successfully / confirmed.
   bool get isSuccessful {
     final s = status.toUpperCase().trim();
-    if (s == 'FAILED' ||
-        s == 'CANCELLED' ||
-        s == 'TIMEOUT' ||
-        s == 'DECLINED' ||
-        s == 'REJECTED' ||
-        s == 'PENDING' ||
-        s == 'INITIATED' ||
-        s == 'PAYMENT_INITIATED') {
-      return false;
-    }
-    return true;
+    return s == 'CONFIRMED' || s == 'SUCCESS' || s == 'COMPLETED';
+  }
+
+  /// Whether this transaction was deleted / cancelled / failed.
+  bool get isDeleted {
+    final s = status.toUpperCase().trim();
+    return s == 'DELETED' || s == 'FAILED' || s == 'CANCELLED';
   }
 
   TransactionModel copyWith({
@@ -78,6 +75,7 @@ class TransactionModel {
     String? upiTransactionId,
     String? upiId,
     String? merchantName,
+    String? description,
     String? category,
     String? paymentMethod,
     String? transactionReference,
@@ -100,6 +98,7 @@ class TransactionModel {
       upiTransactionId: upiTransactionId ?? this.upiTransactionId,
       upiId: upiId ?? this.upiId,
       merchantName: merchantName ?? this.merchantName,
+      description: description ?? this.description,
       category: category ?? this.category,
       paymentMethod: paymentMethod ?? this.paymentMethod,
       transactionReference: transactionReference ?? this.transactionReference,
@@ -163,14 +162,17 @@ class TransactionModel {
       upiTransactionId: (json['upiTransactionId'] ?? json['upi_transaction_id']) as String?,
       upiId: (json['upiId'] ?? json['upi_id']) as String?,
       merchantName: resolvedMerchant,
+      description: (json['description'] as String?)?.trim().isNotEmpty == true
+          ? (json['description'] as String).trim()
+          : null,
       category: (json['category'] as String?) ?? 'Others',
-      paymentMethod: (json['paymentMethod'] ?? json['payment_method']) as String?,
+      paymentMethod: (json['paymentMethod'] ?? json['payment_method'] ?? json['provider']) as String?,
       transactionReference: (json['transactionReference'] ?? json['transaction_reference']) as String?,
       status: (json['paymentStatus'] ?? json['status'] ?? 'SUCCESS') as String,
-      provider: json['provider'] as String?,
+      provider: (json['provider'] ?? json['paymentMethod'] ?? json['payment_method']) as String?,
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
-      locationAccuracyMeters: (json['locationAccuracyMeters'] ?? json['location_accuracy_meters'] as num?)?.toDouble(),
+      locationAccuracyMeters: ((json['locationAccuracyMeters'] ?? json['location_accuracy_meters']) as num?)?.toDouble(),
       paymentDate: (json['paymentDate'] ?? json['payment_date']) as String?,
       paymentTime: (json['paymentTime'] ?? json['payment_time']) as String?,
       createdAt: (json['createdAt'] ?? json['created_at']) as String?,
@@ -188,6 +190,7 @@ class TransactionModel {
       'upiTransactionId': upiTransactionId,
       'upiId': upiId,
       'merchantName': merchantName,
+      'description': description,
       'category': category ?? 'Others',
       'paymentMethod': paymentMethod,
       'transactionReference': transactionReference,
@@ -250,42 +253,50 @@ class TransactionModel {
 
   static IconData _getCategoryIcon(String category) {
     switch (category.toLowerCase()) {
-      case 'food':
+      // 1. Food & Dining
       case 'food & dining':
+      case 'food':
       case 'dining':
-        return Icons.restaurant_rounded;
       case 'groceries':
-        return Icons.local_grocery_store_rounded;
+        return Icons.restaurant_rounded;
+      // 2. Shopping
       case 'shopping':
+      case 'entertainment':
         return Icons.shopping_bag_rounded;
-      case 'bills':
+      // 3. Bills & Utilities
       case 'bills & utilities':
+      case 'bills':
       case 'utilities':
       case 'internet':
+      case 'education':
         return Icons.receipt_long_rounded;
-      case 'entertainment':
-        return Icons.movie_rounded;
+      // 4. Travel & Transport
+      case 'travel & transport':
       case 'travel':
       case 'transport':
-      case 'travel & transport':
       case 'transportation':
         return Icons.directions_car_rounded;
+      // 5. Health & Medical
+      case 'health & medical':
       case 'health':
       case 'medical':
-      case 'health & medical':
       case 'health & fitness':
+      case 'personal care':
+      case 'personal':
         return Icons.medical_services_rounded;
-      case 'education':
-        return Icons.school_rounded;
+      // 6. Investments
       case 'investments':
       case 'investment':
         return Icons.trending_up_rounded;
-      case 'personal care':
-      case 'personal':
-        return Icons.spa_rounded;
+      // 7. Unwanted Expenses
+      case 'unwanted expenses':
+      case 'unwanted':
+        return Icons.money_off_csred_rounded;
+      // 8. Others & Status Fallbacks
       case 'pending':
         return Icons.hourglass_top_rounded;
       case 'failed':
+      case 'deleted':
         return Icons.error_outline_rounded;
       case 'others':
       case 'other':
@@ -296,42 +307,50 @@ class TransactionModel {
 
   static Color _getCategoryIconColor(String category) {
     switch (category.toLowerCase()) {
-      case 'food':
+      // 1. Food & Dining
       case 'food & dining':
+      case 'food':
       case 'dining':
-        return const Color(0xFFFF9500);
       case 'groceries':
-        return const Color(0xFF34C759);
+        return const Color(0xFFFF9500);
+      // 2. Shopping
       case 'shopping':
+      case 'entertainment':
         return const Color(0xFF007AFF);
-      case 'bills':
+      // 3. Bills & Utilities
       case 'bills & utilities':
+      case 'bills':
       case 'utilities':
       case 'internet':
+      case 'education':
         return const Color(0xFFAF52DE);
-      case 'entertainment':
-        return const Color(0xFFFF2D55);
+      // 4. Travel & Transport
+      case 'travel & transport':
       case 'travel':
       case 'transport':
-      case 'travel & transport':
       case 'transportation':
         return const Color(0xFF30D158);
+      // 5. Health & Medical
+      case 'health & medical':
       case 'health':
       case 'medical':
-      case 'health & medical':
       case 'health & fitness':
+      case 'personal care':
+      case 'personal':
         return const Color(0xFF5AC8FA);
-      case 'education':
-        return const Color(0xFF5856D6);
+      // 6. Investments
       case 'investments':
       case 'investment':
         return const Color(0xFFFFCC00);
-      case 'personal care':
-      case 'personal':
-        return const Color(0xFFFF6482);
+      // 7. Unwanted Expenses
+      case 'unwanted expenses':
+      case 'unwanted':
+        return const Color(0xFFFF453A);
+      // 8. Others & Status Fallbacks
       case 'pending':
         return const Color(0xFFFF9500);
       case 'failed':
+      case 'deleted':
         return const Color(0xFFFF3B30);
       case 'others':
       case 'other':
@@ -399,6 +418,7 @@ class CreatePaymentPayload {
   final double amount;
   final String currency;
   final String? merchantName;
+  final String? description;
   final String? category;
   final String? upiId;
   final String? paymentMethod;
@@ -415,6 +435,7 @@ class CreatePaymentPayload {
     required this.amount,
     this.currency = 'INR',
     this.merchantName,
+    this.description,
     this.category,
     this.upiId,
     this.paymentMethod = 'UPI',
@@ -434,6 +455,9 @@ class CreatePaymentPayload {
       'currency': currency,
     };
     if (merchantName != null) map['merchantName'] = merchantName;
+    if (description != null && description!.trim().isNotEmpty) {
+      map['description'] = description!.trim();
+    }
     if (category != null) {
       map['category'] = category;
     } else {
@@ -446,7 +470,10 @@ class CreatePaymentPayload {
     if (provider != null) map['provider'] = provider;
     if (latitude != null) map['latitude'] = latitude;
     if (longitude != null) map['longitude'] = longitude;
-    if (locationAccuracyMeters != null) map['locationAccuracyMeters'] = locationAccuracyMeters;
+    if (locationAccuracyMeters != null) {
+      map['locationAccuracyMeters'] = locationAccuracyMeters;
+      map['location_accuracy_meters'] = locationAccuracyMeters;
+    }
     if (expenseId != null) map['expenseId'] = expenseId;
     if (status != null) {
       map['status'] = status;

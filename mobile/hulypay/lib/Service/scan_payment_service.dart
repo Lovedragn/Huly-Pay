@@ -37,6 +37,8 @@ class ScanPaymentService {
     UpiApps.googlePay: 'GOOGLE_PAY',
     UpiApps.amazonPay: 'AMAZON_PAY',
     UpiApps.phonePe: 'PHONEPE',
+    UpiApps.paytm: 'PAYTM',
+    UpiApps.whatsapp: 'WHATSAPP_PAY',
     UpiApps.bhim: 'BHIM',
   };
 
@@ -112,6 +114,7 @@ class ScanPaymentService {
     required UpiPaymentData upiData,
     required double amount,
     required SupportedUpiApp app,
+    PaymentLocation? location,
   }) async {
     try {
       await TransactionRepository().createTransaction(
@@ -124,6 +127,9 @@ class ScanPaymentService {
           transactionReference: _newTxnRef(),
           status: initialStatus,
           provider: app.name.toUpperCase().replaceAll(' ', '_'),
+          latitude: location?.latitude,
+          longitude: location?.longitude,
+          locationAccuracyMeters: location?.accuracyMeters,
         ),
       );
     } catch (e) {
@@ -189,6 +195,10 @@ class ScanPaymentService {
     final paymentMethod = autoCategory ?? 'UPI';
     final resolvedMerchant = merchantLabel(upiData);
 
+    final userNote = (upiData.note != null && upiData.note!.trim().isNotEmpty)
+        ? upiData.note!.trim()
+        : null;
+
     PaymentModel payment;
     try {
       payment = await TransactionRepository().createTransaction(
@@ -196,6 +206,7 @@ class ScanPaymentService {
           amount: amount,
           currency: upiData.currency,
           merchantName: resolvedMerchant,
+          description: userNote,
           upiId: upiData.upiId,
           paymentMethod: paymentMethod,
           transactionReference: txnRef,
@@ -213,6 +224,7 @@ class ScanPaymentService {
         amount: amount,
         currency: upiData.currency,
         merchantName: resolvedMerchant,
+        description: userNote,
         upiId: upiData.upiId,
         paymentMethod: paymentMethod,
         transactionReference: txnRef,

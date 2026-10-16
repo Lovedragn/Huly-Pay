@@ -205,8 +205,8 @@ export async function syncActualDataFromSupabase(userId = null) {
           t.transaction_reference ||
           `UPI_${t.id.slice(0, 8).toUpperCase()}`,
         upiId: t.upi_id || "payee@upi",
-        paymentMethod: t.payment_method || "UPI",
-        provider: t.provider || "UPI",
+        paymentMethod: t.provider || t.payment_method || "UPI",
+        provider: t.provider || t.payment_method || "UPI",
         createdAt: rawDate,
         date: dateStr,
         latitude: t.latitude,
@@ -317,62 +317,79 @@ export async function syncActualDataFromSupabase(userId = null) {
       }));
 
     // 4. Category Breakdown
+    // 4. Category Breakdown - restricted strictly to canonical 8 categories
+    const CANONICAL_CATEGORIES = [
+      "Food & Dining",
+      "Shopping",
+      "Bills & Utilities",
+      "Travel & Transport",
+      "Health & Medical",
+      "Investments",
+      "Unwanted Expenses",
+      "Others",
+    ];
+
     const categoryColorMap = {
-      "Food & Dining": "#FF0000", // Brand Red
-      Groceries: "#10B981", // Emerald Green
-      Shopping: "#00E5FF", // Cyan Accent
-      "Bills & Utilities": "#A855F7", // Purple Accent
-      Entertainment: "#EC4899", // Neon Pink
-      "Travel & Transport": "#FF7A00", // Vibrant Orange
-      "Health & Medical": "#14B8A6", // Teal
-      Education: "#6366F1", // Indigo
-      Investments: "#D8FF00", // Cyber Yellow
-      "Personal Care": "#F43F5E", // Rose
-      Others: "#71717A", // Slate Gray
-      // Aliases for backward compatibility
-      Food: "#FF0000",
-      Bills: "#A855F7",
-      Travel: "#FF7A00",
-      Transportation: "#FF7A00",
-      Health: "#14B8A6",
-      "Health & Fitness": "#14B8A6",
-      Other: "#71717A",
-      GPAY: "#62D800",
-      UPI: "#FF00F5",
-      GOOGLE_PAY: "#D8FF00",
+      "Food & Dining": "#FF9500", // Warm Orange / Food
+      Shopping: "#007AFF", // Blue Accent
+      "Bills & Utilities": "#AF52DE", // Purple
+      "Travel & Transport": "#30D158", // Green
+      "Health & Medical": "#5AC8FA", // Cyan / Teal
+      Investments: "#FFCC00", // Yellow Accent
+      "Unwanted Expenses": "#FF453A", // Red Warning
+      Others: "#8E8E93", // Slate Gray
     };
 
     const categoryIconMap = {
       "Food & Dining": "utensils",
-      Groceries: "shopping-cart",
       Shopping: "shopping-bag",
       "Bills & Utilities": "zap",
-      Entertainment: "film",
       "Travel & Transport": "navigation",
       "Health & Medical": "activity",
-      Education: "book-open",
       Investments: "trending-up",
-      "Personal Care": "smile",
+      "Unwanted Expenses": "alert-circle",
       Others: "grid",
-      // Aliases for backward compatibility
-      Food: "utensils",
-      Bills: "zap",
-      Travel: "navigation",
-      Transportation: "navigation",
-      Health: "activity",
-      "Health & Fitness": "activity",
-      Other: "grid",
-      GPAY: "zap",
-      UPI: "trending-up",
-      GOOGLE_PAY: "code",
+    };
+
+    const normalizeCategoryName = (raw) => {
+      if (!raw || typeof raw !== "string") return "Others";
+      const trimmed = raw.trim();
+      const lower = trimmed.toLowerCase();
+
+      if (lower === "food & dining" || lower === "food" || lower === "dining" || lower === "groceries") {
+        return "Food & Dining";
+      }
+      if (lower === "shopping" || lower === "entertainment" || lower === "personal care") {
+        return "Shopping";
+      }
+      if (lower === "bills & utilities" || lower === "bills" || lower === "utilities" || lower === "education") {
+        return "Bills & Utilities";
+      }
+      if (lower === "travel & transport" || lower === "travel" || lower === "transport" || lower === "transportation") {
+        return "Travel & Transport";
+      }
+      if (lower === "health & medical" || lower === "health" || lower === "medical" || lower === "health & fitness") {
+        return "Health & Medical";
+      }
+      if (lower === "investments" || lower === "investment") {
+        return "Investments";
+      }
+      if (lower === "unwanted expenses" || lower === "unwanted") {
+        return "Unwanted Expenses";
+      }
+      if (CANONICAL_CATEGORIES.includes(trimmed)) {
+        return trimmed;
+      }
+      return "Others";
     };
 
     const catAggregate = {};
     normalizedTransactions.forEach((t) => {
-      const cName =
+      const rawName =
         (typeof t.category === "string"
           ? t.category
           : t.category?.name || t.category_name) || "Others";
+      const cName = normalizeCategoryName(rawName);
       if (!catAggregate[cName]) {
         catAggregate[cName] = { category: cName, totalAmount: 0, count: 0 };
       }

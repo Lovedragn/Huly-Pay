@@ -174,14 +174,11 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   // ---------------------------------------------------------------------------
 
   Future<void> _runPaymentFlow(UpiPaymentData upiData) async {
-    // Fetch location in the background while the user types the amount.
-    PaymentLocation? location;
-    unawaited(() async {
-      try {
-        location = (await LocationService().getPaymentLocationWithStatus())
-            .location;
-      } catch (_) {}
-    }());
+    // Eagerly fetch location in the background while the user confirms payment details
+    final locationFuture = LocationService()
+        .getPaymentLocationWithStatus()
+        .then((res) => res.location)
+        .catchError((_) => null);
 
     final details = await PaymentDetailsPage.show(
       context,
@@ -190,8 +187,17 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     );
     if (details == null || !mounted) return;
 
+    // Await location with a quick timeout (1.5s max) so user experience remains fast
+    PaymentLocation? location;
+    try {
+      location = await locationFuture.timeout(
+        const Duration(milliseconds: 1500),
+        onTimeout: () => null,
+      );
+    } catch (_) {}
+
     // Primary flow: server generates a QR with am=<amount>, share it to the UPI app.
-    if (await _payViaGeneratedQr(upiData, details)) return;
+    if (await _payViaGeneratedQr(upiData, details, location: location)) return;
 
     // Fallback: launch the UPI app directly and verify via SMS.
     if (!mounted) return;
@@ -212,8 +218,9 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   /// Returns true if the generated QR was shared successfully.
   Future<bool> _payViaGeneratedQr(
     UpiPaymentData upiData,
-    PaymentDetailsResult details,
-  ) async {
+    PaymentDetailsResult details, {
+    PaymentLocation? location,
+  }) async {
     final preferredAppId = await UserPreferencesService().getDefaultPaymentApp();
     final app = await ScanPaymentService.resolveShareTargetApp();
     final qrFile = await ScanPaymentService.generateAmountQr(
@@ -236,6 +243,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       upiData: upiData,
       amount: details.amount,
       app: app,
+      location: location,
     );
     _showSnack('Opening ${app.name} with QR code...');
     if (mounted) _handleBack();

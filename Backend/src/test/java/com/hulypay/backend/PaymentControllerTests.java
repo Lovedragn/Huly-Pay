@@ -54,7 +54,8 @@ class PaymentControllerTests {
                 .andExpect(jsonPath("$.amount").value(500.00))
                 .andExpect(jsonPath("$.status").value("PENDING"))
                 .andExpect(jsonPath("$.upiId").value("cafecoffee@okaxis"))
-                .andExpect(jsonPath("$.paymentMethod").value("GPAY"))
+                .andExpect(jsonPath("$.paymentMethod").value("GOOGLE_PAY"))
+                .andExpect(jsonPath("$.provider").value("GOOGLE_PAY"))
                 .andExpect(jsonPath("$.transactionReference").value("TXN_REF_9988"))
                 .andExpect(jsonPath("$.latitude").value(12.9716))
                 .andExpect(jsonPath("$.longitude").value(77.5946))
@@ -117,7 +118,7 @@ class PaymentControllerTests {
                                 }
                                 """))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.status").value("INITIATED"))
+                .andExpect(jsonPath("$.status").value("PENDING"))
                 .andReturn();
 
         String transactionId = JsonPath.read(createResult.getResponse().getContentAsString(), "$.id");
@@ -214,7 +215,7 @@ class PaymentControllerTests {
                                 """, smsBody)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.verified").value(true))
-                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.status").value("CONFIRMED"))
                 .andExpect(jsonPath("$.extractedAmount").value(420.00))
                 .andExpect(jsonPath("$.extractedUpiReference").value("425611223344"));
 
@@ -230,7 +231,7 @@ class PaymentControllerTests {
                                 """, smsBody)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.verified").value(true))
-                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.status").value("CONFIRMED"))
                 .andExpect(jsonPath("$.message").value("Payment is already confirmed"));
     }
 
@@ -268,7 +269,7 @@ class PaymentControllerTests {
                                 """, failSms)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.verified").value(true))
-                .andExpect(jsonPath("$.status").value("FAILED"));
+                .andExpect(jsonPath("$.status").value("PENDING"));
     }
 }
 

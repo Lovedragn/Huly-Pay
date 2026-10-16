@@ -46,6 +46,12 @@ public class TransactionResponse {
         return status;
     }
 
+    // Backward compatibility property for clients expecting snake_case location_accuracy_meters
+    @JsonProperty("location_accuracy_meters")
+    public Double getLocationAccuracyMetersSnake() {
+        return locationAccuracyMeters;
+    }
+
     public static TransactionResponse fromEntity(Transaction transaction) {
         if (transaction == null) {
             return null;

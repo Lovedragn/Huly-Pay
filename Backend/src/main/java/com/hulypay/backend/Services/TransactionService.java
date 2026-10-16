@@ -45,9 +45,7 @@ public class TransactionService {
                 : "Others";
         ensureCategoryExists(category);
 
-        String statusStr = (request.getStatus() != null && !request.getStatus().isBlank())
-                ? request.getStatus().trim().toUpperCase()
-                : "SUCCESS";
+        String statusStr = TransactionStatusEnum.fromName(request.getStatus()).getName();
         ensureTransactionStatusExists(statusStr);
 
         String rawMerchant = request.getMerchantName();
@@ -62,7 +60,11 @@ public class TransactionService {
             txnRef = "REF_" + System.currentTimeMillis();
         }
 
-        ensurePaymentMethodExists(request.getPaymentMethod(), request.getProvider());
+        String effectiveProvider = (request.getProvider() != null && !request.getProvider().isBlank())
+                ? request.getProvider().trim()
+                : (request.getPaymentMethod() != null && !request.getPaymentMethod().isBlank() ? request.getPaymentMethod().trim() : "UPI");
+
+        ensurePaymentMethodExists(effectiveProvider);
 
         Instant txTime = request.getTransactionTime() != null ? request.getTransactionTime() : Instant.now();
 
@@ -73,8 +75,7 @@ public class TransactionService {
                 .merchant(merchant)
                 .category(category)
                 .description(request.getDescription())
-                .paymentMethod(request.getPaymentMethod())
-                .provider(request.getProvider())
+                .provider(effectiveProvider)
                 .status(statusStr)
                 .upiTransactionId(request.getUpiTransactionId())
                 .transactionReference(txnRef)
@@ -142,20 +143,18 @@ public class TransactionService {
             transaction.setDescription(request.getDescription());
         }
 
-        if (request.getPaymentMethod() != null) {
-            transaction.setPaymentMethod(request.getPaymentMethod());
+        String updateProvider = request.getProvider();
+        if (updateProvider == null || updateProvider.isBlank()) {
+            updateProvider = request.getPaymentMethod();
         }
-
-        if (request.getProvider() != null) {
-            transaction.setProvider(request.getProvider());
-        }
-
-        if (transaction.getPaymentMethod() != null && transaction.getProvider() != null) {
-            ensurePaymentMethodExists(transaction.getPaymentMethod(), transaction.getProvider());
+        if (updateProvider != null && !updateProvider.isBlank()) {
+            String cleanProvider = updateProvider.trim();
+            ensurePaymentMethodExists(cleanProvider);
+            transaction.setProvider(cleanProvider);
         }
 
         if (request.getStatus() != null && !request.getStatus().isBlank()) {
-            String cleanStatus = request.getStatus().trim().toUpperCase();
+            String cleanStatus = TransactionStatusEnum.fromName(request.getStatus()).getName();
             ensureTransactionStatusExists(cleanStatus);
             transaction.setStatus(cleanStatus);
         }
@@ -205,7 +204,7 @@ public class TransactionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found with ID: " + id));
 
         if (request.getStatus() != null && !request.getStatus().isBlank()) {
-            String cleanStatus = request.getStatus().trim().toUpperCase();
+            String cleanStatus = TransactionStatusEnum.fromName(request.getStatus()).getName();
             ensureTransactionStatusExists(cleanStatus);
             transaction.setStatus(cleanStatus);
         }
@@ -263,12 +262,12 @@ public class TransactionService {
         }
 
         if (matchResult.isFailure()) {
-            transaction.setStatus("FAILED");
-            ensureTransactionStatusExists("FAILED");
+            transaction.setStatus("PENDING");
+            ensureTransactionStatusExists("PENDING");
             Transaction saved = transactionRepository.save(transaction);
             return TransactionSmsVerificationResponse.builder()
                     .verified(true)
-                    .status("FAILED")
+                    .status("PENDING")
                     .message(matchResult.details())
                     .extractedAmount(parsed.getAmount())
                     .extractedUpiReference(parsed.getUpiReference())
@@ -276,17 +275,17 @@ public class TransactionService {
                     .build();
         }
 
-        transaction.setStatus("SUCCESS");
-        ensureTransactionStatusExists("SUCCESS");
+        transaction.setStatus("CONFIRMED");
+        ensureTransactionStatusExists("CONFIRMED");
         if (parsed.getUpiReference() != null && !parsed.getUpiReference().isBlank()) {
             transaction.setUpiTransactionId(parsed.getUpiReference());
         }
 
         Transaction saved = transactionRepository.save(transaction);
-        log.info("SMS verified transaction {} as SUCCESS for user {}", saved.getId(), user.getId());
+        log.info("SMS verified transaction {} as CONFIRMED for user {}", saved.getId(), user.getId());
         return TransactionSmsVerificationResponse.builder()
                 .verified(true)
-                .status("SUCCESS")
+                .status("CONFIRMED")
                 .message("Payment verified successfully via SMS")
                 .extractedAmount(parsed.getAmount())
                 .extractedUpiReference(parsed.getUpiReference())
@@ -356,22 +355,17 @@ public class TransactionService {
     }
 
     private void ensureTransactionStatusExists(String statusName) {
-        if (statusName != null && !statusName.isBlank()) {
-            String name = statusName.trim().toUpperCase();
-            if (!statusRepository.existsById(name)) {
-                statusRepository.save(TransactionStatusEntity.builder().name(name).build());
-            }
+        String normalized = TransactionStatusEnum.fromName(statusName).getName();
+        if (!statusRepository.existsById(normalized)) {
+            statusRepository.save(TransactionStatusEntity.builder().name(normalized).build());
         }
     }
 
-    private void ensurePaymentMethodExists(String method, String provider) {
-        if (method != null && !method.isBlank() && provider != null && !provider.isBlank()) {
-            PaymentMethodId id = PaymentMethodId.builder()
-                    .method(method.trim())
-                    .provider(provider.trim())
-                    .build();
-            if (!paymentMethodRepository.existsById(id)) {
-                paymentMethodRepository.save(PaymentMethod.builder().id(id).build());
+    private void ensurePaymentMethodExists(String provider) {
+        if (provider != null && !provider.isBlank()) {
+            String name = provider.trim();
+            if (!paymentMethodRepository.existsById(name)) {
+                paymentMethodRepository.save(PaymentMethod.builder().name(name).build());
             }
         }
     }

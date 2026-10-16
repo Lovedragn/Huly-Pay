@@ -140,9 +140,9 @@ class _SingleTransactionScreenState extends State<SingleTransactionScreen> {
         titleLower.contains('google') ||
         titleLower.contains('zomato') ||
         widget.transaction.type.toLowerCase().contains('upi')) {
-      return 'GPay';
+      return 'GOOGLE_PAY';
     }
-    return widget.transaction.id.hashCode.isEven ? 'GPay' : 'Amazon Pay';
+    return widget.transaction.id.hashCode.isEven ? 'GOOGLE_PAY' : 'Amazon Pay';
   }
 
   String get _category {

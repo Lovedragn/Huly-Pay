@@ -459,12 +459,6 @@ Website: $creatorWebsiteUrl
       description: 'Restaurants, cafes, food delivery & dining',
     ),
     TransactionCategoryItem(
-      name: 'Groceries',
-      icon: Icons.local_grocery_store_rounded,
-      color: Color(0xFF34C759),
-      description: 'Supermarkets, daily essentials & produce',
-    ),
-    TransactionCategoryItem(
       name: 'Shopping',
       icon: Icons.shopping_bag_rounded,
       color: Color(0xFF007AFF),
@@ -475,12 +469,6 @@ Website: $creatorWebsiteUrl
       icon: Icons.receipt_long_rounded,
       color: Color(0xFFAF52DE),
       description: 'Electricity, water, mobile recharge & broadband',
-    ),
-    TransactionCategoryItem(
-      name: 'Entertainment',
-      icon: Icons.movie_outlined,
-      color: Color(0xFFFF2D55),
-      description: 'Movies, streaming subscriptions & events',
     ),
     TransactionCategoryItem(
       name: 'Travel & Transport',
@@ -495,22 +483,16 @@ Website: $creatorWebsiteUrl
       description: 'Pharmacies, clinics, doctors & healthcare',
     ),
     TransactionCategoryItem(
-      name: 'Education',
-      icon: Icons.school_rounded,
-      color: Color(0xFF5856D6),
-      description: 'Courses, books, coaching & tuition fees',
-    ),
-    TransactionCategoryItem(
       name: 'Investments',
       icon: Icons.trending_up_rounded,
       color: Color(0xFFFFCC00),
       description: 'Stocks, mutual funds, gold & crypto investments',
     ),
     TransactionCategoryItem(
-      name: 'Personal Care',
-      icon: Icons.spa_rounded,
-      color: Color(0xFFFF6482),
-      description: 'Salons, grooming, cosmetics & self-care',
+      name: 'Unwanted Expenses',
+      icon: Icons.money_off_csred_rounded,
+      color: Color(0xFFFF453A),
+      description: 'Impulse buys, unnecessary splurges & waste',
     ),
     TransactionCategoryItem(
       name: 'Others',

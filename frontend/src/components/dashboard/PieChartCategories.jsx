@@ -14,47 +14,35 @@ const chartConfig = {
   },
   "Food & Dining": {
     label: "Food & Dining",
-    color: "#FF0000",
-  },
-  Groceries: {
-    label: "Groceries",
-    color: "#10B981",
+    color: "#FF9500",
   },
   Shopping: {
     label: "Shopping",
-    color: "#00E5FF",
+    color: "#007AFF",
   },
   "Bills & Utilities": {
     label: "Bills & Utilities",
-    color: "#A855F7",
-  },
-  Entertainment: {
-    label: "Entertainment",
-    color: "#EC4899",
+    color: "#AF52DE",
   },
   "Travel & Transport": {
     label: "Travel & Transport",
-    color: "#FF7A00",
+    color: "#30D158",
   },
   "Health & Medical": {
     label: "Health & Medical",
-    color: "#14B8A6",
-  },
-  Education: {
-    label: "Education",
-    color: "#6366F1",
+    color: "#5AC8FA",
   },
   Investments: {
     label: "Investments",
-    color: "#D8FF00",
+    color: "#FFCC00",
   },
-  "Personal Care": {
-    label: "Personal Care",
-    color: "#F43F5E",
+  "Unwanted Expenses": {
+    label: "Unwanted Expenses",
+    color: "#FF453A",
   },
   Others: {
     label: "Others",
-    color: "#71717A",
+    color: "#8E8E93",
   },
 };
 

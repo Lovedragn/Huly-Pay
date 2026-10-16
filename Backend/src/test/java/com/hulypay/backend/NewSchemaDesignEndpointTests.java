@@ -62,9 +62,9 @@ class NewSchemaDesignEndpointTests {
                 .andExpect(jsonPath("$.currencySymbol").value("₹"))
                 .andExpect(jsonPath("$.merchantName").value("Reliance Retail"))
                 .andExpect(jsonPath("$.category").value("Groceries"))
-                .andExpect(jsonPath("$.paymentMethod").value("UPI"))
+                .andExpect(jsonPath("$.paymentMethod").value("GOOGLE_PAY"))
                 .andExpect(jsonPath("$.provider").value("GOOGLE_PAY"))
-                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.status").value("CONFIRMED"))
                 .andReturn();
 
         String inrTxId = JsonPath.read(inrResult.getResponse().getContentAsString(), "$.id");

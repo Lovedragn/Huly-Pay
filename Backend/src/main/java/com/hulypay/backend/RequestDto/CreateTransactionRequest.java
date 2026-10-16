@@ -1,5 +1,7 @@
 package com.hulypay.backend.RequestDto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -43,7 +45,7 @@ public class CreateTransactionRequest {
 
     @Builder.Default
     @Size(max = 30, message = "Status must not exceed 30 characters")
-    private String status = "SUCCESS";
+    private String status = "CONFIRMED";
 
     @Size(max = 255, message = "UPI transaction ID must not exceed 255 characters")
     private String upiTransactionId;
@@ -54,10 +56,16 @@ public class CreateTransactionRequest {
     @Size(max = 255, message = "UPI ID must not exceed 255 characters")
     private String upiId;
 
+    @JsonProperty("latitude")
+    @JsonAlias({"lat", "latitude"})
     private Double latitude;
 
+    @JsonProperty("longitude")
+    @JsonAlias({"lng", "lon", "longitude"})
     private Double longitude;
 
+    @JsonProperty("locationAccuracyMeters")
+    @JsonAlias({"location_accuracy_meters", "locationAccuracyMeters", "accuracy", "accuracyMeters"})
     private Double locationAccuracyMeters;
 
     private Instant transactionTime;

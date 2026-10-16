@@ -40,22 +40,17 @@ class TransactionPdfService {
     // Status colors
     final sUpper = status.toUpperCase();
     final isPending = sUpper == 'PENDING' || sUpper == 'INITIATED' || sUpper == 'PAYMENT_INITIATED';
-    final isFailed = sUpper == 'FAILED';
-    final isCancelled = sUpper == 'CANCELLED';
+    final isDeleted = sUpper == 'DELETED' || sUpper == 'FAILED' || sUpper == 'CANCELLED';
 
-    final PdfColor statusColor = isCancelled
-        ? const PdfColor.fromInt(0xFFFF9F0A)
-        : (isFailed
-            ? const PdfColor.fromInt(0xFFFF453A)
-            : (isPending
-                ? const PdfColor.fromInt(0xFFE5A93C)
-                : const PdfColor.fromInt(0xFF30D158)));
+    final PdfColor statusColor = isDeleted
+        ? const PdfColor.fromInt(0xFFFF453A)
+        : (isPending
+            ? const PdfColor.fromInt(0xFFE5A93C)
+            : const PdfColor.fromInt(0xFF30D158));
 
-    final statusLabel = isCancelled
-        ? 'CANCELLED'
-        : (isFailed
-            ? 'FAILED'
-            : (isPending ? 'PENDING' : 'CONFIRMED'));
+    final statusLabel = isDeleted
+        ? 'DELETED'
+        : (isPending ? 'PENDING' : 'CONFIRMED');
 
     final PdfColor accentBlue = const PdfColor.fromInt(0xFF007AFF);
     final PdfColor darkBg = const PdfColor.fromInt(0xFF101013);
@@ -180,7 +175,7 @@ class TransactionPdfService {
                         pw.Text(
                           displayAmount,
                           style: pw.TextStyle(
-                            color: isFailed
+                            color: isDeleted
                                 ? const PdfColor.fromInt(0xFFFF453A)
                                 : textWhite,
                             fontSize: 42,

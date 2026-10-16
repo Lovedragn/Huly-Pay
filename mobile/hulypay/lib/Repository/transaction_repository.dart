@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../Model/transaction_model.dart';
 import '../Service/api_client.dart';
 import '../Service/auth_service.dart';
@@ -109,15 +110,25 @@ class TransactionRepository {
       if (!synced && client != null && user != null) {
         try {
           final nowStr = p.createdAt ?? DateTime.now().toUtc().toIso8601String();
+          final mName = p.merchantName?.trim();
+          if (mName != null && mName.isNotEmpty) {
+            try {
+              await client.from('merchants').upsert({'name': mName});
+            } catch (_) {}
+          }
+
+          final cleanDesc = (p.description != null && p.description!.trim().isNotEmpty)
+              ? p.description!.trim()
+              : null;
+
           final res = await client.from('transactions').insert({
             'user_id': user.id,
             'amount': p.amount,
-            'currency': p.currency,
-            'merchant_name': p.merchantName,
+            'currency': (p.currency == '₹' || p.currency == '\$') ? p.currency : '₹',
+            'merchant_name': (mName != null && mName.isNotEmpty) ? mName : null,
             'category': (p.category != null && p.category!.isNotEmpty) ? p.category : 'Others',
-            'description': p.merchantName ?? (p.paymentMethod ?? 'UPI'),
+            'description': cleanDesc,
             'upi_id': p.upiId,
-            'payment_method': p.paymentMethod,
             'transaction_reference': p.transactionReference,
             'upi_transaction_id': p.upiTransactionId,
             'status': p.status,
@@ -135,7 +146,11 @@ class TransactionRepository {
             await _localDb.markPaymentSynced(p.id, syncedModel);
             syncedCount++;
           }
-        } catch (_) {}
+        } catch (e) {
+          if (kDebugMode) {
+            print('TransactionRepository syncLocalTransactions direct Supabase insert error: $e');
+          }
+        }
       }
     }
 
@@ -221,6 +236,7 @@ class TransactionRepository {
       amount: payload.amount,
       currency: payload.currency,
       merchantName: resolvedMerchant,
+      description: payload.description,
       category: payload.category,
       upiId: payload.upiId,
       paymentMethod: payload.paymentMethod,
@@ -251,15 +267,25 @@ class TransactionRepository {
       final user = AuthService().currentUser;
       if (client != null && user != null) {
         final now = DateTime.now().toUtc().toIso8601String();
+        final mName = resolvedMerchant.trim();
+        if (mName.isNotEmpty) {
+          try {
+            await client.from('merchants').upsert({'name': mName});
+          } catch (_) {}
+        }
+
+        final cleanDesc = (effectivePayload.description != null && effectivePayload.description!.trim().isNotEmpty)
+            ? effectivePayload.description!.trim()
+            : null;
+
         final response = await client.from('transactions').insert({
           'user_id': user.id,
           'amount': effectivePayload.amount,
-          'currency': effectivePayload.currency,
-          'merchant_name': resolvedMerchant,
+          'currency': (effectivePayload.currency == '₹' || effectivePayload.currency == '\$') ? effectivePayload.currency : '₹',
+          'merchant_name': mName.isNotEmpty ? mName : null,
           'category': (effectivePayload.category != null && effectivePayload.category!.isNotEmpty) ? effectivePayload.category : 'Others',
-          'description': resolvedMerchant,
+          'description': cleanDesc,
           'upi_id': effectivePayload.upiId,
-          'payment_method': effectivePayload.paymentMethod,
           'transaction_reference': resolvedRef,
           'upi_transaction_id': effectivePayload.upiTransactionId,
           'status': effectivePayload.status ?? 'CONFIRMED',
@@ -275,7 +301,11 @@ class TransactionRepository {
         await _localDb.upsertPayment(payment, syncStatus: 'SYNCED');
         return payment;
       }
-    } catch (_) {}
+    } catch (e) {
+      if (kDebugMode) {
+        print('TransactionRepository createTransaction direct Supabase insert error: $e');
+      }
+    }
 
     // Offline / connection fallback: save locally so the user payment flow is never blocked
     final localPayment = PaymentModel(
@@ -283,6 +313,9 @@ class TransactionRepository {
       amount: effectivePayload.amount,
       currency: effectivePayload.currency,
       merchantName: resolvedMerchant,
+      description: (effectivePayload.description != null && effectivePayload.description!.trim().isNotEmpty)
+          ? effectivePayload.description!.trim()
+          : null,
       upiId: effectivePayload.upiId,
       paymentMethod: effectivePayload.paymentMethod,
       transactionReference: resolvedRef,

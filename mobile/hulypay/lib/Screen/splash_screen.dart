@@ -97,8 +97,9 @@ class _SplashScreenState extends State<SplashScreen>
     // 3. Initialize Supabase / AuthService in background if not yet initialized
     if (!AuthService.isInitialized) {
       final supabaseUrl = dotenv.env['SUPABASE_URL'] ?? '';
-      final supabasePublishableKey =
-          dotenv.env['SUPABASE_PUBLISHABLE_KEY'] ?? '';
+      final supabasePublishableKey = dotenv.env['SUPABASE_ANON_KEY']?.trim().isNotEmpty == true
+          ? dotenv.env['SUPABASE_ANON_KEY']!
+          : (dotenv.env['SUPABASE_PUBLISHABLE_KEY'] ?? '');
       await AuthService.initialize(
         url: supabaseUrl,
         publishableKey: supabasePublishableKey,

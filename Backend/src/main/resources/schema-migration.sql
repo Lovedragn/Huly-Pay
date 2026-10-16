@@ -62,9 +62,8 @@ CREATE TABLE IF NOT EXISTS public.transaction_status (
 -- Payment methods
 
 CREATE TABLE IF NOT EXISTS public.payment_methods (
-    method VARCHAR(100) NOT NULL,
-    provider VARCHAR(100) NOT NULL,
-    CONSTRAINT payment_methods_pkey PRIMARY KEY (method, provider)
+    name VARCHAR(100) NOT NULL,
+    CONSTRAINT payment_methods_pkey PRIMARY KEY (name)
 );
 
 
@@ -78,9 +77,8 @@ CREATE TABLE IF NOT EXISTS public.transactions (
     merchant_name VARCHAR(255),
     category VARCHAR(100) NOT NULL DEFAULT 'Others',
     description TEXT,
-    payment_method VARCHAR(100),
     provider VARCHAR(100),
-    status VARCHAR(30) NOT NULL DEFAULT 'SUCCESS',
+    status VARCHAR(30) NOT NULL DEFAULT 'CONFIRMED',
     upi_transaction_id TEXT,
     transaction_reference TEXT,
     upi_id TEXT,
@@ -122,9 +120,9 @@ CREATE TABLE IF NOT EXISTS public.transactions (
         ON DELETE RESTRICT
         ON UPDATE CASCADE,
 
-    CONSTRAINT fk_transactions_payment_method
-        FOREIGN KEY (payment_method, provider)
-        REFERENCES public.payment_methods(method, provider)
+    CONSTRAINT fk_transactions_provider
+        FOREIGN KEY (provider)
+        REFERENCES public.payment_methods(name)
         ON DELETE RESTRICT
         ON UPDATE CASCADE,
 
@@ -164,52 +162,119 @@ ON CONFLICT (code) DO NOTHING;
 
 
 -- Categories
+-- Enforce strictly only the 8 supported categories in Supabase
 
 INSERT INTO public.categories (name)
 VALUES
     ('Food & Dining'),
-    ('Groceries'),
     ('Shopping'),
     ('Bills & Utilities'),
-    ('Entertainment'),
     ('Travel & Transport'),
     ('Health & Medical'),
-    ('Education'),
     ('Investments'),
-    ('Personal Care'),
+    ('Unwanted Expenses'),
     ('Others')
 ON CONFLICT (name) DO NOTHING;
 
+-- Map any legacy categories on transactions to one of the 8 canonical categories
+UPDATE public.transactions
+SET category = 'Food & Dining'
+WHERE category IN ('Food', 'Dining', 'Groceries');
+
+UPDATE public.transactions
+SET category = 'Shopping'
+WHERE category IN ('Entertainment', 'Personal Care');
+
+UPDATE public.transactions
+SET category = 'Bills & Utilities'
+WHERE category IN ('Bills', 'Utilities', 'Education');
+
+UPDATE public.transactions
+SET category = 'Travel & Transport'
+WHERE category IN ('Travel', 'Transport', 'Transportation');
+
+UPDATE public.transactions
+SET category = 'Health & Medical'
+WHERE category IN ('Health', 'Medical', 'Health & Fitness');
+
+UPDATE public.transactions
+SET category = 'Investments'
+WHERE category IN ('Investment');
+
+UPDATE public.transactions
+SET category = 'Unwanted Expenses'
+WHERE category IN ('Unwanted');
+
+UPDATE public.transactions
+SET category = 'Others'
+WHERE category NOT IN (
+    'Food & Dining',
+    'Shopping',
+    'Bills & Utilities',
+    'Travel & Transport',
+    'Health & Medical',
+    'Investments',
+    'Unwanted Expenses',
+    'Others'
+);
+
+-- Delete non-canonical categories from categories table
+DELETE FROM public.categories
+WHERE name NOT IN (
+    'Food & Dining',
+    'Shopping',
+    'Bills & Utilities',
+    'Travel & Transport',
+    'Health & Medical',
+    'Investments',
+    'Unwanted Expenses',
+    'Others'
+);
+
 
 -- Transaction statuses
+-- Only 'CONFIRMED' and 'PENDING' are allowed in transaction_status
 
 INSERT INTO public.transaction_status (name)
 VALUES
-    ('SUCCESS'),
-    ('PENDING'),
-    ('FAILED'),
-    ('CANCELLED'),
-    ('TIMEOUT'),
     ('CONFIRMED'),
-    ('SUBMITTED'),
-    ('INITIATED')
+    ('PENDING')
 ON CONFLICT (name) DO NOTHING;
+
+-- Normalize existing transactions status to either CONFIRMED or PENDING
+UPDATE public.transactions
+SET status = 'CONFIRMED'
+WHERE status NOT IN ('CONFIRMED', 'PENDING');
+
+-- Remove any other statuses (such as DELETED, FAILED, CANCELLED)
+DELETE FROM public.transaction_status
+WHERE name NOT IN ('CONFIRMED', 'PENDING');
 
 
 -- Payment methods
+-- Standard payment methods: change any legacy 'GPay' to 'GOOGLE_PAY'
 
-INSERT INTO public.payment_methods (method, provider)
+INSERT INTO public.payment_methods (name)
 VALUES
-    ('UPI', 'GOOGLE_PAY'),
-    ('UPI', 'BHIM'),
-    ('UPI', 'AMAZON_PAY'),
-    ('UPI', 'WHATSAPP_PAY'),
-    ('DEBIT_CARD', 'BANK'),
-    ('CREDIT_CARD', 'BANK'),
-    ('NET_BANKING', 'BANK'),
-    ('CASH', 'MANUAL'),
-    ('OTHER', 'OTHER')
-ON CONFLICT (method, provider) DO NOTHING;
+    ('GOOGLE_PAY'),
+    ('BHIM'),
+    ('AMAZON_PAY'),
+    ('PHONEPE'),
+    ('PAYTM'),
+    ('WHATSAPP_PAY'),
+    ('UPI'),
+    ('CASH'),
+    ('NET_BANKING')
+ON CONFLICT (name) DO NOTHING;
+
+-- Update any transactions using legacy 'GPay' to 'GOOGLE_PAY'
+UPDATE public.transactions
+SET provider = 'GOOGLE_PAY'
+WHERE provider ILIKE 'gpay';
+
+-- Remove legacy 'GPay' from payment_methods table if it exists
+DELETE FROM public.payment_methods
+WHERE name ILIKE 'gpay';
 
 
 -- Indexes
@@ -235,8 +300,8 @@ ON public.transactions(currency);
 CREATE INDEX IF NOT EXISTS idx_transactions_status
 ON public.transactions(status);
 
-CREATE INDEX IF NOT EXISTS idx_transactions_payment_method_provider
-ON public.transactions(payment_method, provider);
+CREATE INDEX IF NOT EXISTS idx_transactions_provider
+ON public.transactions(provider);
 
 CREATE INDEX IF NOT EXISTS idx_transactions_upi_transaction_id
 ON public.transactions(upi_transaction_id);

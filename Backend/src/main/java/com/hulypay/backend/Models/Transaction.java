@@ -45,15 +45,20 @@ public class Transaction {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "payment_method", length = 100)
-    private String paymentMethod;
-
     @Column(name = "provider", length = 100)
     private String provider;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "provider", referencedColumnName = "name", insertable = false, updatable = false)
+    private PaymentMethod providerLookup;
+
     @Builder.Default
     @Column(name = "status", length = 30, nullable = false)
-    private String status = "SUCCESS";
+    private String status = "CONFIRMED";
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status", referencedColumnName = "name", insertable = false, updatable = false)
+    private TransactionStatusEntity statusLookup;
 
     @Column(name = "upi_transaction_id", columnDefinition = "TEXT")
     private String upiTransactionId;
@@ -148,7 +153,13 @@ public class Transaction {
         return TransactionStatusEnum.toCode(status);
     }
 
-    public void setStatusCode(Short code) {
-        this.status = TransactionStatusEnum.toName(code);
+    public String getPaymentMethod() {
+        return provider;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        if (this.provider == null || this.provider.isBlank()) {
+            this.provider = paymentMethod;
+        }
     }
 }

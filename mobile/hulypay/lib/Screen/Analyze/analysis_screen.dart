@@ -52,21 +52,28 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 
   static const Map<String, Color> _kCategoryColors = {
     'Food & Dining': Color(0xFFFF9500),
-    'Groceries': Color(0xFF34C759),
     'Shopping': Color(0xFF007AFF),
     'Bills & Utilities': Color(0xFFAF52DE),
-    'Entertainment': Color(0xFFFF2D55),
     'Travel & Transport': Color(0xFF30D158),
     'Health & Medical': Color(0xFF5AC8FA),
-    'Education': Color(0xFF5856D6),
     'Investments': Color(0xFFFFCC00),
-    'Personal Care': Color(0xFFFF6482),
+    'Unwanted Expenses': Color(0xFFFF453A),
     'Others': Color(0xFF8E8E93),
-    // Aliases for backward compatibility
-    'Transportation': Color(0xFF30D158),
-    'Health & Fitness': Color(0xFF5AC8FA),
-    'Travel': Color(0xFF30D158),
+    // Aliases mapped into the 8 categories for backward compatibility
     'Food': Color(0xFFFF9500),
+    'Dining': Color(0xFFFF9500),
+    'Groceries': Color(0xFFFF9500),
+    'Entertainment': Color(0xFF007AFF),
+    'Personal Care': Color(0xFF5AC8FA),
+    'Education': Color(0xFFAF52DE),
+    'Bills': Color(0xFFAF52DE),
+    'Utilities': Color(0xFFAF52DE),
+    'Travel': Color(0xFF30D158),
+    'Transport': Color(0xFF30D158),
+    'Transportation': Color(0xFF30D158),
+    'Health': Color(0xFF5AC8FA),
+    'Medical': Color(0xFF5AC8FA),
+    'Health & Fitness': Color(0xFF5AC8FA),
     'Other': Color(0xFF8E8E93),
   };
 
@@ -254,13 +261,22 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
         tLower.contains('broadband') ||
         tLower.contains('utility')) {
       return 'Bills & Utilities';
+    } else if (tLower.contains('bet') ||
+        tLower.contains('gambling') ||
+        tLower.contains('lottery') ||
+        tLower.contains('casino') ||
+        tLower.contains('penalty') ||
+        tLower.contains('fine') ||
+        tLower.contains('unwanted') ||
+        tLower.contains('waste')) {
+      return 'Unwanted Expenses';
     } else if (tLower.contains('grocer') ||
         tLower.contains('supermarket') ||
         tLower.contains('blinkit') ||
         tLower.contains('zepto') ||
         tLower.contains('instamart') ||
         tLower.contains('bigbasket')) {
-      return 'Groceries';
+      return 'Food & Dining';
     } else if (tLower.contains('netflix') ||
         tLower.contains('spotify') ||
         tLower.contains('cinema') ||
@@ -269,7 +285,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
         tLower.contains('prime video') ||
         tLower.contains('hotstar') ||
         tLower.contains('game')) {
-      return 'Entertainment';
+      return 'Shopping';
     } else if (tLower.contains('pharmacy') ||
         tLower.contains('apollo') ||
         tLower.contains('med') ||
@@ -278,7 +294,11 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
         tLower.contains('doctor') ||
         tLower.contains('cult') ||
         tLower.contains('gym') ||
-        tLower.contains('fitness')) {
+        tLower.contains('fitness') ||
+        tLower.contains('salon') ||
+        tLower.contains('spa') ||
+        tLower.contains('beauty') ||
+        tLower.contains('barber')) {
       return 'Health & Medical';
     } else if (tLower.contains('zerodha') ||
         tLower.contains('groww') ||
@@ -290,11 +310,6 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
         tLower.contains('coin') ||
         tLower.contains('indmoney')) {
       return 'Investments';
-    } else if (tLower.contains('salon') ||
-        tLower.contains('spa') ||
-        tLower.contains('beauty') ||
-        tLower.contains('barber')) {
-      return 'Personal Care';
     } else if (tLower.contains('school') ||
         tLower.contains('college') ||
         tLower.contains('university') ||
@@ -303,10 +318,14 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
         tLower.contains('coursera') ||
         tLower.contains('tuition') ||
         tLower.contains('education')) {
-      return 'Education';
+      return 'Bills & Utilities';
     } else {
       if (pm != null && pm.isNotEmpty && pm.toUpperCase() != 'UPI') {
-        return pm;
+        for (final catName in _kCategoryColors.keys) {
+          if (catName.toLowerCase() == pm.toLowerCase()) {
+            return catName;
+          }
+        }
       }
       return 'Others';
     }

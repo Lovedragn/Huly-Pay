@@ -69,15 +69,12 @@ public class DatabaseLookupSeeder implements CommandLineRunner {
     private void seedCategories() {
         List<String> categories = List.of(
                 "Food & Dining",
-                "Groceries",
                 "Shopping",
                 "Bills & Utilities",
-                "Entertainment",
                 "Travel & Transport",
                 "Health & Medical",
-                "Education",
                 "Investments",
-                "Personal Care",
+                "Unwanted Expenses",
                 "Others"
         );
 
@@ -93,46 +90,61 @@ public class DatabaseLookupSeeder implements CommandLineRunner {
     }
 
     private void seedTransactionStatuses() {
-        for (TransactionStatusEnum status : TransactionStatusEnum.values()) {
+        List<String> statuses = List.of("CONFIRMED", "PENDING");
+        for (String statusName : statuses) {
             try {
-                if (!statusRepository.existsById(status.getName())) {
+                if (!statusRepository.existsById(statusName)) {
                     statusRepository.save(TransactionStatusEntity.builder()
-                            .name(status.getName())
+                            .name(statusName)
                             .build());
                 }
             } catch (Exception e) {
-                log.warn("Notice seeding status {}: {}", status.getName(), e.getMessage());
+                log.warn("Notice seeding status {}: {}", statusName, e.getMessage());
             }
         }
+        try {
+            statusRepository.findAll().forEach(s -> {
+                if (!statuses.contains(s.getName())) {
+                    try {
+                        statusRepository.delete(s);
+                    } catch (Exception ignored) {}
+                }
+            });
+        } catch (Exception ignored) {}
     }
 
     private void seedPaymentMethods() {
-        List<String[]> methods = List.of(
-                new String[]{"UPI", "GOOGLE_PAY"},
-                new String[]{"UPI", "PHONEPE"},
-                new String[]{"UPI", "PAYTM"},
-                new String[]{"UPI", "BHIM"},
-                new String[]{"UPI", "AMAZON_PAY"},
-                new String[]{"UPI", "CRED"},
-                new String[]{"UPI", "WHATSAPP_PAY"},
-                new String[]{"UPI", "UPI"},
-                new String[]{"GPAY", "GOOGLE_PAY"},
-                new String[]{"DEBIT_CARD", "BANK"},
-                new String[]{"CREDIT_CARD", "BANK"},
-                new String[]{"NET_BANKING", "BANK"},
-                new String[]{"CASH", "MANUAL"},
-                new String[]{"OTHER", "OTHER"}
+        List<String> providers = List.of(
+                "GOOGLE_PAY",
+                "BHIM",
+                "AMAZON_PAY",
+                "PHONEPE",
+                "PAYTM",
+                "WHATSAPP_PAY",
+                "UPI",
+                "CASH",
+                "NET_BANKING"
         );
 
-        for (String[] pair : methods) {
+        for (String provider : providers) {
             try {
-                PaymentMethodId id = PaymentMethodId.builder().method(pair[0]).provider(pair[1]).build();
-                if (!paymentMethodRepository.existsById(id)) {
-                    paymentMethodRepository.save(PaymentMethod.builder().id(id).build());
+                if (!paymentMethodRepository.existsById(provider)) {
+                    paymentMethodRepository.save(PaymentMethod.builder().name(provider).build());
                 }
             } catch (Exception e) {
-                log.debug("Skipping payment method {}: {}", pair[0], e.getMessage());
+                log.debug("Skipping payment method {}: {}", provider, e.getMessage());
             }
         }
+
+        try {
+            // Remove legacy 'GPAY' / 'GPay' from payment_methods if it exists
+            paymentMethodRepository.findAll().forEach(pm -> {
+                if ("GPAY".equalsIgnoreCase(pm.getName())) {
+                    try {
+                        paymentMethodRepository.delete(pm);
+                    } catch (Exception ignored) {}
+                }
+            });
+        } catch (Exception ignored) {}
     }
 }

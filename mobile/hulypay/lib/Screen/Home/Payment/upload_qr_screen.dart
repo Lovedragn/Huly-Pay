@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../../Model/transaction_model.dart';
 import '../../../Repository/transaction_repository.dart';
+import '../../../Service/location_service.dart';
 import '../../../Service/qr_service.dart';
 import '../../../Service/qr_share_service.dart';
 import '../../../Service/upi_payment_service.dart';
@@ -269,6 +270,12 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
               ? TransactionModel.formatMerchantName(payee)
               : ((upi != null && upi.isNotEmpty) ? TransactionModel.formatMerchantName(upi) : (note.isNotEmpty ? note : 'QR Payment'));
 
+          // Fetch location for uploaded QR payment
+          PaymentLocation? location;
+          try {
+            location = (await LocationService().getPaymentLocationWithStatus()).location;
+          } catch (_) {}
+
           try {
             await TransactionRepository().createTransaction(CreatePaymentPayload(
               amount: parsedAmount,
@@ -279,6 +286,9 @@ class _UploadQrScreenState extends State<UploadQrScreen> {
               transactionReference: txnRef,
               status: UserPreferencesService().cachedQuickConfirm ? 'CONFIRMED' : 'PENDING',
               provider: targetApp?.name.toUpperCase().replaceAll(' ', '_') ?? 'UPI',
+              latitude: location?.latitude,
+              longitude: location?.longitude,
+              locationAccuracyMeters: location?.accuracyMeters,
             ));
           } catch (_) {}
 

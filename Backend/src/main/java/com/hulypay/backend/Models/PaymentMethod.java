@@ -1,7 +1,8 @@
 package com.hulypay.backend.Models;
 
-import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
 
@@ -14,14 +15,15 @@ import lombok.*;
 @Builder
 public class PaymentMethod {
 
-    @EmbeddedId
-    private PaymentMethodId id;
+    @Id
+    @Column(name = "name", length = 100, nullable = false)
+    private String name;
 
     public String getMethod() {
-        return id != null ? id.getMethod() : null;
+        return "UPI";
     }
 
     public String getProvider() {
-        return id != null ? id.getProvider() : null;
+        return name;
     }
 }
