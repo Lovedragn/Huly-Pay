@@ -59,8 +59,8 @@ public class MobileAppProperties {
     }
 
     public static class PlatformConfig {
-        private String version = "4.1.0";
-        private String downloadUrl = "https://github.com/Lovedragn/Huly-Pay/releases/download/v4.1.0/hulypay_v4.1.0.apk";
+        private String version = "4.2.0";
+        private String downloadUrl = "https://github.com/Lovedragn/Huly-Pay/releases/download/v4.2.0/hulypay_v4.2.0.apk";
         private List<String> releaseNotes = new ArrayList<>();
 
         public PlatformConfig() {
