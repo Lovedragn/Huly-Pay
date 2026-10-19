@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../../Data/external_data.dart';
+import '../../../Model/transaction_model.dart';
 import '../../../Service/location_service.dart';
 import '../../../Service/qr_share_service.dart';
 import '../../../Service/scan_payment_service.dart';
@@ -197,7 +198,14 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     } catch (_) {}
 
     // Primary flow: server generates a QR with am=<amount>, share it to the UPI app.
-    if (await _payViaGeneratedQr(upiData, details, location: location)) return;
+    PaymentModel? preCreatedPayment;
+    final qrShared = await _payViaGeneratedQr(
+      upiData,
+      details,
+      location: location,
+      onPaymentCreated: (payment) => preCreatedPayment = payment,
+    );
+    if (qrShared) return;
 
     // Fallback: launch the UPI app directly and verify via SMS.
     if (!mounted) return;
@@ -212,7 +220,12 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       note: details.note ?? upiData.note,
       merchantCode: upiData.merchantCode,
     );
-    await _startSmsVerificationWorkflow(payData, details.amount, location);
+    await _startSmsVerificationWorkflow(
+      payData,
+      details.amount,
+      location,
+      existingPayment: preCreatedPayment,
+    );
   }
 
   /// Returns true if the generated QR was shared successfully.
@@ -220,6 +233,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     UpiPaymentData upiData,
     PaymentDetailsResult details, {
     PaymentLocation? location,
+    void Function(PaymentModel payment)? onPaymentCreated,
   }) async {
     final preferredAppId = await UserPreferencesService().getDefaultPaymentApp();
     final app = await ScanPaymentService.resolveShareTargetApp();
@@ -228,6 +242,20 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       amount: details.amount,
     );
     if (qrFile == null || !mounted) return false;
+
+    // Create the payment record once
+    PaymentModel? payment;
+    try {
+      payment = await ScanPaymentService.createPendingPayment(
+        upiData: upiData,
+        amount: details.amount,
+        appId: (preferredAppId != UpiApps.askEveryTime) ? app.id : UpiApps.askEveryTime,
+        location: location,
+      );
+      if (onPaymentCreated != null) {
+        onPaymentCreated(payment);
+      }
+    } catch (_) {}
 
     final shared = await QrShareService.shareQrImage(
       context: context,
@@ -239,12 +267,6 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     );
     if (!shared) return false;
 
-    await ScanPaymentService.recordSharedQrPayment(
-      upiData: upiData,
-      amount: details.amount,
-      app: app,
-      location: location,
-    );
     _showSnack('Opening ${app.name} with QR code...');
     if (mounted) _handleBack();
     return true;
@@ -253,14 +275,20 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
   Future<void> _startSmsVerificationWorkflow(
     UpiPaymentData upiData,
     double amount,
-    PaymentLocation? location,
-  ) async {
+    PaymentLocation? location, {
+    PaymentModel? existingPayment,
+  }) async {
     if (!ScanPaymentService.isQuickConfirm &&
         !await ScanPaymentService.ensureSmsPermission()) {
       if (!mounted) return;
       final retry = await showSmsPermissionDialog(context);
       if (retry && await ScanPaymentService.ensureSmsPermission() && mounted) {
-        await _startSmsVerificationWorkflow(upiData, amount, location);
+        await _startSmsVerificationWorkflow(
+          upiData,
+          amount,
+          location,
+          existingPayment: existingPayment,
+        );
       }
       return;
     }
@@ -289,6 +317,7 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
       amount: amount,
       location: location,
       forceAskEveryTime: forceAskEveryTime,
+      existingPayment: existingPayment,
     );
   }
 
@@ -297,18 +326,20 @@ class _ScanAndPayScreenState extends State<ScanAndPayScreen> {
     required double amount,
     required PaymentLocation? location,
     bool forceAskEveryTime = false,
+    PaymentModel? existingPayment,
   }) async {
     final isQuickConfirm = ScanPaymentService.isQuickConfirm;
     final appId = forceAskEveryTime
         ? UpiApps.askEveryTime
         : await UserPreferencesService().getDefaultPaymentApp();
 
-    final payment = await ScanPaymentService.createPendingPayment(
-      upiData: upiData,
-      amount: amount,
-      appId: appId,
-      location: location,
-    );
+    final payment = existingPayment ??
+        await ScanPaymentService.createPendingPayment(
+          upiData: upiData,
+          amount: amount,
+          appId: appId,
+          location: location,
+        );
 
     final launch = await ScanPaymentService.launchPaymentApp(
       appId,

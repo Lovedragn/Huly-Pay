@@ -218,7 +218,12 @@ class ScanPaymentService {
         ),
       );
     } catch (_) {
-      final nowIso = DateTime.now().toIso8601String();
+      final now = DateTime.now();
+      final nowIso = now.toIso8601String();
+      final localTime =
+          '${now.hour % 12 == 0 ? 12 : now.hour % 12}:${now.minute.toString().padLeft(2, '0')} ${now.hour >= 12 ? 'PM' : 'AM'}';
+      final localDate =
+          '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
       payment = PaymentModel(
         id: 'local_${DateTime.now().millisecondsSinceEpoch}',
         amount: amount,
@@ -233,6 +238,8 @@ class ScanPaymentService {
         latitude: location?.latitude,
         longitude: location?.longitude,
         locationAccuracyMeters: location?.accuracyMeters,
+        paymentDate: localDate,
+        paymentTime: localTime,
         createdAt: nowIso,
         updatedAt: nowIso,
       );

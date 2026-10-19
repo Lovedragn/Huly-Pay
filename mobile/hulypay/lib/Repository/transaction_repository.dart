@@ -232,6 +232,12 @@ class TransactionRepository {
         ? payload.transactionReference!.trim()
         : 'REF_${DateTime.now().millisecondsSinceEpoch}';
 
+    final nowLocal = DateTime.now();
+    final localTimeStr = payload.paymentTime ??
+        '${nowLocal.hour % 12 == 0 ? 12 : nowLocal.hour % 12}:${nowLocal.minute.toString().padLeft(2, '0')} ${nowLocal.hour >= 12 ? 'PM' : 'AM'}';
+    final localDateStr = payload.paymentDate ??
+        '${nowLocal.year}-${nowLocal.month.toString().padLeft(2, '0')}-${nowLocal.day.toString().padLeft(2, '0')}';
+
     final effectivePayload = CreatePaymentPayload(
       amount: payload.amount,
       currency: payload.currency,
@@ -248,6 +254,8 @@ class TransactionRepository {
       locationAccuracyMeters: payload.locationAccuracyMeters,
       expenseId: payload.expenseId,
       status: payload.status,
+      paymentDate: localDateStr,
+      paymentTime: localTimeStr,
     );
 
     // Only attempt remote API if user has a valid active token
@@ -325,6 +333,8 @@ class TransactionRepository {
       latitude: effectivePayload.latitude,
       longitude: effectivePayload.longitude,
       locationAccuracyMeters: effectivePayload.locationAccuracyMeters,
+      paymentDate: localDateStr,
+      paymentTime: localTimeStr,
       createdAt: DateTime.now().toIso8601String(),
       updatedAt: DateTime.now().toIso8601String(),
     );

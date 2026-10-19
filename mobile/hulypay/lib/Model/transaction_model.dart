@@ -173,9 +173,32 @@ class TransactionModel {
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
       locationAccuracyMeters: ((json['locationAccuracyMeters'] ?? json['location_accuracy_meters']) as num?)?.toDouble(),
-      paymentDate: (json['paymentDate'] ?? json['payment_date']) as String?,
-      paymentTime: (json['paymentTime'] ?? json['payment_time']) as String?,
-      createdAt: (json['createdAt'] ?? json['created_at']) as String?,
+      paymentDate: (json['paymentDate'] ?? json['payment_date']) as String? ??
+          (() {
+            final raw = (json['transaction_time'] ?? json['transactionTime'] ?? json['created_at'] ?? json['createdAt']) as String?;
+            if (raw != null && raw.isNotEmpty) {
+              try {
+                final dt = DateTime.parse(raw).toLocal();
+                return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
+              } catch (_) {}
+            }
+            return null;
+          })(),
+      paymentTime: (json['paymentTime'] ?? json['payment_time']) as String? ??
+          (() {
+            final raw = (json['transaction_time'] ?? json['transactionTime'] ?? json['created_at'] ?? json['createdAt']) as String?;
+            if (raw != null && raw.isNotEmpty) {
+              try {
+                final dt = DateTime.parse(raw).toLocal();
+                final hour = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
+                final minute = dt.minute.toString().padLeft(2, '0');
+                final period = dt.hour >= 12 ? 'PM' : 'AM';
+                return '$hour:$minute $period';
+              } catch (_) {}
+            }
+            return null;
+          })(),
+      createdAt: (json['createdAt'] ?? json['created_at'] ?? json['transaction_time']) as String?,
       updatedAt: (json['updatedAt'] ?? json['updated_at']) as String?,
     );
   }
@@ -430,6 +453,8 @@ class CreatePaymentPayload {
   final double? locationAccuracyMeters;
   final String? expenseId;
   final String? status;
+  final String? paymentDate;
+  final String? paymentTime;
 
   CreatePaymentPayload({
     required this.amount,
@@ -447,6 +472,8 @@ class CreatePaymentPayload {
     this.locationAccuracyMeters,
     this.expenseId,
     this.status,
+    this.paymentDate,
+    this.paymentTime,
   });
 
   Map<String, dynamic> toJson() {
@@ -479,6 +506,8 @@ class CreatePaymentPayload {
       map['status'] = status;
       map['paymentStatus'] = status;
     }
+    if (paymentDate != null) map['paymentDate'] = paymentDate;
+    if (paymentTime != null) map['paymentTime'] = paymentTime;
     return map;
   }
 }
